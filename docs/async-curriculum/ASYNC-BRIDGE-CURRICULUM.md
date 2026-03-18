@@ -4,6 +4,10 @@
 **Duration:** 4 weeks | **Weekly investment:** 5–10 hours | **Total:** 20–40 hours
 **Audience:** Professional engineers who completed Phase 1 (2-day live training)
 
+> **Video Library:** All video assignments, structured courses, and the Anthropic Academy certificate pathway are maintained in the authoritative master library:
+> **[`docs/async-curriculum/VIDEO-LIBRARY-MASTER.md`](VIDEO-LIBRARY-MASTER.md)**
+> Section 8 of this document links to that file rather than duplicating content inline.
+
 ---
 
 ## Table of Contents
@@ -124,30 +128,45 @@ By end of Week 1, students will:
 
 ### Weekly Schedule (7 hours)
 
+#### Anthropic Academy Certificate Track — Week 1
+
+Complete this course to earn your first official Anthropic credential:
+
+**Course: Claude Code in Action (Anthropic Academy, ~1 hour)**
+- URL: https://anthropic.skilljar.com/claude-code-in-action
+- Also on Coursera: https://www.coursera.org/learn/claude-code-in-action
+- Published: January 2026 | Free | Awards certificate
+- Assignment: Complete the full course and share your certificate screenshot to the cohort channel by end of Week 1.
+
+This is the Week 1 checkpoint artifact — the only resource in the curriculum that awards an official Anthropic certificate for Claude Code specifically.
+
 #### Video Block (2 hours)
 
-**Video 1.1 — Required:** "Claude Code Best Practices Deep Dive" (Anthropic)
-- Find on: Anthropic's YouTube channel or code.claude.com
-- Watch time: ~45 minutes
-- Focus: Context window management, CLAUDE.md structure, session naming, /clear patterns
-- Viewing guide: (1) Note every time the presenter describes a failure mode — these are the exact plateau points your cohort will hit. (2) Pay attention to the CLAUDE.md pruning philosophy — "Would removing this cause Claude to make mistakes?" (3) Watch the multi-session worktree demo. If you aren't using worktrees yet, this is why you should be.
+> **Specific video assignments are in the master library:** [`VIDEO-LIBRARY-MASTER.md`](VIDEO-LIBRARY-MASTER.md) — Week 1 section.
+> The three primaries below are confirmed picks; use the master library for viewing guides and alternates.
 
-**Video 1.2 — Required:** "Building Effective CLAUDE.md Files" or "Claude Code Memory and Context" (any authoritative source, 2024-2025)
-- Find on: YouTube search "claude code CLAUDE.md 2024" or "claude code context management"
-- Watch time: ~30 minutes
-- Focus: Real-world CLAUDE.md examples, what to include vs exclude, import syntax
-- Viewing guide: (1) Compare their CLAUDE.md examples against Module 02's template. What do they encode that the template misses? (2) Watch for anti-patterns — what did they remove and why? (3) Note the "IMPORTANT" and "YOU MUST" patterns for enforcing critical rules.
+**Video 1.1 — Required:** "Mastering Claude Code in 30 minutes" (Boris Cherny, Anthropic)
+- URL: https://www.youtube.com/watch?v=6eBSHbLKuN0
+- Watch time: ~30 minutes | Published: May 22, 2025 (Code with Claude conference)
+- Focus: Explore→Plan→Confirm→Code→Commit loop; CLAUDE.md at-mentions; git worktrees for parallel sessions
+- Viewing guide: (1) Note every time Boris describes a failure mode — these are the plateau points your cohort will hit. (2) Pay attention to the CLAUDE.md pruning philosophy — "Would removing this cause Claude to make mistakes?" (3) Watch the multi-session worktree demo.
 
-**Video 1.3 — Required:** "Claude Code Skills and Commands Tutorial" (2024-2025)
-- Find on: YouTube search "claude code skills slash commands 2025"
-- Watch time: ~30 minutes
-- Focus: Skill YAML frontmatter, slash command patterns, the difference between CLAUDE.md and Skills
-- Viewing guide: (1) Map their skill examples to the Module 07 taxonomy. (2) Watch for the skill invocation pattern — how does Claude know to apply a skill vs. use CLAUDE.md? (3) Note any composition patterns (skills calling other skills).
+**Video 1.2 — Required:** "No Vibes Allowed: Solving Hard Problems in Complex Codebases" (Dex Horthy, AI Engineer)
+- URL: https://www.youtube.com/watch?v=rmvDxxNubIg
+- Watch time: ~21 minutes | Published: December 2, 2025 | 377,000+ views
+- Focus: The "dumb zone" (context degradation above ~40%), RPI workflow, frequent intentional compaction
+- Viewing guide: (1) What specifically happens at the "dumb zone" threshold? (2) How does RPI map to CLAUDE.md session structure? (3) What does "intentional compaction" look like in practice?
 
-**Video 1.4 — Optional:** "Claude Code Plan Mode and Agentic Workflows" (2024-2025)
-- Watch time: ~20 minutes
-- Focus: Explore → Plan → Implement → Commit pattern, when to use Plan Mode vs direct execution
-- Viewing guide: (1) Count the number of times the presenter interrupts the agent. When and why? (2) Notice how Plan Mode changes the type of context window consumption.
+**Video 1.3 — Required:** "Claude Code Complete Guide — Best Strategies" (Cole Medin)
+- URL: https://www.youtube.com/watch?v=amEUIuBKwvg
+- Watch time: ~45–60 minutes | Published: August 29, 2025 | 110,000+ views
+- Focus: PRP (Product Requirements Prompt) framework, hooks configuration, subagent architecture, YOLO mode
+- Viewing guide: (1) Map the PRP framework to CLAUDE.md structure — how are they related? (2) When does Cole use hooks vs. CLAUDE.md instructions? (3) How are subagents defined vs. invoked?
+- Accuracy note: Preview the MCP transport section. If SSE is presented as current for remote servers (deprecated March 26, 2025), skip that segment. See VIDEO-LIBRARY-MASTER.md Instructor Action Items.
+
+**Video 1.4 — Supplemental (DeepLearning.AI):** "Claude Code: A Highly Agentic Coding Assistant"
+- URL: https://learn.deeplearning.ai/courses/claude-code-a-highly-agentic-coding-assistant/
+- Assignment: Watch Lesson 4 (Setup & Codebase Understanding, 14 min) and Lesson 7 (Adding Multiple Features Simultaneously, 11 min). Lesson 8 (GitHub Integration & Hooks, 10 min) is optional but recommended before the Week 1 hooks lab.
 
 #### Reading Block (1.5 hours)
 
@@ -204,29 +223,51 @@ By end of Week 2, students will:
 
 ### Weekly Schedule (7h 45m)
 
+#### Anthropic Academy Certificate Track — Week 2
+
+Complete these courses to earn your second (and potentially third) official Anthropic credentials:
+
+**Course: Introduction to Model Context Protocol (Anthropic Academy)**
+- URL: https://anthropic.skilljar.com/introduction-to-model-context-protocol
+- Published: March 2026 | Free | Awards certificate
+- Assignment: Complete before the Week 2 lab. Covers all three primitives (Tools, Resources, Prompts) with Python SDK implementation and the built-in MCP Server Inspector. Earns Certificate #2.
+
+**Course: Model Context Protocol: Advanced Topics (Anthropic Academy) — CONDITIONAL**
+- URL: https://anthropic.skilljar.com/model-context-protocol-advanced-topics
+- Published: March 2026 | Free | Awards certificate
+- Assignment (if accuracy confirmed): After completing your MCP server in the lab, watch the sampling section and the production scaling section. Earns Certificate #3.
+- NOTE: This course has an accuracy concern with SSE/Streamable HTTP framing. Your instructor will confirm whether it is cleared for assignment before Week 2 begins.
+
 #### Video Block (2 hours)
 
-**Video 2.1 — Required:** "Building MCP Servers from Scratch" (any 2024-2025 tutorial)
-- Find on: YouTube search "build mcp server typescript 2024" or "mcp server tutorial 2025"
-- Watch time: ~45 minutes
-- Focus: TypeScript SDK setup, tool schema design, stdio transport configuration
-- Viewing guide: (1) Pause when they define the first tool schema. Before they explain it, predict: what would happen if the description were 5 words shorter? (2) Watch how they test the server — what tools/commands do they use? You will need this for Lab 2. (3) Note when they hit an error. What was the error, and what does that tell you about MCP's validation behavior?
+> **Specific video assignments are in the master library:** [`VIDEO-LIBRARY-MASTER.md`](VIDEO-LIBRARY-MASTER.md) — Week 2 section.
+> The three primaries below are confirmed picks. Note the mandatory accuracy caveat for the Mahesh Murag workshop.
 
-**Video 2.2 — Required:** "MCP Inspector and Debugging MCP Servers" (2024-2025)
-- Find on: YouTube search "mcp inspector debug 2024" or "mcp server testing"
-- Watch time: ~30 minutes
-- Focus: MCP Inspector usage, how to test tools before connecting to Claude Code
-- Viewing guide: (1) Note the JSON-RPC message structure when a tool call is made. This is exactly what your Lab 2 server will produce. (2) Watch how they identify a schema error — what does the error message look like? (3) Is there a resource or prompt shown? If not, notice the absence. What would you add?
+**Video 2.1 — Required:** "MCP 201: The Power of the Protocol" (David Soria Parra, Anthropic)
+- URL: https://www.youtube.com/watch?v=HNzH5Us1Rvg
+- Watch time: ~27 minutes | Published: May 22, 2025 | Anthropic first-party
+- Focus: MCP composability, three-primitive taxonomy (Tools/Resources/Prompts), production examples from Sourcegraph and Anthropic's own toolchain
+- Viewing guide: (1) Pause when he distinguishes the three primitives — write a one-sentence definition of each. (2) How do MCP servers compose? What does "any MCP client can use your server" mean in practice?
 
-**Video 2.3 — Required:** "Real-World MCP Server Patterns" (any practitioner video, 2024-2025)
-- Find on: YouTube search "claude code mcp integration real world 2025" or "mcp server production patterns"
-- Watch time: ~30 minutes
-- Focus: Production patterns, authentication, error handling, multi-tool servers
-- Viewing guide: (1) What authentication pattern do they use? How do they keep credentials out of the tool schema? (2) How do they handle API errors — do they return them structured or as plain text? (3) What is the server's single responsibility? If the server handles multiple domains, note it as an anti-pattern.
+**Video 2.2 — Required:** "Building Headless Automation with Claude Code" (Anthropic)
+- URL: https://www.youtube.com/watch?v=dRsjO-88nBs
+- Watch time: ~25–30 minutes | Published: July 31, 2025 | Anthropic first-party
+- Focus: The `-p` flag for headless Claude Code invocation, GitHub Action on top of the SDK, JSON output for pipelines
+- Viewing guide: (1) What is the difference between the Claude Code SDK and the GitHub Action? (2) How does JSON output enable pipeline integration? (3) What does "session state preservation" enable that a stateless invocation cannot?
 
-**Video 2.4 — Optional:** Anthropic's official MCP tutorials (modelcontextprotocol.io or YouTube)
-- Watch time: ~20 minutes
-- Focus: Official patterns, any corrections to community implementations
+**Video 2.3 — Required:** "Remote MCPs — What We Learned from Shipping" (John Welsh, Anthropic)
+- Channel: AI Engineer | Published: June–July 2025 | Duration: ~15 minutes
+- URL: Requires manual lookup on @aiDotEngineer channel. Search: "John Welsh Remote MCPs What We Learned Shipping"
+- Focus: Post-deprecation remote MCP architecture (Streamable HTTP), OAuth at the Gateway layer, MCP Gateway for standardizing calls
+- Viewing guide: (1) What changed between the pre-Gateway architecture and MCP Gateway? (2) What problem does centralized auth solve that server-level auth creates?
+- Accuracy context: This video is the REQUIRED counterpart to any earlier MCP workshop that discusses remote transport. It covers the architecture after the March 26, 2025 SSE deprecation.
+
+**Video 2.4 — Primary Lab Companion (DeepLearning.AI):** "MCP: Build Rich-Context AI Apps with Anthropic"
+- URL: https://learn.deeplearning.ai/courses/mcp-build-rich-context-ai-apps-with-anthropic/
+- Assignment: Watch Lessons 1–8 before starting Lab 2. Lesson 8 (prompt templates as a primitive) is the concept most practitioners miss. Lessons 9–11 cover deployment context.
+- Instructor: Elie Schoppik, Anthropic's Head of Technical Education | Score: 9.5/10 — highest-rated resource in all research
+
+> ⚠️ **MANDATORY CAVEAT — MAHESH MURAG MCP WORKSHOP:** Students will find this video organically (1h44m, ~325,000 views, from MCP's co-creator). The workshop is excellent for primitives, sampling, and composability (~timestamps 0:00–72:00). The remote transport section (~73:00–79:00) describes SSE, which was deprecated on March 26, 2025 — 25 days after this video was published. When referring students to this workshop, include: "Skip ~73:00–79:00 and watch the John Welsh talk (Video 2.3) for current remote transport architecture instead."
 
 #### Reading Block (1 hour)
 
@@ -280,31 +321,49 @@ By end of Week 3, students will:
 
 ### Weekly Schedule (8h 45m)
 
+#### Anthropic Academy Certificate Track — Week 3
+
+Complete this course to earn your fourth official Anthropic credential:
+
+**Course: Introduction to Agent Skills (Anthropic Academy)**
+- URL: https://anthropic.skilljar.com/introduction-to-agent-skills
+- Published: Early 2026 | Free | Awards certificate
+- Assignment: Watch the taxonomy lesson (Skills vs. Tools, MCP, and Subagents) before the Week 3 lab kickoff. Complete the custom skills and skills-with-Claude-Code lessons as your primary lab companion. Earns Certificate #4.
+
+By end of Week 3, students who have completed the certificate pathway hold 3–4 official Anthropic credentials for their LinkedIn profile.
+
 #### Video Block (2.5 hours)
 
-**Video 3.1 — Required:** "Meta-Prompting and AI-Assisted Prompt Engineering" (2024-2025)
-- Find on: YouTube search "meta prompting claude 2025" or "prompt engineering automation"
-- Watch time: ~40 minutes
-- Focus: Generate-evaluate-improve loop, adversarial evaluation prompts, prompt libraries
-- Viewing guide: (1) When they generate a prompt, what context do they provide to the generator? Build a checklist. (2) Watch the evaluation step closely. What dimensions does the evaluator check beyond "is it correct"? (3) Is the improvement step automatic or does it require human judgment? Why?
+> **Specific video assignments are in the master library:** [`VIDEO-LIBRARY-MASTER.md`](VIDEO-LIBRARY-MASTER.md) — Week 3 section.
+> The three primaries below are confirmed picks. All are from Anthropic's Applied AI team or production practitioners with no accuracy red lines.
 
-**Video 3.2 — Required:** "Multi-Agent Architectures with Claude Code" (2024-2025)
-- Find on: YouTube search "claude code multi agent subagents 2025" or "claude code agent teams"
-- Watch time: ~45 minutes
-- Focus: Sub-agent design, orchestrator patterns, failure handling, task decomposition
-- Viewing guide: (1) Map every agent in the demo to Module 09's three legitimate motivations (parallelism, specialization, context isolation). (2) When does the orchestrator fail? Watch for coordination overhead, aggregation complexity, and debugging difficulty. (3) How do they handle a sub-agent returning an error? What does the orchestrator do?
+**Video 3.1 — Required:** "Don't Build Agents, Build Skills Instead" (Barry Zhang & Mahesh Murag, Anthropic)
+- URL: https://www.youtube.com/watch?v=CEvIs9y1uog
+- Watch time: ~16 minutes | Published: December 8, 2025 | 857,000+ views
+- Focus: Skills vs. agents distinction, the one-universal-agent architecture, how skills address orchestration complexity
+- Viewing guide: (1) What is the specific difference between a Skill and an MCP Tool? (2) How does the skills architecture change the design of a multi-agent system? (3) What problem does "too many specialized agents" create that skills solve?
 
-**Video 3.3 — Required:** "Debugging Agentic Systems" (2024-2025)
-- Find on: YouTube search "debugging claude code agent failures 2025" or "agentic system debugging"
-- Watch time: ~40 minutes
-- Focus: Reading multi-agent traces, identifying failure origin (orchestrator vs. sub-agent vs. aggregation), debugging strategies
-- Viewing guide: (1) Note every debugging tool or technique they use. Which work for single-agent? Which only apply to multi-agent? (2) When an agent produces wrong output, how do they trace it to the root cause? (3) What does a prompt injection attempt look like in a trace? Do they demonstrate one?
+**Video 3.2 — Required:** "How We Build Effective Agents" (Barry Zhang, Anthropic)
+- URL: https://www.youtube.com/watch?v=D7_ipDqhtwk
+- Watch time: ~15 minutes | Published: April 4, 2025 | 409,000+ views
+- Focus: When agents are valuable (four criteria), agent component definition, "think like your agents" perspective-taking, multi-agent communication costs
+- Viewing guide: (1) Apply the four criteria to your Lab 3 workflow before starting. (2) What does "think like your agents" mean concretely? What perspective shift does it require? (3) What is the cost/latency tradeoff in multi-agent architectures?
 
-**Video 3.4 — Optional:** "Claude Code Hooks for Automated Workflows" (2024-2025)
-- Find on: YouTube search "claude code hooks automation 2025"
-- Watch time: ~25 minutes
-- Focus: PreToolUse, PostToolUse, Stop hooks, automating quality gates
-- Viewing guide: (1) What problems do hooks solve that CLAUDE.md instructions cannot? (2) Watch for the determinism argument — "hooks always run, instructions are advisory." (3) Note any security hooks. How do they prevent prompt injection or scope creep?
+**Video 3.3 — Required:** "12-Factor Agents: Patterns of Reliable LLM Applications" (Dex Horthy, AI Engineer)
+- URL: https://www.youtube.com/watch?v=8kMaTybvDUw
+- Watch time: ~17 minutes | Published: July 3, 2025 | 262,000+ views
+- Focus: 12 production-derived principles for agent reliability, Factor 8 (own your control flow), Factor 12 (stateless reducer)
+- Viewing guide: (1) Which three factors most directly apply to your Lab 3 workflow? (2) Why does "owning your control flow" matter for debugging? (3) What does a "stateless reducer" architecture enable that a stateful one cannot?
+
+**Video 3.4 — Supplemental (DeepLearning.AI):** "Agent Skills with Anthropic"
+- URL: https://www.deeplearning.ai/short-courses/agent-skills-with-anthropic/
+- Assignment: Watch Lesson 5 (Skills vs. Tools, MCP, and Subagents) before the Week 3 lab kickoff — this is the prerequisite taxonomy. Then complete Lessons 7 and 9 (Creating Custom Skills + Skills with Claude Code) as your lab companion.
+
+**Video 3.5 — Optional:** "I'm HOOKED on Claude Code Hooks: Advanced Agentic Coding" (IndyDevDan)
+- URL: https://www.youtube.com/watch?v=J5B9UGTuNoM
+- Watch time: 30 minutes | Published: July 7, 2025 | Companion GitHub repo: disler/claude-code-hooks-mastery
+- Focus: PreToolUse, PostToolUse, Stop, sub-agent-stop hook types; observability demo; "hooks for guarantees" framing
+- Viewing guide: (1) What problems do hooks solve that CLAUDE.md instructions cannot? (2) Watch for the determinism argument — "hooks always run, instructions are advisory." (3) Note the sub-agent-stop hook — understanding agent lifecycle termination is critical for Week 3 orchestration work.
 
 #### Reading Block (1.5 hours)
 
@@ -1037,102 +1096,55 @@ This portfolio is the evidence that demonstrates Phase 2 readiness.
 
 ## 8. Video Library with Viewing Guides
 
-### Research Methodology Note
+> **This section now references the master library document rather than maintaining video lists inline.**
+>
+> All video assignments, structured courses, alternates, disqualification logs, accuracy flags, and instructor action items are maintained in:
+>
+> **[`docs/async-curriculum/VIDEO-LIBRARY-MASTER.md`](VIDEO-LIBRARY-MASTER.md)**
+>
+> The master library was synthesized from five parallel research passes (March 2026) covering 50+ videos across all four curriculum weeks. It is the single source of truth for all video decisions.
 
-YouTube's API and search results change rapidly. The following recommendations are based on verified content categories and channels that were producing high-quality Claude Code and agentic AI content as of early 2025. Instructors should verify specific video URLs before each cohort, as videos may be updated or replaced.
+### What the Master Library Contains
 
-### How to Find and Validate Videos
+| Section | Contents |
+|---------|----------|
+| Certificate Pathway | Anthropic Academy 4-course developer track (Weeks 1–3, Certificates #1–#4) |
+| Structured Courses | DeepLearning.AI course assignments by specific lesson |
+| Week 1 Primary Videos | 3 confirmed picks with full viewing guides |
+| Week 2 Primary Videos | 3 confirmed picks + mandatory Mahesh Murag caveat |
+| Week 3 Primary Videos | 3 confirmed picks with full viewing guides |
+| Week 4 Primary Videos | 3 confirmed picks + THE GAP section (spec-driven screencast needed) |
+| Alternates | 2–3 alternates per week with use-when guidance |
+| Accuracy Notes | Per-week SSE and red-line status for all assigned videos |
+| Disqualification Log | All rejected videos with reasons |
+| Instructor Action Items | 8 items, priority-ordered (1 = must do before launch) |
+| Update Cadence | Recommended re-evaluation schedule |
 
-For each recommended search, apply these quality filters:
-1. **Published 2024 or later** (MCP, Claude Code, and agentic patterns changed significantly in 2024)
-2. **At least 10 minutes** (shorter videos rarely have the depth needed for technical learning)
-3. **Live demo** (not slides-only — students need to see real tool call traces and real code)
-4. **No confabulation** (check against zero-tolerance rules: no `--thinking` flag, no `/memory` command, no SSE for remote MCP, exactly 3 MCP primitives)
+### Key Findings Summary (from master library)
 
-### Week 1 Video Block
+**The Certificate Pathway (NEW — March 2026 discovery):**
+Anthropic Academy launched in March 2026 with 13 free courses. Four map directly to Weeks 1–3. Students who complete all four earn official Anthropic certificates. This is the credential pathway for the entire curriculum.
 
-**Recommended Channels:**
-- Anthropic's official YouTube channel (youtube.com/@anthropic-ai) — look for Claude Code tutorials, best practices, and workflow demonstrations
-- David Ondrej — consistent high-quality Claude Code workflow videos, real codebase demos
-- Matthew Berman — frequent AI engineering tutorials with live demos
-- IndyDevDan — agentic AI workflow focus, Claude Code deep dives
+**Week 4 Gap (confirmed across all 5 research passes):**
+No video exists demonstrating a complete spec-driven development workflow using Claude Code CLI. An instructor-recorded screencast is the highest-priority pre-launch item. The master library contains a detailed content outline for this screencast.
 
-**Recommended Searches:**
-- `"claude code best practices" site:youtube.com` or YouTube search: `claude code best practices 2025`
-- `"CLAUDE.md" tutorial claude code`
-- `claude code skills commands tutorial 2025`
-- `claude code plan mode agentic workflow`
+**Critical accuracy flag:**
+The Mahesh Murag MCP Workshop (~325K views, from MCP's co-creator) has an SSE accuracy issue at ~73:00–79:00. Students will find this video organically. The master library contains a mandatory caveat block that must appear in any student-facing reference to this workshop.
 
-**Instructor Pre-Screening Checklist:**
-Before adding a video to the Week 1 list, verify:
-- [ ] The presenter shows a real CLAUDE.md file (not a template)
-- [ ] They discuss what to remove from CLAUDE.md, not just what to add
-- [ ] They show session management (naming, /clear, /resume)
-- [ ] No deprecated flags used (no `--thinking`, no `--context`)
+**Top-scoring videos:**
+- DeepLearning.AI Agent Skills course (9.75/10) — highest-rated course
+- No Vibes Allowed — Dex Horthy (9.5/10) — highest-rated individual YouTube video for Week 1
+- Sean Grove "The New Code" (9.5/10) — highest-rated Week 4 video
+- DeepLearning.AI MCP course (9.5/10) — highest-rated Week 2 resource
 
-### Week 2 Video Block
+### Accuracy Policy (preserved here for quick reference)
 
-**Recommended Searches:**
-- `"build mcp server" typescript tutorial 2025`
-- `"mcp inspector" debugging tutorial`
-- `claude code mcp server production 2025`
-- `model context protocol server examples real world`
-
-**Must Contain:**
-- Live implementation of a TypeScript MCP server using `@modelcontextprotocol/sdk`
-- Demonstration of schema validation — what happens with an invalid schema
-- Connection to Claude Code and a live tool call
-- At least one non-trivial tool (not just echo or return-fixed-data)
-
-**Instructor Pre-Screening Checklist:**
-- [ ] Uses Streamable HTTP or stdio transport (not SSE — deprecated 2025-03-26)
-- [ ] Shows exactly 3 primitives (Tools, Resources, Prompts) or explicitly addresses why only Tools are used
-- [ ] `settings.json` format matches: `{"permissions": {"allow": [...], "deny": [...]}}`
-- [ ] Authentication is via environment variable, not hardcoded
-
-### Week 3 Video Block
-
-**Recommended Searches:**
-- `meta prompting claude code prompt engineering automation 2025`
-- `claude code sub-agents multi-agent systems tutorial 2025`
-- `claude code agent teams parallel 2025`
-- `debugging agentic systems claude 2025`
-- `claude code hooks automation production`
-
-**Must Contain for Multi-Agent video:**
-- Real orchestrator/sub-agent demo (not theoretical explanation)
-- Actual failure — a moment where the system produces wrong output or fails
-- The debugging process for that failure
-- A discussion of when NOT to use multi-agent
-
-**Instructor Pre-Screening Checklist:**
-- [ ] Sub-agent frontmatter uses `name`, `description`, `tools` — correct format
-- [ ] No claim that sub-agents can spawn other sub-agents (they cannot)
-- [ ] CLAUDE.md is described as read-at-session-start, not as a slash command
-- [ ] Hook event names match official docs (PreToolUse, PostToolUse, Stop, etc.)
-
-### Week 4 Video Block
-
-**Recommended Searches:**
-- `"spec driven development" AI agents 2025`
-- `claude code production workflow retrospective 2025`
-- `ai engineering workflow team adoption 2025`
-- `advanced CLAUDE.md patterns team 2025`
-
-**Must Contain:**
-- Real production system, not a toy project
-- Discussion of what changed between initial setup and current production use
-- At least one failure story — something that did not work as expected
-- Specific advice for teams, not just individual developers
-
-### Anthropic Official Content
-
-Check these official sources for current, accurate content:
-- **code.claude.com** — has video tutorials embedded in documentation sections
-- **youtube.com/@anthropic-ai** — official demos, product announcements
-- **Anthropic's engineering blog** — written tutorials with code samples
-
-Official content has zero confabulation risk for Claude Code-specific features. Prioritize it when available.
+Zero-tolerance red lines that disqualify any video regardless of other scores:
+- `--thinking` flag — does not exist in Claude Code CLI
+- `/memory` command — not native Claude Code
+- SSE as the current remote MCP transport — deprecated March 26, 2025
+- MCP primitive count other than THREE (Tools, Resources, Prompts)
+- CLAUDE.md described as an invokable command rather than a file read at session start
 
 ---
 
