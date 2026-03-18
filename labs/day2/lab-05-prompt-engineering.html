@@ -1,0 +1,2827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab 05 · Prompt Engineering Workshop | Agentic AI Engineering</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/theme-toggle.css" />
+  <script src="/assets/theme-toggle.js" defer></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    :root {
+      --bg-base:    #080d1a;
+      --bg-surface: #0f1729;
+      --bg-raised:  #172035;
+      --bg-glass:   rgba(23, 32, 53, 0.7);
+      --primary:    #6366f1;
+      --primary-glow: rgba(99,102,241,0.25);
+      --secondary:  #8b5cf6;
+      --accent:     #06b6d4;
+      --accent-glow: rgba(6,182,212,0.2);
+      --success:    #10b981;
+      --warning:    #f59e0b;
+      --danger:     #ef4444;
+      --text:       #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim:   #475569;
+      --border:     rgba(255,255,255,0.08);
+      --border-bright: rgba(99,102,241,0.4);
+      --radius:     16px;
+      --radius-sm:  8px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-base);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding-top: 64px;
+    }
+
+    /* Progress Bar */
+    #progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 0%;
+      z-index: 1000;
+      transition: width 0.5s ease;
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 3px;
+      left: 0;
+      right: 0;
+      height: 61px;
+      background: rgba(8,13,26,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 999;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-badge {
+      background: var(--primary);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .nav-dots {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .nav-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--bg-raised);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .nav-dot.active {
+      border-color: var(--primary);
+      background: var(--primary-glow);
+      color: var(--text);
+    }
+
+    .nav-dot.completed {
+      border-color: var(--success);
+      background: rgba(16,185,129,0.2);
+      color: var(--success);
+    }
+
+    .nav-dot.locked {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .xp-counter {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border-bright);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .xp-counter .xp-icon { font-size: 16px; }
+
+    /* Main */
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    /* Section */
+    .section {
+      margin-bottom: 48px;
+      position: relative;
+    }
+
+    .section-locked {
+      opacity: 0.4;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .section-lock-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(8,13,26,0.6);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .lock-icon { font-size: 32px; }
+    .lock-label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+
+    /* Section Header */
+    .section-header {
+      margin-bottom: 24px;
+    }
+
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--text), var(--text-muted));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-subtitle {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .card-raised {
+      background: var(--bg-raised);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Prompt Comparison */
+    .prompt-comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    @media (max-width: 640px) {
+      .prompt-comparison { grid-template-columns: 1fr; }
+    }
+
+    .prompt-card {
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .prompt-card.bad {
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.3);
+    }
+
+    .prompt-card.good {
+      background: rgba(16,185,129,0.08);
+      border: 1px solid rgba(16,185,129,0.3);
+    }
+
+    .prompt-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .prompt-label.bad { color: var(--danger); }
+    .prompt-label.good { color: var(--success); }
+
+    /* Callback Cards */
+    .callback-card {
+      background: rgba(139,92,246,0.1);
+      border: 1px solid rgba(139,92,246,0.35);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin: 20px 0;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .callback-card .callback-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+
+    .callback-card .callback-text {
+      font-size: 14px;
+      color: #c4b5fd;
+      line-height: 1.6;
+    }
+
+    .callback-card .callback-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--secondary);
+      margin-bottom: 4px;
+    }
+
+    /* Prediction Boxes */
+    .prediction-box {
+      background: var(--bg-raised);
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .prediction-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .prediction-prompt {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+
+    textarea {
+      width: 100%;
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      resize: vertical;
+      min-height: 80px;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    textarea::placeholder { color: var(--text-dim); }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover { background: #4f52e8; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover { background: #0da574; transform: translateY(-1px); }
+    .btn-success:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-accent {
+      background: var(--accent);
+      color: var(--bg-base);
+    }
+
+    .btn-accent:hover { background: #05a3be; transform: translateY(-1px); }
+    .btn-accent:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-bright);
+      color: var(--text-muted);
+    }
+
+    .btn-outline:hover { border-color: var(--primary); color: var(--text); }
+
+    /* Reveal box */
+    .reveal-box {
+      display: none;
+      background: var(--bg-raised);
+      border: 1px solid var(--success);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      margin-top: 16px;
+      animation: slideIn 0.3s ease;
+    }
+
+    .reveal-box.visible { display: block; }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Dimension list */
+    .dimension-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .dimension-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 10px 14px;
+      background: var(--bg-surface);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+
+    .dimension-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .dimension-content strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .dimension-content p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* TCEF Cards */
+    .tcef-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    @media (max-width: 640px) { .tcef-grid { grid-template-columns: 1fr; } }
+
+    .tcef-card {
+      background: var(--bg-raised);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+    }
+
+    .tcef-card.task { border: 1px solid rgba(16,185,129,0.4); }
+    .tcef-card.context { border: 1px solid rgba(6,182,212,0.4); }
+    .tcef-card.examples { border: 1px solid rgba(245,158,11,0.4); }
+    .tcef-card.format { border: 1px solid rgba(139,92,246,0.4); }
+
+    .tcef-letter {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .task .tcef-letter { color: var(--success); }
+    .context .tcef-letter { color: var(--accent); }
+    .examples .tcef-letter { color: var(--warning); }
+    .format .tcef-letter { color: var(--secondary); }
+
+    .tcef-name {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .tcef-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .tcef-example {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      background: var(--bg-base);
+      border-radius: 4px;
+      padding: 8px 10px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .tcef-example .bad { color: var(--danger); }
+    .tcef-example .good { color: var(--success); }
+
+    /* Builder Form */
+    .builder-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .builder-field {
+      position: relative;
+    }
+
+    .builder-field-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .builder-field-label.task-label { color: var(--success); }
+    .builder-field-label.context-label { color: var(--accent); }
+    .builder-field-label.examples-label { color: var(--warning); }
+    .builder-field-label.format-label { color: var(--secondary); }
+
+    .hint-btn {
+      font-size: 11px;
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-dim);
+      padding: 2px 7px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+    }
+
+    .hint-btn:hover { border-color: var(--primary); color: var(--text-muted); }
+
+    .hint-text {
+      display: none;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+      padding: 6px 10px;
+      background: var(--bg-base);
+      border-left: 2px solid var(--primary);
+      border-radius: 0 4px 4px 0;
+      font-style: italic;
+    }
+
+    .hint-text.visible { display: block; }
+
+    /* Assembled prompt */
+    .assembled-prompt {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .assembled-prompt.visible { display: block; }
+
+    .code-block {
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-muted);
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-x: auto;
+    }
+
+    .model-answer {
+      margin-top: 20px;
+      padding: 16px 20px;
+      background: rgba(6,182,212,0.07);
+      border: 1px solid rgba(6,182,212,0.25);
+      border-radius: var(--radius-sm);
+    }
+
+    .model-answer-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    /* Strategy Cards */
+    .strategy-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .strategy-card {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 18px 20px;
+    }
+
+    .strategy-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .strategy-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: var(--primary);
+      color: white;
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .strategy-name { font-size: 15px; font-weight: 700; }
+    .strategy-sub { font-size: 12px; color: var(--text-dim); }
+    .strategy-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 8px; }
+    .strategy-example {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: var(--bg-base);
+      padding: 8px 10px;
+      border-radius: 4px;
+      color: var(--accent);
+      margin: 8px 0;
+    }
+    .strategy-rule {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-top: 6px;
+    }
+    .strategy-tradeoff {
+      font-size: 12px;
+      color: var(--warning);
+      margin-top: 4px;
+    }
+
+    /* Scenario cards */
+    .scenario-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin: 20px 0;
+    }
+
+    .scenario-card {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+    }
+
+    .scenario-text {
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .scenario-options {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .scenario-option {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .scenario-option:hover { border-color: var(--primary); }
+
+    .scenario-option input[type="radio"] { accent-color: var(--primary); }
+
+    .scenario-feedback {
+      margin-top: 10px;
+      font-size: 13px;
+      padding: 8px 12px;
+      border-radius: 4px;
+      display: none;
+    }
+
+    .scenario-feedback.correct {
+      display: block;
+      background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: var(--success);
+    }
+
+    .scenario-feedback.incorrect {
+      display: block;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.25);
+      color: var(--danger);
+    }
+
+    /* Failure Mode Table */
+    .failure-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 14px;
+    }
+
+    .failure-table th {
+      background: var(--bg-raised);
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .failure-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      color: var(--text-muted);
+    }
+
+    .failure-table tr:last-child td { border-bottom: none; }
+    .failure-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .failure-table .mode { color: var(--danger); font-weight: 600; }
+    .failure-table .fix { color: var(--success); font-weight: 600; }
+
+    /* Iteration Workshop */
+    .iteration-block {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      margin: 16px 0;
+    }
+
+    .iteration-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--warning);
+      margin-bottom: 12px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+
+    .checkbox-item:hover { border-color: var(--warning); }
+    .checkbox-item input { accent-color: var(--warning); }
+
+    /* Model Progression */
+    .progression {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .prog-item {
+      background: var(--bg-raised);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      border-left: 3px solid var(--border);
+    }
+
+    .prog-item.v1 { border-left-color: var(--danger); }
+    .prog-item.v2 { border-left-color: var(--warning); }
+    .prog-item.v3 { border-left-color: var(--success); }
+
+    .prog-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .v1 .prog-label { color: var(--danger); }
+    .v2 .prog-label { color: var(--warning); }
+    .v3 .prog-label { color: var(--success); }
+
+    /* Knowledge Checks */
+    .question-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .question-text {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .answer-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .answer-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .answer-option:hover { border-color: var(--primary); background: rgba(99,102,241,0.08); }
+
+    .answer-option.correct { border-color: var(--success); background: rgba(16,185,129,0.1); color: var(--success); }
+    .answer-option.incorrect { border-color: var(--danger); background: rgba(239,68,68,0.08); color: var(--danger); }
+    .answer-option.disabled { pointer-events: none; }
+
+    .answer-letter {
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .answer-option.correct .answer-letter { background: var(--success); border-color: var(--success); color: white; }
+    .answer-option.incorrect .answer-letter { background: var(--danger); border-color: var(--danger); color: white; }
+
+    .answer-feedback {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+      padding: 8px 12px;
+      background: var(--bg-base);
+      border-radius: 4px;
+      display: none;
+      line-height: 1.5;
+    }
+
+    .answer-feedback.visible { display: block; }
+
+    /* Capstone Challenge */
+    .boss-header {
+      background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1));
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .boss-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+
+    .boss-title { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+    .boss-desc { font-size: 15px; color: var(--text-muted); line-height: 1.6; }
+
+    .prompt-slot {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .slot-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .slot-title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .slot-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      padding: 10px 14px;
+      background: var(--bg-raised);
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--accent);
+    }
+
+    .slot-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Iteration Loop Diagram */
+    .loop-diagram {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 24px 0;
+      padding: 20px;
+      background: var(--bg-raised);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+
+    .loop-step {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-sm);
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .loop-arrow {
+      color: var(--primary);
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    /* Insight Card */
+    .insight-card {
+      background: rgba(6,182,212,0.08);
+      border: 1px solid rgba(6,182,212,0.3);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin: 16px 0;
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .insight-card strong { color: var(--accent); }
+
+    /* Completion callout */
+    .completion-callout {
+      background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(6,182,212,0.08));
+      border: 1px solid rgba(16,185,129,0.35);
+      border-radius: var(--radius);
+      padding: 28px;
+      text-align: center;
+      margin-top: 32px;
+    }
+
+    .completion-icon { font-size: 48px; margin-bottom: 12px; }
+    .completion-title { font-size: 22px; font-weight: 800; color: var(--success); margin-bottom: 8px; }
+    .completion-desc { font-size: 15px; color: var(--text-muted); line-height: 1.6; }
+    .completion-next { font-size: 14px; color: var(--accent); margin-top: 12px; font-weight: 600; }
+
+    /* XP Toast */
+    #xp-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-sm);
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    #xp-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Score tracker */
+    .score-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 16px;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+
+    .score-label { color: var(--text-muted); }
+    .score-dots { display: flex; gap: 6px; }
+    .score-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--bg-base); border: 1px solid var(--border); }
+    .score-dot.correct { background: var(--success); border-color: var(--success); }
+    .score-dot.incorrect { background: var(--danger); border-color: var(--danger); }
+
+    /* Generated library */
+    .generated-library {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .generated-library.visible { display: block; }
+
+    .library-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .library-title { font-size: 15px; font-weight: 700; }
+
+    /* Divider */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+
+    /* Info badge */
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    /* Unlocked banner */
+    .unlock-banner {
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.3);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--success);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      display: none;
+    }
+
+    .unlock-banner.visible { display: flex; }
+
+    .milestone-display {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: rgba(6,182,212,0.08);
+      border: 1px solid rgba(6,182,212,0.25);
+      border-radius: 999px;
+      padding: 4px 10px;
+      white-space: nowrap;
+    }
+    .milestone-toast {
+      position: fixed; top: 120px; right: 24px;
+      background: var(--accent); color: #02131a;
+      padding: 8px 14px; border-radius: 20px;
+      font-weight: 700; font-size: 12px;
+      animation: toastFade 2s forwards;
+      pointer-events: none; z-index: 9999;
+    }
+
+    /* ── Icon System (Lucide) ─────────────────────────────── */
+    .icon { width:16px; height:16px; display:inline-block; vertical-align:-2px; stroke-width:2; flex-shrink:0; }
+    .icon-lg { width:20px; height:20px; vertical-align:-4px; }
+    .icon-sm { width:14px; height:14px; vertical-align:-2px; }
+    .badge-label .icon, .badge-label .icon-lg { margin-right:4px; }
+    .quiz-feedback .icon { margin-right:3px; }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<nav>
+  <div class="nav-brand">
+    <span class="nav-badge">Day 2 · Lab 05</span>
+    <span class="nav-title">Prompt Engineering Workshop</span>
+  </div>
+  <div class="nav-dots">
+    <div class="nav-dot active" id="dot-s0" onclick="scrollToSection('s0')" role="button" tabindex="0" aria-label="Section 0" onkeydown="if(event.key==='Enter'||event.key===' ')scrollToSection('s0')">S0</div>
+    <div class="nav-dot locked" id="dot-s1" onclick="scrollToSection('s1')" role="button" tabindex="0" aria-label="Section 1" onkeydown="if(event.key==='Enter'||event.key===' ')scrollToSection('s1')">S1</div>
+    <div class="nav-dot locked" id="dot-s2" onclick="scrollToSection('s2')" role="button" tabindex="0" aria-label="Section 2" onkeydown="if(event.key==='Enter'||event.key===' ')scrollToSection('s2')">S2</div>
+    <div class="nav-dot locked" id="dot-s3" onclick="scrollToSection('s3')" role="button" tabindex="0" aria-label="Section 3" onkeydown="if(event.key==='Enter'||event.key===' ')scrollToSection('s3')">S3</div>
+    <div class="nav-dot locked" id="dot-s4" onclick="scrollToSection('s4')" role="button" tabindex="0" aria-label="Section 4" onkeydown="if(event.key==='Enter'||event.key===' ')scrollToSection('s4')">S4</div>
+    <div class="nav-dot locked" id="dot-s5" onclick="scrollToSection('s5')" role="button" tabindex="0" aria-label="Section 5" onkeydown="if(event.key==='Enter'||event.key===' ')scrollToSection('s5')">S5</div>
+  </div>
+  <div id="milestone-display" class="milestone-display" aria-live="polite" aria-label="Current milestone">Milestone: Not started</div>
+  <div class="xp-counter" id="xp-display">
+    <span class="xp-icon"><svg class="icon" data-lucide="zap" aria-hidden="true"></svg></span>
+    <span id="xp-value">0</span> XP
+  </div>
+</nav>
+
+<div style="max-width:1160px;margin:14px auto 0;padding:0 24px;display:flex;gap:10px;flex-wrap:wrap;">
+  <a href="/lab/04" class="btn btn-outline" style="font-size:12px;padding:8px 16px;text-decoration:none;">← Lab 04</a>
+  <a href="/lab/06" class="btn btn-outline" style="font-size:12px;padding:8px 16px;text-decoration:none;">Lab 06 →</a>
+</div>
+
+<div id="xp-toast"></div>
+
+<main>
+
+  <!-- ==================== SECTION 0 ==================== -->
+  <section class="section" id="s0">
+    <div class="section-header">
+      <div class="section-tag">Section 0</div>
+      <h1 class="section-title">The Prompt Quality Gap</h1>
+      <p class="section-subtitle">Most developers write prompts the way they'd write a Stack Overflow question. But Claude isn't googling for answers — it's a reasoning engine that needs structure, context, and constraints to produce reliable output.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><svg class="icon" data-lucide="clipboard" aria-hidden="true"></svg> Prompt Comparison</div>
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">Both prompts ask Claude to review a PR. But they produce radically different results.</p>
+      <div class="prompt-comparison">
+        <div>
+          <div class="prompt-label bad"><svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Vague</div>
+          <div class="prompt-card bad">"Review this PR and tell me if it's good."</div>
+        </div>
+        <div>
+          <div class="prompt-label good"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Structured</div>
+          <div class="prompt-card good">"Review the attached PR diff as a senior backend engineer focusing on security vulnerabilities and database query performance. Flag any N+1 queries, missing input validation, or SQL injection risks. Return your findings as a JSON array with fields: file, line, severity (critical/high/medium/low), issue, and recommended_fix. Skip style comments."</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prediction-box">
+      <div class="prediction-label"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> Prediction Challenge</div>
+      <div class="prediction-prompt">What made the second prompt produce dramatically better output? List as many factors as you can think of — even partial answers count.</div>
+      <textarea id="s0-prediction" rows="4" placeholder="Write your answer here... (any response earns XP)" aria-label="Prediction answer for Section 0"></textarea>
+      <div style="margin-top:12px;display:flex;align-items:center;gap:12px;">
+        <button class="btn btn-primary" id="s0-submit-btn" onclick="submitS0Prediction()">
+          Submit Prediction <span style="font-size:12px;opacity:0.8;">+10 XP</span>
+        </button>
+        <span class="info-badge" id="s0-status"></span>
+      </div>
+    </div>
+
+    <div class="reveal-box" id="s0-reveal">
+      <div class="card-title" style="color:var(--success);"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> The Five Dimensions of Reliable Prompts</div>
+      <ul class="dimension-list">
+        <li class="dimension-item">
+          <div class="dimension-num">1</div>
+          <div class="dimension-content">
+            <strong>Role / Persona</strong>
+            <p>Who Claude should be. Affects tone, depth, vocabulary, and what knowledge it foregrounds.</p>
+          </div>
+        </li>
+        <li class="dimension-item">
+          <div class="dimension-num">2</div>
+          <div class="dimension-content">
+            <strong>Task specificity</strong>
+            <p>Exactly what to do — not vague direction. "Flag N+1 queries" beats "review the code."</p>
+          </div>
+        </li>
+        <li class="dimension-item">
+          <div class="dimension-num">3</div>
+          <div class="dimension-content">
+            <strong>Context</strong>
+            <p>What Claude needs to know to do the task well: stack, constraints, conventions, background.</p>
+          </div>
+        </li>
+        <li class="dimension-item">
+          <div class="dimension-num">4</div>
+          <div class="dimension-content">
+            <strong>Constraints</strong>
+            <p>What to exclude, what to limit, what matters and what doesn't. "Skip style comments" is a constraint.</p>
+          </div>
+        </li>
+        <li class="dimension-item">
+          <div class="dimension-num">5</div>
+          <div class="dimension-content">
+            <strong>Output format</strong>
+            <p>Structured output (JSON, markdown, numbered list) produces predictable, parseable results every time.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="callback-card" style="margin-top:16px;">
+        <span class="callback-icon"><svg class="icon" data-lucide="link" aria-hidden="true"></svg></span>
+        <div>
+          <div class="callback-label">Lab 02 Callback · GCCF Pattern</div>
+          <div class="callback-text">You learned GCCF in Lab 02: <strong>Goal + Context + Constraints + Format</strong>. TCEF (coming in S1) is the prompt-engineering view of the same insight — different framing, same discipline. Consistent structure = consistent output.</div>
+        </div>
+      </div>
+
+      <div class="unlock-banner" id="s0-unlock-banner">
+        <svg class="icon" data-lucide="lock-open" aria-hidden="true"></svg> Section 1 unlocked — The TCEF Pattern
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 1 ==================== -->
+  <section class="section" id="s1">
+    <div id="s1-lock-overlay" class="section-lock-overlay" aria-hidden="true">
+      <div class="lock-icon"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <div class="lock-label">Complete Section 0 to unlock</div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-tag">Section 1</div>
+      <h1 class="section-title">The TCEF Pattern</h1>
+      <p class="section-subtitle">TCEF = <strong>Task + Context + Examples + Format</strong>. A systematic four-part structure for prompts that produce consistent, structured output every time.</p>
+    </div>
+
+    <div class="tcef-grid">
+      <div class="tcef-card task">
+        <div class="tcef-letter">T</div>
+        <div class="tcef-name">Task</div>
+        <div class="tcef-desc">What specifically should Claude do? Use precise verbs: "Extract", "Classify", "Generate", "Summarize as", "Convert to".</div>
+        <div class="tcef-example"><span class="bad">✗ "Look at this code"</span>
+<span class="good">✓ "Identify all functions that mutate state and explain the side effects"</span></div>
+      </div>
+      <div class="tcef-card context">
+        <div class="tcef-letter">C</div>
+        <div class="tcef-name">Context</div>
+        <div class="tcef-desc">What does Claude need to know? Stack, codebase conventions, user background, relevant constraints. Rule: If removing it would change Claude's response, include it.</div>
+        <div class="tcef-example">"Python 3.11 FastAPI. We use Pydantic v2 for all input validation."</div>
+      </div>
+      <div class="tcef-card examples">
+        <div class="tcef-letter">E</div>
+        <div class="tcef-name">Examples</div>
+        <div class="tcef-desc">Show Claude what good output looks like (few-shot learning). One example beats three paragraphs of description. For classification: show at least one example per class.</div>
+        <div class="tcef-example"><span class="good"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Validated:</span> @app.post("/users")
+def create_user(user: UserCreate): ...</div>
+      </div>
+      <div class="tcef-card format">
+        <div class="tcef-letter">F</div>
+        <div class="tcef-name">Format</div>
+        <div class="tcef-desc">Specify the exact output structure: JSON schema, markdown headers, numbered list, prose paragraph. The more specific, the more reliable.</div>
+        <div class="tcef-example">{"endpoint": "/path", "method": "POST", "severity": "high", "fix": "..."}</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="card">
+      <div class="card-title"><svg class="icon" data-lucide="hammer" aria-hidden="true"></svg> TCEF Builder — Apply Task</div>
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>Scenario:</strong> You want Claude to review API endpoints in a Python FastAPI codebase and flag any missing input validation. It should return a structured report. Build the four TCEF components below.</p>
+
+      <div class="builder-form">
+        <div class="builder-field">
+          <div class="builder-field-label task-label">
+            T — Task
+            <button class="hint-btn" onclick="toggleHint('hint-task')" aria-label="Show Task hint">Hint</button>
+          </div>
+          <div class="hint-text" id="hint-task">Verb + what to find + what to produce. Be specific about what "missing validation" means.</div>
+          <textarea id="tcef-task" rows="3" placeholder="What should Claude do? Use a precise action verb..." aria-label="Task component" oninput="saveTcef();checkTcefComplete()"></textarea>
+        </div>
+
+        <div class="builder-field">
+          <div class="builder-field-label context-label">
+            C — Context
+            <button class="hint-btn" onclick="toggleHint('hint-context')" aria-label="Show Context hint">Hint</button>
+          </div>
+          <div class="hint-text" id="hint-context">Language, framework, version. What does "missing validation" mean in your codebase? What tools do you use?</div>
+          <textarea id="tcef-context" rows="3" placeholder="What does Claude need to know about the codebase and conventions?" aria-label="Context component" oninput="saveTcef();checkTcefComplete()"></textarea>
+        </div>
+
+        <div class="builder-field">
+          <div class="builder-field-label examples-label">
+            E — Examples
+            <button class="hint-btn" onclick="toggleHint('hint-examples')" aria-label="Show Examples hint">Hint</button>
+          </div>
+          <div class="hint-text" id="hint-examples">Show one example of a properly validated endpoint vs one that's missing validation. Code snippets work great here.</div>
+          <textarea id="tcef-examples" rows="5" placeholder="Show Claude what good validation looks like vs missing validation..." aria-label="Examples component" oninput="saveTcef();checkTcefComplete()"></textarea>
+        </div>
+
+        <div class="builder-field">
+          <div class="builder-field-label format-label">
+            F — Format
+            <button class="hint-btn" onclick="toggleHint('hint-format')" aria-label="Show Format hint">Hint</button>
+          </div>
+          <div class="hint-text" id="hint-format">JSON array? Markdown report? What fields does each finding need? endpoint, method, issue, risk, fix?</div>
+          <textarea id="tcef-format" rows="3" placeholder="Specify the exact output format Claude should use..." aria-label="Format component" oninput="saveTcef();checkTcefComplete()"></textarea>
+        </div>
+      </div>
+
+      <button class="btn btn-success" id="tcef-complete-btn" onclick="completeTcef()" disabled>
+        Complete TCEF <span style="font-size:12px;opacity:0.8;">+20 XP</span>
+      </button>
+    </div>
+
+    <div class="assembled-prompt" id="tcef-assembled">
+      <div class="card-title" style="color:var(--success);margin-bottom:8px;"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Your Assembled TCEF Prompt</div>
+      <pre class="code-block" id="tcef-assembled-text"></pre>
+
+      <div class="model-answer">
+        <div class="model-answer-label">Model Answer</div>
+        <pre class="code-block" style="margin-top:8px;">Task: Review the FastAPI route handlers in the provided code and identify any endpoints missing proper input validation. For each, explain the security risk.
+
+Context: This is a Python 3.11 FastAPI application. "Missing validation" means: no Pydantic model for request body, no type annotations on path/query params, or accepting `Any` type. We use Pydantic v2.
+
+Examples:
+Properly validated:
+@app.post("/users")
+def create_user(user: UserCreate):  # Pydantic model validates input
+    ...
+
+Missing validation:
+@app.post("/upload")
+def upload(data: dict):  # dict accepts anything — no validation
+    ...
+
+Format: Return a JSON array. Each item:
+{"endpoint": "/path", "method": "POST", "issue": "description", "risk": "security impact", "fix": "recommended fix"}</pre>
+      </div>
+
+      <div class="unlock-banner visible" id="s1-unlock-banner">
+        <svg class="icon" data-lucide="lock-open" aria-hidden="true"></svg> Section 2 unlocked — Context Injection Strategies
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 2 ==================== -->
+  <section class="section" id="s2">
+    <div id="s2-lock-overlay" class="section-lock-overlay" aria-hidden="true">
+      <div class="lock-icon"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <div class="lock-label">Complete the TCEF Builder in Section 1 to unlock</div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-tag">Section 2</div>
+      <h1 class="section-title">Context Injection Strategies</h1>
+      <p class="section-subtitle">What context you inject — and when — changes everything. Three strategies, each with different trade-offs for different use cases.</p>
+    </div>
+
+    <div class="prediction-box">
+      <div class="prediction-label"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> Prediction</div>
+      <div class="prediction-prompt">CLAUDE.md is always loaded at session start. Where else can you inject context into Claude's reasoning?</div>
+      <textarea id="s2-prediction" rows="3" placeholder="List other ways to get context into Claude..." aria-label="Section 2 prediction" oninput="saveTextarea('s2-prediction')"></textarea>
+      <div style="margin-top:12px;">
+        <button class="btn btn-primary" id="s2-predict-btn" onclick="submitS2Prediction()">
+          Submit Prediction <span style="font-size:12px;opacity:0.8;">+10 XP</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="reveal-box" id="s2-reveal">
+      <div class="callback-card" style="margin-bottom:20px;">
+        <span class="callback-icon"><svg class="icon" data-lucide="link" aria-hidden="true"></svg></span>
+        <div>
+          <div class="callback-label">Lab 02 Callback · CLAUDE.md Context</div>
+          <div class="callback-text">In Lab 02, you learned that CLAUDE.md is Claude's persistent memory for a project — loaded at every session start. That's Strategy 1 below. The other two strategies give you more control over timing and freshness.</div>
+        </div>
+      </div>
+
+      <div class="strategy-grid">
+        <div class="strategy-card">
+          <div class="strategy-header">
+            <div class="strategy-badge">S1</div>
+            <div>
+              <div class="strategy-name">Session-persistent context</div>
+              <div class="strategy-sub">CLAUDE.md</div>
+            </div>
+          </div>
+          <div class="strategy-desc">CLAUDE.md is read at session start — always available throughout the session without any extra effort.</div>
+          <div class="strategy-example">CLAUDE.md: "We use PostgreSQL 15 with raw SQL (no ORM). Always use parameterized queries."</div>
+          <div class="strategy-tradeoff"><svg class="icon" data-lucide="triangle-alert" aria-hidden="true"></svg> Trade-off: Everything in CLAUDE.md uses tokens on every interaction. Keep it focused and stable.</div>
+          <div class="strategy-rule"><svg class="icon" data-lucide="pin" aria-hidden="true"></svg> Rule: If it never changes, put it in CLAUDE.md.</div>
+        </div>
+
+        <div class="strategy-card">
+          <div class="strategy-header">
+            <div class="strategy-badge" style="background:var(--accent);">S2</div>
+            <div>
+              <div class="strategy-name">Task-time context injection</div>
+              <div class="strategy-sub">@file references or paste</div>
+            </div>
+          </div>
+          <div class="strategy-desc">Include relevant files or data directly in your prompt using @file.py references or pasting content inline.</div>
+          <div class="strategy-example">"Review @src/api/routes.py and @src/models/user.py for validation issues"</div>
+          <div class="strategy-tradeoff"><svg class="icon" data-lucide="triangle-alert" aria-hidden="true"></svg> Trade-off: Uses more tokens per request, but ensures Claude sees exactly what it needs.</div>
+          <div class="strategy-rule"><svg class="icon" data-lucide="pin" aria-hidden="true"></svg> Rule: If it's relevant to this specific task, inject it now.</div>
+        </div>
+
+        <div class="strategy-card">
+          <div class="strategy-header">
+            <div class="strategy-badge" style="background:var(--secondary);">S3</div>
+            <div>
+              <div class="strategy-name">MCP-driven dynamic context</div>
+              <div class="strategy-sub">Claude pulls via MCP tools at reasoning time</div>
+            </div>
+          </div>
+          <div class="strategy-desc">Claude uses MCP tools to fetch live data at reasoning time — fresh context on demand without manual injection.</div>
+          <div class="strategy-example">A get_schema MCP tool returns the current DB schema when Claude needs it</div>
+          <div class="strategy-tradeoff"><svg class="icon" data-lucide="triangle-alert" aria-hidden="true"></svg> Trade-off: Adds latency and cost, but keeps context fresh and automated.</div>
+          <div class="strategy-rule"><svg class="icon" data-lucide="pin" aria-hidden="true"></svg> Rule: If it changes between sessions, expose it via MCP.</div>
+        </div>
+      </div>
+
+      <div class="callback-card">
+        <span class="callback-icon"><svg class="icon" data-lucide="link" aria-hidden="true"></svg></span>
+        <div>
+          <div class="callback-label">Lab 01 Callback · PRAO Loop</div>
+          <div class="callback-text">Strategy 3 is Claude doing <strong>Perceive</strong> in real-time — using MCP to gather context before reasoning. Strategies 1 and 2 are <em>you</em> doing Perceive on Claude's behalf. The loop is the same; the agent doing it is different.</div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="card" id="s2-apply-card" style="display:none;">
+      <div class="card-title"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> Apply Task — Choose the Right Strategy</div>
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">For each scenario, select the best context injection strategy and we'll tell you if you're right.</p>
+
+      <div class="scenario-list">
+        <div class="scenario-card" id="scenario-1">
+          <div class="scenario-text">1. Your team's coding standards and architecture decisions that all engineers follow — decisions that haven't changed in months.</div>
+          <div class="scenario-options">
+            <label class="scenario-option">
+              <input type="radio" name="s2-q1" value="S1" onchange="checkScenario(1,'S1','S1')"> S1 (CLAUDE.md)
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="s2-q1" value="S2" onchange="checkScenario(1,'S2','S1')"> S2 (Task-time)
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="s2-q1" value="S3" onchange="checkScenario(1,'S3','S1')"> S3 (MCP)
+            </label>
+          </div>
+          <div class="scenario-feedback" id="s2-feedback-1"></div>
+        </div>
+
+        <div class="scenario-card" id="scenario-2">
+          <div class="scenario-text">2. The specific PR diff Claude needs to review right now — a single file changed in today's feature branch.</div>
+          <div class="scenario-options">
+            <label class="scenario-option">
+              <input type="radio" name="s2-q2" value="S1" onchange="checkScenario(2,'S1','S2')"> S1 (CLAUDE.md)
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="s2-q2" value="S2" onchange="checkScenario(2,'S2','S2')"> S2 (Task-time)
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="s2-q2" value="S3" onchange="checkScenario(2,'S3','S2')"> S3 (MCP)
+            </label>
+          </div>
+          <div class="scenario-feedback" id="s2-feedback-2"></div>
+        </div>
+
+        <div class="scenario-card" id="scenario-3">
+          <div class="scenario-text">3. The current error rate from your production monitoring dashboard — a metric that changes minute by minute.</div>
+          <div class="scenario-options">
+            <label class="scenario-option">
+              <input type="radio" name="s2-q3" value="S1" onchange="checkScenario(3,'S1','S3')"> S1 (CLAUDE.md)
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="s2-q3" value="S2" onchange="checkScenario(3,'S2','S3')"> S2 (Task-time)
+            </label>
+            <label class="scenario-option">
+              <input type="radio" name="s2-q3" value="S3" onchange="checkScenario(3,'S3','S3')"> S3 (MCP)
+            </label>
+          </div>
+          <div class="scenario-feedback" id="s2-feedback-3"></div>
+        </div>
+      </div>
+
+      <div class="unlock-banner" id="s2-unlock-banner">
+        <svg class="icon" data-lucide="lock-open" aria-hidden="true"></svg> Section 3 unlocked — Prompt Iteration
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 3 ==================== -->
+  <section class="section" id="s3">
+    <div id="s3-lock-overlay" class="section-lock-overlay" aria-hidden="true">
+      <div class="lock-icon"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <div class="lock-label">Complete Section 2 apply task to unlock</div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-tag">Section 3</div>
+      <h1 class="section-title">Prompt Iteration</h1>
+      <p class="section-subtitle">First-draft prompts rarely produce optimal output. Systematic iteration — not random tweaking — is the skill that separates prompt engineers from prompt guessers.</p>
+    </div>
+
+    <div class="insight-card">
+      <strong>Professional prompt engineers</strong> don't write the perfect prompt on the first try. They have a system for knowing <em>what</em> to change and <em>why</em>. Random tweaking is not iteration — it's guessing.
+    </div>
+
+    <div class="card">
+      <div class="card-title"><svg class="icon" data-lucide="refresh-cw" aria-hidden="true"></svg> The Iteration Loop</div>
+      <div class="loop-diagram">
+        <div class="loop-step">Write Prompt</div>
+        <div class="loop-arrow">→</div>
+        <div class="loop-step">Run It</div>
+        <div class="loop-arrow">→</div>
+        <div class="loop-step">Identify Failure Mode</div>
+        <div class="loop-arrow">→</div>
+        <div class="loop-step">Fix Specific Component</div>
+        <div class="loop-arrow">→</div>
+        <div class="loop-step">Repeat</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><svg class="icon" data-lucide="triangle-alert" aria-hidden="true"></svg> Six Failure Modes & Targeted Fixes</div>
+      <table class="failure-table" aria-label="Failure modes and fixes">
+        <thead>
+          <tr>
+            <th>Failure Mode</th>
+            <th>Symptom</th>
+            <th>Fix</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mode">Too vague</td>
+            <td>Claude asks clarifying questions</td>
+            <td class="fix">Add Task specificity</td>
+          </tr>
+          <tr>
+            <td class="mode">Wrong persona</td>
+            <td>Tone or depth is off</td>
+            <td class="fix">Add/change Role in Task</td>
+          </tr>
+          <tr>
+            <td class="mode">Missing context</td>
+            <td>Claude makes wrong assumptions</td>
+            <td class="fix">Add Context</td>
+          </tr>
+          <tr>
+            <td class="mode">Wrong format</td>
+            <td>Output hard to parse or use</td>
+            <td class="fix">Add/fix Format</td>
+          </tr>
+          <tr>
+            <td class="mode">No examples</td>
+            <td>Output varies wildly</td>
+            <td class="fix">Add Examples</td>
+          </tr>
+          <tr>
+            <td class="mode">Too broad scope</td>
+            <td>Claude includes irrelevant things</td>
+            <td class="fix">Add Constraints</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="divider">
+
+    <div class="card">
+      <div class="card-title"><svg class="icon" data-lucide="hammer" aria-hidden="true"></svg> Iteration Workshop</div>
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">Here's a bad prompt. Iterate on it at least twice — identify what's wrong and write an improved version each time.</p>
+
+      <div class="iteration-block">
+        <div class="iteration-label">Starting Prompt</div>
+        <div class="code-block">"Summarize this meeting transcript."</div>
+      </div>
+
+      <div class="iteration-block" id="iter-1-block">
+        <div class="iteration-label">Iteration 1 — Identify &amp; Fix</div>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">What's wrong with the starting prompt? (Check all that apply)</p>
+        <div class="checkbox-group">
+          <label class="checkbox-item">
+            <input type="checkbox" id="iter-check-1a" value="format" aria-label="No format specified" onchange="checkIterChecks()"> No format specified
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" id="iter-check-1b" value="context" aria-label="No context about meeting type" onchange="checkIterChecks()"> No context about meeting type
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" id="iter-check-1c" value="task" aria-label="Unclear what summarize means" onchange="checkIterChecks()"> "Summarize" is unclear — what should be captured?
+          </label>
+        </div>
+        <p style="font-size:13px;color:var(--text-muted);margin:12px 0 6px;">Write your improved version (Iteration 1):</p>
+        <textarea id="iter-1-text" rows="4" placeholder="Improve the prompt based on the issues you identified..." aria-label="Iteration 1 improved prompt" oninput="saveTextarea('iter-1-text')"></textarea>
+        <div style="margin-top:12px;">
+          <button class="btn btn-primary" id="iter-1-btn" onclick="submitIter1()" disabled>
+            Submit Iteration 1 <span style="font-size:12px;opacity:0.8;">+20 XP</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="iteration-block" id="iter-2-block" style="display:none;">
+        <div class="iteration-label">Iteration 2 — Go Further</div>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">What's STILL missing after your first fix?</p>
+        <textarea id="iter-2-gap" rows="2" placeholder="What gap remains in your iteration 1 version?" aria-label="What is still missing after iteration 1" oninput="saveTextarea('iter-2-gap')"></textarea>
+        <p style="font-size:13px;color:var(--text-muted);margin:12px 0 6px;">Write your second improvement (Iteration 2):</p>
+        <textarea id="iter-2-text" rows="5" placeholder="Add what's missing from iteration 1..." aria-label="Iteration 2 improved prompt" oninput="saveTextarea('iter-2-text')"></textarea>
+        <div style="margin-top:12px;">
+          <button class="btn btn-success" id="iter-2-btn" onclick="submitIter2()">
+            Submit Iteration 2 <span style="font-size:12px;opacity:0.8;">+20 XP</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="reveal-box" id="iter-reveal">
+        <div class="card-title" style="color:var(--success);"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Model Progression</div>
+        <div class="progression">
+          <div class="prog-item v1">
+            <div class="prog-label">v1 — Original (broken)</div>
+            <div class="code-block">"Summarize this meeting transcript."</div>
+          </div>
+          <div class="prog-item v2">
+            <div class="prog-label">v2 — Format fixed</div>
+            <div class="code-block">"Summarize the key decisions and action items from this engineering team meeting transcript. Format as markdown with two sections: ## Decisions and ## Action Items."</div>
+          </div>
+          <div class="prog-item v3">
+            <div class="prog-label">v3 — Full TCEF</div>
+            <div class="code-block">"You are a technical program manager. Extract key decisions and action items from the attached engineering standup transcript. Context: This is a 15-person backend team; action items should include owner name and deadline if mentioned. Format: ## Decisions (bullet list), ## Action Items (table: Owner | Task | Deadline). Exclude general discussion."</div>
+          </div>
+        </div>
+        <div class="insight-card">
+          Notice the progression: <strong>format → context → persona + constraints</strong>. Each iteration targeted ONE specific failure mode. Systematic, not random.
+        </div>
+        <div class="unlock-banner visible" id="s3-unlock-banner">
+          <svg class="icon" data-lucide="lock-open" aria-hidden="true"></svg> Section 4 unlocked — Knowledge Checks
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 4 ==================== -->
+  <section class="section" id="s4">
+    <div id="s4-lock-overlay" class="section-lock-overlay" aria-hidden="true">
+      <div class="lock-icon"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <div class="lock-label">Submit at least 2 iterations in Section 3 to unlock</div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-tag">Section 4</div>
+      <h1 class="section-title">Knowledge Checks</h1>
+      <p class="section-subtitle">Answer at least 2 out of 3 questions correctly to unlock the Capstone Challenge.</p>
+    </div>
+
+    <div class="score-bar" id="s4-score-bar">
+      <span class="score-label">Score:</span>
+      <div class="score-dots">
+        <div class="score-dot" id="sdot-1" aria-label="Question 1 result"></div>
+        <div class="score-dot" id="sdot-2" aria-label="Question 2 result"></div>
+        <div class="score-dot" id="sdot-3" aria-label="Question 3 result"></div>
+      </div>
+      <span class="score-label" id="s4-score-text">0/3 answered</span>
+    </div>
+
+    <!-- Q1 -->
+    <div class="question-card" id="q1-card">
+      <div class="question-text">Q1: A prompt returns inconsistent output every time you run it — the structure changes, fields appear and disappear. Which TCEF component is most likely missing?</div>
+      <div class="answer-options" id="q1-options">
+        <div class="answer-option" onclick="answerQ(1,'A')" role="button" tabindex="0" aria-label="Answer A: Task" onkeydown="if(event.key==='Enter'||event.key===' ')answerQ(1,'A')">
+          <div class="answer-letter">A</div>
+          <div>Task</div>
+        </div>
+        <div class="answer-option" onclick="answerQ(1,'B')" role="button" tabindex="0" aria-label="Answer B: Context" onkeydown="if(event.key==='Enter'||event.key===' ')answerQ(1,'B')">
+          <div class="answer-letter">B</div>
+          <div>Context</div>
+        </div>
+        <div class="answer-option" onclick="answerQ(1,'C')" role="button" tabindex="0" aria-label="Answer C: Format" onkeydown="if(event.key==='Enter'||event.key===' ')answerQ(1,'C')">
+          <div class="answer-letter">C</div>
+          <div>Format</div>
+        </div>
+        <div class="answer-option" onclick="answerQ(1,'D')" role="button" tabindex="0" aria-label="Answer D: Examples" onkeydown="if(event.key==='Enter'||event.key===' ')answerQ(1,'D')">
+          <div class="answer-letter">D</div>
+          <div>Examples</div>
+        </div>
+      </div>
+      <div class="answer-feedback" id="q1-feedback"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="question-card" id="q2-card">
+      <div class="question-text">Q2: You're building a Claude Code workflow that needs to check current server error rates before deciding whether to deploy. Which context injection strategy should you use?</div>
+      <div class="answer-options" id="q2-options">
+        <div class="answer-option" onclick="answerQ(2,'A')" role="button" tabindex="0" aria-label="Answer A: CLAUDE.md" onkeydown="if(event.key==='Enter'||event.key===' ')answerQ(2,'A')">
+          <div class="answer-letter">A</div>
+          <div>CLAUDE.md (session-persistent)</div>
+        </div>
+        <div class="answer-option" onclick="answerQ(2,'B')" role="button" tabindex="0" aria-label="Answer B: Task-time paste" onkeydown="if(event.key==='Enter'||event.key===' ')answerQ(2,'B')">
+          <div class="answer-letter">B</div>
+          <div>Task-time paste</div>
+        </div>
+        <div class="answer-option" onclick="answerQ(2,'C')" role="button" tabindex="0" aria-label="Answer C: MCP-driven dynamic context" onkeydown="if(event.key==='Enter'||event.key===' ')answerQ(2,'C')">
+          <div class="answer-letter">C</div>
+          <div>MCP-driven dynamic context</div>
+        </div>
+      </div>
+      <div class="answer-feedback" id="q2-feedback"></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="question-card" id="q3-card">
+      <div class="question-text">Q3: Your prompt asks Claude to "review the code for issues." After reviewing, Claude responds: "What kind of issues should I look for?" What went wrong?</div>
+      <div class="answer-options" id="q3-options">
+        <div class="answer-option" onclick="answerQ(3,'A')" role="button" tabindex="0" aria-label="Answer A: Missing Context" onkeydown="if(event.key==='Enter'||event.key===' ')answerQ(3,'A')">
+          <div class="answer-letter">A</div>
+          <div>Missing Context</div>
+        </div>
+        <div class="answer-option" onclick="answerQ(3,'B')" role="button" tabindex="0" aria-label="Answer B: Missing Task specificity" onkeydown="if(event.key==='Enter'||event.key===' ')answerQ(3,'B')">
+          <div class="answer-letter">B</div>
+          <div>Missing Task specificity</div>
+        </div>
+        <div class="answer-option" onclick="answerQ(3,'C')" role="button" tabindex="0" aria-label="Answer C: Missing Format" onkeydown="if(event.key==='Enter'||event.key===' ')answerQ(3,'C')">
+          <div class="answer-letter">C</div>
+          <div>Missing Format</div>
+        </div>
+        <div class="answer-option" onclick="answerQ(3,'D')" role="button" tabindex="0" aria-label="Answer D: Missing Examples" onkeydown="if(event.key==='Enter'||event.key===' ')answerQ(3,'D')">
+          <div class="answer-letter">D</div>
+          <div>Missing Examples</div>
+        </div>
+      </div>
+      <div class="answer-feedback" id="q3-feedback"></div>
+    </div>
+
+    <div class="unlock-banner" id="s4-unlock-banner">
+      <svg class="icon" data-lucide="lock-open" aria-hidden="true"></svg> Section 5 unlocked — Capstone Challenge
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 5 ==================== -->
+  <section class="section" id="s5">
+    <div id="s5-lock-overlay" class="section-lock-overlay" aria-hidden="true">
+      <div class="lock-icon"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <div class="lock-label">Pass Section 4 knowledge checks (2/3) to unlock</div>
+    </div>
+
+    <div class="boss-header">
+      <div class="boss-badge">Capstone Challenge</div>
+      <div class="boss-title">Build a Prompt Library</div>
+      <div class="boss-desc">Your team's Claude Code usage is wildly inconsistent — everyone prompts differently and gets different quality results. You've been asked to build a <strong>Prompt Library</strong>: three reusable TCEF prompts that any engineer on your team can use.</div>
+    </div>
+
+    <!-- Prompt Slot 1 -->
+    <div class="prompt-slot" id="slot-1">
+      <div class="slot-header">
+        <div class="slot-title"><svg class="icon" data-lucide="clipboard" aria-hidden="true"></svg> Prompt 1: PR Code Review</div>
+        <div class="info-badge" id="slot-1-status">Incomplete</div>
+      </div>
+      <div class="slot-desc">Build a TCEF prompt for reviewing a pull request diff. It should focus on correctness, security, and performance — not style.</div>
+      <div class="slot-fields">
+        <div class="builder-field">
+          <div class="builder-field-label task-label">T — Task</div>
+          <textarea id="boss-1-task" rows="3" placeholder="What should Claude do with this PR diff?" aria-label="PR Review Task" oninput="saveTextarea('boss-1-task');checkBossSlot(1)"></textarea>
+        </div>
+        <div class="builder-field">
+          <div class="builder-field-label context-label">C — Context</div>
+          <textarea id="boss-1-context" rows="3" placeholder="What should Claude know about your codebase/team?" aria-label="PR Review Context" oninput="saveTextarea('boss-1-context');checkBossSlot(1)"></textarea>
+        </div>
+        <div class="builder-field">
+          <div class="builder-field-label examples-label">E — Examples</div>
+          <textarea id="boss-1-examples" rows="3" placeholder="Show an example of a good finding vs a style nit to ignore..." aria-label="PR Review Examples" oninput="saveTextarea('boss-1-examples');checkBossSlot(1)"></textarea>
+        </div>
+        <div class="builder-field">
+          <div class="builder-field-label format-label">F — Format</div>
+          <textarea id="boss-1-format" rows="2" placeholder="JSON array? Markdown report? What fields?" aria-label="PR Review Format" oninput="saveTextarea('boss-1-format');checkBossSlot(1)"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Prompt Slot 2 -->
+    <div class="prompt-slot" id="slot-2">
+      <div class="slot-header">
+        <div class="slot-title"><svg class="icon" data-lucide="bug" aria-hidden="true"></svg> Prompt 2: Bug Investigation</div>
+        <div class="info-badge" id="slot-2-status">Incomplete</div>
+      </div>
+      <div class="slot-desc">Build a TCEF prompt for investigating a bug from an error message + stack trace. It should output a structured investigation plan.</div>
+      <div class="slot-fields">
+        <div class="builder-field">
+          <div class="builder-field-label task-label">T — Task</div>
+          <textarea id="boss-2-task" rows="3" placeholder="What should Claude do with the error message and stack trace?" aria-label="Bug Investigation Task" oninput="saveTextarea('boss-2-task');checkBossSlot(2)"></textarea>
+        </div>
+        <div class="builder-field">
+          <div class="builder-field-label context-label">C — Context</div>
+          <textarea id="boss-2-context" rows="3" placeholder="Stack, environment, what kinds of bugs are common?" aria-label="Bug Investigation Context" oninput="saveTextarea('boss-2-context');checkBossSlot(2)"></textarea>
+        </div>
+        <div class="builder-field">
+          <div class="builder-field-label examples-label">E — Examples</div>
+          <textarea id="boss-2-examples" rows="3" placeholder="Sample error message + what a good investigation looks like..." aria-label="Bug Investigation Examples" oninput="saveTextarea('boss-2-examples');checkBossSlot(2)"></textarea>
+        </div>
+        <div class="builder-field">
+          <div class="builder-field-label format-label">F — Format</div>
+          <textarea id="boss-2-format" rows="2" placeholder="Structured plan format: steps, hypotheses, validation methods?" aria-label="Bug Investigation Format" oninput="saveTextarea('boss-2-format');checkBossSlot(2)"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Prompt Slot 3 -->
+    <div class="prompt-slot" id="slot-3">
+      <div class="slot-header">
+        <div class="slot-title"><svg class="icon" data-lucide="file-text" aria-hidden="true"></svg> Prompt 3: Documentation Generation</div>
+        <div class="info-badge" id="slot-3-status">Incomplete</div>
+      </div>
+      <div class="slot-desc">Build a TCEF prompt for generating API documentation from a Python function. It should produce OpenAPI-compatible YAML.</div>
+      <div class="slot-fields">
+        <div class="builder-field">
+          <div class="builder-field-label task-label">T — Task</div>
+          <textarea id="boss-3-task" rows="3" placeholder="Generate OpenAPI YAML from... what exactly?" aria-label="Documentation Task" oninput="saveTextarea('boss-3-task');checkBossSlot(3)"></textarea>
+        </div>
+        <div class="builder-field">
+          <div class="builder-field-label context-label">C — Context</div>
+          <textarea id="boss-3-context" rows="3" placeholder="Framework, docstring style, OpenAPI version?" aria-label="Documentation Context" oninput="saveTextarea('boss-3-context');checkBossSlot(3)"></textarea>
+        </div>
+        <div class="builder-field">
+          <div class="builder-field-label examples-label">E — Examples</div>
+          <textarea id="boss-3-examples" rows="4" placeholder="Show a sample Python function and the YAML it should produce..." aria-label="Documentation Examples" oninput="saveTextarea('boss-3-examples');checkBossSlot(3)"></textarea>
+        </div>
+        <div class="builder-field">
+          <div class="builder-field-label format-label">F — Format</div>
+          <textarea id="boss-3-format" rows="2" placeholder="Pure YAML? Wrapped in a code block? OpenAPI 3.0 or 3.1?" aria-label="Documentation Format" oninput="saveTextarea('boss-3-format');checkBossSlot(3)"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin:24px 0;">
+      <button class="btn btn-accent" id="generate-library-btn" onclick="generateLibrary()" disabled style="font-size:15px;padding:14px 28px;">
+        Generate Prompt Library <span style="font-size:13px;opacity:0.9;">+100 XP</span>
+      </button>
+    </div>
+
+    <div class="generated-library" id="generated-library">
+      <div class="library-header">
+        <div class="library-title"><svg class="icon" data-lucide="book-open" aria-hidden="true"></svg> Your Team Prompt Library</div>
+        <button class="btn btn-outline" onclick="downloadLibrary()" aria-label="Download prompt library as text file">Download .txt</button>
+      </div>
+      <pre class="code-block" id="library-output" style="max-height:500px;overflow-y:auto;"></pre>
+
+      <hr class="divider">
+
+      <div class="card">
+        <div class="card-title"><svg class="icon" data-lucide="message-circle" aria-hidden="true"></svg> Reflection (optional)</div>
+        <p style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">What pattern do you notice across your three prompts? What's the hardest TCEF component to write well?</p>
+        <textarea id="boss-reflection" rows="4" placeholder="Your reflection here — not graded, just for you..." aria-label="Boss challenge reflection" oninput="saveTextarea('boss-reflection')"></textarea>
+      </div>
+
+      <div class="completion-callout">
+        <div class="completion-icon"><svg class="icon-lg" data-lucide="trophy" aria-hidden="true"></svg></div>
+        <div class="completion-title">Lab 05 Complete!</div>
+        <div class="completion-desc">You've built a reusable TCEF-based prompt library that your entire team can use. Consistent prompts = consistent output = reliable automation.</div>
+        <div class="completion-next">Next: Lab 06 — Skills &amp; Commands Builder. You'll package reliable workflows into reusable skills and slash commands.</div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
+          <a href="/lab/04" class="btn btn-outline" style="text-decoration:none;">← Back to Lab 04</a>
+          <a href="/lab/06" class="btn btn-primary" style="text-decoration:none;">Continue to Lab 06 →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+// ============================================================
+// CONCEPT REGISTRY
+// ============================================================
+const CONCEPT_REGISTRY = {
+  'prao-loop':       { lab: 'Lab 01', section: 'S1', title: 'PRAO Loop' },
+  'gccf-pattern':    { lab: 'Lab 02', section: 'S1', title: 'GCCF Pattern' },
+  'claude-md':       { lab: 'Lab 01', section: 'S4', title: 'CLAUDE.md Context' },
+  'chain-of-thought':{ lab: 'Lab 03', section: 'S1', title: 'Chain of Thought' },
+  'tcef-pattern':    { lab: 'Lab 05', section: 'S1', title: 'TCEF Pattern' },
+  'context-injection':{ lab: 'Lab 05', section: 'S2', title: 'Context Injection' }
+};
+
+// ============================================================
+// STATE
+// ============================================================
+const STATE = {
+  xp: 0,
+  streak: 0,
+  streakCount: 0,
+  s0Done: false,
+  s1Done: false,
+  s2Done: false,
+  s3Iters: 0,
+  s3Done: false,
+  s4Answers: { 1: null, 2: null, 3: null },
+  s4Correct: 0,
+  s4Done: false,
+  s5Slots: { 1: false, 2: false, 3: false },
+  s5Done: false,
+  s2Scenarios: { 1: null, 2: null, 3: null },
+  s2CorrectCount: 0,
+  s2PredictionDone: false,
+  iter1Done: false,
+  iter2Done: false
+};
+
+// ============================================================
+// MILESTONE SYSTEM
+// ============================================================
+  let milestoneLevel = 0;
+  const MILESTONES = [
+    { section: 's1Done', label: 'TCEF Mastered' },
+    { section: 's2Done', label: 'Pattern Library' },
+    { section: 's4Done', label: 'Iteration Workflow' },
+    { section: 's5Done', label: 'Capstone Complete' }
+  ];
+
+  function getMilestoneLevel() {
+    let level = 0;
+    MILESTONES.forEach(function(m, idx) {
+      if (STATE[m.section]) level = idx + 1;
+    });
+    return level;
+  }
+
+  function updateMilestoneDisplay() {
+    const el = document.getElementById('milestone-display');
+    if (!el) return;
+    if (milestoneLevel === 0) {
+      el.textContent = 'Milestone: Not started';
+      return;
+    }
+    const entry = MILESTONES[milestoneLevel - 1];
+    el.textContent = 'Milestone ' + milestoneLevel + ': ' + entry.label;
+  }
+
+  function announceMilestone(level) {
+    const entry = MILESTONES[level - 1];
+    const toast = document.createElement('div');
+    toast.className = 'milestone-toast';
+    toast.textContent = 'Milestone reached: ' + entry.label;
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.remove(); }, 2200);
+  }
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  loadState();
+  restoreTextareas();
+  milestoneLevel = getMilestoneLevel();
+  updateMilestoneDisplay();
+  updateXpDisplay();
+  updateProgressBar();
+  applyUnlockStates();
+  updateNavDots();
+});
+
+function loadState() {
+  const saved = localStorage.getItem('lab-05-state');
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      Object.assign(STATE, parsed);
+    } catch(e) {}
+  }
+  const savedXp = localStorage.getItem('lab-05-xp');
+  if (savedXp) STATE.xp = parseInt(savedXp, 10) || 0;
+  const savedStreak = localStorage.getItem('lab-05-streak');
+  if (savedStreak) STATE.streak = parseInt(savedStreak, 10) || 0;
+  const savedStreakCount = localStorage.getItem('lab-05-streak-count');
+  if (savedStreakCount) STATE.streakCount = parseInt(savedStreakCount, 10) || 0;
+}
+
+function saveState() {
+  localStorage.setItem('lab-05-state', JSON.stringify(STATE));
+  localStorage.setItem('lab-05-xp', STATE.xp);
+  localStorage.setItem('lab-05-streak', STATE.streak);
+  localStorage.setItem('lab-05-streak-count', STATE.streakCount);
+}
+
+// ============================================================
+// TEXTAREA PERSISTENCE
+// ============================================================
+const TEXTAREA_IDS = [
+  's0-prediction','s2-prediction','tcef-task','tcef-context','tcef-examples','tcef-format',
+  'iter-1-text','iter-2-gap','iter-2-text',
+  'boss-1-task','boss-1-context','boss-1-examples','boss-1-format',
+  'boss-2-task','boss-2-context','boss-2-examples','boss-2-format',
+  'boss-3-task','boss-3-context','boss-3-examples','boss-3-format',
+  'boss-reflection'
+];
+
+function saveTextarea(id) {
+  const el = document.getElementById(id);
+  if (el) localStorage.setItem('lab-05-ta-' + id, el.value);
+}
+
+function restoreTextareas() {
+  TEXTAREA_IDS.forEach(id => {
+    const val = localStorage.getItem('lab-05-ta-' + id);
+    const el = document.getElementById(id);
+    if (val && el) el.value = val;
+  });
+}
+
+// ============================================================
+// XP SYSTEM
+// ============================================================
+function awardXP(amount, label) {
+  STATE.xp += amount;
+  saveState();
+  updateXpDisplay();
+  showToast(`+${amount} XP${label ? ' · ' + label : ''}`);
+}
+
+function updateXpDisplay() {
+  document.getElementById('xp-value').textContent = STATE.xp;
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('xp-toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+function recordCorrect() {
+  STATE.streakCount++;
+  if (STATE.streakCount === 3) showToast('3-Streak Bonus! +25 XP');
+  if (STATE.streakCount === 5) showToast('5-Streak Bonus! +50 XP');
+  if (STATE.streakCount >= 3) STATE.xp += 25;
+  if (STATE.streakCount >= 5) STATE.xp += 50;
+  saveState();
+  updateXpDisplay();
+}
+
+function recordIncorrect() {
+  STATE.streakCount = 0;
+  saveState();
+}
+
+// ============================================================
+// PROGRESS BAR
+// ============================================================
+function updateProgressBar() {
+  let completed = 0;
+  if (STATE.s0Done) completed++;
+  if (STATE.s1Done) completed++;
+  if (STATE.s2Done) completed++;
+  if (STATE.s3Done) completed++;
+  if (STATE.s4Done) completed++;
+  if (STATE.s5Done) completed++;
+  const pct = Math.round((completed / 6) * 100);
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+// ============================================================
+// NAV DOTS
+// ============================================================
+function updateNavDots() {
+  const unlocked = [
+    true,
+    STATE.s0Done,
+    STATE.s1Done,
+    STATE.s2Done,
+    STATE.s3Done,
+    STATE.s4Done
+  ];
+  const completed = [
+    STATE.s0Done,
+    STATE.s1Done,
+    STATE.s2Done,
+    STATE.s3Done,
+    STATE.s4Done,
+    STATE.s5Done
+  ];
+  for (let i = 0; i <= 5; i++) {
+    const dot = document.getElementById('dot-s' + i);
+    if (!dot) continue;
+    dot.className = 'nav-dot';
+    if (completed[i]) {
+      dot.classList.add('completed');
+    } else if (unlocked[i]) {
+      dot.classList.add('active');
+    } else {
+      dot.classList.add('locked');
+    }
+  }
+}
+
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ============================================================
+// UNLOCK STATES
+// ============================================================
+function applyUnlockStates() {
+  // S1
+  if (STATE.s0Done) unlockSection('s1');
+  // S2
+  if (STATE.s1Done) {
+    unlockSection('s2');
+    document.getElementById('s2-reveal').classList.add('visible');
+    document.getElementById('s2-apply-card').style.display = 'block';
+  }
+  // S2 prediction reveal
+  if (STATE.s2PredictionDone) {
+    document.getElementById('s2-reveal').classList.add('visible');
+    document.getElementById('s2-apply-card').style.display = 'block';
+    document.getElementById('s2-predict-btn').disabled = true;
+    document.getElementById('s2-predict-btn').textContent = 'Submitted ✓';
+  }
+  // S3
+  if (STATE.s2Done) unlockSection('s3');
+  // S4
+  if (STATE.s3Done) unlockSection('s4');
+  // S5
+  if (STATE.s4Done) unlockSection('s5');
+
+  // Restore S0 reveal
+  if (STATE.s0Done) {
+    document.getElementById('s0-reveal').classList.add('visible');
+    document.getElementById('s0-unlock-banner').classList.add('visible');
+    document.getElementById('s0-submit-btn').disabled = true;
+    document.getElementById('s0-submit-btn').textContent = 'Submitted ✓';
+    document.getElementById('s0-status').textContent = '✓ Submitted';
+  }
+
+  // Restore TCEF assembled
+  if (STATE.s1Done) {
+    const ta = document.getElementById('tcef-task').value;
+    const ca = document.getElementById('tcef-context').value;
+    const ea = document.getElementById('tcef-examples').value;
+    const fa = document.getElementById('tcef-format').value;
+    if (ta && ca && ea && fa) {
+      showAssembledPrompt(ta, ca, ea, fa);
+    }
+    document.getElementById('tcef-complete-btn').disabled = true;
+    document.getElementById('tcef-complete-btn').textContent = 'Completed ✓';
+  }
+
+  // Restore iteration blocks
+  if (STATE.iter1Done) {
+    document.getElementById('iter-2-block').style.display = 'block';
+    document.getElementById('iter-1-btn').disabled = true;
+    document.getElementById('iter-1-btn').textContent = 'Submitted ✓';
+    checkIterChecks();
+  }
+  if (STATE.iter2Done) {
+    document.getElementById('iter-reveal').classList.add('visible');
+    document.getElementById('s3-unlock-banner').classList.add('visible');
+    document.getElementById('iter-2-btn').disabled = true;
+    document.getElementById('iter-2-btn').textContent = 'Submitted ✓';
+  }
+
+  // Restore Q answers
+  [1,2,3].forEach(q => {
+    const ans = STATE.s4Answers[q];
+    if (ans) {
+      restoreAnswer(q, ans);
+    }
+  });
+
+  // S2 scenario state
+  [1,2,3].forEach(n => {
+    const ans = STATE.s2Scenarios[n];
+    if (ans) {
+      // Mark radio
+      const radios = document.querySelectorAll(`input[name="s2-q${n}"]`);
+      radios.forEach(r => { if (r.value === ans) r.checked = true; });
+    }
+  });
+
+  if (STATE.s2Done) {
+    document.getElementById('s2-unlock-banner').classList.add('visible');
+  }
+
+  // Boss slots
+  [1,2,3].forEach(n => checkBossSlot(n));
+
+  // Library already generated
+  if (STATE.s5Done) {
+    document.getElementById('generated-library').classList.add('visible');
+    document.getElementById('generate-library-btn').disabled = true;
+    document.getElementById('generate-library-btn').textContent = 'Library Generated ✓';
+    generateLibraryContent();
+  }
+
+  updateNavDots();
+  updateProgressBar();
+}
+
+function unlockSection(id) {
+  const overlay = document.getElementById(id + '-lock-overlay');
+  if (overlay) {
+    overlay.style.display = 'none';
+    overlay.setAttribute('aria-hidden', 'true');
+  }
+}
+
+// ============================================================
+// SECTION 0
+// ============================================================
+function submitS0Prediction() {
+  if (STATE.s0Done) return;
+  const val = document.getElementById('s0-prediction').value.trim();
+  if (!val) { showToast('Write something first!'); return; }
+
+  saveTextarea('s0-prediction');
+  STATE.s0Done = true;
+  awardXP(10, 'Prediction submitted');
+  saveState();
+
+  document.getElementById('s0-reveal').classList.add('visible');
+  document.getElementById('s0-unlock-banner').classList.add('visible');
+  document.getElementById('s0-submit-btn').disabled = true;
+  document.getElementById('s0-submit-btn').textContent = 'Submitted ✓';
+  document.getElementById('s0-status').textContent = '✓ Submitted';
+
+  unlockSection('s1');
+  updateNavDots();
+  updateProgressBar();
+
+  setTimeout(() => {
+    document.getElementById('s1').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 800);
+}
+
+// ============================================================
+// SECTION 1 — TCEF BUILDER
+// ============================================================
+function toggleHint(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('visible');
+}
+
+function saveTcef() {
+  ['task','context','examples','format'].forEach(f => saveTextarea('tcef-' + f));
+}
+
+function checkTcefComplete() {
+  const t = document.getElementById('tcef-task').value.trim();
+  const c = document.getElementById('tcef-context').value.trim();
+  const e = document.getElementById('tcef-examples').value.trim();
+  const f = document.getElementById('tcef-format').value.trim();
+  const btn = document.getElementById('tcef-complete-btn');
+  btn.disabled = !(t && c && e && f);
+}
+
+function completeTcef() {
+  if (STATE.s1Done) return;
+  const t = document.getElementById('tcef-task').value.trim();
+  const c = document.getElementById('tcef-context').value.trim();
+  const e = document.getElementById('tcef-examples').value.trim();
+  const f = document.getElementById('tcef-format').value.trim();
+
+  if (!t || !c || !e || !f) { showToast('Fill in all four TCEF fields first!'); return; }
+
+  STATE.s1Done = true;
+  awardXP(20, 'TCEF Builder complete');
+  saveState();
+
+  showAssembledPrompt(t, c, e, f);
+  document.getElementById('tcef-complete-btn').disabled = true;
+  document.getElementById('tcef-complete-btn').textContent = 'Completed ✓';
+
+  unlockSection('s2');
+  document.getElementById('s2-reveal').classList.add('visible');
+  document.getElementById('s2-apply-card').style.display = 'block';
+  updateNavDots();
+  updateProgressBar();
+
+  const nextMilestoneLevel1 = getMilestoneLevel();
+  if (nextMilestoneLevel1 > milestoneLevel) {
+    milestoneLevel = nextMilestoneLevel1;
+    updateMilestoneDisplay();
+    announceMilestone(milestoneLevel);
+  } else {
+    updateMilestoneDisplay();
+  }
+
+  setTimeout(() => {
+    document.getElementById('tcef-assembled').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 300);
+}
+
+function showAssembledPrompt(t, c, e, f) {
+  const assembled = `Task: ${t}\n\nContext: ${c}\n\nExamples:\n${e}\n\nFormat: ${f}`;
+  document.getElementById('tcef-assembled-text').textContent = assembled;
+  document.getElementById('tcef-assembled').classList.add('visible');
+}
+
+// ============================================================
+// SECTION 2 — CONTEXT INJECTION
+// ============================================================
+function submitS2Prediction() {
+  if (STATE.s2PredictionDone) return;
+  const val = document.getElementById('s2-prediction').value.trim();
+  if (!val) { showToast('Write something first!'); return; }
+
+  saveTextarea('s2-prediction');
+  STATE.s2PredictionDone = true;
+  awardXP(10, 'Prediction submitted');
+  saveState();
+
+  document.getElementById('s2-reveal').classList.add('visible');
+  document.getElementById('s2-apply-card').style.display = 'block';
+  document.getElementById('s2-predict-btn').disabled = true;
+  document.getElementById('s2-predict-btn').textContent = 'Submitted ✓';
+}
+
+const S2_CORRECT = { 1: 'S1', 2: 'S2', 3: 'S3' };
+const S2_FEEDBACK = {
+  1: {
+    S1: 'Correct! Stable, never-changing context belongs in CLAUDE.md — it\'s always available and costs no extra effort.',
+    S2: 'Not quite. Task-time injection is for specific, task-relevant data. Coding standards that never change belong in CLAUDE.md.',
+    S3: 'Not quite. MCP is for live, changing data. Stable architecture decisions belong in CLAUDE.md.'
+  },
+  2: {
+    S1: 'Not quite. CLAUDE.md is for stable context. A specific PR diff is task-specific — inject it now.',
+    S2: 'Correct! A specific PR diff for this review goes in the prompt now. It\'s task-specific, not persistent.',
+    S3: 'Not quite. MCP is for dynamic, changing data like live metrics. A PR diff is a static artifact — inject it directly.'
+  },
+  3: {
+    S1: 'Not quite. CLAUDE.md can\'t reflect live metrics. It\'s read at session start, not during reasoning.',
+    S2: 'Not quite. You\'d have to paste fresh error rates manually every time. That doesn\'t scale for live data.',
+    S3: 'Correct! An MCP tool that queries your monitoring system gives Claude fresh, accurate data on demand — exactly right for live metrics.'
+  }
+};
+
+function checkScenario(num, chosen, correct) {
+  if (STATE.s2Scenarios[num] !== null) return;
+
+  STATE.s2Scenarios[num] = chosen;
+  const feedbackEl = document.getElementById('s2-feedback-' + num);
+  const isCorrect = (chosen === correct);
+
+  feedbackEl.textContent = S2_FEEDBACK[num][chosen];
+  feedbackEl.className = 'scenario-feedback ' + (isCorrect ? 'correct' : 'incorrect');
+
+  if (isCorrect) {
+    awardXP(10, 'Correct strategy');
+    STATE.s2CorrectCount++;
+    recordCorrect();
+  } else {
+    recordIncorrect();
+  }
+
+  // Disable all radios for this scenario
+  document.querySelectorAll(`input[name="s2-q${num}"]`).forEach(r => r.disabled = true);
+
+  saveState();
+  checkS2Complete();
+}
+
+function checkS2Complete() {
+  const allAnswered = STATE.s2Scenarios[1] !== null && STATE.s2Scenarios[2] !== null && STATE.s2Scenarios[3] !== null;
+  const allCorrect = STATE.s2Scenarios[1] === 'S1' && STATE.s2Scenarios[2] === 'S2' && STATE.s2Scenarios[3] === 'S3';
+
+  if (allAnswered && allCorrect && !STATE.s2Done) {
+    STATE.s2Done = true;
+    awardXP(10, 'Context mastered!');
+    saveState();
+    document.getElementById('s2-unlock-banner').classList.add('visible');
+    unlockSection('s3');
+    updateNavDots();
+    updateProgressBar();
+    const nextMilestoneLevel2a = getMilestoneLevel();
+    if (nextMilestoneLevel2a > milestoneLevel) {
+      milestoneLevel = nextMilestoneLevel2a;
+      updateMilestoneDisplay();
+      announceMilestone(milestoneLevel);
+    } else {
+      updateMilestoneDisplay();
+    }
+    setTimeout(() => {
+      document.getElementById('s3').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 800);
+  } else if (allAnswered && !allCorrect && !STATE.s2Done) {
+    // Partial credit — unlock anyway after all answered if at least 2/3 correct
+    const correct = [STATE.s2Scenarios[1]==='S1', STATE.s2Scenarios[2]==='S2', STATE.s2Scenarios[3]==='S3'].filter(Boolean).length;
+    if (correct >= 2) {
+      STATE.s2Done = true;
+      saveState();
+      document.getElementById('s2-unlock-banner').classList.add('visible');
+      unlockSection('s3');
+      updateNavDots();
+      updateProgressBar();
+      const nextMilestoneLevel2b = getMilestoneLevel();
+      if (nextMilestoneLevel2b > milestoneLevel) {
+        milestoneLevel = nextMilestoneLevel2b;
+        updateMilestoneDisplay();
+        announceMilestone(milestoneLevel);
+      } else {
+        updateMilestoneDisplay();
+      }
+    }
+  }
+}
+
+// ============================================================
+// SECTION 3 — ITERATION WORKSHOP
+// ============================================================
+function checkIterChecks() {
+  const a = document.getElementById('iter-check-1a').checked;
+  const b = document.getElementById('iter-check-1b').checked;
+  const c = document.getElementById('iter-check-1c').checked;
+  const btn = document.getElementById('iter-1-btn');
+  const text = document.getElementById('iter-1-text').value.trim();
+  btn.disabled = !((a || b || c) && text.length > 0);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const t = document.getElementById('iter-1-text');
+  if (t) t.addEventListener('input', () => { saveTextarea('iter-1-text'); checkIterChecks(); });
+});
+
+function submitIter1() {
+  if (STATE.iter1Done) return;
+  const text = document.getElementById('iter-1-text').value.trim();
+  if (!text) { showToast('Write your improved prompt first!'); return; }
+
+  STATE.iter1Done = true;
+  STATE.s3Iters = 1;
+  awardXP(20, 'Iteration 1 submitted');
+  saveState();
+
+  document.getElementById('iter-2-block').style.display = 'block';
+  document.getElementById('iter-1-btn').disabled = true;
+  document.getElementById('iter-1-btn').textContent = 'Submitted ✓';
+
+  setTimeout(() => {
+    document.getElementById('iter-2-block').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 300);
+}
+
+function submitIter2() {
+  if (STATE.iter2Done) return;
+  const text = document.getElementById('iter-2-text').value.trim();
+  if (!text) { showToast('Write your second improved prompt first!'); return; }
+
+  STATE.iter2Done = true;
+  STATE.s3Iters = 2;
+  STATE.s3Done = true;
+  awardXP(20, 'Iteration 2 submitted');
+  saveState();
+
+  document.getElementById('iter-reveal').classList.add('visible');
+  document.getElementById('s3-unlock-banner').classList.add('visible');
+  document.getElementById('iter-2-btn').disabled = true;
+  document.getElementById('iter-2-btn').textContent = 'Submitted ✓';
+
+  unlockSection('s4');
+  updateNavDots();
+  updateProgressBar();
+
+  setTimeout(() => {
+    document.getElementById('iter-reveal').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 300);
+}
+
+// ============================================================
+// SECTION 4 — KNOWLEDGE CHECKS
+// ============================================================
+const Q_CORRECT = { 1: 'C', 2: 'C', 3: 'B' };
+const Q_FEEDBACK = {
+  1: {
+    A: 'If the task is clear but output structure varies run to run, the issue is almost always missing Format specification.',
+    B: 'Context affects accuracy and relevance, but consistency — the same structure every time — comes from specifying Format.',
+    C: 'Correct! Without a specified format, Claude improvises structure each run. A JSON schema or explicit template eliminates inconsistency.',
+    D: 'Examples help calibrate output quality, but they don\'t enforce a consistent structure. Format is the consistency lever.'
+  },
+  2: {
+    A: 'CLAUDE.md is for stable context loaded at session start. Error rates change continuously — CLAUDE.md can\'t reflect live data.',
+    B: 'You\'d have to manually paste fresh error data before each deploy check. That doesn\'t scale — and you\'d forget.',
+    C: 'Correct! An MCP tool that queries your monitoring system gives Claude fresh, accurate data on demand. This is exactly the use case for MCP-driven context.'
+  },
+  3: {
+    A: 'Context is about background knowledge Claude needs. Claude is asking about scope and what it should do — that\'s a Task clarity problem.',
+    B: 'Correct! The Task was too vague. "Review for issues" doesn\'t specify which issues matter. Fix: "Identify N+1 queries, missing error handling, and SQL injection risks."',
+    C: 'Format defines how Claude structures output. Claude is asking about what to do, not how to format results — that\'s Task specificity.',
+    D: 'Examples help Claude calibrate output quality. This is a scope problem — Claude doesn\'t know what kind of issues to look for. Fix the Task.'
+  }
+};
+
+function answerQ(qNum, choice) {
+  if (STATE.s4Answers[qNum] !== null) return;
+
+  STATE.s4Answers[qNum] = choice;
+  const isCorrect = (choice === Q_CORRECT[qNum]);
+
+  // Update UI
+  const opts = document.querySelectorAll(`#q${qNum}-options .answer-option`);
+  opts.forEach(opt => {
+    opt.classList.add('disabled');
+    opt.removeAttribute('tabindex');
+  });
+
+  // Find chosen and correct options
+  const letters = ['A','B','C','D'];
+  opts.forEach((opt, i) => {
+    const letter = letters[i];
+    if (letter === choice) {
+      opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+    }
+    if (letter === Q_CORRECT[qNum] && !isCorrect) {
+      opt.classList.add('correct');
+    }
+  });
+
+  // Show feedback
+  const feedback = document.getElementById('q' + qNum + '-feedback');
+  feedback.textContent = Q_FEEDBACK[qNum][choice];
+  feedback.classList.add('visible');
+
+  // Score dot
+  const dot = document.getElementById('sdot-' + qNum);
+  dot.classList.add(isCorrect ? 'correct' : 'incorrect');
+
+  if (isCorrect) {
+    awardXP(30, 'Correct answer');
+    STATE.s4Correct++;
+    recordCorrect();
+  } else {
+    recordIncorrect();
+  }
+
+  saveState();
+  updateScoreDisplay();
+  checkS4Complete();
+}
+
+function restoreAnswer(qNum, choice) {
+  const opts = document.querySelectorAll(`#q${qNum}-options .answer-option`);
+  const letters = ['A','B','C','D'];
+  const isCorrect = (choice === Q_CORRECT[qNum]);
+
+  opts.forEach(opt => {
+    opt.classList.add('disabled');
+    opt.removeAttribute('tabindex');
+  });
+
+  opts.forEach((opt, i) => {
+    const letter = letters[i];
+    if (letter === choice) {
+      opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+    }
+    if (letter === Q_CORRECT[qNum] && !isCorrect) {
+      opt.classList.add('correct');
+    }
+  });
+
+  const feedback = document.getElementById('q' + qNum + '-feedback');
+  if (feedback) {
+    feedback.textContent = Q_FEEDBACK[qNum][choice];
+    feedback.classList.add('visible');
+  }
+
+  const dot = document.getElementById('sdot-' + qNum);
+  if (dot) dot.classList.add(isCorrect ? 'correct' : 'incorrect');
+}
+
+function updateScoreDisplay() {
+  const answered = Object.values(STATE.s4Answers).filter(a => a !== null).length;
+  document.getElementById('s4-score-text').textContent = `${STATE.s4Correct}/${answered} correct`;
+}
+
+function checkS4Complete() {
+  const answered = Object.values(STATE.s4Answers).filter(a => a !== null).length;
+  if (answered >= 3 && STATE.s4Correct >= 2 && !STATE.s4Done) {
+    STATE.s4Done = true;
+    saveState();
+    document.getElementById('s4-unlock-banner').classList.add('visible');
+    unlockSection('s5');
+    updateNavDots();
+    updateProgressBar();
+    const nextMilestoneLevel4 = getMilestoneLevel();
+    if (nextMilestoneLevel4 > milestoneLevel) {
+      milestoneLevel = nextMilestoneLevel4;
+      updateMilestoneDisplay();
+      announceMilestone(milestoneLevel);
+    } else {
+      updateMilestoneDisplay();
+    }
+    setTimeout(() => {
+      document.getElementById('s5').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 800);
+  } else if (answered >= 3 && STATE.s4Correct < 2 && !STATE.s4Done) {
+    // Show feedback but don't unlock yet — let them try to understand
+    showToast('Need 2/3 correct to unlock Capstone Challenge. Review the feedback above.');
+  }
+}
+
+// ============================================================
+// SECTION 5 — BOSS CHALLENGE
+// ============================================================
+function checkBossSlot(num) {
+  const fields = ['task','context','examples','format'];
+  const allFilled = fields.every(f => {
+    const el = document.getElementById(`boss-${num}-${f}`);
+    return el && el.value.trim().length > 0;
+  });
+
+  STATE.s5Slots[num] = allFilled;
+  const statusEl = document.getElementById(`slot-${num}-status`);
+  if (statusEl) {
+    statusEl.textContent = allFilled ? '✓ Complete' : 'Incomplete';
+    statusEl.style.color = allFilled ? 'var(--success)' : '';
+    statusEl.style.borderColor = allFilled ? 'rgba(16,185,129,0.4)' : '';
+  }
+
+  const allDone = STATE.s5Slots[1] && STATE.s5Slots[2] && STATE.s5Slots[3];
+  const btn = document.getElementById('generate-library-btn');
+  if (btn) btn.disabled = !allDone;
+
+  saveState();
+}
+
+function generateLibraryContent() {
+  const slots = [
+    { title: 'PR Code Review', num: 1 },
+    { title: 'Bug Investigation', num: 2 },
+    { title: 'Documentation Generation', num: 3 }
+  ];
+
+  let output = '# Team Prompt Library\n';
+  output += '# Generated from Lab 05 · Prompt Engineering Workshop\n';
+  output += '# ' + new Date().toLocaleDateString() + '\n\n';
+  output += '---\n\n';
+
+  slots.forEach(({ title, num }) => {
+    const t = document.getElementById(`boss-${num}-task`).value.trim();
+    const c = document.getElementById(`boss-${num}-context`).value.trim();
+    const e = document.getElementById(`boss-${num}-examples`).value.trim();
+    const f = document.getElementById(`boss-${num}-format`).value.trim();
+
+    output += `## Prompt ${num}: ${title}\n\n`;
+    output += `**Task:**\n${t}\n\n`;
+    output += `**Context:**\n${c}\n\n`;
+    output += `**Examples:**\n${e}\n\n`;
+    output += `**Format:**\n${f}\n\n`;
+    output += '---\n\n';
+  });
+
+  document.getElementById('library-output').textContent = output;
+  return output;
+}
+
+function generateLibrary() {
+  if (STATE.s5Done) return;
+
+  const allDone = STATE.s5Slots[1] && STATE.s5Slots[2] && STATE.s5Slots[3];
+  if (!allDone) { showToast('Complete all three prompts first!'); return; }
+
+  generateLibraryContent();
+
+  STATE.s5Done = true;
+  awardXP(100, 'Capstone Challenge complete!');
+  saveState();
+
+  document.getElementById('generated-library').classList.add('visible');
+  document.getElementById('generate-library-btn').disabled = true;
+  document.getElementById('generate-library-btn').textContent = 'Library Generated ✓';
+
+  updateNavDots();
+  updateProgressBar();
+
+  const nextMilestoneLevel5 = getMilestoneLevel();
+  if (nextMilestoneLevel5 > milestoneLevel) {
+    milestoneLevel = nextMilestoneLevel5;
+    updateMilestoneDisplay();
+    announceMilestone(milestoneLevel);
+  } else {
+    updateMilestoneDisplay();
+  }
+
+  setTimeout(() => {
+    document.getElementById('generated-library').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 300);
+
+  setTimeout(() => showToast('Lab 05 Complete! +100 XP'), 1000);
+}
+
+function downloadLibrary() {
+  const content = document.getElementById('library-output').textContent;
+  if (!content) return;
+
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'lab-05-prompt-library.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ============================================================
+// SCROLL-BASED PROGRESS
+// ============================================================
+window.addEventListener('scroll', () => {
+  const scrolled = window.scrollY;
+  const total = document.body.scrollHeight - window.innerHeight;
+  const pct = total > 0 ? Math.min(100, Math.round((scrolled / total) * 100)) : 0;
+  // Only override with scroll if no sections completed yet
+  // (section completion drives the bar otherwise)
+  if (!STATE.s0Done) {
+    document.getElementById('progress-bar').style.width = Math.min(pct, 16) + '%';
+  }
+});
+</script>
+
+  <!-- ─── Attribution Footer ─────────────────────────────────────────────── -->
+  <footer style="
+    margin-top: 80px;
+    padding: 32px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    text-align: center;
+    font-size: 12px;
+    color: #475569;
+    line-height: 1.8;
+  ">
+    <p>
+      &ldquo;Claude&rdquo; and &ldquo;Claude Code&rdquo; are trademarks of Anthropic, PBC.
+      This course is not affiliated with or endorsed by Anthropic.
+      All product names, logos, and trademarks are the property of their respective owners
+      and are referenced here for educational purposes only.
+    </p>
+    <p>
+      Fonts:
+      <a href="https://fonts.google.com/specimen/Inter" rel="noopener" style="color:#6366f1;">Inter</a>
+      and
+      <a href="https://fonts.google.com/specimen/JetBrains+Mono" rel="noopener" style="color:#6366f1;">JetBrains Mono</a>
+      via Google Fonts under the
+      <a href="https://scripts.sil.org/OFL" rel="noopener" style="color:#6366f1;">SIL Open Font License 1.1</a>.
+    </p>
+    <p>Course content &copy; 2026 Agentic AI Engineering Course. Educational use.</p>
+  </footer>
+
+<script>if (window.lucide) lucide.createIcons();</script>
+</body>
+</html>

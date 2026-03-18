@@ -1,0 +1,52 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/lab/1", "destination": "/labs/day1/lab-01-paradigm-shift.html" },
+    { "source": "/lab/2", "destination": "/labs/day1/lab-02-first-agent.html" },
+    { "source": "/lab/3", "destination": "/labs/day1/lab-03-agent-thinking.html" },
+    { "source": "/lab/4", "destination": "/labs/day2/lab-04-mcp-explorer.html" },
+    { "source": "/lab/5", "destination": "/labs/day2/lab-05-prompt-engineering.html" },
+    { "source": "/lab/6", "destination": "/labs/day2/lab-06-skills-commands.html" },
+    { "source": "/lab/7", "destination": "/labs/day3/lab-07-multi-agent.html" },
+    { "source": "/lab/8", "destination": "/labs/day3/lab-08-production.html" },
+    { "source": "/lab/9", "destination": "/labs/day3/lab-09-capstone.html" },
+    { "source": "/lab/01", "destination": "/labs/day1/lab-01-paradigm-shift.html" },
+    { "source": "/lab/02", "destination": "/labs/day1/lab-02-first-agent.html" },
+    { "source": "/lab/03", "destination": "/labs/day1/lab-03-agent-thinking.html" },
+    { "source": "/lab/04", "destination": "/labs/day2/lab-04-mcp-explorer.html" },
+    { "source": "/lab/05", "destination": "/labs/day2/lab-05-prompt-engineering.html" },
+    { "source": "/lab/06", "destination": "/labs/day2/lab-06-skills-commands.html" },
+    { "source": "/lab/07", "destination": "/labs/day3/lab-07-multi-agent.html" },
+    { "source": "/lab/08", "destination": "/labs/day3/lab-08-production.html" },
+    { "source": "/lab/09", "destination": "/labs/day3/lab-09-capstone.html" },
+    { "source": "/module/1", "destination": "/module-viewer.html?m=01-paradigm-shift" },
+    { "source": "/module/2", "destination": "/module-viewer.html?m=02-claude-code-foundations" },
+    { "source": "/module/3", "destination": "/module-viewer.html?m=03-agent-thinking" },
+    { "source": "/module/4", "destination": "/module-viewer.html?m=04-prompt-engineering-depth" },
+    { "source": "/module/5", "destination": "/module-viewer.html?m=05-mcp-architecture" },
+    { "source": "/module/6", "destination": "/module-viewer.html?m=06-mcp-building" },
+    { "source": "/module/7", "destination": "/module-viewer.html?m=07-skills-commands" },
+    { "source": "/module/8", "destination": "/module-viewer.html?m=08-meta-prompting" },
+    { "source": "/module/9", "destination": "/module-viewer.html?m=09-multi-agent-systems" },
+    { "source": "/module/01", "destination": "/module-viewer.html?m=01-paradigm-shift" },
+    { "source": "/module/02", "destination": "/module-viewer.html?m=02-claude-code-foundations" },
+    { "source": "/module/03", "destination": "/module-viewer.html?m=03-agent-thinking" },
+    { "source": "/module/04", "destination": "/module-viewer.html?m=04-prompt-engineering-depth" },
+    { "source": "/module/05", "destination": "/module-viewer.html?m=05-mcp-architecture" },
+    { "source": "/module/06", "destination": "/module-viewer.html?m=06-mcp-building" },
+    { "source": "/module/07", "destination": "/module-viewer.html?m=07-skills-commands" },
+    { "source": "/module/08", "destination": "/module-viewer.html?m=08-meta-prompting" },
+    { "source": "/module/09", "destination": "/module-viewer.html?m=09-multi-agent-systems" },
+    { "source": "/module/10", "destination": "/module-viewer.html?m=10-security-sandboxing" },
+    { "source": "/module/11", "destination": "/module-viewer.html?m=11-tech-stack-adaptation" },
+    { "source": "/module/12", "destination": "/module-viewer.html?m=12-capstone-production" },
+    { "source": "/challenges", "destination": "/module-viewer.html?m=../CHALLENGE-MISSIONS" },
+    { "source": "/challenge", "destination": "/module-viewer.html?m=../CHALLENGE-MISSIONS" }
+  ],
+  "headers": [
+    {
+      "source": "/labs/(.*)",
+      "headers": [{ "key": "X-Frame-Options", "value": "SAMEORIGIN" }]
+    }
+  ]
+}

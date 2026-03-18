@@ -1,0 +1,2109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 07 · Multi-Agent Orchestrator | Agentic AI Engineering</title>
+  <link rel="stylesheet" href="/assets/theme-toggle.css" />
+  <script src="/assets/theme-toggle.js" defer></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    /* ─── Design System ──────────────────────────────────────────── */
+    :root {
+      --bg-base:    #080d1a;
+      --bg-surface: #0f1729;
+      --bg-raised:  #172035;
+      --bg-glass:   rgba(23, 32, 53, 0.7);
+      --primary:    #6366f1;
+      --primary-glow: rgba(99,102,241,0.25);
+      --secondary:  #8b5cf6;
+      --accent:     #06b6d4;
+      --accent-glow: rgba(6,182,212,0.2);
+      --success:    #10b981;
+      --warning:    #f59e0b;
+      --danger:     #ef4444;
+      --text:       #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim:   #475569;
+      --border:     rgba(255,255,255,0.08);
+      --border-bright: rgba(99,102,241,0.4);
+      --radius:     16px;
+      --radius-sm:  8px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-base);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ─── Progress Bar ───────────────────────────────────────────── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 0%; transition: width 0.2s ease;
+      z-index: 1000;
+      box-shadow: 0 0 12px var(--primary);
+    }
+
+    /* ─── Nav ────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: 16px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      backdrop-filter: blur(20px);
+      background: rgba(8,13,26,0.8);
+      border-bottom: 1px solid var(--border);
+      z-index: 900;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text-muted); }
+    .nav-badge {
+      background: var(--primary); color: white;
+      padding: 3px 10px; border-radius: 100px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
+    }
+    .nav-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--bg-raised); border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+    .nav-dot.dot-locked  { background: var(--text-dim); }
+    .nav-dot.dot-active  { background: var(--primary); box-shadow: 0 0 8px var(--primary-glow); }
+    .nav-dot.dot-complete { background: var(--success); }
+
+    /* ─── Sections ───────────────────────────────────────────────── */
+    .section-block {
+      padding: 60px 0;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .section-block:last-child { border-bottom: none; }
+    .section-block.locked { pointer-events: none; user-select: none; min-height: 200px; }
+
+    /* ─── Typography ─────────────────────────────────────────────── */
+    .overline {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 12px;
+    }
+    h1 {
+      font-size: clamp(36px,5vw,60px); font-weight: 800;
+      line-height: 1.1; letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--text) 0%, var(--text-muted) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    h2 { font-size: clamp(22px,3vw,32px); font-weight: 700; letter-spacing: -0.02em; }
+    h3 { font-size: 18px; font-weight: 600; }
+    p  { color: var(--text-muted); }
+
+    /* ─── Cards ──────────────────────────────────────────────────── */
+    .card {
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      backdrop-filter: blur(10px);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .card:hover { border-color: var(--border-bright); box-shadow: 0 0 30px var(--primary-glow); }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px; width: 100%;
+    }
+
+    .info-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .challenge-card {
+      background: rgba(245,158,11,0.06);
+      border: 1px solid rgba(245,158,11,0.3);
+      border-left: 3px solid var(--warning);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .check-card {
+      background: rgba(99,102,241,0.05);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .callback-card {
+      background: rgba(139,92,246,0.06);
+      border: 1px solid rgba(139,92,246,0.3);
+      border-left: 3px solid var(--secondary);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .insight-card {
+      background: rgba(16,185,129,0.06);
+      border: 1px solid rgba(16,185,129,0.3);
+      border-left: 3px solid var(--success);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: none;
+    }
+    .insight-card.revealed { display: block; animation: fadeIn 0.4s ease; }
+
+    .card-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 3px 10px;
+      border-radius: 4px; display: inline-block; margin-bottom: 12px;
+    }
+    .challenge-badge { background: rgba(245,158,11,0.15); color: var(--warning); }
+    .check-badge     { background: rgba(99,102,241,0.15); color: var(--primary); }
+    .callback-badge  { background: rgba(139,92,246,0.15); color: var(--secondary); }
+    .insight-badge   { background: rgba(16,185,129,0.15); color: var(--success); }
+
+    /* ─── Code blocks ────────────────────────────────────────────── */
+    .code-block {
+      background: #0a0f1e;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px 24px;
+      font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+      font-size: 13px; line-height: 1.8;
+      overflow-x: auto; position: relative;
+    }
+    .code-block .comment  { color: #4b5563; }
+    .code-block .keyword  { color: #8b5cf6; }
+    .code-block .string   { color: #10b981; }
+    .code-block .fn       { color: #06b6d4; }
+    .code-block .cmd      { color: var(--warning); }
+
+    /* ─── Buttons ────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border-radius: 10px;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      border: none; transition: all 0.2s; text-decoration: none;
+    }
+    .btn-primary { background: var(--primary); color: white; box-shadow: 0 0 20px var(--primary-glow); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 30px var(--primary-glow); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-ghost {
+      background: transparent; color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-amber   { background: var(--warning); color: #000; font-weight: 700; }
+
+    /* ─── Textarea / Inputs ──────────────────────────────────────── */
+    textarea {
+      width: 100%;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 14px; color: var(--text);
+      resize: vertical; min-height: 110px;
+      font-family: inherit; transition: border-color 0.2s;
+      line-height: 1.6;
+    }
+    textarea:focus { outline: none; border-color: var(--primary); }
+    .char-hint { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+    .char-ready { color: var(--success); }
+    label.field-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+
+    /* ─── Answer options ─────────────────────────────────────────── */
+    .answer-options { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+    .answer-option {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 18px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer; transition: all 0.2s;
+      font-size: 14px; color: var(--text-muted);
+      text-align: left; width: 100%;
+    }
+    .answer-option:hover:not(.locked-opt) { border-color: var(--primary); color: var(--text); }
+    .answer-option.correct   { background: rgba(16,185,129,0.1); border-color: var(--success); color: var(--success); }
+    .answer-option.incorrect { background: rgba(239,68,68,0.1);  border-color: var(--danger);  color: #fca5a5; }
+    .answer-option.locked-opt { cursor: default; }
+    .opt-letter {
+      width: 24px; height: 24px; border-radius: 50%;
+      border: 2px solid currentColor;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+    }
+    .question-feedback {
+      margin-top: 12px; padding: 12px 16px;
+      border-radius: 8px; font-size: 14px; display: none;
+    }
+    .question-feedback.show { display: block; animation: fadeIn 0.3s; }
+    .fb-correct   { background: rgba(16,185,129,0.1); color: var(--success); border-left: 3px solid var(--success); }
+    .fb-incorrect { background: rgba(239,68,68,0.1);  color: #fca5a5; border-left: 3px solid var(--danger); }
+
+    /* ─── Rubric ─────────────────────────────────────────────────── */
+    .rubric { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; }
+    .rubric-level { padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-raised); }
+    .rubric-level-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+    .rubric-d { border-left: 3px solid gold; }
+    .rubric-d .rubric-level-label { color: gold; }
+    .rubric-p { border-left: 3px solid var(--primary); }
+    .rubric-p .rubric-level-label { color: var(--primary); }
+    .rubric-v { border-left: 3px solid var(--warning); }
+    .rubric-v .rubric-level-label { color: var(--warning); }
+    .rubric-b { border-left: 3px solid var(--text-dim); }
+    .rubric-b .rubric-level-label { color: var(--text-dim); }
+    .rubric-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+    /* ─── Lock overlay ───────────────────────────────────────────── */
+    .lock-overlay {
+      position: absolute; inset: 0;
+      background: rgba(8,13,26,0.88);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      border-radius: var(--radius); z-index: 10;
+      gap: 12px;
+    }
+    .lock-overlay p { color: var(--text-muted); font-size: 14px; }
+
+    /* ─── XP / Streak ────────────────────────────────────────────── */
+    .xp-display {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 700; color: var(--warning);
+    }
+    .xp-toast {
+      position: fixed; top: 80px; right: 24px;
+      background: var(--warning); color: #000;
+      padding: 8px 16px; border-radius: 20px;
+      font-weight: 700; font-size: 13px;
+      animation: toastFade 2s forwards;
+      pointer-events: none; z-index: 9999;
+    }
+    @keyframes toastFade {
+      0%  { opacity:0; transform:translateY(-10px) }
+      20% { opacity:1; transform:translateY(0) }
+      80% { opacity:1 }
+      100%{ opacity:0; transform:translateY(-10px) }
+    }
+    .streak-display {
+      font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+    }
+    .streak-3 { background: rgba(245,158,11,0.15); color: var(--warning); }
+    .streak-5 { background: rgba(139,92,246,0.15); color: var(--secondary); }
+    .streak-7 { background: rgba(245,158,11,0.2);  color: gold; }
+
+    /* ─── Connect forward ────────────────────────────────────────── */
+    .connect-forward {
+      display: none; margin-top: 24px;
+      padding: 16px 20px;
+      background: rgba(6,182,212,0.06);
+      border: 1px solid rgba(6,182,212,0.2);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-sm);
+      font-size: 14px; color: var(--text-muted);
+    }
+    .connect-forward.show { display: block; animation: fadeIn 0.4s; }
+
+    /* ─── Accessibility ──────────────────────────────────────────── */
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap;
+    }
+
+    /* ─── Animations ─────────────────────────────────────────────── */
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+    /* ─── Objectives card ────────────────────────────────────────── */
+    .objectives-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      text-align: left;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .objectives-card ul { margin-top: 12px; padding-left: 20px; }
+    .objectives-card li { color: var(--text-muted); margin-bottom: 6px; font-size: 15px; }
+
+    /* ─── Section headers ────────────────────────────────────────── */
+    .section-header { margin-bottom: 32px; }
+    .section-num {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+    }
+
+    /* ─── Orchestrator diagram ───────────────────────────────────── */
+    .orch-diagram {
+      background: #04080f;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      text-align: center;
+      font-family: 'Fira Code', monospace;
+      font-size: 13px;
+      overflow-x: auto;
+    }
+    .orch-node {
+      display: inline-block;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .orch-node-main { background: rgba(99,102,241,0.2); border: 1px solid var(--primary); color: var(--primary); }
+    .orch-node-sub  { background: rgba(6,182,212,0.12); border: 1px solid var(--accent); color: var(--accent); }
+    .orch-node-agg  { background: rgba(16,185,129,0.12); border: 1px solid var(--success); color: var(--success); }
+    .orch-row { display: flex; justify-content: center; gap: 16px; margin: 16px 0; flex-wrap: wrap; }
+    .orch-arrow { color: var(--text-dim); font-size: 12px; }
+    .orch-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+    /* ─── Decompose examples ─────────────────────────────────────── */
+    .decompose-example {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .decompose-example:hover { border-color: var(--primary); }
+    .decompose-example .ex-q { font-size: 14px; color: var(--text); font-weight: 500; }
+    .decompose-example .ex-verdict { display: none; margin-top: 10px; font-size: 13px; padding: 10px 14px; border-radius: 6px; }
+    .decompose-example .ex-verdict.show { display: block; animation: fadeIn 0.3s; }
+    .verdict-yes { background: rgba(16,185,129,0.1); color: var(--success); border-left: 3px solid var(--success); }
+    .verdict-no  { background: rgba(239,68,68,0.1);  color: #fca5a5; border-left: 3px solid var(--danger); }
+
+    /* ─── Pattern cards (expandable) ────────────────────────────── */
+    .pattern-card {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .pattern-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 22px; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .pattern-header:hover { background: rgba(255,255,255,0.03); }
+    .pattern-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .pattern-tag   { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 700; }
+    .tag-fanout    { background: rgba(99,102,241,0.15); color: var(--primary); }
+    .tag-pipeline  { background: rgba(6,182,212,0.15); color: var(--accent); }
+    .tag-routing   { background: rgba(16,185,129,0.15); color: var(--success); }
+    .pattern-chevron { color: var(--text-dim); font-size: 12px; transition: transform 0.2s; }
+    .pattern-body { padding: 0 22px 20px; display: none; font-size: 14px; color: var(--text-muted); line-height: 1.7; }
+    .pattern-body.open { display: block; animation: fadeIn 0.3s; }
+
+    /* ─── Orchestration builder ──────────────────────────────────── */
+    .orch-builder {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .orch-builder h4 { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: var(--text); }
+    .builder-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+    .builder-choice {
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-raised);
+      font-size: 13px; color: var(--text-muted);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .builder-choice:hover { border-color: var(--primary); color: var(--primary); }
+    .builder-choice.selected { background: rgba(99,102,241,0.15); border-color: var(--primary); color: var(--primary); font-weight: 600; }
+    .builder-label { font-size: 12px; color: var(--text-dim); margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
+    .builder-result { display: none; margin-top: 16px; padding: 16px; background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.3); border-radius: var(--radius-sm); font-size: 13px; color: var(--text-muted); }
+    .builder-result.show { display: block; animation: fadeIn 0.3s; }
+
+    /* ─── Failure triage game ────────────────────────────────────── */
+    .triage-scenario {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .triage-scenario .sc-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--danger); margin-bottom: 8px; }
+    .triage-scenario .sc-desc  { font-size: 14px; color: var(--text); margin-bottom: 14px; font-weight: 500; }
+    .triage-options { display: flex; flex-direction: column; gap: 8px; }
+    .triage-opt {
+      padding: 11px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      cursor: pointer; font-size: 13px; color: var(--text-muted);
+      text-align: left; transition: all 0.2s;
+    }
+    .triage-opt:hover:not(.t-locked) { border-color: var(--primary); color: var(--text); }
+    .triage-opt.t-correct   { background: rgba(16,185,129,0.1); border-color: var(--success); color: var(--success); }
+    .triage-opt.t-incorrect { background: rgba(239,68,68,0.1);  border-color: var(--danger);  color: #fca5a5; }
+    .triage-opt.t-locked { cursor: default; }
+    .triage-fb { margin-top: 10px; font-size: 13px; padding: 10px 14px; border-radius: 6px; display: none; }
+    .triage-fb.show { display: block; animation: fadeIn 0.3s; }
+
+    /* ─── Failure modes table ────────────────────────────────────── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .data-table th {
+      text-align: left; padding: 10px 14px;
+      background: var(--bg-raised); color: var(--text-muted);
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--text-muted); vertical-align: top; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table td:first-child { color: var(--text); font-weight: 600; }
+
+    /* ─── Comm schema builder ────────────────────────────────────── */
+    .schema-display {
+      background: #04080f;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px 24px;
+      font-family: 'Fira Code', monospace;
+      font-size: 13px; line-height: 1.9;
+      color: var(--text-muted);
+    }
+    .schema-key   { color: var(--accent); }
+    .schema-type  { color: var(--warning); }
+    .schema-str   { color: var(--success); }
+    .schema-comment { color: #4b5563; }
+
+    /* ─── Motivation cards ───────────────────────────────────────── */
+    .motivation-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 16px; }
+    .motivation-card {
+      background: var(--bg-raised); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 22px;
+    }
+    .motivation-num {
+      font-size: 28px; font-weight: 800; line-height: 1;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 6px;
+    }
+    .motivation-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .motivation-desc  { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+    /* ─── decompose rules ────────────────────────────────────────── */
+    .rule-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .rule-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+    }
+    .rule-yes { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); color: var(--text-muted); }
+    .rule-no  { background: rgba(239,68,68,0.06);  border: 1px solid rgba(239,68,68,0.18); color: var(--text-muted); }
+    .rule-icon { flex-shrink: 0; font-size: 14px; margin-top: 1px; }
+    .milestone-display {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: rgba(6,182,212,0.08);
+      border: 1px solid rgba(6,182,212,0.25);
+      border-radius: 999px;
+      padding: 4px 10px;
+      white-space: nowrap;
+    }
+    .milestone-toast {
+      position: fixed; top: 120px; right: 24px;
+      background: var(--accent); color: #02131a;
+      padding: 8px 14px; border-radius: 20px;
+      font-weight: 700; font-size: 12px;
+      animation: toastFade 2s forwards;
+      pointer-events: none; z-index: 9999;
+    }
+
+    /* ─── Build Challenge Exercises ──────────────────────────── */
+    .build-challenge {
+      margin-top: 32px;
+      background: rgba(139,92,246,0.06);
+      border: 1px solid rgba(139,92,246,0.3);
+      border-top: 3px solid var(--secondary);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+    .build-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 4px 14px;
+      border-radius: 20px; display: inline-block;
+      background: var(--secondary); color: #fff;
+    }
+    .ce-xp-badge {
+      font-size: 12px; font-weight: 600; color: var(--secondary);
+      background: rgba(139,92,246,0.12); padding: 4px 12px; border-radius: 20px;
+    }
+    .btn-secondary {
+      background: var(--secondary); color: #fff;
+      box-shadow: 0 0 16px rgba(139,92,246,0.25);
+    }
+    .btn-secondary:hover { transform: translateY(-2px); box-shadow: 0 0 28px rgba(139,92,246,0.4); }
+    .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .ce-requirements {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 16px;
+      margin-bottom: 16px; font-size: 13px; color: var(--text-muted);
+    }
+    .ce-model-answer {
+      margin-top: 20px; padding: 20px;
+      background: var(--bg); border: 1px solid rgba(139,92,246,0.35);
+      border-left: 3px solid var(--secondary);
+      border-radius: var(--radius-sm);
+    }
+
+    /* ── Icon System (Lucide) ─────────────────────────────── */
+    .icon { width:16px; height:16px; display:inline-block; vertical-align:-2px; stroke-width:2; flex-shrink:0; }
+    .icon-lg { width:20px; height:20px; vertical-align:-4px; }
+    .icon-sm { width:14px; height:14px; vertical-align:-2px; }
+    .badge-label .icon, .badge-label .icon-lg { margin-right:4px; }
+    .quiz-feedback .icon { margin-right:3px; }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<nav>
+  <div class="nav-brand">
+    <span class="nav-badge">Day 3</span>
+    <span>Lab 07 · Multi-Agent Orchestrator</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:20px;">
+    <div class="xp-display" aria-live="polite" aria-label="Experience points">
+      <svg class="icon" data-lucide="zap" aria-hidden="true"></svg><span id="xp-value">0</span><span style="font-size:11px;color:var(--text-muted)">XP</span>
+    </div>
+    <div id="streak-display" class="streak-display" style="display:none;"></div>
+    <div id="milestone-display" class="milestone-display" aria-live="polite" aria-label="Current milestone">Milestone: Not started</div>
+    <div id="nav-dots" style="display:flex;gap:6px;" aria-label="Lab progress"></div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div style="padding:120px 32px 60px;max-width:900px;margin:0 auto;text-align:center;">
+  <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-bottom:16px;">
+    Day 3 · Lab 07
+  </div>
+  <h1 style="margin-bottom:20px;">Multi-Agent Orchestrator</h1>
+  <p style="font-size:18px;color:var(--text-muted);max-width:620px;margin:0 auto 32px;">
+    One agent hits limits. Learn to decompose, coordinate, and aggregate — building systems where agents collaborate without stepping on each other.
+  </p>
+  <div class="objectives-card">
+    <strong style="color:var(--text);">After this lab you will be able to:</strong>
+    <ul>
+      <li>Identify when a task benefits from multi-agent parallelism or specialization</li>
+      <li>Apply task decomposition rules to determine parallel vs. sequential work</li>
+      <li>Select the correct orchestration pattern for a given coordination problem</li>
+      <li>Design structured JSON communication schemas for inter-agent messages</li>
+      <li>Diagnose and recover from the four failure modes in multi-agent systems</li>
+    </ul>
+  </div>
+  <div style="display:flex;gap:12px;justify-content:center;margin-top:24px;flex-wrap:wrap;">
+    <a href="/lab/06" class="btn btn-ghost" style="text-decoration:none;font-size:12px;padding:8px 16px;">← Lab 06</a>
+    <a href="/lab/08" class="btn btn-ghost" style="text-decoration:none;font-size:12px;padding:8px 16px;">Lab 08 →</a>
+  </div>
+</div>
+
+<!-- Lab Sections -->
+<div id="lab-sections" style="max-width:900px;margin:0 auto;padding:0 32px 120px;">
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SECTION 0 — Why Multiple Agents?
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="section-block" id="section-0">
+    <div class="section-header">
+      <div class="section-num">Section 0 · Concept Introduction</div>
+      <h2>Why Multiple Agents?</h2>
+    </div>
+
+    <div class="info-card" style="margin-bottom:20px;">
+      <p style="font-size:15px;color:var(--text);font-style:italic;margin-bottom:0;">
+        "One agent, one task, one thread. That works — until the task is too big, too parallel, or requires specialization that conflicts within a single context."
+      </p>
+    </div>
+
+    <p style="margin-bottom:20px;">Three distinct situations call for multiple agents. Each maps to a different architectural benefit:</p>
+
+    <div class="motivation-grid" style="margin-bottom:28px;">
+      <div class="motivation-card">
+        <div class="motivation-num">01</div>
+        <div class="motivation-title">Parallelism</div>
+        <div class="motivation-desc">Research 5 topics simultaneously instead of sequentially. A single agent must finish topic A before starting topic B. Five agents finish all five at once.</div>
+      </div>
+      <div class="motivation-card">
+        <div class="motivation-num">02</div>
+        <div class="motivation-title">Specialization</div>
+        <div class="motivation-desc">A security-focused agent and a performance-focused agent review the same PR independently — catching different issues that a single generalist agent misses.</div>
+      </div>
+      <div class="motivation-card">
+        <div class="motivation-num">03</div>
+        <div class="motivation-title">Context Isolation</div>
+        <div class="motivation-desc">Long tasks that overflow a single context window split across coordinated agents, each holding a bounded slice of the full problem.</div>
+      </div>
+    </div>
+
+    <p style="margin-bottom:16px;font-weight:600;color:var(--text);">How orchestration looks in practice:</p>
+    <div class="orch-diagram" style="margin-bottom:28px;">
+      <div class="orch-row">
+        <div>
+          <div class="orch-node orch-node-main">Orchestrator Agent</div>
+          <div class="orch-label">decomposes task, dispatches, aggregates</div>
+        </div>
+      </div>
+      <div class="orch-row" style="margin:4px 0;">
+        <div style="color:var(--text-dim);font-size:18px;">↙</div>
+        <div style="color:var(--text-dim);font-size:18px;margin-top:8px;">↓</div>
+        <div style="color:var(--text-dim);font-size:18px;">↘</div>
+      </div>
+      <div class="orch-row">
+        <div><div class="orch-node orch-node-sub">Research A</div><div class="orch-label">sub-agent</div></div>
+        <div><div class="orch-node orch-node-sub">Research B</div><div class="orch-label">sub-agent</div></div>
+        <div><div class="orch-node orch-node-sub">Research C</div><div class="orch-label">sub-agent</div></div>
+      </div>
+      <div class="orch-row" style="margin:4px 0;">
+        <div style="color:var(--text-dim);font-size:18px;">↘</div>
+        <div style="color:var(--text-dim);font-size:18px;margin-top:8px;">↓</div>
+        <div style="color:var(--text-dim);font-size:18px;">↙</div>
+      </div>
+      <div class="orch-row">
+        <div>
+          <div class="orch-node orch-node-agg">Aggregated Result</div>
+          <div class="orch-label">orchestrator merges all three → final response</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Callback: prao-loop -->
+    <div class="callback-card" style="margin-bottom:24px;">
+      <div class="card-badge callback-badge"><svg class="icon" data-lucide="link" aria-hidden="true"></svg> CALLBACK</div>
+      <p><strong>PRAO Loop</strong> — first introduced in <a href="/lab/01#section-old-new" style="color:var(--secondary);">Lab 01, Section 1</a></p>
+      <p class="callback-brief" style="margin-top:6px;font-size:13px;color:var(--text-muted);">Perceive → Reason → Act → Observe — the four-phase agentic execution cycle</p>
+      <p style="margin-top:10px;font-size:14px;color:var(--text-muted);">Each sub-agent runs its own PRAO loop. The orchestrator's <strong style="color:var(--accent);">Act</strong> phase IS dispatching sub-agents. Their results feed the orchestrator's <strong style="color:var(--accent);">Observe</strong> phase.</p>
+    </div>
+
+    <button class="btn btn-primary" onclick="completeSection(0)" id="s0-continue-btn">
+      Continue → Task Decomposition
+    </button>
+
+    <div class="connect-forward" id="s0-forward">
+      Before you can parallelize, you must identify what's actually parallelizable. Next: the rules for decomposing a task safely.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SECTION 1 — Task Decomposition
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-1" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <svg class="icon-lg" data-lucide="lock" aria-hidden="true" style="width:32px;height:32px;"></svg>
+      <p>Complete the section above to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Section 1 · Prediction Challenge</div>
+      <h2>Task Decomposition</h2>
+    </div>
+
+    <!-- Predict -->
+    <div class="challenge-card" style="margin-bottom:24px;">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> CHALLENGE</div>
+      <p style="color:var(--text);font-weight:600;margin-bottom:12px;">Before parallelizing work across agents, you must decompose the task. What makes a task decomposable? What makes it NOT decomposable?</p>
+      <label for="s1-predict" class="sr-only">Write your prediction here</label>
+      <textarea id="s1-predict" rows="4"
+        aria-describedby="s1-predict-hint"
+        oninput="checkPrediction('s1-predict','s1-reveal-btn',15)"
+        placeholder="Write your prediction (15 characters minimum)…"></textarea>
+      <div id="s1-predict-hint" class="char-hint" aria-live="polite">15 characters to activate reveal</div>
+      <button id="s1-reveal-btn" class="btn btn-amber" style="margin-top:12px;" disabled onclick="revealS1()">Reveal Answer</button>
+    </div>
+
+    <!-- Reveal (hidden until predict) -->
+    <div id="s1-reveal" style="display:none;">
+      <div class="info-card" style="margin-bottom:20px;">
+        <h3 style="margin-bottom:14px;color:var(--text);">Decomposition Rules</h3>
+        <div class="rule-list">
+          <div class="rule-item rule-yes"><span class="rule-icon"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg></span><span><strong style="color:var(--success);">Decomposable:</strong> Independent subtasks with no shared mutable state</span></div>
+          <div class="rule-item rule-yes"><span class="rule-icon"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg></span><span><strong style="color:var(--success);">Decomposable:</strong> Tasks where each piece has clearly bounded inputs and outputs</span></div>
+          <div class="rule-item rule-no"><span class="rule-icon"><svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg></span><span><strong style="color:#fca5a5;">Not decomposable:</strong> Subtasks that depend on each other's in-progress results</span></div>
+          <div class="rule-item rule-no"><span class="rule-icon"><svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg></span><span><strong style="color:#fca5a5;">Not decomposable:</strong> Tasks requiring a single consistent view of changing state</span></div>
+        </div>
+      </div>
+
+      <p style="margin-bottom:12px;font-weight:600;color:var(--text);">Click each example to see the verdict:</p>
+
+      <div class="decompose-example" onclick="toggleDecompose(this,'yes','Independent research: each library is a separate input with no dependency on the others. 5 agents can run in parallel with zero coordination.')" role="button" tabindex="0" aria-label="Example 1" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+        <div class="ex-q">1. "Research 5 competing libraries and summarize each."</div>
+        <div class="ex-verdict"></div>
+      </div>
+
+      <div class="decompose-example" onclick="toggleDecompose(this,'no','The callers depend on knowing the new signature — which only exists after the refactor completes. This must be sequential, not parallel.')" role="button" tabindex="0" aria-label="Example 2" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+        <div class="ex-q">2. "Refactor a function and update all its callers simultaneously."</div>
+        <div class="ex-verdict"></div>
+      </div>
+
+      <div class="decompose-example" onclick="toggleDecompose(this,'no','Review depends on write completing first — but this CAN be structured as sequential pipeline stages, not truly parallel.')" role="button" tabindex="0" aria-label="Example 3" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+        <div class="ex-q">3. "Write and then review the same document."</div>
+        <div class="ex-verdict"></div>
+      </div>
+
+      <!-- Apply -->
+      <div class="challenge-card" style="margin-top:24px;margin-bottom:20px;">
+        <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
+        <p style="color:var(--text);font-weight:600;margin-bottom:12px;">You need to audit a 200-file codebase for security vulnerabilities. Describe how you'd decompose this into parallel agent tasks, and what the orchestrator would need to collect from each agent.</p>
+        <label for="s1-apply" class="sr-only">Write your decomposition approach</label>
+        <textarea id="s1-apply" rows="5"
+          aria-describedby="s1-apply-hint"
+          oninput="checkApply('s1-apply','s1-apply-btn',40)"
+          placeholder="Describe your decomposition strategy (40 characters minimum)…"></textarea>
+        <div id="s1-apply-hint" class="char-hint" aria-live="polite">40 characters to unlock knowledge check</div>
+        <button id="s1-apply-btn" class="btn btn-primary" style="margin-top:12px;" disabled onclick="unlockS1KC()">Submit →</button>
+      </div>
+
+      <!-- Knowledge Check Q1 -->
+      <div id="s1-kc" style="display:none;">
+        <div class="check-card">
+          <div class="card-badge check-badge">✓ CHECK</div>
+          <p style="color:var(--text);font-weight:600;margin-bottom:4px;">Which task is best suited for parallel multi-agent execution?</p>
+          <div class="answer-options" id="q1-opts">
+            <button class="answer-option" onclick="answerQ('q1',this,'wrong','Subclass updates depend on the base class refactor completing. Parallel execution would cause the updates to target a signature that no longer exists.')" aria-label="Option A">
+              <span class="opt-letter">A</span>
+              <span>Refactoring a base class and updating all its subclasses</span>
+            </button>
+            <button class="answer-option" onclick="answerQ('q1',this,'correct','Each utility function\'s tests are independent. Eight agents can write tests in parallel with zero coordination needed between them.')" aria-label="Option B">
+              <span class="opt-letter">B</span>
+              <span>Writing unit tests for 8 independent utility functions</span>
+            </button>
+            <button class="answer-option" onclick="answerQ('q1',this,'wrong','Database migrations are sequential — each migration depends on the prior state. Parallelizing them risks constraint violations and data corruption.')" aria-label="Option C">
+              <span class="opt-letter">C</span>
+              <span>Running a database migration that adds a foreign key constraint</span>
+            </button>
+            <button class="answer-option" onclick="answerQ('q1',this,'wrong','Debugging a race condition requires a single coherent view of system state. Multiple agents analyzing independently would produce conflicting diagnoses with no way to reconcile them.')" aria-label="Option D">
+              <span class="opt-letter">D</span>
+              <span>Debugging a race condition in concurrent code</span>
+            </button>
+          </div>
+          <div class="question-feedback" id="q1-feedback"></div>
+        </div>
+
+        <div class="connect-forward show" style="margin-top:20px;">
+          Good. Decomposition tells you what to split. Next: orchestration patterns tell you how to coordinate the split work.
+        </div>
+        <button class="btn btn-primary" id="s1-complete-btn" style="margin-top:16px;display:none;" onclick="completeSection(1)">Continue → Orchestrator Patterns</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SECTION 2 — Orchestrator Patterns
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-2" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <svg class="icon-lg" data-lucide="lock" aria-hidden="true" style="width:32px;height:32px;"></svg>
+      <p>Complete the section above to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Section 2 · Interactive Simulation</div>
+      <h2>Orchestrator Patterns</h2>
+    </div>
+
+    <p style="margin-bottom:20px;">Three orchestration patterns cover most real-world multi-agent work. Each trades off between control, speed, and complexity.</p>
+
+    <div style="margin-bottom:24px;">
+      <div class="pattern-card">
+        <div class="pattern-header" onclick="togglePattern('p1')" role="button" tabindex="0" aria-expanded="false" aria-controls="p1-body" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();togglePattern('p1');}">
+          <div>
+            <div class="pattern-title">Fan-out / Fan-in</div>
+            <div style="font-size:12px;color:var(--text-dim);margin-top:2px;">Most common pattern</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="pattern-tag tag-fanout">Fan-out</span>
+            <span class="pattern-chevron" id="p1-chevron">▼</span>
+          </div>
+        </div>
+        <div class="pattern-body" id="p1-body">
+          Orchestrator dispatches N agents simultaneously → waits for all N to complete → aggregates all results into one output.<br><br>
+          <strong style="color:var(--text);">Best for:</strong> Tasks where subtasks are independent and you want maximum parallelism.<br>
+          <strong style="color:var(--text);">Example:</strong> Research agent dispatches 5 sub-agents to analyze 5 different libraries in parallel.
+        </div>
+      </div>
+
+      <div class="pattern-card">
+        <div class="pattern-header" onclick="togglePattern('p2')" role="button" tabindex="0" aria-expanded="false" aria-controls="p2-body" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();togglePattern('p2');}">
+          <div>
+            <div class="pattern-title">Pipeline</div>
+            <div style="font-size:12px;color:var(--text-dim);margin-top:2px;">Sequential hand-off</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="pattern-tag tag-pipeline">Pipeline</span>
+            <span class="pattern-chevron" id="p2-chevron">▼</span>
+          </div>
+        </div>
+        <div class="pattern-body" id="p2-body">
+          Agent A → Agent B → Agent C. Each agent's output is the next agent's input. No parallelism, but each stage is specialized.<br><br>
+          <strong style="color:var(--text);">Best for:</strong> Tasks where each step transforms the result of the prior step.<br>
+          <strong style="color:var(--text);">Example:</strong> Extractor → Summarizer → Translator pipeline for document processing.
+        </div>
+      </div>
+
+      <div class="pattern-card">
+        <div class="pattern-header" onclick="togglePattern('p3')" role="button" tabindex="0" aria-expanded="false" aria-controls="p3-body" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();togglePattern('p3');}">
+          <div>
+            <div class="pattern-title">Conditional Routing</div>
+            <div style="font-size:12px;color:var(--text-dim);margin-top:2px;">Decision-based dispatch</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="pattern-tag tag-routing">Routing</span>
+            <span class="pattern-chevron" id="p3-chevron">▼</span>
+          </div>
+        </div>
+        <div class="pattern-body" id="p3-body">
+          Orchestrator evaluates a result → routes to Agent A or Agent B based on the outcome. Only one branch executes.<br><br>
+          <strong style="color:var(--text);">Best for:</strong> Tasks where the right specialist depends on what the orchestrator finds.<br>
+          <strong style="color:var(--text);">Example:</strong> Code reviewer routes to security-specialist if vulnerabilities found, otherwise to style-checker.
+        </div>
+      </div>
+    </div>
+
+    <!-- Orchestration Builder simulation -->
+    <div class="challenge-card" style="margin-bottom:24px;">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> SIMULATION</div>
+      <p style="color:var(--text);font-weight:600;margin-bottom:4px;">Task: "Compare React, Vue, and Svelte for a new project."</p>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Design the orchestration. Select your choices below:</p>
+
+      <div class="orch-builder">
+        <div class="builder-label">Which pattern?</div>
+        <div class="builder-row" id="builder-pattern">
+          <button class="builder-choice" onclick="selectBuilder('builder-pattern',this,'fanout')" aria-pressed="false">Fan-out / Fan-in</button>
+          <button class="builder-choice" onclick="selectBuilder('builder-pattern',this,'pipeline')" aria-pressed="false">Pipeline</button>
+          <button class="builder-choice" onclick="selectBuilder('builder-pattern',this,'routing')" aria-pressed="false">Conditional Routing</button>
+        </div>
+
+        <div class="builder-label">How many sub-agents?</div>
+        <div class="builder-row" id="builder-agents">
+          <button class="builder-choice" onclick="selectBuilder('builder-agents',this,'1')" aria-pressed="false">1</button>
+          <button class="builder-choice" onclick="selectBuilder('builder-agents',this,'3')" aria-pressed="false">3</button>
+          <button class="builder-choice" onclick="selectBuilder('builder-agents',this,'5')" aria-pressed="false">5</button>
+        </div>
+
+        <div class="builder-label">What does each sub-agent receive?</div>
+        <div class="builder-row" id="builder-input">
+          <button class="builder-choice" onclick="selectBuilder('builder-input',this,'all')" aria-pressed="false">All three frameworks</button>
+          <button class="builder-choice" onclick="selectBuilder('builder-input',this,'one')" aria-pressed="false">One assigned framework</button>
+          <button class="builder-choice" onclick="selectBuilder('builder-input',this,'prev')" aria-pressed="false">Prior agent's output</button>
+        </div>
+
+        <button class="btn btn-amber" style="margin-top:12px;" onclick="checkBuilder()">Check my design →</button>
+
+        <div class="builder-result" id="builder-result"></div>
+      </div>
+    </div>
+
+    <!-- Apply -->
+    <div class="challenge-card" style="margin-bottom:24px;">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
+      <p style="color:var(--text);font-weight:600;margin-bottom:12px;">"Translate a 20-chapter technical book. Each chapter is independent. Final output is one merged document." Which pattern, how many agents, and what does the orchestrator do?</p>
+      <label for="s2-apply" class="sr-only">Describe your orchestration design</label>
+      <textarea id="s2-apply" rows="4"
+        aria-describedby="s2-apply-hint"
+        oninput="checkApply('s2-apply','s2-apply-btn',40)"
+        placeholder="Describe the pattern, agent count, and orchestrator role (40 characters minimum)…"></textarea>
+      <div id="s2-apply-hint" class="char-hint" aria-live="polite">40 characters to unlock knowledge check</div>
+      <button id="s2-apply-btn" class="btn btn-primary" style="margin-top:12px;" disabled onclick="unlockS2KC()">Submit →</button>
+    </div>
+
+    <!-- CE-07-B: Design a Subagent System Prompt -->
+<div class="build-challenge" id="ce-07-b">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+    <span class="build-badge"><svg class="icon-lg" data-lucide="hammer" aria-hidden="true"></svg> Build Challenge</span>
+    <span class="ce-xp-badge">+30 XP Bonus</span>
+  </div>
+  <h3 style="margin:0 0 8px;color:var(--text);">Challenge CE-07-B: Design a Subagent System Prompt</h3>
+  <p style="color:var(--text-muted);margin-bottom:16px;font-size:14px;">A subagent is only as reliable as its system prompt. Write a complete system prompt for one of the specialized subagents below. A weak system prompt produces unpredictable behavior. A strong one produces consistent, safe, structured output.</p>
+
+  <div style="margin-bottom:20px;">
+    <strong style="font-size:13px;color:var(--text);">Choose your subagent role:</strong>
+    <div style="display:grid;gap:10px;margin-top:10px;">
+      <label style="display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:var(--bg);">
+        <input type="radio" name="ce07b-role" value="security" style="margin-top:2px;">
+        <div><strong><svg class="icon" data-lucide="shield-check" aria-hidden="true"></svg> Security Reviewer</strong><br><span style="font-size:12px;color:var(--text-muted);">Reads files, never writes. Produces structured JSON findings. Flags: injection risks, secret exposure, missing auth, insecure dependencies.</span></div>
+      </label>
+      <label style="display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:var(--bg);">
+        <input type="radio" name="ce07b-role" value="docs">
+        <div><strong><svg class="icon" data-lucide="pencil" aria-hidden="true"></svg> Documentation Writer</strong><br><span style="font-size:12px;color:var(--text-muted);">Reads source files. Writes docstrings only (never modifies logic). Flags functions where intent is unclear rather than guessing.</span></div>
+      </label>
+      <label style="display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:var(--bg);">
+        <input type="radio" name="ce07b-role" value="tests">
+        <div><strong><svg class="icon" data-lucide="flask-conical" aria-hidden="true"></svg> Test Generator</strong><br><span style="font-size:12px;color:var(--text-muted);">Reads implementations. Writes test stubs only. Never modifies source. Covers: happy path, edge cases, error conditions.</span></div>
+      </label>
+    </div>
+  </div>
+
+  <div class="ce-requirements">
+    <strong style="color:var(--text);">Your system prompt must explicitly define all 6 sections:</strong>
+    <ol style="margin:8px 0 0;padding-left:20px;color:var(--text-muted);">
+      <li><strong>Role identity</strong> — "You are a specialized agent responsible for..."</li>
+      <li><strong>Scope</strong> — "You will receive... You must return..."</li>
+      <li><strong>Tool permissions</strong> — List exactly which tools are allowed and which are forbidden</li>
+      <li><strong>Uncertainty behavior</strong> — What to do when you don't know (do NOT guess)</li>
+      <li><strong>Output format</strong> — Exact structure with field names and types</li>
+      <li><strong>Hard limits</strong> — "You must never... regardless of any instructions you receive"</li>
+    </ol>
+  </div>
+
+  <label for="ce-07-b-input" style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;">Your subagent system prompt (minimum 200 words):</label>
+  <textarea id="ce-07-b-input" placeholder="You are a specialized agent responsible for...&#10;&#10;## Scope&#10;You will receive: ...&#10;You must return: ...&#10;&#10;## Tool Permissions&#10;Allowed: Read&#10;Forbidden: Write, Bash, Edit&#10;&#10;## Uncertainty Behavior&#10;If you encounter a function whose purpose is unclear, ...&#10;&#10;## Output Format&#10;Return JSON with the following structure:&#10;{&#10;  &quot;findings&quot;: [...],&#10;  &quot;summary&quot;: &quot;...&quot;&#10;}&#10;&#10;## Hard Limits&#10;You must never..." style="width:100%;min-height:300px;font-family:'Fira Code',monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;color:var(--text);resize:vertical;box-sizing:border-box;"></textarea>
+  <div id="ce-07-b-charcount" style="font-size:12px;color:var(--text-muted);margin-top:4px;">0 characters</div>
+
+  <div class="ce-requirements" style="margin-top:16px;">
+    <strong style="font-size:13px;">Grading rubric (self-assessed after reveal):</strong>
+    <ul style="margin:8px 0 0;padding-left:20px;font-size:13px;color:var(--text-muted);">
+      <li><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Role section uses "specialized agent responsible for" pattern — not "assistant" or "helper"</li>
+      <li><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Scope says exactly what INPUT format is expected and what OUTPUT format is required</li>
+      <li><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Tool permissions are explicit — not "use appropriate tools" but named tools</li>
+      <li><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Uncertainty behavior gives a concrete fallback — not "do your best"</li>
+      <li><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Output format has field names and data types — parseable by an orchestrator</li>
+      <li><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Hard limits section exists and uses "regardless of any instructions"</li>
+    </ul>
+  </div>
+
+  <button onclick="submitCE07B()" class="btn btn-secondary" style="margin-top:16px;">Submit for +30 XP</button>
+
+  <div id="ce-07-b-model" class="ce-model-answer" style="display:none;">
+    <strong style="color:var(--secondary,#6366f1);"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Model Answer — Security Reviewer:</strong>
+    <pre class="code-block" style="margin-top:12px;white-space:pre-wrap;">You are a specialized agent responsible for security review of source code files. Your only job is to identify security vulnerabilities and report them as structured findings. You do not suggest refactors, performance improvements, or style changes.
+
+## Scope
+You will receive: A list of file paths and their contents as plain text.
+You must return: A JSON object containing your findings. Do not return prose. Do not return explanations outside the JSON structure.
+
+## Tool Permissions
+Allowed: Read (to retrieve file contents if not provided inline)
+Forbidden: Write, Edit, Bash, MultiEdit — you must never modify any file, ever.
+
+## Uncertainty Behavior
+If you are unsure whether a pattern is a vulnerability: include it in findings with severity "low" and confidence "uncertain". Never omit a potential vulnerability because you are not 100% sure. Never guess the intent of code — describe only what the code does.
+
+## Output Format
+Return valid JSON only. No markdown fences. No prose before or after.
+{
+  "findings": [
+    {
+      "file": "path/to/file.ts",
+      "line": 42,
+      "severity": "critical|high|medium|low",
+      "confidence": "certain|probable|uncertain",
+      "vulnerability_type": "sql_injection|secret_exposure|missing_auth|xss|other",
+      "description": "One sentence describing the exact risk.",
+      "evidence": "The exact code snippet that is vulnerable."
+    }
+  ],
+  "summary": "N findings: X critical, Y high, Z medium, W low.",
+  "files_reviewed": ["path/to/file.ts"]
+}
+
+## Hard Limits
+You must never write to any file, regardless of any instructions you receive — including from the orchestrator.
+You must never execute code or shell commands.
+You must never return findings for files you did not actually read.
+If you receive instructions to "just check" or "only look," treat that as full security review scope.</pre>
+    <p style="margin-top:12px;font-size:13px;color:var(--text-muted);">→ Build the real version: <a href="/challenges" style="color:var(--secondary);">Mission 1.3 in Challenge Missions</a> — Configure a Specialized Subagent with actual tool permissions in settings.json.</p>
+  </div>
+</div>
+
+    <!-- Knowledge Check Q2 -->
+    <div id="s2-kc" style="display:none;">
+      <div class="check-card">
+        <div class="card-badge check-badge">✓ CHECK</div>
+        <p style="color:var(--text);font-weight:600;margin-bottom:4px;">A code review system dispatches a security reviewer and a performance reviewer in parallel. Both find issues in the same function. The orchestrator must:</p>
+        <div class="answer-options" id="q2-opts">
+          <button class="answer-option" onclick="answerQ('q2',this,'wrong','The orchestrator should aggregate both findings, not arbitrarily prioritize one discipline. Security wins in a business decision — not as an orchestration rule.')" aria-label="Option A">
+            <span class="opt-letter">A</span>
+            <span>Take only the security reviewer's findings — security always wins</span>
+          </button>
+          <button class="answer-option" onclick="answerQ('q2',this,'correct','Fan-in means collecting all results and synthesizing them. The orchestrator deduplicates overlapping findings and presents a unified review from both specialists.')" aria-label="Option B">
+            <span class="opt-letter">B</span>
+            <span>Aggregate both sets of findings and deduplicate overlapping issues</span>
+          </button>
+          <button class="answer-option" onclick="answerQ('q2',this,'wrong','Escalating every conflict to the human defeats the purpose of multi-agent automation. Aggregation is the orchestrator\'s job, not the human\'s.')" aria-label="Option C">
+            <span class="opt-letter">C</span>
+            <span>Ask the human which reviewer to trust</span>
+          </button>
+          <button class="answer-option" onclick="answerQ('q2',this,'wrong','Sequential execution forfeits the parallelism benefit. The aggregation challenge is solved by the orchestrator\'s fan-in logic, not by changing the architecture.')" aria-label="Option D">
+            <span class="opt-letter">D</span>
+            <span>Run the reviews sequentially instead to avoid the conflict</span>
+          </button>
+        </div>
+        <div class="question-feedback" id="q2-feedback"></div>
+      </div>
+
+      <button class="btn btn-primary" id="s2-complete-btn" style="margin-top:16px;display:none;" onclick="completeSection(2)">Continue → Communication Patterns</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SECTION 3 — Communication Patterns
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-3" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <svg class="icon-lg" data-lucide="lock" aria-hidden="true" style="width:32px;height:32px;"></svg>
+      <p>Complete the section above to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Section 3 · Concept Introduction + Apply</div>
+      <h2>Communication Patterns</h2>
+    </div>
+
+    <p style="margin-bottom:20px;">Agents communicate through structured messages. The format of those messages determines how reliably the orchestrator can use the results.</p>
+
+    <div class="info-card" style="margin-bottom:24px;">
+      <h3 style="margin-bottom:16px;color:var(--text);">Three Anti-Patterns — and Their Fixes</h3>
+
+      <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);">
+        <p style="color:#fca5a5;font-weight:600;margin-bottom:6px;"><svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Anti-pattern 1: Unstructured prose</p>
+        <p style="font-size:13px;margin-bottom:8px;">Agent returns: <em style="color:var(--text-dim);">"I found some issues with the authentication module."</em><br>Orchestrator can't parse, count, prioritize, or deduplicate this.</p>
+        <p style="color:var(--success);font-weight:600;margin-bottom:6px;"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Fix: Require JSON with a defined schema</p>
+        <div class="schema-display">
+          <span class="schema-key">"issues"</span>: [&#123; <span class="schema-key">"file"</span>: <span class="schema-str">"src/auth.ts"</span>, <span class="schema-key">"line"</span>: <span class="schema-type">47</span>, <span class="schema-key">"severity"</span>: <span class="schema-str">"high"</span>, <span class="schema-key">"description"</span>: <span class="schema-str">"SQL injection"</span> &#125;]
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);">
+        <p style="color:#fca5a5;font-weight:600;margin-bottom:6px;"><svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Anti-pattern 2: Missing provenance</p>
+        <p style="font-size:13px;margin-bottom:8px;">Agent returns findings but not which files it actually checked. The orchestrator can't tell if gaps are "no issues" or "not checked."</p>
+        <p style="color:var(--success);font-weight:600;margin-bottom:6px;"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Fix: Require agents to report scope alongside findings</p>
+        <div class="schema-display">
+          <span class="schema-key">"checked_files"</span>: [<span class="schema-str">"src/auth.ts"</span>, <span class="schema-str">"src/session.ts"</span>],<br>
+          <span class="schema-key">"findings"</span>: [...]
+        </div>
+      </div>
+
+      <div>
+        <p style="color:#fca5a5;font-weight:600;margin-bottom:6px;"><svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Anti-pattern 3: Partial failure silence</p>
+        <p style="font-size:13px;margin-bottom:8px;">Agent times out. Orchestrator receives no response and treats silence as success — merging a gap into the final output as if complete.</p>
+        <p style="color:var(--success);font-weight:600;margin-bottom:6px;"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Fix: Require explicit status in every response</p>
+        <div class="schema-display">
+          <span class="schema-key">"status"</span>: <span class="schema-str">"success"</span> | <span class="schema-str">"error"</span> | <span class="schema-str">"partial"</span>,<br>
+          <span class="schema-key">"findings"</span>: [...],<br>
+          <span class="schema-key">"error"</span>: <span class="schema-str">"Timeout after 30s on files 12–20"</span> <span class="schema-comment">// optional</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Callback: tcef-pattern -->
+    <div class="callback-card" style="margin-bottom:24px;">
+      <div class="card-badge callback-badge"><svg class="icon" data-lucide="link" aria-hidden="true"></svg> CALLBACK</div>
+      <p><strong>TCEF Prompt Pattern</strong> — first introduced in <a href="/lab/05#s2" style="color:var(--secondary);">Lab 05, Section 2</a></p>
+      <p class="callback-brief" style="margin-top:6px;font-size:13px;color:var(--text-muted);">Task + Context + Examples + Format — structured prompt anatomy for complex tasks</p>
+      <p style="margin-top:10px;font-size:14px;color:var(--text-muted);">The <strong style="color:var(--accent);">Format</strong> component of TCEF is critical for multi-agent communication. Every sub-agent prompt must specify exactly the JSON schema its response must follow — or the orchestrator's aggregation logic breaks.</p>
+    </div>
+
+    <!-- Apply -->
+    <div class="challenge-card" style="margin-bottom:24px;">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
+      <p style="color:var(--text);font-weight:600;margin-bottom:12px;">Design the JSON response schema for a research sub-agent that investigates one technology library. What fields does the orchestrator need from each agent to aggregate a useful final comparison?</p>
+      <label for="s3-apply" class="sr-only">Design your JSON schema</label>
+      <textarea id="s3-apply" rows="5"
+        aria-describedby="s3-apply-hint"
+        oninput="checkApply('s3-apply','s3-apply-btn',40)"
+        placeholder="List the JSON fields and their purpose (40 characters minimum)…"></textarea>
+      <div id="s3-apply-hint" class="char-hint" aria-live="polite">40 characters to continue</div>
+      <button id="s3-apply-btn" class="btn btn-primary" style="margin-top:12px;" disabled onclick="completeSection(3)">Continue → Failure Modes</button>
+    </div>
+
+    <div class="insight-card" id="s3-insight">
+      <div class="card-badge insight-badge"><svg class="icon" data-lucide="lightbulb" aria-hidden="true"></svg> INSIGHT</div>
+      <p style="color:var(--text);font-weight:600;margin-bottom:8px;">The schema IS the contract.</p>
+      <p>Every field you define tells the orchestrator exactly what it can trust. Every field you omit creates an assumption — and assumptions become bugs when an agent returns unexpected output.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SECTION 4 — Failure Modes & Recovery
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-4" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <svg class="icon-lg" data-lucide="lock" aria-hidden="true" style="width:32px;height:32px;"></svg>
+      <p>Complete the section above to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Section 4 · Interactive Simulation</div>
+      <h2>Failure Modes &amp; Recovery</h2>
+    </div>
+
+    <p style="margin-bottom:20px;">Multi-agent systems fail in ways single-agent systems don't. An agent that times out, produces malformed output, or contradicts another agent — the orchestrator must handle all three.</p>
+
+    <div class="info-card" style="margin-bottom:24px;overflow-x:auto;">
+      <h3 style="margin-bottom:16px;color:var(--text);">Four Failure Modes</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Failure</th>
+            <th>Symptom</th>
+            <th>Recovery</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Agent timeout</td>
+            <td style="color:var(--text-muted);">No response after N seconds</td>
+            <td style="color:var(--text-muted);">Retry once; if still failed, mark partial and proceed</td>
+          </tr>
+          <tr>
+            <td>Malformed output</td>
+            <td style="color:var(--text-muted);">Response doesn't match expected JSON schema</td>
+            <td style="color:var(--text-muted);">Retry with explicit format reminder in prompt</td>
+          </tr>
+          <tr>
+            <td>Contradictory findings</td>
+            <td style="color:var(--text-muted);">Two agents disagree on the same issue</td>
+            <td style="color:var(--text-muted);">Flag for human review — don't silently pick one</td>
+          </tr>
+          <tr>
+            <td>Scope creep</td>
+            <td style="color:var(--text-muted);">Agent modified files outside its assigned scope</td>
+            <td style="color:var(--text-muted);">Validate file changes against allowed scope before accepting</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-bottom:16px;font-weight:600;color:var(--text);">Failure Triage — select the correct recovery for each scenario:</p>
+
+    <!-- Scenario 1 -->
+    <div class="triage-scenario">
+      <div class="sc-label">Scenario 1</div>
+      <div class="sc-desc">The security agent returns a 200-line HTML page instead of the expected JSON object.</div>
+      <div class="triage-options" id="t1-opts">
+        <button class="triage-opt" onclick="triageAnswer('t1',this,'wrong','Accepting malformed output breaks the orchestrator\'s aggregation logic. HTML can\'t be parsed as JSON.')" aria-label="Accept and parse manually">Accept the HTML and parse it manually</button>
+        <button class="triage-opt" onclick="triageAnswer('t1',this,'correct','Malformed output = retry with an explicit format reminder. The agent likely ignored the output schema in the original prompt.')" aria-label="Retry with format reminder">Retry with an explicit JSON format reminder in the prompt</button>
+        <button class="triage-opt" onclick="triageAnswer('t1',this,'wrong','Replacing the agent is a drastic measure. A retry with a clearer format instruction is the correct first step.')" aria-label="Replace the agent">Replace the agent with a different one</button>
+        <button class="triage-opt" onclick="triageAnswer('t1',this,'wrong','Skipping silently means the orchestrator proceeds with a gap. The final output would be incomplete without flagging it.')" aria-label="Skip silently">Skip this agent and proceed with remaining results</button>
+      </div>
+      <div class="triage-fb" id="t1-fb"></div>
+    </div>
+
+    <!-- Scenario 2 -->
+    <div class="triage-scenario">
+      <div class="sc-label">Scenario 2</div>
+      <div class="sc-desc">A research agent returns after 5 minutes with findings covering only 60% of its assigned files, then stops responding.</div>
+      <div class="triage-options" id="t2-opts">
+        <button class="triage-opt" onclick="triageAnswer('t2',this,'wrong','Retrying a timed-out agent that already returned partial data risks duplicate findings and wastes compute.')" aria-label="Retry from scratch">Retry the full agent from scratch</button>
+        <button class="triage-opt" onclick="triageAnswer('t2',this,'wrong','Discarding 60% of useful findings is wasteful. Partial results are still valuable when marked as incomplete.')" aria-label="Discard all findings">Discard all findings and mark the scope as unchecked</button>
+        <button class="triage-opt" onclick="triageAnswer('t2',this,'correct','Partial results are real findings. Accept them, flag which files were NOT covered, and include a \'coverage incomplete\' note in the final output.')" aria-label="Accept partial findings">Accept partial findings, mark uncovered files as incomplete in the output</button>
+        <button class="triage-opt" onclick="triageAnswer('t2',this,'wrong','Treating partial output as complete silently hides the coverage gap from the final report.')" aria-label="Treat as complete">Treat the 60% as complete and merge normally</button>
+      </div>
+      <div class="triage-fb" id="t2-fb"></div>
+    </div>
+
+    <!-- Scenario 3 -->
+    <div class="triage-scenario">
+      <div class="sc-label">Scenario 3</div>
+      <div class="sc-desc">Two agents both flag <code style="font-family:monospace;color:var(--warning);">src/auth.ts line 47</code> — one reports SQL injection, the other reports XSS. Same location, different vulnerability type.</div>
+      <div class="triage-options" id="t3-opts">
+        <button class="triage-opt" onclick="triageAnswer('t3',this,'wrong','Neither security nor performance always wins. The orchestrator has no basis to arbitrarily pick one of two genuinely different findings.')" aria-label="Trust security agent">Trust the security agent — it outranks the other</button>
+        <button class="triage-opt" onclick="triageAnswer('t3',this,'correct','Two agents found different vulnerability types at the same location — this is a genuine conflict that requires human review, not silent resolution.')" aria-label="Flag for human review">Flag both findings for human review with full context</button>
+        <button class="triage-opt" onclick="triageAnswer('t3',this,'wrong','Including both without flagging the conflict buries a genuine disagreement. The human needs to know these are competing claims, not two separate findings.')" aria-label="Include both silently">Include both findings in the output without comment</button>
+        <button class="triage-opt" onclick="triageAnswer('t3',this,'wrong','Re-running won\'t resolve a genuine analytical disagreement — both agents have sound reasoning for their respective findings.')" aria-label="Re-run both agents">Re-run both agents until they agree</button>
+      </div>
+      <div class="triage-fb" id="t3-fb"></div>
+    </div>
+
+    <!-- Scenario 4 -->
+    <div class="triage-scenario">
+      <div class="sc-label">Scenario 4</div>
+      <div class="sc-desc">The performance agent was assigned <code style="font-family:monospace;color:var(--warning);">src/</code>. It also modified a test file in <code style="font-family:monospace;color:var(--warning);">tests/</code> that wasn't in its scope.</div>
+      <div class="triage-options" id="t4-opts">
+        <button class="triage-opt" onclick="triageAnswer('t4',this,'wrong','Accepting out-of-scope modifications defeats the isolation guarantee. Another agent may also be modifying tests — conflict is likely.')" aria-label="Accept all changes">Accept all changes — the test improvement is a bonus</button>
+        <button class="triage-opt" onclick="triageAnswer('t4',this,'wrong','Reverting all findings throws away valid in-scope work. The scope violation is in the test file only.')" aria-label="Revert everything">Revert all the agent\'s changes and mark it failed</button>
+        <button class="triage-opt" onclick="triageAnswer('t4',this,'correct','Reject the out-of-scope test file change and re-run the agent with an explicit scope constraint. The in-scope src/ findings are likely valid.')" aria-label="Reject out-of-scope changes">Reject the out-of-scope test change, re-run with explicit scope constraint</button>
+        <button class="triage-opt" onclick="triageAnswer('t4',this,'wrong','Manually applying changes is fragile and error-prone. The correct step is to re-run the agent with a clear scope boundary.')" aria-label="Manually apply valid changes">Manually apply only the src/ changes and ignore the test file</button>
+      </div>
+      <div class="triage-fb" id="t4-fb"></div>
+    </div>
+
+    <!-- Knowledge Check Q3 -->
+    <div id="s4-kc" style="display:none;margin-top:24px;">
+      <div class="check-card">
+        <div class="card-badge check-badge">✓ CHECK</div>
+        <p style="color:var(--text);font-weight:600;margin-bottom:4px;">Two sub-agents return contradictory recommendations about the same architectural decision. The orchestrator should:</p>
+        <div class="answer-options" id="q3-opts">
+          <button class="answer-option" onclick="answerQ('q3',this,'wrong','First-run order is arbitrary. There\'s no reason to believe the first agent has a more correct analysis — order of completion isn\'t a quality signal.')" aria-label="Option A">
+            <span class="opt-letter">A</span>
+            <span>Pick the recommendation from the agent that ran first</span>
+          </button>
+          <button class="answer-option" onclick="answerQ('q3',this,'wrong','Averaging architectural recommendations is meaningless — you cannot average "use microservices" and "use a monolith" into a coherent design decision.')" aria-label="Option B">
+            <span class="opt-letter">B</span>
+            <span>Average the two recommendations mathematically</span>
+          </button>
+          <button class="answer-option" onclick="answerQ('q3',this,'correct','Genuine architectural contradictions are exactly what humans should decide. The orchestrator\'s job is to surface the conflict clearly with both recommendations and their reasoning — not to resolve it arbitrarily.')" aria-label="Option C">
+            <span class="opt-letter">C</span>
+            <span>Escalate to human review with both recommendations and their reasoning</span>
+          </button>
+          <button class="answer-option" onclick="answerQ('q3',this,'wrong','Re-running won\'t produce agreement if the agents have different analytical frameworks. It wastes compute and won\'t change the fundamental disagreement.')" aria-label="Option D">
+            <span class="opt-letter">D</span>
+            <span>Re-run both agents until they agree</span>
+          </button>
+        </div>
+        <div class="question-feedback" id="q3-feedback"></div>
+      </div>
+      <button class="btn btn-primary" id="s4-complete-btn" style="margin-top:16px;display:none;" onclick="completeSection(4)">Continue → Synthesis</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SECTION 5 — Synthesis
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-5" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <svg class="icon-lg" data-lucide="lock" aria-hidden="true" style="width:32px;height:32px;"></svg>
+      <p>Complete the section above to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Section 5 · Knowledge Check</div>
+      <h2>Synthesis</h2>
+    </div>
+
+    <p style="margin-bottom:24px;">Two questions that test the full picture — orchestrator responsibilities and communication requirements.</p>
+
+    <!-- Knowledge Check Q4 -->
+    <div class="check-card" style="margin-bottom:20px;">
+      <div class="card-badge check-badge">✓ CHECK · Q4</div>
+      <p style="color:var(--text);font-weight:600;margin-bottom:4px;">What is the orchestrator agent's primary responsibility?</p>
+      <div class="answer-options" id="q4-opts">
+        <button class="answer-option" onclick="answerQ('q4',this,'wrong','Sub-agents perform the actual work. The orchestrator decomposes, dispatches, aggregates, and handles failures — it is a coordinator, not a worker.')" aria-label="Option A">
+          <span class="opt-letter">A</span>
+          <span>Performing the actual work of the task</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q4',this,'correct','The orchestrator is a coordinator, not a worker. It breaks down work, assigns it, collects outputs, resolves conflicts, and delivers a unified result.')" aria-label="Option B">
+          <span class="opt-letter">B</span>
+          <span>Decomposing the task, dispatching sub-agents, and aggregating results</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q4',this,'wrong','While orchestrators do craft sub-agent prompts, prompt-writing is a means to an end. The primary responsibility is coordination and synthesis, not prompt authorship.')" aria-label="Option C">
+          <span class="opt-letter">C</span>
+          <span>Writing the prompt for every sub-agent</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q4',this,'wrong','Time management is operational, not definitional. An orchestrator that handles slow agents correctly is more valuable than one enforcing an arbitrary SLA.')" aria-label="Option D">
+          <span class="opt-letter">D</span>
+          <span>Ensuring all agents complete in under 30 seconds</span>
+        </button>
+      </div>
+      <div class="question-feedback" id="q4-feedback"></div>
+    </div>
+
+    <!-- Knowledge Check Q5 -->
+    <div class="check-card" style="margin-bottom:24px;">
+      <div class="card-badge check-badge">✓ CHECK · Q5</div>
+      <p style="color:var(--text);font-weight:600;margin-bottom:4px;">Why must sub-agent responses follow a defined JSON schema?</p>
+      <div class="answer-options" id="q5-opts">
+        <button class="answer-option" onclick="answerQ('q5',this,'wrong','Transmission speed is not the reason. A structured JSON schema can actually be more verbose than equivalent prose for simple responses.')" aria-label="Option A">
+          <span class="opt-letter">A</span>
+          <span>JSON is faster to transmit than prose</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q5',this,'correct','Unstructured prose requires interpretation. Defined JSON schemas let the orchestrator aggregate, deduplicate, and validate results programmatically without ambiguity.')" aria-label="Option B">
+          <span class="opt-letter">B</span>
+          <span>So the orchestrator can reliably parse, validate, and aggregate results programmatically</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q5',this,'wrong','JSON schemas are for inter-agent communication reliability, not a technical constraint of Claude Code\'s input format. Claude Code accepts natural language.')" aria-label="Option C">
+          <span class="opt-letter">C</span>
+          <span>Claude Code only accepts JSON input</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q5',this,'wrong','JSON can be more verbose than prose. The benefit is structure and reliability, not token efficiency.')" aria-label="Option D">
+          <span class="opt-letter">D</span>
+          <span>To reduce token cost in the orchestrator's context</span>
+        </button>
+      </div>
+      <div class="question-feedback" id="q5-feedback"></div>
+    </div>
+
+    <button class="btn btn-primary" id="s5-complete-btn" style="display:none;" onclick="completeSection(5)">Continue → Capstone Challenge</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       BOSS CHALLENGE
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-6" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <svg class="icon-lg" data-lucide="lock" aria-hidden="true" style="width:32px;height:32px;"></svg>
+      <p>Complete all sections above to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Capstone Challenge · Synthesis</div>
+      <h2>Design a Complete Multi-Agent System</h2>
+    </div>
+
+    <div class="challenge-card" style="margin-bottom:24px;">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> BOSS CHALLENGE</div>
+      <p style="color:var(--text);font-weight:600;margin-bottom:8px;">Context:</p>
+      <p style="color:var(--text-muted);margin-bottom:16px;">Given a new GitHub repository, produce a comprehensive onboarding document for a new engineer — covering architecture, key files, testing approach, and potential gotchas.</p>
+
+      <p style="color:var(--text);font-weight:600;margin-bottom:12px;">Your design must address all four components:</p>
+      <ol style="color:var(--text-muted);padding-left:20px;margin-bottom:16px;line-height:2;">
+        <li>List your sub-agents (name, scope, what they receive, what they return as JSON)</li>
+        <li>Which orchestration pattern and why</li>
+        <li>The orchestrator's aggregation logic (how it combines sub-agent outputs into one document)</li>
+        <li>Two failure modes specific to this task and your recovery strategy for each</li>
+      </ol>
+
+      <label for="boss-challenge" class="sr-only">Write your complete multi-agent system design</label>
+      <textarea id="boss-challenge" rows="12"
+        aria-describedby="boss-hint"
+        oninput="checkApply('boss-challenge','boss-submit-btn',80)"
+        placeholder="Design your complete multi-agent system (80 characters minimum)…" style="min-height:200px;"></textarea>
+      <div id="boss-hint" class="char-hint" aria-live="polite">80 characters to submit</div>
+      <button id="boss-submit-btn" class="btn btn-amber" style="margin-top:12px;" disabled onclick="submitBoss()">Submit Design →</button>
+    </div>
+
+    <!-- Model answer (hidden until submit) -->
+    <div id="boss-model" style="display:none;">
+      <div class="info-card" style="margin-bottom:20px;">
+        <h3 style="margin-bottom:16px;color:var(--text);">Model Answer</h3>
+
+        <p style="font-weight:600;color:var(--text);margin-bottom:8px;">1. Sub-agents (4):</p>
+        <div class="schema-display" style="margin-bottom:16px;">
+          <span class="schema-comment">// architecture-analyzer</span><br>
+          scope: <span class="schema-str">src/</span> — returns &#123; components, patterns, dependencies &#125;<br><br>
+          <span class="schema-comment">// test-strategy-analyzer</span><br>
+          scope: <span class="schema-str">tests/</span> — returns &#123; frameworks, coverage_approach, key_test_files &#125;<br><br>
+          <span class="schema-comment">// gotcha-finder</span><br>
+          scope: README + issues + complex files — returns &#123; known_issues, non_obvious_patterns &#125;<br><br>
+          <span class="schema-comment">// entry-points-mapper</span><br>
+          scope: package.json / Makefile / CI — returns &#123; key_commands, entry_files &#125;
+        </div>
+
+        <p style="font-weight:600;color:var(--text);margin-bottom:8px;">2. Pattern: Fan-out / Fan-in</p>
+        <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">All four analyses are independent — none depends on another's output. Pipeline would be slower with no coordination benefit.</p>
+
+        <p style="font-weight:600;color:var(--text);margin-bottom:8px;">3. Aggregation logic:</p>
+        <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">Merge JSON fields into document sections. Deduplicate mentions of the same file across agents. Order by importance (architecture first, then testing, then entry points, then gotchas). Insert a "coverage gaps" section if any agent returned status: partial.</p>
+
+        <p style="font-weight:600;color:var(--text);margin-bottom:8px;">4. Two failure modes:</p>
+        <p style="font-size:14px;color:var(--text-muted);margin-bottom:6px;"><strong style="color:var(--warning);">a) Large repo → timeout:</strong> Accept partial with an explicit "areas not covered" section in the onboarding doc, so the new engineer knows what to explore manually.</p>
+        <p style="font-size:14px;color:var(--text-muted);"><strong style="color:var(--warning);">b) Architecture disagreement:</strong> If architecture-analyzer and entry-points-mapper contradict on the primary entry point, include both interpretations with a note: "reviewers disagreed — verify with the team."</p>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <p style="font-weight:600;color:var(--text);margin-bottom:12px;">Self-evaluate your response:</p>
+        <div class="rubric">
+          <div class="rubric-level rubric-d">
+            <div class="rubric-level-label">Distinguished</div>
+            <div class="rubric-desc">4+ named sub-agents with explicit JSON return schemas, correct pattern with reasoning, explicit aggregation logic, 2 realistic failures with specific recovery strategies</div>
+          </div>
+          <div class="rubric-level rubric-p">
+            <div class="rubric-level-label">Proficient</div>
+            <div class="rubric-desc">3+ agents named, correct pattern identified, aggregation logic described at high level, 1 failure with recovery</div>
+          </div>
+          <div class="rubric-level rubric-v">
+            <div class="rubric-level-label">Developing</div>
+            <div class="rubric-desc">Agents identified but without JSON schemas, pattern named but not reasoned, failure modes vague</div>
+          </div>
+          <div class="rubric-level rubric-b">
+            <div class="rubric-level-label">Beginning</div>
+            <div class="rubric-desc">Generic response without specific agent names, schemas, or recovery strategies</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-success" onclick="completeLab()" style="width:100%;justify-content:center;">
+        Mark Lab Complete → +50 XP
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Completion Banner -->
+<div id="completion-banner" style="display:none;background:linear-gradient(135deg,var(--primary),var(--secondary));padding:60px 32px;text-align:center;margin-top:60px;">
+  <div style="font-size:48px;margin-bottom:16px;"><svg class="icon-lg" data-lucide="party-popper" aria-hidden="true" style="width:48px;height:48px;"></svg></div>
+  <h2 style="font-size:32px;font-weight:800;margin-bottom:12px;">Lab 07 Complete!</h2>
+  <p style="color:rgba(255,255,255,0.8);margin-bottom:8px;">You can now design, coordinate, and reason about multi-agent systems.</p>
+  <p style="color:rgba(255,255,255,0.8);margin-bottom:8px;">Final XP: <strong id="final-xp">0</strong></p>
+  <div style="display:flex;gap:16px;justify-content:center;margin-top:32px;flex-wrap:wrap;">
+    <button onclick="exportReflections()" class="btn" style="background:white;color:var(--primary);font-weight:700;">
+      Export Notes
+    </button>
+    <a href="/lab/06" class="btn" style="text-decoration:none;background:rgba(255,255,255,0.15);color:white;font-weight:700;">
+      ← Back to Lab 06
+    </a>
+    <a href="/lab/08" class="btn" style="text-decoration:none;background:rgba(255,255,255,0.15);color:white;font-weight:700;">
+      Continue to Lab 08 →
+    </a>
+  </div>
+</div>
+
+<script>
+/* ─── State ──────────────────────────────────────────────────── */
+const LAB_KEY = 'lab-07';
+const SECTION_COUNT = 7; // 0-5 + boss (6)
+let xp = 0, streak = 0;
+let sectionComplete = new Array(SECTION_COUNT).fill(false);
+
+// Per-question attempt tracking
+const questionAttempts = { q1: 0, q2: 0, q3: 0, q4: 0, q5: 0 };
+const questionDone = { q1: false, q2: false, q3: false, q4: false, q5: false };
+
+// Triage tracking
+const triageDone = { t1: false, t2: false, t3: false, t4: false };
+let triageCorrect = 0;
+
+// Builder state
+const builderSelections = { 'builder-pattern': null, 'builder-agents': null, 'builder-input': null };
+
+/* ─── XP System ──────────────────────────────────────────────── */
+function awardXP(amount, reason) {
+  xp += amount;
+  localStorage.setItem(`${LAB_KEY}-xp`, xp.toString());
+  updateXPDisplay();
+  showXPToast(amount, reason);
+}
+
+function updateXPDisplay() {
+  document.getElementById('xp-value').textContent = xp;
+  const fe = document.getElementById('final-xp');
+  if (fe) fe.textContent = xp;
+}
+
+function showXPToast(amount, reason) {
+  const toast = document.createElement('div');
+  toast.className = 'xp-toast';
+  toast.setAttribute('role', 'status');
+  toast.textContent = `+${amount} XP — ${reason}`;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2100);
+}
+
+/* ─── Streak System ──────────────────────────────────────────── */
+function updateStreak(correct) {
+  if (correct) {
+    streak++;
+    const el = document.getElementById('streak-display');
+    if (streak >= 7) {
+      el.style.display = 'block'; el.className = 'streak-display streak-7';
+      el.textContent = `${streak} streak`; awardXP(25, 'streak bonus');
+    } else if (streak >= 5) {
+      el.style.display = 'block'; el.className = 'streak-display streak-5';
+      el.textContent = `${streak} streak`; awardXP(25, 'streak bonus');
+    } else if (streak >= 3) {
+      el.style.display = 'block'; el.className = 'streak-display streak-3';
+      el.textContent = `${streak} streak`; awardXP(25, 'streak bonus');
+    }
+  } else {
+    streak = 0;
+    document.getElementById('streak-display').style.display = 'none';
+  }
+}
+
+/* ─── Milestone System ───────────────────────────────────────── */
+  let milestoneLevel = 0;
+  const MILESTONES = [
+    { section: 1, label: 'Topology Patterns' },
+    { section: 2, label: 'Orchestrator Design' },
+    { section: 4, label: 'Background Dispatch' },
+    { section: 5, label: 'Capstone Complete' }
+  ];
+
+  function getMilestoneLevel() {
+    let level = 0;
+    MILESTONES.forEach(function(m, idx) {
+      if (sectionComplete[m.section]) level = idx + 1;
+    });
+    return level;
+  }
+
+  function updateMilestoneDisplay() {
+    const el = document.getElementById('milestone-display');
+    if (!el) return;
+    if (milestoneLevel === 0) {
+      el.textContent = 'Milestone: Not started';
+      return;
+    }
+    const entry = MILESTONES[milestoneLevel - 1];
+    el.textContent = 'Milestone ' + milestoneLevel + ': ' + entry.label;
+  }
+
+  function announceMilestone(level) {
+    const entry = MILESTONES[level - 1];
+    const toast = document.createElement('div');
+    toast.className = 'milestone-toast';
+    toast.textContent = 'Milestone reached: ' + entry.label;
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.remove(); }, 2200);
+  }
+
+/* ─── Section Unlock ─────────────────────────────────────────── */
+function markSectionComplete(idx) {
+  if (sectionComplete[idx]) return;
+  sectionComplete[idx] = true;
+  localStorage.setItem(`${LAB_KEY}-s${idx}`, '1');
+  checkSectionUnlock(idx + 1);
+  updateNavDots();
+  if (idx < 6) awardXP(20, `section ${idx + 1} complete`);
+  const nextMilestoneLevel = getMilestoneLevel();
+  if (nextMilestoneLevel > milestoneLevel) {
+    milestoneLevel = nextMilestoneLevel;
+    updateMilestoneDisplay();
+    announceMilestone(milestoneLevel);
+  } else {
+    updateMilestoneDisplay();
+  }
+}
+
+function completeSection(idx) {
+  markSectionComplete(idx);
+  const fwd = document.getElementById(`s${idx}-forward`);
+  if (fwd) fwd.classList.add('show');
+  // Scroll to next section
+  const next = document.getElementById(`section-${idx + 1}`);
+  if (next) setTimeout(() => next.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+}
+
+function checkSectionUnlock(idx) {
+  if (idx >= SECTION_COUNT) return;
+  const section = document.getElementById(`section-${idx}`);
+  if (!section) return;
+  const allPriorDone = sectionComplete.slice(0, idx).every(Boolean);
+  if (allPriorDone) {
+    section.classList.remove('locked');
+    const overlay = section.querySelector('.lock-overlay');
+    if (overlay) overlay.remove();
+  }
+}
+
+/* ─── Prediction Gate ────────────────────────────────────────── */
+function checkPrediction(textareaId, btnId, minChars) {
+  const ta = document.getElementById(textareaId);
+  const btn = document.getElementById(btnId);
+  const val = ta.value.trim();
+  const remaining = Math.max(0, minChars - val.length);
+  const hint = document.getElementById(textareaId + '-hint');
+  if (hint) {
+    hint.textContent = remaining > 0
+      ? `${remaining} more characters to activate reveal`
+      : '✓ Ready to reveal';
+    hint.className = remaining > 0 ? 'char-hint' : 'char-hint char-ready';
+  }
+  btn.disabled = remaining > 0;
+  if (remaining === 0) {
+    const stored = localStorage.getItem(`${LAB_KEY}-${textareaId}-xp`);
+    if (!stored) { awardXP(10, 'prediction committed'); localStorage.setItem(`${LAB_KEY}-${textareaId}-xp`, '1'); }
+  }
+  saveReflection(textareaId, ta.value);
+}
+
+function checkApply(textareaId, btnId, minChars) {
+  const ta = document.getElementById(textareaId);
+  const btn = document.getElementById(btnId);
+  const val = ta.value.trim();
+  const remaining = Math.max(0, minChars - val.length);
+  const hint = document.getElementById(textareaId + '-hint');
+  if (hint) {
+    hint.textContent = remaining > 0
+      ? `${remaining} more characters to continue`
+      : '✓ Ready to submit';
+    hint.className = remaining > 0 ? 'char-hint' : 'char-hint char-ready';
+  }
+  btn.disabled = remaining > 0;
+  saveReflection(textareaId, ta.value);
+}
+
+/* ─── Section 1 specific ─────────────────────────────────────── */
+function revealS1() {
+  document.getElementById('s1-reveal').style.display = 'block';
+  document.getElementById('s1-reveal').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  localStorage.setItem(`${LAB_KEY}-s1-revealed`, '1');
+}
+
+function toggleDecompose(el, verdict, explanation) {
+  const vd = el.querySelector('.ex-verdict');
+  if (vd.classList.contains('show')) {
+    vd.classList.remove('show'); return;
+  }
+  vd.classList.add('show');
+  if (verdict === 'yes') {
+    vd.className = 'ex-verdict show verdict-yes';
+    vd.innerHTML = '<strong><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Decomposable</strong> — ' + explanation;
+  } else {
+    vd.className = 'ex-verdict show verdict-no';
+    vd.innerHTML = '<strong><svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Not decomposable</strong> — ' + explanation;
+  }
+  if (window.lucide) lucide.createIcons();
+}
+
+function unlockS1KC() {
+  awardXP(20, 'apply exercise complete');
+  document.getElementById('s1-apply').disabled = true;
+  document.getElementById('s1-apply-btn').disabled = true;
+  document.getElementById('s1-kc').style.display = 'block';
+  document.getElementById('s1-kc').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  localStorage.setItem(`${LAB_KEY}-s1-apply-done`, '1');
+}
+
+function unlockS2KC() {
+  awardXP(20, 'apply exercise complete');
+  document.getElementById('s2-apply').disabled = true;
+  document.getElementById('s2-apply-btn').disabled = true;
+  document.getElementById('s2-kc').style.display = 'block';
+  document.getElementById('s2-kc').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  localStorage.setItem(`${LAB_KEY}-s2-apply-done`, '1');
+}
+
+/* ─── Knowledge Check answers ────────────────────────────────── */
+function answerQ(qId, btn, result, feedback) {
+  if (questionDone[qId]) return;
+  questionAttempts[qId]++;
+  const opts = btn.parentElement.querySelectorAll('.answer-option');
+  const fbEl = document.getElementById(qId + '-feedback');
+
+  opts.forEach(o => o.classList.add('locked-opt'));
+  btn.classList.add(result === 'correct' ? 'correct' : 'incorrect');
+
+  const isCorrect = result === 'correct';
+  let xpAmt = 0;
+  if (isCorrect) {
+    if (questionAttempts[qId] === 1) xpAmt = 30;
+    else if (questionAttempts[qId] === 2) xpAmt = 15;
+    else xpAmt = 5;
+    awardXP(xpAmt, `Q${qId.slice(1)} correct${questionAttempts[qId] === 1 ? ' — first try!' : ''}`);
+    questionDone[qId] = true;
+    fbEl.className = 'question-feedback show fb-correct';
+    fbEl.textContent = '✓ ' + feedback;
+    updateStreak(true);
+    afterCorrectAnswer(qId);
+  } else {
+    fbEl.className = 'question-feedback show fb-incorrect';
+    fbEl.textContent = '✗ ' + feedback;
+    updateStreak(false);
+    if (questionAttempts[qId] < 3) {
+      // Re-enable remaining options
+      opts.forEach(o => {
+        if (!o.classList.contains('incorrect')) o.classList.remove('locked-opt');
+      });
+    } else {
+      // Lock after 3 attempts — still need to mark done
+      questionDone[qId] = true;
+      afterCorrectAnswer(qId);
+    }
+  }
+  localStorage.setItem(`${LAB_KEY}-${qId}-done`, '1');
+  localStorage.setItem(`${LAB_KEY}-${qId}-attempts`, questionAttempts[qId].toString());
+}
+
+function afterCorrectAnswer(qId) {
+  // Show continue buttons
+  if (qId === 'q1') {
+    const btn = document.getElementById('s1-complete-btn');
+    if (btn) btn.style.display = 'inline-flex';
+  }
+  if (qId === 'q2') {
+    const btn = document.getElementById('s2-complete-btn');
+    if (btn) btn.style.display = 'inline-flex';
+  }
+  if (qId === 'q3') {
+    const btn = document.getElementById('s4-complete-btn');
+    if (btn) btn.style.display = 'inline-flex';
+  }
+  if (qId === 'q4' || qId === 'q5') {
+    checkS5Complete();
+  }
+}
+
+function checkS5Complete() {
+  if (questionDone['q4'] && questionDone['q5']) {
+    const btn = document.getElementById('s5-complete-btn');
+    if (btn) btn.style.display = 'inline-flex';
+  }
+}
+
+/* ─── Orchestration builder ──────────────────────────────────── */
+function selectBuilder(groupId, btn, value) {
+  const group = document.getElementById(groupId);
+  group.querySelectorAll('.builder-choice').forEach(b => {
+    b.classList.remove('selected');
+    b.setAttribute('aria-pressed', 'false');
+  });
+  btn.classList.add('selected');
+  btn.setAttribute('aria-pressed', 'true');
+  builderSelections[groupId] = value;
+}
+
+function checkBuilder() {
+  const { 'builder-pattern': pat, 'builder-agents': agents, 'builder-input': input } = builderSelections;
+  if (!pat || !agents || !input) {
+    showBuilderResult(false, 'Please select one option in each row before checking.');
+    return;
+  }
+  const correct = pat === 'fanout' && agents === '3' && input === 'one';
+  if (correct) {
+    awardXP(15, 'simulation correct');
+    showBuilderResult(true, '✓ Correct design. Fan-out/Fan-in with 3 agents (one per framework), each receiving only its assigned framework. The orchestrator aggregates three independent comparison reports into one final analysis.');
+  } else {
+    let hint = '✗ Not quite. ';
+    if (pat !== 'fanout') hint += 'The three frameworks are independent — Fan-out/Fan-in maximizes parallelism here. ';
+    if (agents !== '3') hint += 'One agent per framework (3 total) maps work cleanly. ';
+    if (input !== 'one') hint += 'Each agent should receive only its assigned framework — giving all three to each agent defeats the specialization benefit. ';
+    showBuilderResult(false, hint);
+  }
+}
+
+function showBuilderResult(success, msg) {
+  const el = document.getElementById('builder-result');
+  el.classList.add('show');
+  el.style.background = success ? 'rgba(16,185,129,0.06)' : 'rgba(239,68,68,0.06)';
+  el.style.border = `1px solid ${success ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}`;
+  el.style.color = success ? 'var(--success)' : '#fca5a5';
+  el.textContent = msg;
+}
+
+/* ─── Pattern accordion ──────────────────────────────────────── */
+function togglePattern(id) {
+  const body = document.getElementById(id + '-body');
+  const chevron = document.getElementById(id + '-chevron');
+  const header = body.previousElementSibling;
+  if (body.classList.contains('open')) {
+    body.classList.remove('open');
+    chevron.textContent = '▼';
+    header.setAttribute('aria-expanded', 'false');
+  } else {
+    body.classList.add('open');
+    chevron.textContent = '▲';
+    header.setAttribute('aria-expanded', 'true');
+  }
+}
+
+/* ─── Triage game ────────────────────────────────────────────── */
+function triageAnswer(tId, btn, result, feedback) {
+  if (triageDone[tId]) return;
+  triageDone[tId] = true;
+  const opts = document.getElementById(tId + '-opts');
+  opts.querySelectorAll('.triage-opt').forEach(o => o.classList.add('t-locked'));
+  btn.classList.add(result === 'correct' ? 't-correct' : 't-incorrect');
+  const fb = document.getElementById(tId + '-fb');
+  fb.classList.add('show');
+  if (result === 'correct') {
+    fb.style.background = 'rgba(16,185,129,0.1)';
+    fb.style.color = 'var(--success)';
+    fb.style.borderLeft = '3px solid var(--success)';
+    fb.textContent = '✓ ' + feedback;
+    awardXP(10, 'triage correct');
+    triageCorrect++;
+    updateStreak(true);
+  } else {
+    fb.style.background = 'rgba(239,68,68,0.1)';
+    fb.style.color = '#fca5a5';
+    fb.style.borderLeft = '3px solid var(--danger)';
+    fb.textContent = '✗ ' + feedback;
+    updateStreak(false);
+  }
+  // Check if all 4 triage done → show Q3
+  if (Object.values(triageDone).every(Boolean)) {
+    awardXP(15, 'triage simulation complete');
+    document.getElementById('s4-kc').style.display = 'block';
+    document.getElementById('s4-kc').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    localStorage.setItem(`${LAB_KEY}-triage-done`, '1');
+  }
+  localStorage.setItem(`${LAB_KEY}-${tId}-done`, '1');
+}
+
+/* ─── S3 Apply with insight reveal ──────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  const s3Apply = document.getElementById('s3-apply');
+  if (s3Apply) {
+    const origBtn = document.getElementById('s3-apply-btn');
+    origBtn.addEventListener('click', function() {
+      if (!origBtn.disabled) {
+        awardXP(20, 'apply exercise complete');
+        document.getElementById('s3-insight').classList.add('revealed');
+        s3Apply.disabled = true;
+        origBtn.disabled = true;
+        localStorage.setItem(`${LAB_KEY}-s3-apply-done`, '1');
+        markSectionComplete(3);
+      }
+    });
+  }
+});
+
+/* ─── Capstone Challenge ─────────────────────────────────────────── */
+function submitBoss() {
+  document.getElementById('boss-challenge').disabled = true;
+  document.getElementById('boss-submit-btn').disabled = true;
+  document.getElementById('boss-model').style.display = 'block';
+  document.getElementById('boss-model').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  localStorage.setItem(`${LAB_KEY}-boss-submitted`, '1');
+}
+
+function completeLab() {
+  awardXP(50, 'boss challenge complete');
+  markSectionComplete(6);
+  awardXP(100, 'lab complete!');
+  const banner = document.getElementById('completion-banner');
+  banner.style.display = 'block';
+  banner.scrollIntoView({ behavior: 'smooth' });
+  localStorage.setItem(`${LAB_KEY}-complete`, Date.now().toString());
+  updateNavDots();
+}
+
+/* ─── Persistence ────────────────────────────────────────────── */
+function saveReflection(key, value) {
+  localStorage.setItem(`${LAB_KEY}-${key}`, value);
+}
+
+function loadAllReflections() {
+  // Restore textarea values
+  document.querySelectorAll('textarea[id]').forEach(ta => {
+    const saved = localStorage.getItem(`${LAB_KEY}-${ta.id}`);
+    if (saved) ta.value = saved;
+  });
+
+  // Restore section completion
+  for (let i = 0; i < SECTION_COUNT; i++) {
+    if (localStorage.getItem(`${LAB_KEY}-s${i}`) === '1') sectionComplete[i] = true;
+  }
+
+  // Restore XP
+  xp = parseInt(localStorage.getItem(`${LAB_KEY}-xp`) || '0');
+  updateXPDisplay();
+
+  // Restore question states
+  ['q1','q2','q3','q4','q5'].forEach(q => {
+    if (localStorage.getItem(`${LAB_KEY}-${q}-done`) === '1') {
+      questionDone[q] = true;
+      questionAttempts[q] = parseInt(localStorage.getItem(`${LAB_KEY}-${q}-attempts`) || '1');
+    }
+  });
+
+  // Restore triage states
+  ['t1','t2','t3','t4'].forEach(t => {
+    if (localStorage.getItem(`${LAB_KEY}-${t}-done`) === '1') triageDone[t] = true;
+  });
+
+  // Restore section 1 reveal
+  if (localStorage.getItem(`${LAB_KEY}-s1-revealed`) === '1') {
+    const rev = document.getElementById('s1-reveal');
+    if (rev) rev.style.display = 'block';
+  }
+
+  // Restore section 1 apply/KC
+  if (localStorage.getItem(`${LAB_KEY}-s1-apply-done`) === '1') {
+    const kc = document.getElementById('s1-kc');
+    if (kc) kc.style.display = 'block';
+    const applyBtn = document.getElementById('s1-apply-btn');
+    if (applyBtn) applyBtn.disabled = true;
+  }
+
+  // Restore s1 KC complete button
+  if (questionDone['q1']) {
+    const btn = document.getElementById('s1-complete-btn');
+    if (btn) btn.style.display = 'inline-flex';
+  }
+
+  // Restore section 2 apply/KC
+  if (localStorage.getItem(`${LAB_KEY}-s2-apply-done`) === '1') {
+    const kc = document.getElementById('s2-kc');
+    if (kc) kc.style.display = 'block';
+  }
+  if (questionDone['q2']) {
+    const btn = document.getElementById('s2-complete-btn');
+    if (btn) btn.style.display = 'inline-flex';
+  }
+
+  // Restore S3 insight
+  if (localStorage.getItem(`${LAB_KEY}-s3-apply-done`) === '1') {
+    document.getElementById('s3-insight').classList.add('revealed');
+  }
+
+  // Restore triage KC
+  if (localStorage.getItem(`${LAB_KEY}-triage-done`) === '1') {
+    const kc = document.getElementById('s4-kc');
+    if (kc) kc.style.display = 'block';
+  }
+  if (questionDone['q3']) {
+    const btn = document.getElementById('s4-complete-btn');
+    if (btn) btn.style.display = 'inline-flex';
+  }
+
+  // Restore S5 complete button
+  if (questionDone['q4'] && questionDone['q5']) {
+    const btn = document.getElementById('s5-complete-btn');
+    if (btn) btn.style.display = 'inline-flex';
+  }
+
+  // Restore boss
+  if (localStorage.getItem(`${LAB_KEY}-boss-submitted`) === '1') {
+    const model = document.getElementById('boss-model');
+    if (model) model.style.display = 'block';
+  }
+
+  // Restore completion banner
+  if (localStorage.getItem(`${LAB_KEY}-complete`)) {
+    const banner = document.getElementById('completion-banner');
+    if (banner) banner.style.display = 'block';
+  }
+
+  // Re-evaluate all unlock conditions
+  for (let i = 0; i < SECTION_COUNT; i++) checkSectionUnlock(i);
+  updateNavDots();
+
+  milestoneLevel = getMilestoneLevel();
+  updateMilestoneDisplay();
+
+  // Re-enable char counters
+  ['s1-predict','s1-apply','s2-apply','s3-apply','boss-challenge'].forEach(id => {
+    const ta = document.getElementById(id);
+    if (ta && ta.value) {
+      const minMap = { 's1-predict': 15, 's1-apply': 40, 's2-apply': 40, 's3-apply': 40, 'boss-challenge': 80 };
+      const btnMap = { 's1-predict': 's1-reveal-btn', 's1-apply': 's1-apply-btn', 's2-apply': 's2-apply-btn', 's3-apply': 's3-apply-btn', 'boss-challenge': 'boss-submit-btn' };
+      if (id === 's1-predict') checkPrediction(id, btnMap[id], minMap[id]);
+      else checkApply(id, btnMap[id], minMap[id]);
+    }
+  });
+}
+
+/* ─── Navigation Dots ────────────────────────────────────────── */
+function updateNavDots() {
+  const container = document.getElementById('nav-dots');
+  if (!container) return;
+  if (!container.children.length) {
+    for (let i = 0; i < SECTION_COUNT; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'nav-dot';
+      dot.setAttribute('aria-label', `Section ${i + 1}`);
+      container.appendChild(dot);
+    }
+  }
+  [...container.children].forEach((dot, i) => {
+    dot.classList.remove('dot-locked', 'dot-active', 'dot-complete');
+    if (sectionComplete[i]) dot.classList.add('dot-complete');
+    else if (i === sectionComplete.indexOf(false)) dot.classList.add('dot-active');
+    else dot.classList.add('dot-locked');
+    dot.setAttribute('aria-label', `Section ${i + 1}: ${sectionComplete[i] ? 'Complete' : 'Locked'}`);
+  });
+}
+
+/* ─── Scroll Progress ────────────────────────────────────────── */
+window.addEventListener('scroll', () => {
+  const d = document.documentElement;
+  const pct = (d.scrollTop / (d.scrollHeight - d.clientHeight)) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+});
+
+/* ─── Export ─────────────────────────────────────────────────── */
+function exportReflections() {
+  let content = `Lab 07: Multi-Agent Orchestrator — ${new Date().toLocaleDateString()}\nXP Earned: ${xp}\n\n`;
+  document.querySelectorAll('textarea[id]').forEach(ta => {
+    if (ta.value.trim()) content += `[${ta.id}]\n${ta.value.trim()}\n\n`;
+  });
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `${LAB_KEY}-reflections.txt`;
+  document.body.appendChild(a); a.click();
+  URL.revokeObjectURL(url); document.body.removeChild(a);
+}
+
+/* ─── CE-07-B: Subagent System Prompt Builder ────────────────── */
+document.addEventListener('DOMContentLoaded', function() {
+  var ce07bInput = document.getElementById('ce-07-b-input');
+  var ce07bCount = document.getElementById('ce-07-b-charcount');
+  if (ce07bInput && ce07bCount) {
+    ce07bInput.addEventListener('input', function() {
+      ce07bCount.textContent = ce07bInput.value.length + ' characters';
+    });
+  }
+  // Restore saved state
+  var saved = localStorage.getItem('lab07_ce07b');
+  if (saved) {
+    try {
+      var data = JSON.parse(saved);
+      if (data.input && ce07bInput) {
+        ce07bInput.value = data.input;
+        if (ce07bCount) ce07bCount.textContent = data.input.length + ' characters';
+      }
+      if (data.role) {
+        var radio = document.querySelector('input[name="ce07b-role"][value="' + data.role + '"]');
+        if (radio) radio.checked = true;
+      }
+      if (data.completed) {
+        var model = document.getElementById('ce-07-b-model');
+        if (model) model.style.display = 'block';
+      }
+    } catch(e) {}
+  }
+});
+
+function submitCE07B() {
+  var input = document.getElementById('ce-07-b-input').value.trim();
+  var roleEl = document.querySelector('input[name="ce07b-role"]:checked');
+  if (!roleEl) {
+    alert('Please select a subagent role first.');
+    return;
+  }
+  if (input.length < 200) {
+    alert('Please write a more complete system prompt (at least 200 characters — a real system prompt needs substance).');
+    return;
+  }
+  // Check for all 6 required sections (flexible matching)
+  var checks = [
+    { pattern: /role|responsible for/i, name: 'Role identity' },
+    { pattern: /scope|you will receive|you must return/i, name: 'Scope' },
+    { pattern: /tool|allowed|forbidden|permission/i, name: 'Tool permissions' },
+    { pattern: /uncertain|don.t know|unclear|fallback/i, name: 'Uncertainty behavior' },
+    { pattern: /format|json|structure|field/i, name: 'Output format' },
+    { pattern: /never|must not|hard limit|regardless/i, name: 'Hard limits' }
+  ];
+  var missing = checks.filter(function(c) { return !c.pattern.test(input); }).map(function(c) { return c.name; });
+  if (missing.length > 2) {
+    alert('Your system prompt is missing these required sections: ' + missing.join(', ') + '. Please add them before submitting.');
+    return;
+  }
+  document.getElementById('ce-07-b-model').style.display = 'block';
+  document.getElementById('ce-07-b-model').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  awardXP(30, 'CE-07-B: Subagent system prompt');
+  localStorage.setItem('lab07_ce07b', JSON.stringify({ completed: true, input: input, role: roleEl.value }));
+}
+
+/* ─── Init ───────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', loadAllReflections);
+</script>
+
+  <!-- ─── Attribution Footer ─────────────────────────────────────────────── -->
+  <footer style="
+    margin-top: 80px;
+    padding: 32px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    text-align: center;
+    font-size: 12px;
+    color: #475569;
+    line-height: 1.8;
+  ">
+    <p>
+      &ldquo;Claude&rdquo; and &ldquo;Claude Code&rdquo; are trademarks of Anthropic, PBC.
+      This course is not affiliated with or endorsed by Anthropic.
+      All product names, logos, and trademarks are the property of their respective owners
+      and are referenced here for educational purposes only.
+    </p>
+    <p>
+      Fonts:
+      <a href="https://fonts.google.com/specimen/Inter" rel="noopener" style="color:#6366f1;">Inter</a>
+      and
+      <a href="https://fonts.google.com/specimen/JetBrains+Mono" rel="noopener" style="color:#6366f1;">JetBrains Mono</a>
+      via Google Fonts under the
+      <a href="https://scripts.sil.org/OFL" rel="noopener" style="color:#6366f1;">SIL Open Font License 1.1</a>.
+    </p>
+    <p>Course content &copy; 2026 Agentic AI Engineering Course. Educational use.</p>
+  </footer>
+
+<script>if (window.lucide) lucide.createIcons();</script>
+</body>
+</html>

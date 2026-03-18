@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agentic AI Engineering — Course Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/theme-toggle.css" />
+  <script src="/assets/theme-toggle.js" defer></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    :root {
+      --bg:       #080d1a;
+      --surface:  #0f1729;
+      --raised:   #172035;
+      --primary:  #6366f1;
+      --primary-g: rgba(99,102,241,0.18);
+      --accent:   #06b6d4;
+      --success:  #10b981;
+      --warning:  #f59e0b;
+      --danger:   #ef4444;
+      --text:     #f1f5f9;
+      --muted:    #94a3b8;
+      --dim:      #475569;
+      --border:   rgba(255,255,255,0.07);
+      --radius:   14px;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 48px 48px 32px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(99,102,241,0.06) 0%, transparent 60%);
+    }
+    .header-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 12px;
+    }
+    header h1 {
+      font-size: clamp(24px, 4vw, 42px); font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--text), var(--muted));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header-meta {
+      display: flex; gap: 24px; margin-top: 20px; flex-wrap: wrap;
+    }
+    .meta-pill {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; color: var(--muted);
+    }
+    .meta-pill strong { color: var(--text); font-weight: 600; }
+
+    /* ── Layout ── */
+    main { max-width: 1200px; margin: 0 auto; padding: 40px 48px 80px; }
+
+    .section-title {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--dim);
+      margin: 40px 0 16px; padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── Day groups ── */
+    .day-group { margin-bottom: 40px; }
+    .day-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 12px;
+    }
+    .day-badge {
+      background: var(--primary); color: white;
+      padding: 3px 12px; border-radius: 100px;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
+    }
+    .day-title { font-size: 15px; color: var(--muted); font-weight: 500; }
+
+    /* ── Lab cards ── */
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+    .card:hover {
+      border-color: rgba(99,102,241,0.4);
+      box-shadow: 0 0 24px var(--primary-g);
+      background: var(--raised);
+    }
+
+    .card-num {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; flex-shrink: 0;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .card-num.lab  { background: rgba(99,102,241,0.12); color: var(--primary); }
+    .card-num.mod  { background: rgba(6,182,212,0.12);  color: var(--accent); }
+
+    .card-body { flex: 1; min-width: 0; }
+    .card-name {
+      font-size: 14px; font-weight: 600; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .card-meta { font-size: 12px; color: var(--dim); margin-top: 3px; }
+
+    .card-arrow {
+      color: var(--dim); font-size: 16px; flex-shrink: 0;
+      transition: color 0.15s, transform 0.15s;
+    }
+    .card:hover .card-arrow { color: var(--primary); transform: translateX(2px); }
+
+    /* ── Status pills ── */
+    .pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 2px 8px; border-radius: 100px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.03em;
+      flex-shrink: 0;
+    }
+    .pill.done   { background: rgba(16,185,129,0.12); color: var(--success); }
+    .pill.review { background: rgba(245,158,11,0.12); color: var(--warning); }
+
+    /* ── Stat bar ── */
+    .stat-bar {
+      display: flex; gap: 32px; flex-wrap: wrap;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px 28px;
+      margin-bottom: 40px;
+    }
+    .stat { display: flex; flex-direction: column; gap: 2px; }
+    .stat-val { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
+    .stat-lbl { font-size: 12px; color: var(--dim); font-weight: 500; }
+    .stat-val.green  { color: var(--success); }
+    .stat-val.blue   { color: var(--primary); }
+    .stat-val.cyan   { color: var(--accent); }
+    .stat-val.orange { color: var(--warning); }
+
+    /* ── Validation banner ── */
+    .validation-banner {
+      display: flex; align-items: center; gap: 16px;
+      background: rgba(16,185,129,0.08);
+      border: 1px solid rgba(16,185,129,0.25);
+      border-radius: var(--radius); padding: 16px 24px;
+      margin-bottom: 32px;
+    }
+    .val-icon { font-size: 24px; }
+    .val-text { font-size: 14px; color: var(--muted); }
+    .val-text strong { color: var(--success); }
+
+    /* ── Framework section ── */
+    .framework-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 10px;
+    }
+    .fw-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 16px;
+      font-size: 13px;
+    }
+    .fw-card code {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent); font-size: 12px;
+    }
+    .fw-card .fw-size { font-size: 11px; color: var(--dim); margin-top: 4px; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 48px;
+      font-size: 12px; color: var(--dim); line-height: 1.8;
+    }
+    footer a { color: var(--dim); }
+
+    /* ── Multimedia Learning section ── */
+    .multimedia-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .mm-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .mm-card:hover {
+      border-color: rgba(99,102,241,0.4);
+      background: var(--raised);
+    }
+    .mm-icon {
+      font-size: 22px; flex-shrink: 0; width: 40px; text-align: center;
+    }
+    .mm-body { flex: 1; min-width: 0; }
+    .mm-title {
+      font-size: 13px; font-weight: 600; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .mm-meta { font-size: 11px; color: var(--dim); margin-top: 2px; }
+    .mm-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+      padding: 2px 7px; border-radius: 100px; flex-shrink: 0;
+    }
+    .mm-badge.video   { background: rgba(99,102,241,0.12); color: var(--primary); }
+    .mm-badge.slides  { background: rgba(6,182,212,0.12);  color: var(--accent); }
+    .mm-badge.audio   { background: rgba(16,185,129,0.12); color: var(--success); }
+    .mm-badge.cards   { background: rgba(245,158,11,0.12); color: var(--warning); }
+    .mm-featured {
+      display: flex; align-items: center; gap: 16px;
+      background: rgba(16,185,129,0.06);
+      border: 1px solid rgba(16,185,129,0.2);
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      text-decoration: none; color: inherit;
+      margin-bottom: 16px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .mm-featured:hover {
+      border-color: rgba(16,185,129,0.4);
+      background: rgba(16,185,129,0.1);
+    }
+    .mm-featured .mm-icon { font-size: 32px; }
+    .mm-featured .mm-title { font-size: 15px; font-weight: 700; }
+    .mm-featured .mm-meta  { font-size: 12px; }
+    .mm-subsection-title {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--dim);
+      margin: 20px 0 10px;
+    }
+    .mm-notebook-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 12px; color: var(--muted); text-decoration: none;
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 6px 14px; margin-top: 6px;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .mm-notebook-link:hover { border-color: var(--warning); color: var(--warning); }
+
+    /* ── Icon System (Lucide) ─────────────────────────────── */
+    .icon { width:16px; height:16px; display:inline-block; vertical-align:-2px; stroke-width:2; flex-shrink:0; }
+    .icon-lg { width:20px; height:20px; vertical-align:-4px; }
+    .icon-sm { width:14px; height:14px; vertical-align:-2px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-label">Course Review Dashboard</div>
+  <h1>Agentic AI Engineering</h1>
+  <div class="header-meta">
+    <div class="meta-pill"><svg class="icon" data-lucide="calendar" aria-hidden="true"></svg> <strong>Built</strong> 2026-03-15</div>
+    <div class="meta-pill"><svg class="icon" data-lucide="flask-conical" aria-hidden="true"></svg> <strong>9</strong> Interactive Labs</div>
+    <div class="meta-pill"><svg class="icon" data-lucide="book-open" aria-hidden="true"></svg> <strong>12</strong> Curriculum Modules</div>
+    <div class="meta-pill"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> <strong>Validation</strong> PASS — 0 confabulations</div>
+  </div>
+</header>
+
+<main>
+
+  <!-- Stat bar -->
+  <div class="stat-bar">
+    <div class="stat"><div class="stat-val green">17,440</div><div class="stat-lbl">Lab lines (HTML)</div></div>
+    <div class="stat"><div class="stat-val blue">~50k</div><div class="stat-lbl">Module words</div></div>
+    <div class="stat"><div class="stat-val cyan">9</div><div class="stat-lbl">Labs complete</div></div>
+    <div class="stat"><div class="stat-val cyan">12</div><div class="stat-lbl">Modules complete</div></div>
+    <div class="stat"><div class="stat-val orange">~220</div><div class="stat-lbl">Total XP per learner</div></div>
+    <div class="stat"><div class="stat-val green">64.6%</div><div class="stat-lbl">Code reduction (framework)</div></div>
+  </div>
+
+  <!-- Validation -->
+  <div class="validation-banner">
+    <div class="val-icon"><svg class="icon" data-lucide="shield" aria-hidden="true"></svg></div>
+    <div class="val-text">
+      <strong>Anti-confabulation: PASS</strong> — 8 checks across 21 files (9 labs + 12 modules).
+      Zero technical errors. All trademark &amp; font license attribution added. Academic citations complete.
+    </div>
+  </div>
+
+  <!-- LABS -->
+  <div class="section-title">Interactive Labs</div>
+
+  <!-- Day 1 -->
+  <div class="day-group">
+    <div class="day-header">
+      <span class="day-badge">Day 1</span>
+      <span class="day-title">Foundations — Understanding Agentic AI</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="/lab/01">
+        <div class="card-num lab">01</div>
+        <div class="card-body">
+          <div class="card-name">The Paradigm Shift</div>
+          <div class="card-meta">1,987 lines · PRAO Loop · Old World vs New World</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/lab/02">
+        <div class="card-num lab">02</div>
+        <div class="card-body">
+          <div class="card-name">First Agent Conversation</div>
+          <div class="card-meta">1,937 lines · GCCF Pattern · Prompt structure</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/lab/03">
+        <div class="card-num lab">03</div>
+        <div class="card-body">
+          <div class="card-name">Agent Thinking with OpenCode</div>
+          <div class="card-meta">1,822 lines · PRAO trace · OpenCode reasoning annotation</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Day 2 -->
+  <div class="day-group">
+    <div class="day-header">
+      <span class="day-badge">Day 2</span>
+      <span class="day-title">Tools &amp; Techniques — Building with Claude Code</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="/lab/04">
+        <div class="card-num lab">04</div>
+        <div class="card-body">
+          <div class="card-name">MCP Server Explorer</div>
+          <div class="card-meta">2,181 lines · Tools / Resources / Prompts primitives</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/lab/05">
+        <div class="card-num lab">05</div>
+        <div class="card-body">
+          <div class="card-name">Prompt Engineering Workshop</div>
+          <div class="card-meta">2,679 lines · TCEF Pattern · Ranking matrix</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/lab/06">
+        <div class="card-num lab">06</div>
+        <div class="card-body">
+          <div class="card-name">Skills &amp; Commands Builder</div>
+          <div class="card-meta">1,632 lines · Skill anatomy · Builder interface</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Day 3 -->
+  <div class="day-group">
+    <div class="day-header">
+      <span class="day-badge">Day 3</span>
+      <span class="day-title">Production — Multi-Agent Systems &amp; Deployment</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="/lab/07">
+        <div class="card-num lab">07</div>
+        <div class="card-body">
+          <div class="card-name">Multi-Agent Orchestrator</div>
+          <div class="card-meta">1,798 lines · Orchestrator pattern · Agent dispatch</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/lab/08">
+        <div class="card-num lab">08</div>
+        <div class="card-body">
+          <div class="card-name">Production Patterns</div>
+          <div class="card-meta">1,684 lines · Triage simulation · Permission gates</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/lab/09">
+        <div class="card-num lab">09</div>
+        <div class="card-body">
+          <div class="card-name">Capstone Build</div>
+          <div class="card-meta">1,720 lines · Full system design · Boss challenge</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- MODULES -->
+  <div class="section-title">Curriculum Modules</div>
+
+  <!-- Day 1 modules -->
+  <div class="day-group">
+    <div class="day-header">
+      <span class="day-badge">Day 1</span>
+      <span class="day-title">Modules 01–04</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="/module/01">
+        <div class="card-num mod">01</div>
+        <div class="card-body">
+          <div class="card-name">The Paradigm Shift</div>
+          <div class="card-meta">Agent-first thinking · PRAO Loop · Mental models</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/module/02">
+        <div class="card-num mod">02</div>
+        <div class="card-body">
+          <div class="card-name">Claude Code Foundations</div>
+          <div class="card-meta">CLI · CLAUDE.md · settings.json · slash commands</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/module/03">
+        <div class="card-num mod">03</div>
+        <div class="card-body">
+          <div class="card-name">Agent Thinking</div>
+          <div class="card-meta">Chain-of-thought · Trace analysis · Wei et al. 2022</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/module/04">
+        <div class="card-num mod">04</div>
+        <div class="card-body">
+          <div class="card-name">Prompt Engineering in Depth</div>
+          <div class="card-meta">TCEF · Few-shot · Brown et al. 2020 · Signal/noise</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Day 2 modules -->
+  <div class="day-group">
+    <div class="day-header">
+      <span class="day-badge">Day 2</span>
+      <span class="day-title">Modules 05–08</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="/module/05">
+        <div class="card-num mod">05</div>
+        <div class="card-body">
+          <div class="card-name">MCP Architecture</div>
+          <div class="card-meta">Tools / Resources / Prompts · Streamable HTTP · Spec</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/module/06">
+        <div class="card-num mod">06</div>
+        <div class="card-body">
+          <div class="card-name">Building MCP Servers</div>
+          <div class="card-meta">TypeScript SDK · Zod validation · Tool definitions</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/module/07">
+        <div class="card-num mod">07</div>
+        <div class="card-body">
+          <div class="card-name">Skills &amp; Commands</div>
+          <div class="card-meta">Skill anatomy · Slash commands · Conventional Commits</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/module/08">
+        <div class="card-num mod">08</div>
+        <div class="card-body">
+          <div class="card-name">Meta-Prompting</div>
+          <div class="card-meta">APE · DSPy · Meta-Prompting paper · Optimization loops</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Day 3 modules -->
+  <div class="day-group">
+    <div class="day-header">
+      <span class="day-badge">Day 3</span>
+      <span class="day-title">Modules 09–12</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="/module/09">
+        <div class="card-num mod">09</div>
+        <div class="card-body">
+          <div class="card-name">Multi-Agent Systems</div>
+          <div class="card-meta">Orchestrator pattern · Parallel dispatch · Coordination</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/module/10">
+        <div class="card-num mod">10</div>
+        <div class="card-body">
+          <div class="card-name">Security &amp; Sandboxing</div>
+          <div class="card-meta">OWASP LLM Top 10 · Prompt injection · RSP</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/module/11">
+        <div class="card-num mod">11</div>
+        <div class="card-body">
+          <div class="card-name">Tech Stack Adaptation</div>
+          <div class="card-meta">Next.js · Pydantic v2 · Context7 · Stack integration</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/module/12">
+        <div class="card-num mod">12</div>
+        <div class="card-body">
+          <div class="card-name">Capstone &amp; Production</div>
+          <div class="card-meta">Full pipeline · CI/CD · Deployment patterns</div>
+        </div>
+        <span class="pill done">✓ Done</span>
+        <span class="card-arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Multimedia Learning -->
+  <div class="section-title">Multimedia Learning</div>
+
+  <!-- Featured: Audio Podcast -->
+  <a class="mm-featured" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+    <div class="mm-icon"><svg class="icon-lg" data-lucide="mic" aria-hidden="true"></svg></div>
+    <div class="mm-body">
+      <div class="mm-title">Architecting Reliable Autonomous AI Agents — Deep Dive Podcast</div>
+      <div class="mm-meta">~45 minutes · All 12 modules · NotebookLM AI audio overview · Perfect for commute listening</div>
+    </div>
+    <span class="mm-badge audio">AUDIO</span>
+  </a>
+
+  <!-- Explainer Videos -->
+  <div class="mm-subsection-title"><svg class="icon" data-lucide="video" aria-hidden="true"></svg> Explainer Videos — One per Module</div>
+  <div class="multimedia-grid">
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon">▶</div>
+      <div class="mm-body"><div class="mm-title">M01 — AI: From Assistant to Agent</div><div class="mm-meta">Paradigm shift · Three eras · PRAO loop</div></div>
+      <span class="mm-badge video">VIDEO</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon">▶</div>
+      <div class="mm-body"><div class="mm-title">M02 — Claude Code Foundations</div><div class="mm-meta">CLI architecture · Tool loop · Context system</div></div>
+      <span class="mm-badge video">VIDEO</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon">▶</div>
+      <div class="mm-body"><div class="mm-title">M03 — Agent Thinking</div><div class="mm-meta">Reasoning models · Thinking depth · PRAO trace</div></div>
+      <span class="mm-badge video">VIDEO</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon">▶</div>
+      <div class="mm-body"><div class="mm-title">M04 — Prompt Engineering Depth</div><div class="mm-meta">TCEF · GCCF · Chain-of-thought</div></div>
+      <span class="mm-badge video">VIDEO</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon">▶</div>
+      <div class="mm-body"><div class="mm-title">M05 — MCP Architecture</div><div class="mm-meta">Host · Client · Server · Three primitives</div></div>
+      <span class="mm-badge video">VIDEO</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon">▶</div>
+      <div class="mm-body"><div class="mm-title">M06 — Building MCP Servers</div><div class="mm-meta">TypeScript SDK · Zod · Tool definitions</div></div>
+      <span class="mm-badge video">VIDEO</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon">▶</div>
+      <div class="mm-body"><div class="mm-title">M07 — Amnesiac to Collaborator</div><div class="mm-meta">Skills · Slash commands · CLAUDE.md</div></div>
+      <span class="mm-badge video">VIDEO</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon">▶</div>
+      <div class="mm-body"><div class="mm-title">M08 — Meta-Prompting</div><div class="mm-meta">APE · DSPy · Automated prompt optimization</div></div>
+      <span class="mm-badge video">VIDEO</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon">▶</div>
+      <div class="mm-body"><div class="mm-title">M09 — Multi-Agent AI: A Guide</div><div class="mm-meta">Orchestrator · Fan-out · Coordination patterns</div></div>
+      <span class="mm-badge video">VIDEO</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon">▶</div>
+      <div class="mm-body"><div class="mm-title">M10 — Agentic AI Security</div><div class="mm-meta">Permissions · Prompt injection · Secrets</div></div>
+      <span class="mm-badge video">VIDEO</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon">▶</div>
+      <div class="mm-body"><div class="mm-title">M11 — Adapting AI to Your Stack</div><div class="mm-meta">Context7 · CLAUDE.md encoding · Stack integration</div></div>
+      <span class="mm-badge video">VIDEO</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon">▶</div>
+      <div class="mm-body"><div class="mm-title">M12 — Capstone &amp; Production</div><div class="mm-meta">Pipeline design · Observability · Deployment</div></div>
+      <span class="mm-badge video">VIDEO</span>
+    </a>
+  </div>
+
+  <!-- Slide Decks -->
+  <div class="mm-subsection-title"><svg class="icon" data-lucide="bar-chart-2" aria-hidden="true"></svg> Slide Decks — Download PDF</div>
+  <div class="multimedia-grid">
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon"><svg class="icon" data-lucide="download" aria-hidden="true"></svg></div>
+      <div class="mm-body"><div class="mm-title">Course Overview — Agentic Engineering Blueprint</div><div class="mm-meta">All 12 modules · Course-wide summary slides</div></div>
+      <span class="mm-badge slides">SLIDES</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon"><svg class="icon" data-lucide="download" aria-hidden="true"></svg></div>
+      <div class="mm-body"><div class="mm-title">M01 — Agentic AI Engineering</div><div class="mm-meta">Paradigm shift · Three eras of AI coding</div></div>
+      <span class="mm-badge slides">SLIDES</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon"><svg class="icon" data-lucide="download" aria-hidden="true"></svg></div>
+      <div class="mm-body"><div class="mm-title">M02 — Claude Code Foundations</div><div class="mm-meta">CLI · Tool loop · Architecture</div></div>
+      <span class="mm-badge slides">SLIDES</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon"><svg class="icon" data-lucide="download" aria-hidden="true"></svg></div>
+      <div class="mm-body"><div class="mm-title">M03 — Agentic Telemetry</div><div class="mm-meta">Agent thinking · Reasoning models</div></div>
+      <span class="mm-badge slides">SLIDES</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon"><svg class="icon" data-lucide="download" aria-hidden="true"></svg></div>
+      <div class="mm-body"><div class="mm-title">M04 — Precision Prompt Architecture</div><div class="mm-meta">TCEF · GCCF · Prompt engineering</div></div>
+      <span class="mm-badge slides">SLIDES</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon"><svg class="icon" data-lucide="download" aria-hidden="true"></svg></div>
+      <div class="mm-body"><div class="mm-title">M05 — MCP Architecture</div><div class="mm-meta">Host · Client · Server · Three primitives</div></div>
+      <span class="mm-badge slides">SLIDES</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon"><svg class="icon" data-lucide="download" aria-hidden="true"></svg></div>
+      <div class="mm-body"><div class="mm-title">M06 — MCP Server Engineering</div><div class="mm-meta">TypeScript SDK · Zod · Tool handler pattern</div></div>
+      <span class="mm-badge slides">SLIDES</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon"><svg class="icon" data-lucide="download" aria-hidden="true"></svg></div>
+      <div class="mm-body"><div class="mm-title">M07 — Claude Code Architecture</div><div class="mm-meta">Skills · Slash commands · CLAUDE.md</div></div>
+      <span class="mm-badge slides">SLIDES</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon"><svg class="icon" data-lucide="download" aria-hidden="true"></svg></div>
+      <div class="mm-body"><div class="mm-title">M08 — Meta-Prompting at Scale</div><div class="mm-meta">APE · DSPy · Automated optimization</div></div>
+      <span class="mm-badge slides">SLIDES</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon"><svg class="icon" data-lucide="download" aria-hidden="true"></svg></div>
+      <div class="mm-body"><div class="mm-title">M09 — Multi-Agent Engineering Blueprints</div><div class="mm-meta">Orchestrator · Fan-out · Coordination</div></div>
+      <span class="mm-badge slides">SLIDES</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon"><svg class="icon" data-lucide="download" aria-hidden="true"></svg></div>
+      <div class="mm-body"><div class="mm-title">M10 — Securing Agentic Systems</div><div class="mm-meta">Permissions · Prompt injection · Audit trail</div></div>
+      <span class="mm-badge slides">SLIDES</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon"><svg class="icon" data-lucide="download" aria-hidden="true"></svg></div>
+      <div class="mm-body"><div class="mm-title">M11 — Agentic Stack Adaptation</div><div class="mm-meta">Context7 · CLAUDE.md · Stack encoding</div></div>
+      <span class="mm-badge slides">SLIDES</span>
+    </a>
+    <a class="mm-card" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+      <div class="mm-icon"><svg class="icon" data-lucide="download" aria-hidden="true"></svg></div>
+      <div class="mm-body"><div class="mm-title">M12 — Agentic Engineering Flight Manual</div><div class="mm-meta">Full pipeline · Observability · Production checklist</div></div>
+      <span class="mm-badge slides">SLIDES</span>
+    </a>
+  </div>
+
+  <!-- Flashcards -->
+  <div class="mm-subsection-title"><svg class="icon" data-lucide="layers" aria-hidden="true"></svg> Flashcards — 2 Sets · 18 Cards Total</div>
+  <div class="multimedia-grid" style="grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));">
+    <div class="mm-card" style="cursor:default;">
+      <div class="mm-icon"><svg class="icon" data-lucide="layers" aria-hidden="true"></svg></div>
+      <div class="mm-body">
+        <div class="mm-title">Agentic Flashcards — Foundations</div>
+        <div class="mm-meta">9 cards · Medium difficulty · Modules 01–06 · PRAO, MCP, TCEF, GCCF</div>
+      </div>
+      <span class="mm-badge cards">MEDIUM</span>
+    </div>
+    <div class="mm-card" style="cursor:default;">
+      <div class="mm-icon"><svg class="icon" data-lucide="layers" aria-hidden="true"></svg></div>
+      <div class="mm-body">
+        <div class="mm-title">Agentic Systems Flashcards — Advanced</div>
+        <div class="mm-meta">9 cards · Hard difficulty · Modules 07–12 · Multi-agent, Security, Production</div>
+      </div>
+      <span class="mm-badge cards">HARD</span>
+    </div>
+  </div>
+  <a class="mm-notebook-link" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+    <svg class="icon" data-lucide="external-link" aria-hidden="true"></svg> Open NotebookLM notebook to access flashcards &amp; all materials
+  </a>
+
+  <!-- Challenge Exercises & Missions -->
+  <div class="section-title">Challenge Exercises &amp; Missions</div>
+  <div class="day-group">
+    <div class="day-header">
+      <span class="day-badge" style="background:rgba(139,92,246,0.15);color:#a78bfa;">Missions</span>
+      <span class="day-title">Open-ended engineering challenges — build real things</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="/challenges">
+        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;letter-spacing:0.05em;">DOC</div>
+        <div class="card-body">
+          <div class="card-name">Challenge Missions</div>
+          <div class="card-meta">8 missions · Difficulty ★★☆ to ★★★★★ · Real codebase work · Linear &amp; GitHub MCP</div>
+        </div>
+        <span class="pill done" style="background:rgba(139,92,246,0.15);color:#a78bfa;border-color:rgba(139,92,246,0.3);">8 missions</span>
+        <span class="card-arrow">→</span>
+      </a>
+    </div>
+  </div>
+  <div class="day-group" style="margin-top:0;">
+    <div class="day-header">
+      <span class="day-badge" style="background:rgba(139,92,246,0.15);color:#a78bfa;">Exercises</span>
+      <span class="day-title">Build challenges baked into labs — non-gating, +XP</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="/lab/03#ce-03-d">
+        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;">CE</div>
+        <div class="card-body">
+          <div class="card-name">CE-03-D · Issue Navigation</div>
+          <div class="card-meta">Lab 03 · Debug auth 500 error · Tool calls + PRAO + GCCF fix prompt · +30 XP</div>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/lab/04#ce-04-b">
+        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;">CE</div>
+        <div class="card-body">
+          <div class="card-name">CE-04-B · Tool Schema Design</div>
+          <div class="card-meta">Lab 04 · Write production MCP tool JSON schema · Auto-validated · +30 XP</div>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/lab/06#ce-06-c">
+        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;">CE</div>
+        <div class="card-body">
+          <div class="card-name">CE-06-C · Author a Skill YAML</div>
+          <div class="card-meta">Lab 06 · Write standup-writer skill from scratch · 6-field validation · +30 XP</div>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/lab/06#ce-06-d">
+        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;">CE</div>
+        <div class="card-body">
+          <div class="card-name">CE-06-D · Build /pr-ready Command</div>
+          <div class="card-meta">Lab 06 · Design slash command with 4 sections · Data flow required · +30 XP</div>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/lab/07#ce-07-b">
+        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;">CE</div>
+        <div class="card-body">
+          <div class="card-name">CE-07-B · Subagent System Prompt</div>
+          <div class="card-meta">Lab 07 · Write 200+ word system prompt · 6-section spec · 200-word min · +30 XP</div>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/lab/08#ce-08-a">
+        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;">CE</div>
+        <div class="card-body">
+          <div class="card-name">CE-08-A · Permission Models</div>
+          <div class="card-meta">Lab 08 · Write settings.json for 3 production scenarios · JSON validated · +30 XP</div>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/lab/09#ce-09-a">
+        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;">CE</div>
+        <div class="card-body">
+          <div class="card-name">CE-09-A · Capstone Skill YAML</div>
+          <div class="card-meta">Lab 09 · Write complete skill YAML for your pipeline · 6-field auto-validation · +40 XP</div>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/lab/09#ce-09-c">
+        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;">CE</div>
+        <div class="card-body">
+          <div class="card-name">CE-09-C · Issue Tracker Integration</div>
+          <div class="card-meta">Lab 09 · Specify Linear/GitHub pipeline integration · 4 design questions · +40 XP</div>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Framework -->
+  <div class="section-title">Lab Framework (Extracted)</div>
+  <div class="framework-grid">
+    <div class="fw-card">
+      <code>lab-framework/core.css</code>
+      <div class="fw-size">19 KB · Design system · All component styles</div>
+    </div>
+    <div class="fw-card">
+      <code>lab-framework/core.js</code>
+      <div class="fw-size">26 KB · IIFE module · 15-function public API</div>
+    </div>
+    <div class="fw-card">
+      <code>lab-framework/build.js</code>
+      <div class="fw-size">10 KB · Node.js CLI · Inline build pipeline</div>
+    </div>
+    <div class="fw-card">
+      <code>docs/meta/framework-architecture/</code>
+      <div class="fw-size">4 docs · ARCHITECTURE + CATALOG + PATTERN-ANALYSIS + CITATIONS</div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  &ldquo;Claude&rdquo; and &ldquo;Claude Code&rdquo; are trademarks of Anthropic, PBC. This course is not affiliated with or endorsed by Anthropic.
+  Fonts: <a href="https://fonts.google.com/specimen/Inter">Inter</a> and <a href="https://fonts.google.com/specimen/JetBrains+Mono">JetBrains Mono</a>
+  via Google Fonts under the <a href="https://scripts.sil.org/OFL">SIL Open Font License 1.1</a>.
+  Course content &copy; 2026 Agentic AI Engineering Course.
+</footer>
+
+<script>if (window.lucide) lucide.createIcons();</script>
+</body>
+</html>
