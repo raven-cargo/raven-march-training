@@ -9,6 +9,38 @@
 
 ---
 
+## Session 12 — Remaining Polish (Next Session)
+
+### SHOULD DO (gets to 99%)
+
+1. **Lab 08 responsive polish** - add @media breakpoints (1h)
+2. **Labs 06/08 accessibility** - add role=, tabindex to interactive elements (2h)
+3. **CE-to-Mission linkage** - add "Ready for more?" links from 8 CE exercises to corresponding missions (2h)
+4. **Lab 09 prediction challenges** - add 2-3 predictions to restore pedagogical pattern (1h)
+5. **Challenge naming standardization** - pick numeric (1.1-3.2) everywhere, remove alpha refs (30m)
+6. **Pin CDN versions** - marked.js, mermaid, lucide should use exact versions not @latest (30m)
+
+### NICE TO HAVE (beyond 99%)
+
+7. Lab 01 XP system upgrade to LAB_KEY pattern (4h)
+8. Lab 05 localStorage refactor to granular keys (2h)
+9. Implement CE-05-C/D (Lab 05 highest gap: zero challenges) (4h)
+10. Implement CE-02-B (Write Production CLAUDE.md) (3h)
+11. Dedicated /challenges HTML page with completion tracking (6h)
+12. XP for mission completion via self-report button (2h)
+13. Portfolio export mechanism (4h)
+14. Compare-component markup standardization across M05/M06/M08/M09 (2h)
+15. Fix data-diagram-id collision M02/M03 (30m)
+
+### ARCHITECTURAL (future sprint)
+
+16. Activate lab-framework build pipeline (all labs inline CSS/JS currently)
+17. Add package.json + CI/CD pipeline
+18. Async bridge curriculum completion (paused, 4 weeks of content)
+19. Regenerate NotebookLM multimedia with improved prompts
+
+---
+
 ## Priority Stack (Post-Audit)
 
 ```

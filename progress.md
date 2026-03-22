@@ -15,10 +15,16 @@
 - Deployed: https://agentic-ai-course-hazel.vercel.app
 - Committed to `master` branch
 
-### Module Quality Remediation — IN PROGRESS 🔄
-- P0 fixes: 9 items (invalid markup, missing components, spec violations)
-- P1 quality lift: 12 items (a11y, quiz gaps, pedagogy gaps)
-- P2 polish: 6 items (cross-module consistency, backlog)
+### Module Quality Remediation — DONE ✅
+- P0 fixes: 9/9 DONE (invalid markup, missing components, spec violations)
+- P1 quality lift: 12/12 DONE (a11y, quiz gaps, pedagogy gaps)
+- P2 polish: 4/7 DONE (3 backlog: compare markup, step class names, diagram-id collision)
+
+### Labs & Challenges Polish — DONE ✅ (Session 11)
+- CC2 pipeline analysis completed (OBSERVE/REASON/CREATE/DEPLOY/VERIFY)
+- 9 labs analyzed, 8 challenge missions assessed, 18 action items resolved
+- MERCURIO 9.0/10, MARS 98%+ PASS
+- 7 commits on `curriculum-production-gaps` branch, 4 Vercel deploys
 
 ### Phase 1→2 Async Bridge Curriculum — PAUSED ⏸️
 **Branch**: `feature/async-bridge-curriculum`
@@ -43,6 +49,40 @@
 5. Critical SSE deprecation issue: Mahesh Murag MCP Workshop (325K views, March 2025) shows SSE as current — must pair with caveat + John Welsh's "Remote MCPs" video (June 2025)
 6. Same Vercel hosting for async content (feature branch → merge to master when ready)
 7. HTML pages to be built using same ix-diagram component system as Phase 1 modules
+
+## Session 11 — CC2 Labs/Challenges Analysis & Polish (2026-03-22)
+
+**Summary**: Ran full CC2 pipeline (OBSERVE->REASON->CREATE->DEPLOY->VERIFY) on labs and challenges. 7 commits, 4 Vercel deploys, MERCURIO (9.0/10) and MARS (98%+ PASS) reviews.
+
+### Completed
+
+1. CC2-OBSERVE: Labs deep analysis (511 lines) - quality scorecard, 9 gaps identified
+2. CC2-OBSERVE: Challenges analysis (451 lines) - 8 missions assessed, 9 gaps found
+3. CC2-REASON: Strategic priority matrix (100 lines) - 18 action items categorized
+4. Dashboard redesign: Challenge Missions split into 3 color-coded track groups (8 individual cards)
+5. Dashboard stats fixed: lab lines 17,440->19,645, module words ~50k->~90k, framework API 15->19
+6. Added time estimates + prerequisites to all 8 challenge missions
+7. Responsive CSS: Labs 06 (38 lines) and 07 (111 lines) - mobile breakpoints at 768px + 480px
+8. Connect-forward panels: Lab 01 (new), Labs 04/05 (verified existing)
+9. Lab 05 completion callout: fixed nav to match canonical Day 2 order (05->04->06)
+10. Module-viewer heading IDs: custom marked.js renderer + hash-scroll handler for challenge deep-links
+11. MERCURIO three-plane review: Mental 8.5, Physical 9.0, Spiritual 9.5 = 9.0/10 overall
+12. MARS systems validation: PASS at 98%+ after P1/P2 fixes
+13. Meta-observations dashboard: added 4 KPIs + 2 nav tabs
+
+### Commits on branch `curriculum-production-gaps`
+
+```
+5b8a950 feat: add labs + challenges KPIs to meta-observations dashboard
+bfa677b fix: Lab 05 nav consistency + heading IDs for challenge anchors
+82c8cd2 fix: apply MERCURIO review corrections + connect-forward + CC2-REASON
+164e037 feat: add connect-forward panel to Lab 01
+8c0d851 feat: add responsive breakpoints to Labs 06/07 + CC2 labs analysis
+080144d feat: redesign Challenge Missions UI + add time estimates + fix stats
+07eb112 checkpoint: baseline before CC2 labs/challenges analysis and polish
+```
+
+---
 
 ## Session 10 — Quality Audit & Remediation (2026-03-18)
 
