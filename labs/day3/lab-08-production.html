@@ -531,6 +531,16 @@
     }
   
     pre { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    /* Focus-visible for keyboard navigation */
+    :focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    button:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
 </style>
 </head>
 <body>
@@ -707,7 +717,7 @@
           but <strong>never</strong> write to production config files (<code>*.prod.*</code>, <code>.env*</code>) or run <code>curl</code>/<code>wget</code>.
         </p>
         <label for="s1-apply" class="sr-only">Write the permissions block for the CI/CD agent</label>
-        <textarea aria-label="{" id="s1-apply"
+        <textarea aria-label="Write the permissions block for the CI/CD agent" id="s1-apply"
           aria-describedby="s1-apply-hint"
           oninput="checkApply('s1-apply','s1-apply-btn',40)"
           placeholder='{ "permissions": { "allow": [...], "deny": [...] } }'
@@ -739,7 +749,7 @@
       </div>
       <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">"A CI agent that reads source code, runs tests, and reports results. Should <strong>never write files, commit, or push</strong>."</p>
       <label style="font-weight:600;font-size:12px;display:block;margin-bottom:4px;color:var(--text);">Your settings.json "permissions" block:</label>
-      <textarea aria-label="{" id="ce-08-a-s1" placeholder='{"allow": [...], "deny": [...]}' style="width:100%;min-height:120px;font-family:&apos;Fira Code&apos;,monospace;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;resize:vertical;"></textarea>
+      <textarea aria-label="Write permissions for CI agent scenario" id="ce-08-a-s1" placeholder='{"allow": [...], "deny": [...]}' style="width:100%;min-height:120px;font-family:&apos;Fira Code&apos;,monospace;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;resize:vertical;"></textarea>
     </div>
 
     <!-- Scenario 2 -->
@@ -750,7 +760,7 @@
       </div>
       <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">"Reads source files and writes to <code>/docs/</code> only. Can run linters but not tests. Must <strong>not touch any .env files</strong>."</p>
       <label style="font-weight:600;font-size:12px;display:block;margin-bottom:4px;color:var(--text);">Your settings.json "permissions" block:</label>
-      <textarea aria-label="{" id="ce-08-a-s2" placeholder='{"allow": [...], "deny": [...]}' style="width:100%;min-height:120px;font-family:&apos;Fira Code&apos;,monospace;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;resize:vertical;"></textarea>
+      <textarea aria-label="Write permissions for docs generator agent scenario" id="ce-08-a-s2" placeholder='{"allow": [...], "deny": [...]}' style="width:100%;min-height:120px;font-family:&apos;Fira Code&apos;,monospace;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;resize:vertical;"></textarea>
     </div>
 
     <!-- Scenario 3 -->
@@ -761,7 +771,7 @@
       </div>
       <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">"Reads logs and queries a read-only database. <strong>Must never write anything, execute shell commands, or access source code.</strong>"</p>
       <label style="font-weight:600;font-size:12px;display:block;margin-bottom:4px;color:var(--text);">Your settings.json "permissions" block:</label>
-      <textarea aria-label="{" id="ce-08-a-s3" placeholder='{"allow": [...], "deny": [...]}' style="width:100%;min-height:120px;font-family:&apos;Fira Code&apos;,monospace;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;resize:vertical;"></textarea>
+      <textarea aria-label="Write permissions for production monitor agent scenario" id="ce-08-a-s3" placeholder='{"allow": [...], "deny": [...]}' style="width:100%;min-height:120px;font-family:&apos;Fira Code&apos;,monospace;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;resize:vertical;"></textarea>
     </div>
   </div>
 
@@ -1004,7 +1014,7 @@ STRIPE_KEY=sk_live_abc123</div>
         and explain what the developer must do locally to set them up.
       </p>
       <label for="s2-apply" class="sr-only">Write the MCP server config and setup instructions</label>
-      <textarea aria-label="{" id="s2-apply"
+      <textarea aria-label="Write MCP server config and setup instructions" id="s2-apply"
         aria-describedby="s2-apply-hint"
         oninput="checkApply('s2-apply','s2-apply-btn',40)"
         placeholder='{ "mcpServers": { "my-server": { "env": { ... } } } }  +  setup steps...'

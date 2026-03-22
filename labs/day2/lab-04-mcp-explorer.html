@@ -863,6 +863,16 @@
   
     pre { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .sr-only { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0; }
+    /* Focus-visible for keyboard navigation */
+    :focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    button:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
 </style>
 </head>
 <body>
@@ -915,7 +925,7 @@
     </div>
 
     <div class="card">
-      <h3>Click each component to understand the architecture</h3>
+      <h2>Click each component to understand the architecture</h2>
       <p style="font-size:0.82rem;">Click all three boxes to unlock Section 1.</p>
 
       <div class="arch-diagram">
@@ -1195,7 +1205,7 @@
     <p>Claude reads tool JSON schemas to understand what each tool does and how to call it. The <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;background:var(--bg-raised);padding:2px 6px;border-radius:4px;">description</code> field is what Claude actually uses to decide <em>when</em> to call a tool — write it for Claude, not for humans.</p>
 
     <div class="card">
-      <h3><svg class="icon" data-lucide="search" aria-hidden="true"></svg> Interactive Schema Explorer</h3>
+      <h2><svg class="icon" data-lucide="search" aria-hidden="true"></svg> Interactive Schema Explorer</h2>
       <p style="font-size:0.82rem;">Click any line to reveal an annotation explaining what Claude does with that field.</p>
 
       <div class="schema-explorer" role="region" aria-label="Interactive tool schema explorer">
@@ -1349,7 +1359,7 @@
       </div>
 
       <label for="ce-04-b-input" style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;">Your tool schema JSON:</label>
-      <textarea aria-label="{" id="ce-04-b-input" placeholder='{&#10;  "name": "search_issues",&#10;  "description": "...",&#10;  "inputSchema": {&#10;    "type": "object",&#10;    "properties": {&#10;      "query": {&#10;        "type": "string",&#10;        "description": "..."&#10;      }&#10;    },&#10;    "required": ["query"]&#10;  }&#10;}' style="width:100%;min-height:260px;font-family:'Fira Code',monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;color:var(--text);resize:vertical;box-sizing:border-box;"></textarea>
+      <textarea aria-label="Write your tool schema JSON" id="ce-04-b-input" placeholder='{&#10;  "name": "search_issues",&#10;  "description": "...",&#10;  "inputSchema": {&#10;    "type": "object",&#10;    "properties": {&#10;      "query": {&#10;        "type": "string",&#10;        "description": "..."&#10;      }&#10;    },&#10;    "required": ["query"]&#10;  }&#10;}' style="width:100%;min-height:260px;font-family:'Fira Code',monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;color:var(--text);resize:vertical;box-sizing:border-box;"></textarea>
 
       <div id="ce-04-b-validation" style="display:none;margin-top:12px;padding:12px;border-radius:8px;font-size:13px;"></div>
 
@@ -1447,7 +1457,7 @@
     </div>
 
     <div class="card">
-      <h3><svg class="icon-lg" data-lucide="repeat" aria-hidden="true"></svg> Interactive PRAO Trace — MCP Tool Call</h3>
+      <h2><svg class="icon-lg" data-lucide="repeat" aria-hidden="true"></svg> Interactive PRAO Trace — MCP Tool Call</h2>
       <p style="font-size:0.82rem;">Click each step to expand the detail. Each step maps to a PRAO phase.</p>
 
       <div class="prao-steps" id="prao-steps">
@@ -1495,7 +1505,7 @@
 
     <hr class="divider" />
 
-    <h3><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Knowledge Checks</h3>
+    <h2><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Knowledge Checks</h2>
     <p>Answer at least <strong>2 out of 3</strong> correctly to unlock the Capstone Challenge.</p>
 
     <div id="kcheck-container"></div>
@@ -1624,7 +1634,7 @@
 
     <div class="completion-card" style="margin-top:40px;">
       <div style="font-size:2rem;margin-bottom:8px;"><svg class="icon-lg" data-lucide="graduation-cap" aria-hidden="true"></svg></div>
-      <h3>Lab 04 Complete!</h3>
+      <h2>Lab 04 Complete!</h2>
       <p>You've mastered MCP — the extensibility layer that transforms Claude Code from a capable assistant into a deeply integrated engineering tool.</p>
       <p style="margin-top:8px;"><strong style="color:var(--accent);">Next: Lab 05 — Prompt Engineering Workshop.</strong> You'll build durable prompt structures and practice reliability patterns before packaging them as reusable skills.</p>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
