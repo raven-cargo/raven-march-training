@@ -5972,6 +5972,19 @@
       contentEl.style.display = 'block';
       if (window.marked && typeof window.marked.parse === 'function') {
         try {
+          // Configure heading renderer to emit id attributes for anchor navigation
+          const renderer = new marked.Renderer();
+          renderer.heading = function({ text, depth }) {
+            const raw = typeof text === 'object' ? text.text || '' : String(text);
+            const slug = raw.toLowerCase()
+              .replace(/<[^>]*>/g, '')
+              .replace(/[^\w\s-]/g, '')
+              .replace(/\s+/g, '-')
+              .replace(/-+/g, '-')
+              .trim();
+            return '<h' + depth + ' id="' + slug + '">' + raw + '</h' + depth + '>';
+          };
+          marked.setOptions({ renderer: renderer });
           contentEl.innerHTML = marked.parse(md);
         } catch (parseErr) {
           console.warn('[Module] Markdown parse failed:', parseErr);
@@ -6004,6 +6017,13 @@
       } catch (renderErr) {
         console.warn('[Module] Post-render processing failed:', renderErr);
         updateNavProgress();
+      }
+      // Scroll to hash anchor after content renders (for deep links like /challenges#mission-11-...)
+      if (window.location.hash) {
+        setTimeout(function() {
+          var target = document.getElementById(window.location.hash.slice(1));
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300);
       }
       // Check if already completed in a prior session
       if (localStorage.getItem(slug + '-complete') && readSections.size >= totalSections) {
