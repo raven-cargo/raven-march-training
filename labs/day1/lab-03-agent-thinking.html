@@ -1312,7 +1312,11 @@ router.post('/login', async (req, res) =&gt; {
             <p style="color:var(--text-muted);margin-top:6px;font-style:italic;">"Goal: Fix the 500 on POST /api/auth/login by resolving the Prisma schema mismatch from commit a3f2d8c. Context: The commit added profile fields. Prod DB may not have the migration applied. Prisma client may not be regenerated. Constraints: Do not change auth logic — only fix data layer. Show migration status first before applying anything. Format: Explain what you'll check, what you find, and what you'll change before you change it."</p>
           </div>
         </div>
-        <p style="margin-top:12px;font-size:13px;color:var(--text-muted);">→ Do this for real: <a href="/challenges" style="color:var(--secondary);">Mission 2.2 in Challenge Missions</a> — Issue-to-PR Pipeline using Linear or GitHub MCP to handle real issues end-to-end.</p>
+        <div style="margin-top:16px; padding:12px 16px; background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.15); border-radius:8px; font-size:13px;">
+          <span style="color:#a78bfa; font-weight:600;">Ready for more?</span>
+          <span style="color:#94a3b8;"> This exercise prepares you for </span>
+          <a href="/challenges#mission-21-codebase-archaeology---understand-before-touching-" style="color:#a78bfa; text-decoration:underline;">Mission 2.1 — Codebase Archaeology</a>
+        </div>
       </div>
     </div>
   </div>
