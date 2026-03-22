@@ -28,24 +28,24 @@
         "The PRAO framework provides excellent structural backbone across all modules"
       ],
       "top_issues": [
-        { "id": "ARCH-01", "severity": "high", "module": "04-09", "description": "Modules 04-09 average 5,281 words vs 9,657 for M01-M03 — content depth inconsistency suggests incomplete development", "recommendation": "Expand M04-M09 to match the depth and interactive richness of M01-M03" },
+        { "id": "ARCH-01", "severity": "high", "module": "04-09", "description": "Modules 04-09 average 5,281 words vs 9,657 for M01-M03 -- content depth inconsistency suggests incomplete development", "recommendation": "Expand M04-M09 to match the depth and interactive richness of M01-M03" },
         { "id": "ARCH-02", "severity": "medium", "module": "all", "description": "No explicit module on Claude SDK programmatic API (claude.ai SDK, agent builder patterns)", "recommendation": "Consider adding SDK coverage to M09 or M12, or a dedicated module" },
-        { "id": "ARCH-03", "severity": "low", "module": "08", "description": "Module 08 (Meta-Prompting) at 4,267 words is the thinnest module, yet covers a complex topic", "recommendation": "Expand with more concrete meta-prompting examples and evaluation exercises" }
+        { "id": "ARCH-03", "severity": "low", "module": "08", "description": "Module 08 (Meta-Prompting) at 4,472 words is still the thinnest module, yet it covers a conceptually dense topic", "recommendation": "Expand with more concrete meta-prompting examples and evaluation exercises" }
       ]
     },
     "pedagogy": {
       "score": 88,
       "findings": [
-        "Predict-before-explain pattern used consistently across all 12 modules — excellent pedagogical practice",
+        "Predict-before-explain pattern used consistently across all 12 modules -- excellent pedagogical practice",
         "Every module opens with clear learning objectives via ix-diagram objective components",
-        "Deep Dive collapsibles provide optional depth without cognitive overload — well-designed progressive disclosure",
+        "Deep Dive collapsibles provide optional depth without cognitive overload -- well-designed progressive disclosure",
         "Quiz questions align with learning objectives and use Bloom's taxonomy (apply/analyze level, not just recall)",
         "The 'Senior Engineer on Day One' test in M07 is an exemplary skill assessment heuristic"
       ],
       "top_issues": [
         { "id": "PED-01", "severity": "high", "module": "04-09", "description": "Interactive element density drops significantly in M04-M09 (avg 11.5 elements vs 22.3 for M01-M03). Students may disengage.", "recommendation": "Add more agent-trace, terminal-sim, and intervention components to maintain engagement" },
         { "id": "PED-02", "severity": "medium", "module": "08", "description": "Module 08 now has stronger quiz coverage, but practice remains light without a terminal-sim or guided builder exercise", "recommendation": "Add a hands-on meta-prompt builder or terminal-sim to deepen practice" },
-        { "id": "PED-03", "severity": "medium", "module": "12", "description": "Capstone module is content-heavy (11,138 words) but may overwhelm on Day 3 of intensive. No pacing guidance.", "recommendation": "Add explicit time estimates per section and consider splitting into design + execution phases" }
+        { "id": "PED-03", "severity": "medium", "module": "12", "description": "Capstone module is content-heavy (10,581 words) and may still overwhelm learners on Day 3 of the intensive without pacing guidance.", "recommendation": "Add explicit time estimates per section and consider splitting into design + execution phases" }
       ]
     },
     "accuracy": {
@@ -59,7 +59,7 @@
       ],
       "top_issues": [
         { "id": "ACC-01", "severity": "low", "module": "12", "description": "Module 12 back-reference precision was corrected in the implementation refresh; the remaining risk is future drift if module summaries change without an audit pass.", "recommendation": "Keep the M12 cross-reference audit in the review checklist for future curriculum edits" },
-        { "id": "ACC-02", "severity": "medium", "module": "02", "description": "M02 references four tool categories (Files, Bash, Web, MCP) — Web tools (WebSearch, WebFetch) may not be available in all Claude Code configurations", "recommendation": "Add a note that Web tools availability depends on the Claude Code plan/configuration" },
+        { "id": "ACC-02", "severity": "medium", "module": "02", "description": "M02 references four tool categories (Files, Bash, Web, MCP) -- Web tools (WebSearch, WebFetch) may not be available in all Claude Code configurations", "recommendation": "Add a note that Web tools availability depends on the Claude Code plan/configuration" },
         { "id": "ACC-03", "severity": "low", "module": "06", "description": "MCP TypeScript SDK import paths use .js extensions (e.g., server/mcp.js) which is correct for ESM but may confuse TypeScript newcomers", "recommendation": "Add a brief note explaining ESM .js extension convention in TypeScript" }
       ]
     },
@@ -83,14 +83,14 @@
       "findings": [
         "Consistent voice across all 12 modules: professional, direct, second-person address",
         "Terminology is consistent: PRAO, TCEF, Agentic Loop used uniformly with the same definitions",
-        "Module transitions are smooth — each module opens by connecting to prior concepts",
-        "Double-dash (--) used consistently instead of em-dash across all modules",
+        "Module transitions are smooth -- each module opens by connecting to prior concepts",
+        "Dash usage is mostly consistent after the refresh, though subtitle punctuation should still be standardized in a final editor pass",
         "Jargon is introduced before use in every case observed"
       ],
       "top_issues": [
-        { "id": "EDIT-01", "severity": "medium", "module": "04", "description": "Module 04 title says 'Prompt Engineering Depth' but the module refers to both GCCF and TCEF frameworks — the transition from GCCF to TCEF could be clearer", "recommendation": "Add explicit framing: 'GCCF is the baseline you already know; TCEF is the upgrade this module teaches'" },
+        { "id": "EDIT-01", "severity": "medium", "module": "04", "description": "Module 04 title says 'Prompt Engineering Depth' but the module refers to both GCCF and TCEF frameworks -- the transition from GCCF to TCEF could be clearer", "recommendation": "Add explicit framing: 'GCCF is the baseline you already know; TCEF is the upgrade this module teaches'" },
         { "id": "EDIT-02", "severity": "low", "module": "12", "description": "Module 12 overview mapping is now corrected; preserve that wording if the overview is revised again so the editor pass does not reintroduce the old mismatch", "recommendation": "Keep the corrected M12 overview wording aligned with the module focus map during future edits" },
-        { "id": "EDIT-03", "severity": "low", "module": "01-12", "description": "Some modules use 'Agentic AI Engineering — 3-Day Intensive Course' and others use 'Agentic AI Engineering -- 3-Day Intensive Course' (em-dash vs double-dash inconsistency in subtitle)", "recommendation": "Standardize to one dash convention throughout" }
+        { "id": "EDIT-03", "severity": "low", "module": "01-12", "description": "Subtitle punctuation is close to consistent, but a final pass should standardize dash conventions across all modules and companion pages", "recommendation": "Standardize to one dash convention throughout" }
       ]
     },
     "ux": {
@@ -105,7 +105,7 @@
       "top_issues": [
         { "id": "UX-01", "severity": "low", "module": "06-12", "description": "Baseline diagram coverage is now restored for Modules 06-12, but each later module currently has only one standalone visual companion", "recommendation": "Add second-wave visuals only where a module still has a dense concept cluster that would benefit from another interactive diagram" },
         { "id": "UX-02", "severity": "medium", "module": "04", "description": "Module 04 has the fewest interactive elements per word (11 elements / 6144 words = 1.8/1000w) vs M02 (24/10356 = 2.3/1000w)", "recommendation": "Add more interactive components, especially agent-trace examples showing TCEF in action" },
-        { "id": "UX-03", "severity": "medium", "module": "08", "description": "Module 08 (Meta-Prompting) lacks a terminal-sim or hands-on code block exercise — students have no chance to try meta-prompting", "recommendation": "Add an interactive meta-prompt builder exercise" }
+        { "id": "UX-03", "severity": "medium", "module": "08", "description": "Module 08 (Meta-Prompting) lacks a terminal-sim or hands-on code block exercise -- students have no chance to try meta-prompting", "recommendation": "Add an interactive meta-prompt builder exercise" }
       ]
     },
     "categorical": {
@@ -206,46 +206,46 @@
       "impact": "Eliminates the content cliff in the middle of the course"
     },
     {
-      "priority": "must-have",
-      "description": "Add token economics coverage (cost management, context budgeting)",
+      "priority": "should-have",
+      "description": "Add one concrete production observability walkthrough to M12",
       "effort": "medium",
-      "impact": "Addresses the #1 question senior engineers will ask"
+      "impact": "Turns production guidance into an operational example with budgets, burn rate, and alerts"
     },
     {
       "priority": "should-have",
-      "description": "Create HTML diagrams for Modules 06-12",
-      "effort": "high",
-      "impact": "Maintains visual learning support consistency across the entire course"
-    },
-    {
-      "priority": "should-have",
-      "description": "Strengthen M08->M09 compositional bridge",
-      "effort": "low",
-      "impact": "Improves learning flow through the most disconnected transition"
-    },
-    {
-      "priority": "should-have",
-      "description": "Add concrete prompt injection defense code examples to M10",
+      "description": "Add a hands-on meta-prompt builder or terminal-sim to M08",
       "effort": "medium",
-      "impact": "Makes security module production-actionable"
+      "impact": "Gives students a way to practice meta-prompting instead of only reading about it"
+    },
+    {
+      "priority": "should-have",
+      "description": "Add one worked artifact-to-orchestrator exercise spanning M08 and M09",
+      "effort": "medium",
+      "impact": "Strengthens the bridge from generated specialist artifacts into orchestration"
     },
     {
       "priority": "nice-to-have",
       "description": "Mention Context7 earlier in M05 MCP examples",
       "effort": "low",
-      "impact": "Removes orphaned concept, creates smoother M05->M11 connection"
-    },
-    {
-      "priority": "nice-to-have",
-      "description": "Add Claude SDK/API programmatic integration coverage",
-      "effort": "high",
-      "impact": "Closes the gap between CLI usage and production deployment"
+      "impact": "Removes an orphaned concept and creates a smoother M05->M11 connection"
     },
     {
       "priority": "nice-to-have",
       "description": "Standardize dash convention (-- vs em-dash) in module subtitles",
       "effort": "low",
-      "impact": "Polish and consistency"
+      "impact": "Improves editorial consistency across modules and companion pages"
+    },
+    {
+      "priority": "nice-to-have",
+      "description": "Add pacing estimates to the heaviest day-three sections in M12",
+      "effort": "low",
+      "impact": "Makes intensive delivery easier to facilitate without trimming content"
+    },
+    {
+      "priority": "nice-to-have",
+      "description": "Add extra standalone visuals only where later modules still feel concept-dense",
+      "effort": "medium",
+      "impact": "Targets second-wave diagrams where they will reduce the most cognitive load"
     }
   ]
 }
