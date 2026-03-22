@@ -1285,6 +1285,10 @@
 </div>
 
 <script>
+
+    /* ─── Safe localStorage wrappers ─── */
+    function safeSave(k,v){try{safeSave(k,v)}catch(e){}}
+    function safeLoad(k,d){try{return safeLoad(k)||d}catch(e){return d}}
   /* ─── State ──────────────────────────────────────────────────── */
   const LAB_KEY = 'lab-02';
   const SECTION_COUNT = 7; // sections 0–6
@@ -1332,7 +1336,7 @@
   /* ─── XP System ──────────────────────────────────────────────── */
   function awardXP(amount, reason) {
     xp += amount;
-    localStorage.setItem(LAB_KEY + '-xp', xp.toString());
+    safeSave(LAB_KEY + '-xp', xp.toString());
     updateXPDisplay();
     showXPToast(amount, reason);
   }
@@ -1410,18 +1414,18 @@
 
   /* ─── Persistence ────────────────────────────────────────────── */
   function saveReflection(key, value) {
-    localStorage.setItem(LAB_KEY + '-' + key, value);
+    safeSave(LAB_KEY + '-' + key, value);
   }
 
   function loadAllReflections() {
     document.querySelectorAll('textarea[id]').forEach(ta => {
-      const saved = localStorage.getItem(LAB_KEY + '-' + ta.id);
+      const saved = safeLoad(LAB_KEY + '-' + ta.id);
       if (saved) ta.value = saved;
     });
     for (let i = 0; i < SECTION_COUNT; i++) {
-      if (localStorage.getItem(LAB_KEY + '-s' + i) === '1') sectionComplete[i] = true;
+      if (safeLoad(LAB_KEY + '-s' + i) === '1') sectionComplete[i] = true;
     }
-    xp = parseInt(localStorage.getItem(LAB_KEY + '-xp') || '0');
+    xp = parseInt(safeLoad(LAB_KEY + '-xp') || '0');
     updateXPDisplay();
     for (let i = 0; i < SECTION_COUNT; i++) checkSectionUnlock(i);
     updateNavDots();
@@ -1518,7 +1522,7 @@
   function markSectionComplete(idx) {
     if (sectionComplete[idx]) return;
     sectionComplete[idx] = true;
-    localStorage.setItem(LAB_KEY + '-s' + idx, '1');
+    safeSave(LAB_KEY + '-s' + idx, '1');
     checkSectionUnlock(idx + 1);
     updateNavDots();
     const nextMilestoneLevel = getMilestoneLevel();
@@ -1549,7 +1553,7 @@
     const banner = document.getElementById('completion-banner');
     banner.style.display = 'block';
     banner.scrollIntoView({ behavior: 'smooth' });
-    localStorage.setItem(LAB_KEY + '-complete', Date.now().toString());
+    safeSave(LAB_KEY + '-complete', Date.now().toString());
   }
 
   /* ─── Navigation dots ────────────────────────────────────────── */

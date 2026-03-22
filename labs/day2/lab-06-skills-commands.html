@@ -1512,6 +1512,10 @@ Arguments: $ARGUMENTS (optional — specific files to scope the review)</div>
 </div>
 
 <script>
+
+    /* ─── Safe localStorage wrappers ─── */
+    function safeSave(k,v){try{safeSave(k,v)}catch(e){}}
+    function safeLoad(k,d){try{return safeLoad(k)||d}catch(e){return d}}
 /* ─── State ──────────────────────────────────────────────────────── */
 const LAB_KEY = 'lab-06';
 const SECTION_COUNT = 7; // sections 0-5 + boss (6)
@@ -1543,7 +1547,7 @@ let q3done = false, q4done = false;
 /* ─── XP System ──────────────────────────────────────────────────── */
 function awardXP(amount, reason) {
   xp += amount;
-  localStorage.setItem(`${LAB_KEY}-xp`, xp.toString());
+  safeSave(`${LAB_KEY}-xp`, xp.toString());
   updateXPDisplay();
   showXPToast(amount, reason);
 }
@@ -1605,7 +1609,7 @@ function answerQ(qId, optIdx, isCorrect, feedback) {
     const label = qAttempts[qId] === 1 ? 'first try!' : qAttempts[qId] === 2 ? 'second try' : 'third try';
     awardXP(pts, label);
     updateStreak(true);
-    localStorage.setItem(`${LAB_KEY}-${qId}`, 'done');
+    safeSave(`${LAB_KEY}-${qId}`, 'done');
     // Section 5 gating
     if (qId === 'q3') { q3done = true; checkS5Complete(); }
     if (qId === 'q4') { q4done = true; checkS5Complete(); }
@@ -1836,7 +1840,7 @@ function submitBoss() {
 /* ─── Section unlock ─────────────────────────────────────────────── */
 function markSectionComplete(idx) {
   sectionComplete[idx] = true;
-  localStorage.setItem(`${LAB_KEY}-s${idx}`, '1');
+  safeSave(`${LAB_KEY}-s${idx}`, '1');
   checkSectionUnlock(idx + 1);
   updateNavDots();
   const nextMilestoneLevel = getMilestoneLevel();
@@ -1868,18 +1872,18 @@ function completeLab() {
   const banner = document.getElementById('completion-banner');
   banner.style.display = 'block';
   banner.scrollIntoView({ behavior: 'smooth' });
-  localStorage.setItem(`${LAB_KEY}-complete`, Date.now().toString());
+  safeSave(`${LAB_KEY}-complete`, Date.now().toString());
   updateNavDots();
 }
 
 /* ─── Persistence ────────────────────────────────────────────────── */
 function saveReflection(key, value) {
-  localStorage.setItem(`${LAB_KEY}-${key}`, value);
+  safeSave(`${LAB_KEY}-${key}`, value);
 }
 
 function loadAllReflections() {
   document.querySelectorAll('textarea[id]').forEach(ta => {
-    const saved = localStorage.getItem(`${LAB_KEY}-${ta.id}`);
+    const saved = safeLoad(`${LAB_KEY}-${ta.id}`);
     if (saved) {
       ta.value = saved;
       // Re-fire char counters
@@ -1889,28 +1893,28 @@ function loadAllReflections() {
   });
   // Section completion states
   for (let i = 0; i < SECTION_COUNT; i++) {
-    if (localStorage.getItem(`${LAB_KEY}-s${i}`) === '1') sectionComplete[i] = true;
+    if (safeLoad(`${LAB_KEY}-s${i}`) === '1') sectionComplete[i] = true;
   }
   // Question states
   ['q1','q2','q3','q4'].forEach(qId => {
-    if (localStorage.getItem(`${LAB_KEY}-${qId}`) === 'done') {
+    if (safeLoad(`${LAB_KEY}-${qId}`) === 'done') {
       qDone[qId] = true;
       if (qId === 'q3') { q3done = true; }
       if (qId === 'q4') { q4done = true; }
     }
   });
   // XP
-  xp = parseInt(localStorage.getItem(`${LAB_KEY}-xp`) || '0');
+  xp = parseInt(safeLoad(`${LAB_KEY}-xp`) || '0');
   updateXPDisplay();
   // Unlock gates
   for (let i = 0; i < SECTION_COUNT; i++) checkSectionUnlock(i);
   // Restore s1 reveal if prediction was done
-  if (localStorage.getItem(`${LAB_KEY}-s1-predict`) && sectionComplete[1]) {
+  if (safeLoad(`${LAB_KEY}-s1-predict`) && sectionComplete[1]) {
     const rev = document.getElementById('s1-reveal');
     if (rev) rev.style.display = 'block';
   }
   // Restore s3 reveal
-  if (localStorage.getItem(`${LAB_KEY}-s3-predict`) && sectionComplete[3]) {
+  if (safeLoad(`${LAB_KEY}-s3-predict`) && sectionComplete[3]) {
     const rev = document.getElementById('s3-reveal');
     if (rev) rev.style.display = 'block';
   }
@@ -1931,7 +1935,7 @@ function loadAllReflections() {
     if (fwd) fwd.classList.add('show');
   }
   // Completion banner
-  if (localStorage.getItem(`${LAB_KEY}-complete`)) {
+  if (safeLoad(`${LAB_KEY}-complete`)) {
     document.getElementById('completion-banner').style.display = 'block';
   }
   milestoneLevel = getMilestoneLevel();
@@ -1993,7 +1997,7 @@ function submitCE06C() {
   document.getElementById('ce-06-c-model').style.display = 'block';
   document.getElementById('ce-06-c-model').scrollIntoView({ behavior: 'smooth', block: 'start' });
   if (typeof awardXP === 'function') awardXP(30, 'CE-06-C: Skill YAML Author');
-  localStorage.setItem('lab06_ce06c', JSON.stringify({ completed: true, input: input }));
+  safeSave('lab06_ce06c', JSON.stringify({ completed: true, input: input }));
 }
 
 function submitCE06D() {
@@ -2008,7 +2012,7 @@ function submitCE06D() {
   document.getElementById('ce-06-d-model').style.display = 'block';
   document.getElementById('ce-06-d-model').scrollIntoView({ behavior: 'smooth', block: 'start' });
   if (typeof awardXP === 'function') awardXP(30, 'CE-06-D: /pr-ready Command Builder');
-  localStorage.setItem('lab06_ce06d', JSON.stringify({ completed: true, args, steps, output, edge }));
+  safeSave('lab06_ce06d', JSON.stringify({ completed: true, args, steps, output, edge }));
 }
 
 /* ─── Init ───────────────────────────────────────────────────────── */

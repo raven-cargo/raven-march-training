@@ -1336,6 +1336,10 @@ examples: |
 
 
 <script>
+
+    /* ─── Safe localStorage wrappers ─── */
+    function safeSave(k,v){try{safeSave(k,v)}catch(e){}}
+    function safeLoad(k,d){try{return safeLoad(k)||d}catch(e){return d}}
 /* ─── State ──────────────────────────────────────────────────── */
 const LAB_KEY      = 'lab-09';
 const SECTION_COUNT = 6; // S0–S5
@@ -1495,7 +1499,7 @@ const LEVEL_LABELS = { D: 'Distinguished', P: 'Proficient', V: 'Developing', B: 
 /* ─── XP System ───────────────────────────────────────────────── */
 function awardXP(amount, reason) {
   xp += amount;
-  localStorage.setItem(`${LAB_KEY}-xp`, xp.toString());
+  safeSave(`${LAB_KEY}-xp`, xp.toString());
   updateXPDisplay();
   showXPToast(amount, reason);
 }
@@ -1565,7 +1569,7 @@ function selectProblem(idx) {
     saveReflection('apply-s0', ta.value);
     handleApplyInput('apply-s0', 60, 's0-complete-btn');
   }
-  localStorage.setItem(`${LAB_KEY}-problem`, idx.toString());
+  safeSave(`${LAB_KEY}-problem`, idx.toString());
 }
 
 /* ─── Section completion ─────────────────────────────────────── */
@@ -1615,7 +1619,7 @@ function completeSection4() {
 /* ─── Mark section complete + unlock next ─────────────────────── */
 function markSectionComplete(idx) {
   sectionComplete[idx] = true;
-  localStorage.setItem(`${LAB_KEY}-s${idx}`, '1');
+  safeSave(`${LAB_KEY}-s${idx}`, '1');
   checkSectionUnlock(idx + 1);
   updateNavDots();
     const nextMilestoneLevel = getMilestoneLevel();
@@ -1644,7 +1648,7 @@ function checkSectionUnlock(idx) {
 /* ─── Peer review logic ───────────────────────────────────────── */
 function selectLevel(dimIdx, level) {
   dimRatings[dimIdx] = level;
-  localStorage.setItem(`${LAB_KEY}-dim${dimIdx}`, level);
+  safeSave(`${LAB_KEY}-dim${dimIdx}`, level);
 
   // Update button styles
   ['D','P','V','B'].forEach(l => {
@@ -1834,7 +1838,7 @@ function exportDocument() {
   if (!exportDone) {
     exportDone = true;
     awardXP(100, 'design document exported!');
-    localStorage.setItem(`${LAB_KEY}-exported`, '1');
+    safeSave(`${LAB_KEY}-exported`, '1');
   }
 }
 
@@ -1849,14 +1853,14 @@ function completeCourse() {
   let totalXP = xp;
   for (let i = 1; i <= 8; i++) {
     const labKey = `lab-0${i}-xp`;
-    const prior  = parseInt(localStorage.getItem(labKey) || '0');
+    const prior  = parseInt(safeLoad(labKey) || '0');
     totalXP += prior;
   }
   document.getElementById('course-total-xp').textContent = totalXP;
   document.getElementById('stat-xp-this-lab').textContent = xp;
 
-  localStorage.setItem(`${LAB_KEY}-complete`, Date.now().toString());
-  localStorage.setItem('course-complete', Date.now().toString());
+  safeSave(`${LAB_KEY}-complete`, Date.now().toString());
+  safeSave('course-complete', Date.now().toString());
 
   const banner = document.getElementById('course-completion-banner');
   banner.style.display = 'block';
@@ -1866,29 +1870,29 @@ function completeCourse() {
 
 /* ─── Persistence ─────────────────────────────────────────────── */
 function saveReflection(key, value) {
-  localStorage.setItem(`${LAB_KEY}-${key}`, value);
+  safeSave(`${LAB_KEY}-${key}`, value);
 }
 
 function loadAllReflections() {
   // Restore textareas
   document.querySelectorAll('textarea[id]').forEach(ta => {
-    const saved = localStorage.getItem(`${LAB_KEY}-${ta.id}`);
+    const saved = safeLoad(`${LAB_KEY}-${ta.id}`);
     if (saved) ta.value = saved;
   });
 
   // Restore section completions
   for (let i = 0; i < SECTION_COUNT; i++) {
-    if (localStorage.getItem(`${LAB_KEY}-s${i}`) === '1') {
+    if (safeLoad(`${LAB_KEY}-s${i}`) === '1') {
       sectionComplete[i] = true;
     }
   }
 
   // Restore XP
-  xp = parseInt(localStorage.getItem(`${LAB_KEY}-xp`) || '0');
+  xp = parseInt(safeLoad(`${LAB_KEY}-xp`) || '0');
   updateXPDisplay();
 
   // Restore problem selection
-  const prob = localStorage.getItem(`${LAB_KEY}-problem`);
+  const prob = safeLoad(`${LAB_KEY}-problem`);
   if (prob !== null) {
     selectedProblem = parseInt(prob);
     const el = document.getElementById(`prob-${selectedProblem}`);
@@ -1911,12 +1915,12 @@ function loadAllReflections() {
 
   // Restore dim ratings
   dimRatings.forEach((_, i) => {
-    const saved = localStorage.getItem(`${LAB_KEY}-dim${i}`);
+    const saved = safeLoad(`${LAB_KEY}-dim${i}`);
     if (saved) selectLevel(i, saved);
   });
 
   // Restore export flag
-  if (localStorage.getItem(`${LAB_KEY}-exported`) === '1') exportDone = true;
+  if (safeLoad(`${LAB_KEY}-exported`) === '1') exportDone = true;
 
   // Unlock sections
   for (let i = 0; i < SECTION_COUNT; i++) checkSectionUnlock(i);
@@ -1945,7 +1949,7 @@ function loadAllReflections() {
   if (sectionComplete[4]) buildDeliverable();
 
   // Restore course completion banner
-  if (localStorage.getItem('course-complete')) {
+  if (safeLoad('course-complete')) {
     document.getElementById('course-completion-banner').style.display = 'block';
     const totalXP = parseInt(document.getElementById('course-total-xp').textContent) || xp;
     document.getElementById('stat-xp-this-lab').textContent = xp;
@@ -2041,7 +2045,7 @@ function validateCE09A() {
 
   awardXP(40, 'skill YAML validated');
 
-  localStorage.setItem('lab09_ce09a', JSON.stringify({ completed: true, input: input }));
+  safeSave('lab09_ce09a', JSON.stringify({ completed: true, input: input }));
 }
 
 /* ─── CE-09-C: Submit Issue Tracker Spec ─────────────────────── */
@@ -2061,7 +2065,7 @@ function submitCE09C() {
 
   awardXP(40, 'issue tracker spec submitted');
 
-  localStorage.setItem('lab09_ce09c', JSON.stringify({ completed: true, q1: q1, q2: q2, q3: q3, q4: q4 }));
+  safeSave('lab09_ce09c', JSON.stringify({ completed: true, q1: q1, q2: q2, q3: q3, q4: q4 }));
 }
 
 /* ─── Scroll progress bar ─────────────────────────────────────── */

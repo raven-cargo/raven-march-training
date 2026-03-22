@@ -1508,6 +1508,10 @@ Middleware: requireAuth() — JWT validation, already imported in routes files
 </div>
 
 <script>
+
+    /* ─── Safe localStorage wrappers ─── */
+    function safeSave(k,v){try{safeSave(k,v)}catch(e){}}
+    function safeLoad(k,d){try{return safeLoad(k)||d}catch(e){return d}}
 /* ─── State ───────────────────────────────────────────────── */
 const LAB_KEY      = 'lab-03';
 const SECTION_COUNT = 7; // sections 0-6
@@ -1592,7 +1596,7 @@ const CONCEPT_REGISTRY = {
 /* ─── XP System ───────────────────────────────────────────── */
 function awardXP(amount, reason) {
   xp += amount;
-  localStorage.setItem(`${LAB_KEY}-xp`, xp.toString());
+  safeSave(`${LAB_KEY}-xp`, xp.toString());
   updateXPDisplay();
   showXPToast(amount, reason);
 }
@@ -1649,7 +1653,7 @@ function updateStreak(correct) {
 /* ─── Section Unlock ──────────────────────────────────────── */
 function markSectionComplete(idx) {
   sectionComplete[idx] = true;
-  localStorage.setItem(`${LAB_KEY}-s${idx}`, '1');
+  safeSave(`${LAB_KEY}-s${idx}`, '1');
   checkSectionUnlock(idx + 1);
   updateNavDots();
   if (idx === SECTION_COUNT - 1) completeLab();
@@ -1912,26 +1916,26 @@ function completeLab() {
   banner.scrollIntoView({ behavior: 'smooth' });
   document.getElementById('final-xp').textContent = xp;
   document.getElementById('next-lab-link').style.display = 'inline-flex';
-  localStorage.setItem(`${LAB_KEY}-complete`, Date.now().toString());
+  safeSave(`${LAB_KEY}-complete`, Date.now().toString());
   updateNavDots();
 }
 
 /* ─── Persistence ─────────────────────────────────────────── */
 function saveReflection(key, value) {
-  localStorage.setItem(`${LAB_KEY}-${key}`, value);
+  safeSave(`${LAB_KEY}-${key}`, value);
 }
 
 function loadAllReflections() {
   document.querySelectorAll('textarea[id]').forEach(ta => {
-    const saved = localStorage.getItem(`${LAB_KEY}-${ta.id}`);
+    const saved = safeLoad(`${LAB_KEY}-${ta.id}`);
     if (saved) ta.value = saved;
   });
 
   for (let i = 0; i < SECTION_COUNT; i++) {
-    if (localStorage.getItem(`${LAB_KEY}-s${i}`) === '1') sectionComplete[i] = true;
+    if (safeLoad(`${LAB_KEY}-s${i}`) === '1') sectionComplete[i] = true;
   }
 
-  xp = parseInt(localStorage.getItem(`${LAB_KEY}-xp`) || '0');
+  xp = parseInt(safeLoad(`${LAB_KEY}-xp`) || '0');
   updateXPDisplay();
 
   // Restore section states
@@ -1972,7 +1976,7 @@ function loadAllReflections() {
   });
 
   // Show completion banner if complete
-  if (localStorage.getItem(`${LAB_KEY}-complete`)) {
+  if (safeLoad(`${LAB_KEY}-complete`)) {
     document.getElementById('completion-banner').style.display = 'block';
     document.getElementById('next-lab-link').style.display = 'inline-flex';
   }
@@ -2048,7 +2052,7 @@ function submitCE03D() {
 
   awardXP(30, 'Issue Navigation Challenge');
 
-  localStorage.setItem('lab03_ce03d', JSON.stringify({
+  safeSave('lab03_ce03d', JSON.stringify({
     completed: true,
     q1: values[0], q2: values[1], q3: values[2], q4: values[3], q5: values[4]
   }));
