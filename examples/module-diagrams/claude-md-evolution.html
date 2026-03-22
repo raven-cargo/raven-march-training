@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLAUDE.md Evolution</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.sub{font-size:12px;color:#444;margin-bottom:2rem;font-family:'JetBrains Mono',monospace}
+
+.timeline{position:relative;padding-left:32px;margin-bottom:1.5rem}
+.timeline::before{content:'';position:absolute;left:11px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,#222228 0%,#1a4030 40%,#1a3a6a 70%,#2d2555 100%);border-radius:1px}
+
+.stage{position:relative;margin-bottom:8px;cursor:pointer;transition:all .3s}
+.stage::before{content:'';position:absolute;left:-25px;top:16px;width:12px;height:12px;border-radius:50%;background:#222228;border:2px solid #333;transition:all .35s;z-index:1}
+.stage.active::before{background:#5ba4f5;border-color:#5ba4f5;box-shadow:0 0 12px rgba(91,164,245,.3)}
+.stage-header{padding:12px 16px;border-radius:10px;border:1px solid #1a1a1e;background:#141418;transition:all .3s;display:flex;align-items:center;justify-content:space-between}
+.stage:hover .stage-header{border-color:#2a2a30}
+.stage.active .stage-header{border-color:#1a3a6a;background:#0a1525}
+.stage-left{display:flex;flex-direction:column;gap:2px}
+.stage-week{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#444}
+.stage.active .stage-week{color:#5ba4f5}
+.stage-name{font-size:14px;font-weight:600;color:#888;transition:color .3s}
+.stage.active .stage-name{color:#e8e6e1}
+.stage-lines{font-size:11px;font-family:'JetBrains Mono',monospace;color:#444;transition:color .3s}
+.stage.active .stage-lines{color:#5ba4f5}
+
+.detail{border-radius:14px;border:1px solid #222228;background:#141418;overflow:hidden;animation:fadeIn .4s cubic-bezier(.22,1,.36,1)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.detail-header{padding:14px 20px;border-bottom:1px solid #1a1a1e;display:flex;align-items:center;justify-content:space-between}
+.detail-title{font-size:14px;font-weight:600}
+.detail-badge{font-size:11px;font-family:'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#0a1525;color:#5ba4f5;border:1px solid #1a3a6a}
+.detail-body{padding:16px 20px}
+
+.file-block{font-family:'JetBrains Mono',monospace;font-size:12px;background:#0a0a0c;border:1px solid #1a1a1e;border-radius:10px;padding:16px 18px;line-height:2;overflow-x:auto;margin-bottom:12px}
+.file-block .comment{color:#555}
+.file-block .section{color:#5ba4f5;font-weight:500}
+.file-block .rule{color:#aaa}
+.file-block .new{color:#4ade80;background:#0a1a14;padding:1px 4px;border-radius:3px}
+
+.trigger{font-size:13px;color:#888;padding:12px 16px;border-radius:10px;background:#0c0c0f;border:1px solid #1a1a1e;line-height:1.6;margin-top:8px}
+.trigger strong{color:#f59e42;font-weight:600}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>CLAUDE.md is a living document</h1>
+<div class="sub">Watch it evolve from empty file to comprehensive briefing</div>
+
+<div class="timeline" id="timeline"></div>
+<div class="detail" id="detail"></div>
+</div>
+
+<script>
+const stages=[
+{week:'Day 1',name:'Project kickoff',lines:'~8 lines',
+ file:`<span class="comment"># Project</span>
+<span class="section">## Architecture</span>
+<span class="rule">Express + TypeScript API with PostgreSQL</span>
+<span class="rule">Monorepo: /api, /web, /shared</span>
+
+<span class="section">## Stack</span>
+<span class="rule">Node 20, TypeScript 5.3, Prisma ORM</span>
+<span class="rule">Tests: Vitest</span>`,
+ trigger:'<strong>What triggered this:</strong> You created the project and wrote the initial structure. This is the bare minimum — enough for the agent to know what it\'s working with.'},
+
+{week:'Week 1',name:'First conventions established',lines:'~20 lines',
+ file:`<span class="comment"># Project</span>
+<span class="section">## Architecture</span>
+<span class="rule">Express + TypeScript API with PostgreSQL</span>
+<span class="rule">Monorepo: /api, /web, /shared</span>
+
+<span class="section">## Stack</span>
+<span class="rule">Node 20, TypeScript 5.3, Prisma ORM</span>
+<span class="rule">Tests: Vitest</span>
+
+<span class="new"><span class="section">## Conventions</span></span>
+<span class="new"><span class="rule">Use zod for all input validation</span></span>
+<span class="new"><span class="rule">Error responses: { error: string, code: string }</span></span>
+<span class="new"><span class="rule">All endpoints return typed responses</span></span>
+
+<span class="new"><span class="section">## Never do</span></span>
+<span class="new"><span class="rule">Don't use any in TypeScript — use unknown + narrowing</span></span>
+<span class="new"><span class="rule">Don't modify prisma/schema.prisma without asking</span></span>`,
+ trigger:'<strong>What triggered this:</strong> The agent used <code>any</code> in its first PR. You caught it in review, fixed it, and added the rule so it never happens again. The zod convention came from a team decision you wrote down.'},
+
+{week:'Week 3',name:'Architecture decisions recorded',lines:'~35 lines',
+ file:`<span class="comment"># Project</span>
+<span class="section">## Architecture</span>
+<span class="rule">Express + TypeScript API with PostgreSQL</span>
+<span class="rule">Monorepo: /api, /web, /shared</span>
+<span class="new"><span class="rule">Auth: JWT with refresh tokens (not sessions)</span></span>
+<span class="new"><span class="rule">Background jobs: BullMQ + Redis</span></span>
+
+<span class="section">## Stack</span>
+<span class="rule">Node 20, TypeScript 5.3, Prisma ORM</span>
+<span class="rule">Tests: Vitest</span>
+
+<span class="section">## Conventions</span>
+<span class="rule">Use zod for all input validation</span>
+<span class="rule">Error responses: { error: string, code: string }</span>
+<span class="rule">All endpoints return typed responses</span>
+<span class="new"><span class="rule">Service layer pattern: routes → services → repositories</span></span>
+<span class="new"><span class="rule">All services take dependencies via constructor injection</span></span>
+
+<span class="section">## Never do</span>
+<span class="rule">Don't use any — use unknown + narrowing</span>
+<span class="rule">Don't modify prisma/schema.prisma without asking</span>
+<span class="new"><span class="rule">Don't import from /web in /api or vice versa</span></span>
+<span class="new"><span class="rule">Don't add new npm dependencies without asking</span></span>`,
+ trigger:'<strong>What triggered this:</strong> You chose JWT over sessions after evaluating trade-offs. The agent tried to import a web component into the API — you caught it and added the cross-import rule. Patterns are solidifying.'},
+
+{week:'Month 2',name:'Mature project with lessons learned',lines:'~55 lines',
+ file:`<span class="comment"># Project</span>
+<span class="section">## Architecture</span>
+<span class="rule">Express + TypeScript API with PostgreSQL</span>
+<span class="rule">Monorepo: /api, /web, /shared</span>
+<span class="rule">Auth: JWT with refresh tokens (not sessions)</span>
+<span class="rule">Background jobs: BullMQ + Redis</span>
+<span class="new"><span class="rule">Rate limiting: express-rate-limit on all public endpoints</span></span>
+
+<span class="section">## Key files</span>
+<span class="new"><span class="rule">api/src/middleware/auth.ts — JWT verification + refresh</span></span>
+<span class="new"><span class="rule">api/src/services/ — all business logic lives here</span></span>
+<span class="new"><span class="rule">shared/types/ — shared TypeScript interfaces</span></span>
+
+<span class="section">## Conventions</span>
+<span class="rule">Use zod for all input validation</span>
+<span class="rule">Error responses: { error: string, code: string }</span>
+<span class="rule">All endpoints return typed responses</span>
+<span class="rule">Service layer: routes → services → repositories</span>
+<span class="rule">All services: constructor injection for testability</span>
+<span class="new"><span class="rule">Tests: one describe block per public method</span></span>
+<span class="new"><span class="rule">Migrations: always add, never modify existing</span></span>
+
+<span class="section">## Decisions made (don't revisit)</span>
+<span class="new"><span class="rule">Chose Prisma over TypeORM — settled, don't switch</span></span>
+<span class="new"><span class="rule">REST over GraphQL for this project — settled</span></span>
+<span class="new"><span class="rule">Vitest over Jest — settled, all tests use Vitest</span></span>
+
+<span class="section">## Never do</span>
+<span class="rule">Don't use any — use unknown + narrowing</span>
+<span class="rule">Don't modify prisma/schema.prisma without asking</span>
+<span class="rule">Don't import from /web in /api or vice versa</span>
+<span class="rule">Don't add new npm dependencies without asking</span>
+<span class="new"><span class="rule">Don't skip writing tests for new endpoints</span></span>
+<span class="new"><span class="rule">Don't put business logic in route handlers</span></span>
+<span class="new"><span class="rule">Never store secrets in code — use env vars only</span></span>`,
+ trigger:'<strong>What triggered this:</strong> Two months of real usage. Every green line represents a mistake that was caught, a decision that was made, or a pattern that proved itself. The "decisions made" section prevents the agent from re-litigating settled choices in new sessions.'}
+];
+
+let activeIdx=0;
+function renderTimeline(){
+  let h='';
+  stages.forEach((s,i)=>{
+    h+='<div class="stage'+(i===activeIdx?' active':'')+'" onclick="select('+i+')">';
+    h+='<div class="stage-header"><div class="stage-left"><span class="stage-week">'+s.week+'</span><span class="stage-name">'+s.name+'</span></div>';
+    h+='<span class="stage-lines">'+s.lines+'</span></div></div>';
+  });
+  document.getElementById('timeline').innerHTML=h;
+}
+function renderDetail(){
+  const s=stages[activeIdx];
+  let h='<div class="detail-header"><span class="detail-title">CLAUDE.md</span><span class="detail-badge">'+s.lines+'</span></div>';
+  h+='<div class="detail-body"><div class="file-block">'+s.file+'</div>';
+  h+='<div class="trigger">'+s.trigger+'</div></div>';
+  document.getElementById('detail').innerHTML=h;
+}
+function select(i){activeIdx=i;renderTimeline();renderDetail()}
+renderTimeline();renderDetail();
+</script>
+</body>
+</html>

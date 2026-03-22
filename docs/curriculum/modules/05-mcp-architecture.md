@@ -40,7 +40,7 @@ In Module 02, you connected your first MCP server and saw how it extends Claude 
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m05-extension-predict" data-xp="8">
   <span class="ix-title">Predict Before You Learn</span>
   <p class="ix-predict-prompt">Imagine you need to give an AI agent access to your company's internal project tracker. Without a standard protocol, what steps would you need to take? Think about prompt engineering, parsing, error handling, and reusability. What would be painful about this approach?</p>
-  <textarea class="ix-predict-input" placeholder="Write your reasoning -- what steps would be needed and what would be painful?"></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- what steps would be needed and what would be painful?"></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>
     <p>Without a standard protocol, you would need to: (1) write system prompt sections describing the tracker's API, (2) build a custom wrapper to parse and execute the agent's HTTP requests, (3) handle response formats the agent was not trained on, (4) build ad-hoc error handling, (5) maintain prompt-embedded instructions that drift as the API evolves, and (6) accept that no other agent can reuse your integration. MCP eliminates all six pain points by standardizing discovery, invocation, schema, and transport into one protocol. Implement once, connect everywhere.</p>
@@ -85,19 +85,19 @@ In Module 02, you connected your first MCP server and saw how it extends Claude 
 
 <div class="ix-diagram" data-component="click-cards" data-diagram-id="m05-mcp-standardizes">
   <span class="ix-title">The four things MCP standardizes</span>
-  <div class="ix-card" data-accent="#6366f1">
+  <div class="ix-card" data-phase="reason">
     <i data-lucide="search" class="ix-card-icon"></i>
     <span class="ix-card-label">Discovery</span>
   </div>
-  <div class="ix-card" data-accent="#10b981">
+  <div class="ix-card" data-phase="observe">
     <i data-lucide="play" class="ix-card-icon"></i>
     <span class="ix-card-label">Invocation</span>
   </div>
-  <div class="ix-card" data-accent="#06b6d4">
+  <div class="ix-card" data-phase="act">
     <i data-lucide="file-json" class="ix-card-icon"></i>
     <span class="ix-card-label">Schema</span>
   </div>
-  <div class="ix-card" data-accent="#f59e0b">
+  <div class="ix-card" data-phase="perceive">
     <i data-lucide="cable" class="ix-card-icon"></i>
     <span class="ix-card-label">Transport</span>
   </div>
@@ -178,7 +178,7 @@ In Module 02, you connected your first MCP server and saw how it extends Claude 
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m05-primitives-predict" data-xp="8">
   <span class="ix-title">Predict Before You Learn</span>
   <p class="ix-predict-prompt">MCP servers expose capabilities through exactly three primitives. One is for actions with side effects, one is for passive data the agent reads, and one is for reusable instruction templates. Think about a database MCP server: it can run queries, expose the schema for reference, and offer a "SQL helper" template. Which of these three capabilities would you classify as which primitive type, and why?</p>
-  <textarea class="ix-predict-input" placeholder="Write your reasoning -- how would you classify each database capability?"></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- how would you classify each database capability?"></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>
     <p>The three primitives are <strong>Tools</strong>, <strong>Resources</strong>, and <strong>Prompts</strong>. Running queries is a <strong>Tool</strong> -- it has side effects (executes SQL), takes variable inputs, and returns results. The database schema is a <strong>Resource</strong> -- it is stable reference data identified by a URI like <code>db://schema/users</code> that the agent reads for context. The SQL helper template is a <strong>Prompt</strong> -- it is a parameterized instruction template that helps users construct queries. The shorthand: Tools are verbs, Resources are nouns, Prompts are templates.</p>
@@ -189,15 +189,15 @@ In Module 02, you connected your first MCP server and saw how it extends Claude 
 
 <div class="ix-diagram" data-component="click-cards" data-diagram-id="m05-three-primitives">
   <span class="ix-title">The three MCP primitives</span>
-  <div class="ix-card" data-accent="#10b981">
+  <div class="ix-card" data-phase="observe">
     <i data-lucide="wrench" class="ix-card-icon"></i>
     <span class="ix-card-label">Tools</span>
   </div>
-  <div class="ix-card" data-accent="#06b6d4">
+  <div class="ix-card" data-phase="act">
     <i data-lucide="database" class="ix-card-icon"></i>
     <span class="ix-card-label">Resources</span>
   </div>
-  <div class="ix-card" data-accent="#f59e0b">
+  <div class="ix-card" data-phase="perceive">
     <i data-lucide="message-square" class="ix-card-icon"></i>
     <span class="ix-card-label">Prompts</span>
   </div>
@@ -526,10 +526,6 @@ You configured <code>settings.json</code> in Module 02. Now let's understand the
 // DEPRECATED -- migrate to Streamable HTTP</code></pre>
     <p>Keep legacy HTTP+SSE only for compatibility with older integrations you cannot yet migrate.</p>
   </div>
-</div>
-
-<div class="ix-diagram" data-component="callout" data-variant="warning">
-  <p><strong>SSE (Server-Sent Events) was the original remote transport</strong>. It is deprecated as of 2025-03-26. Use Streamable HTTP for all new remote MCP server configurations. Migrate existing SSE configurations when possible.</p>
 </div>
 
 <p class="ix-instruct">Step through the three phases of the MCP connection handshake.</p>

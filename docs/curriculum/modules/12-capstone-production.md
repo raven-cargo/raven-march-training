@@ -1,6 +1,6 @@
 <div class="ix-diagram" data-component="module-hero">
 <div class="ix-hero">
-<div class="ix-hero-bg" data-phase="goal"></div>
+<div class="ix-hero-bg" data-phase="success"></div>
 <div class="ix-hero-module-num">Module 12</div>
 <div class="ix-hero-title">Capstone and Production Deployment</div>
 <div class="ix-hero-subtitle">Integrate everything you've learned to design, build, validate, and maintain a production-grade agentic system</div>
@@ -293,7 +293,7 @@ Every agentic pipeline composes the five components above into a recognizable ar
 </div>
 
 <div class="ix-diagram" data-component="callout" data-variant="core-idea">
-<p><strong>MCP servers are integration points</strong>: Every external interaction in the Act phase -- posting a GitHub comment, querying a database, fetching documentation -- goes through an MCP server. Remote MCP servers must use Streamable HTTP transport. SSE is deprecated as of 2025-03-26 and must not appear in any production configuration. The three MCP primitives (Tools, Resources, Prompts) are the only building blocks -- no others exist.</p>
+<p><strong>MCP servers are integration points</strong>: Every external interaction in the Act phase -- posting a GitHub comment, querying a database, fetching documentation -- goes through an MCP server. For new remote deployments, use Streamable HTTP transport. HTTP+SSE is a deprecated legacy path from older spec versions and should be migrated when present. The three MCP primitives (Tools, Resources, Prompts) are the only building blocks -- no others exist.</p>
 </div>
 
 <details class="ix-collapse">
@@ -319,7 +319,7 @@ Every agentic pipeline composes the five components above into a recognizable ar
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m12-design-predict" data-xp="8">
 <span class="ix-title">Predict Before You Learn</span>
 <p class="ix-predict-prompt">Before we walk through the five design phases: a team ships an agentic code reviewer on day one -- no CLAUDE.md committed, no approval gates configured, permissions set to broad bash access for convenience. What is the most likely first incident, and in which of the five pipeline components does the failure originate?</p>
-<textarea class="ix-predict-input" placeholder="Write your reasoning -- what would you expect and why?"></textarea>
+<textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- what would you expect and why?"></textarea>
 <details class="ix-predict-reveal">
 <summary>Reveal reference reasoning</summary>
 <p>The most likely first incident is an unintended write or destructive action. With broad bash permissions and no approval gate, the agent has the ability to execute any command -- and in attempting to "fix" what it perceives as an issue, it may delete files, reset git history, or modify production configuration. The failure originates in the <strong>Action Scope</strong> component: the permissions were not bounded to the read-and-comment scope the pipeline actually required. The absence of a committed CLAUDE.md means the agent has no grounding in team conventions, compounding the problem by making reasoning errors more likely. This is exactly what Module 10's security framework prevents: a permission audit (Phase 4) would have caught the broad bash access before deployment.</p>
@@ -435,7 +435,7 @@ Every agentic pipeline composes the five components above into a recognizable ar
 <div class="ix-checklist-section">
 <div class="ix-checklist-section-title">Section 6: Deployment Readiness</div>
 <label class="ix-checklist-item"><input type="checkbox"><span>CLAUDE.md committed to git with no secrets, referencing all relevant skill files</span></label>
-<label class="ix-checklist-item"><input type="checkbox"><span>Remote MCP servers configured with Streamable HTTP transport -- SSE is deprecated (2025-03-26)</span></label>
+<label class="ix-checklist-item"><input type="checkbox"><span>Remote MCP servers configured with Streamable HTTP transport; any legacy HTTP+SSE usage is documented with an explicit migration plan</span></label>
 <label class="ix-checklist-item"><input type="checkbox"><span>Audit trail configured: session logs retrievable by session ID within 5 minutes</span></label>
 <label class="ix-checklist-item"><input type="checkbox"><span>Alerting thresholds set and tested: error rate, timeout rate, cost spike, duration spike</span></label>
 <label class="ix-checklist-item"><input type="checkbox"><span>Incident response playbook written and reviewed with a second engineer</span></label>
@@ -529,7 +529,7 @@ The deployment checklist extends the stack adaptation checklist from Module 11 w
 </div>
 <div data-tab="MCP Servers">
 <ul>
-<li>All remote MCP servers configured with <strong>Streamable HTTP transport</strong> -- SSE is deprecated as of 2025-03-26</li>
+<li>All remote MCP servers configured with <strong>Streamable HTTP transport</strong>; any legacy HTTP+SSE endpoint has a documented migration owner and date</li>
 <li>All local MCP servers configured with <strong>stdio transport</strong></li>
 <li>MCP server endpoints tested: each server responds to a test tool call before deployment</li>
 <li>MCP primitives in use verified: Tools (actions), Resources (context), Prompts (templates) -- only these three exist</li>
@@ -577,11 +577,11 @@ The deployment checklist extends the stack adaptation checklist from Module 11 w
 <div class="ix-scenario-question">What must be changed before this system can deploy to production?</div>
 <div class="ix-scenario-options">
 <button class="ix-scenario-option">Nothing -- SSE is a valid transport option alongside Streamable HTTP</button>
-<button class="ix-scenario-option" data-correct="true">Change the transport from SSE to Streamable HTTP -- SSE was deprecated 2025-03-26</button>
+<button class="ix-scenario-option" data-correct="true">Change the transport from SSE to Streamable HTTP -- migrate off the deprecated legacy path</button>
 <button class="ix-scenario-option">Add a note to the documentation that SSE is in use</button>
 <button class="ix-scenario-option">Test the SSE connection and proceed if it works</button>
 </div>
-<div class="ix-scenario-explanation">SSE transport is deprecated as of 2025-03-26. No exceptions. A system using SSE in production is running on a deprecated protocol that may be removed in future MCP server releases. The fix is a configuration change: update the transport field to Streamable HTTP and verify the endpoint URL matches the Streamable HTTP endpoint (not the SSE endpoint -- they may differ).</div>
+<div class="ix-scenario-explanation">SSE transport is deprecated as of 2025-03-26 and should not be used for new remote deployments. Existing systems still on SSE are on a legacy path and should be migrated deliberately. The fix is a configuration change: update the transport field to Streamable HTTP and verify the endpoint URL matches the Streamable HTTP endpoint (not the SSE endpoint -- they may differ).</div>
 </div>
 <div class="ix-scenario">
 <div class="ix-scenario-header">Scenario B</div>
@@ -661,7 +661,7 @@ The deployment checklist extends the stack adaptation checklist from Module 11 w
 </div>
 
 <div class="ix-diagram" data-component="callout" data-variant="warning">
-<p><strong>SSE transport deprecated</strong>: Any production system using <code>"transport": "sse"</code> must migrate to Streamable HTTP before deployment. SSE was deprecated as of 2025-03-26. Systems running on SSE are on a deprecated protocol path. The migration requires updating the transport field and verifying the Streamable HTTP endpoint URL -- the two endpoints are often different paths.</p>
+<p><strong>SSE transport deprecated</strong>: New remote deployments should use Streamable HTTP. Systems still using <code>"transport": "sse"</code> are on a legacy path and should be migrated with a tracked rollout plan. The migration requires updating the transport field and verifying the Streamable HTTP endpoint URL -- the two endpoints are often different paths.</p>
 </div>
 
 <div class="ix-diagram" data-component="callout" data-variant="tip">
@@ -694,7 +694,7 @@ The deployment checklist extends the stack adaptation checklist from Module 11 w
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m12-observability-predict" data-xp="8">
 <span class="ix-title">Predict Before You Learn</span>
 <p class="ix-predict-prompt">An agentic system has been in production for two weeks. You get an alert at 3am -- error rate is 12%, up from a baseline of 1%. Before you look at any logs, what is the single most important piece of information you need in the first 60 seconds to determine whether you should roll back the system immediately or investigate further?</p>
-<textarea class="ix-predict-input" placeholder="Write your reasoning -- what would you need to know first and why?"></textarea>
+<textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- what would you need to know first and why?"></textarea>
 <details class="ix-predict-reveal">
 <summary>Reveal reference reasoning</summary>
 <p>The most important first piece of information is: <strong>did any failing session take an irreversible action?</strong> If yes, you must escalate to the pipeline owner immediately for human review -- the irreversible action may have already caused damage that investigation cannot undo. If no, the incident scope is limited to failed sessions that need to be re-run, and you have time to investigate the root cause before taking action. This determines the urgency and the decision frame for the next four minutes. Knowing the error type or the failing component is important, but secondary -- you cannot undo a write to a production database or a sent email, and determining whether that happened is the first gate. The structured log event <code>session_end</code> with its <code>status</code> field, combined with tool call logs showing write operations, gives you this answer within seconds if your logging is configured correctly.</p>
@@ -886,28 +886,28 @@ The deployment checklist extends the stack adaptation checklist from Module 11 w
 
 <div class="ix-diagram" data-component="entry-list" data-diagram-id="m12-alert-thresholds">
 <span class="ix-title">Alerting Thresholds</span>
-<div class="ix-entry" data-badge="warning">
-<div class="ix-entry-label">Error rate &gt; 5% (1-hour window)</div>
+<div class="ix-entry" data-badge="exclude">
+<div class="ix-entry-title">Error rate &gt; 5% (1-hour window)</div>
 <div class="ix-entry-body">Sustained above 5% indicates a systematic problem: MCP server down, permission blocking a required action, or prompt failing on a class of inputs. Below 5% may be transient noise.</div>
 </div>
-<div class="ix-entry" data-badge="error">
-<div class="ix-entry-label">Error rate &gt; 20% (1-hour window) -- CRITICAL</div>
+<div class="ix-entry" data-badge="exclude">
+<div class="ix-entry-title">Error rate &gt; 20% (1-hour window) -- CRITICAL</div>
 <div class="ix-entry-body">Majority of sessions failing. Likely a complete MCP server outage or a breaking change in a dependency. Consider disabling the pipeline trigger until the cause is identified.</div>
 </div>
-<div class="ix-entry" data-badge="warning">
-<div class="ix-entry-label">Timeout rate &gt; 10%</div>
+<div class="ix-entry" data-badge="exclude">
+<div class="ix-entry-title">Timeout rate &gt; 10%</div>
 <div class="ix-entry-body">Sustained timeouts indicate the agent's scope is too large for reliable completion, or an MCP server is responding slowly. Check MCP server health and median session duration trend.</div>
 </div>
-<div class="ix-entry" data-badge="warning">
-<div class="ix-entry-label">Cost spike: daily cost &gt; 150% of 7-day average</div>
+<div class="ix-entry" data-badge="exclude">
+<div class="ix-entry-title">Cost spike: daily cost &gt; 150% of 7-day average</div>
 <div class="ix-entry-body">A sudden cost increase signals a prompt generating unexpectedly large context, a runaway multi-agent system, or a trigger firing far more frequently than expected. Check session count and per-session token consumption.</div>
 </div>
-<div class="ix-entry" data-badge="warning">
-<div class="ix-entry-label">Session duration &gt; 200% of 7-day median</div>
+<div class="ix-entry" data-badge="exclude">
+<div class="ix-entry-title">Session duration &gt; 200% of 7-day median</div>
 <div class="ix-entry-body">Slow sessions indicate reasoning loops, slow MCP server responses, or inputs requiring unexpectedly deep analysis. Retrieve a sample of slow sessions and check for repeated tool calls on the same resource.</div>
 </div>
-<div class="ix-entry" data-badge="error">
-<div class="ix-entry-label">Approval gate bypasses &gt; 0 -- CRITICAL</div>
+<div class="ix-entry" data-badge="exclude">
+<div class="ix-entry-title">Approval gate bypasses &gt; 0 -- CRITICAL</div>
 <div class="ix-entry-body">Any bypass of a configured approval gate is a critical signal -- the agent took an irreversible action without human review. Immediately check what action was taken and escalate to the pipeline owner.</div>
 </div>
 </div>
@@ -979,6 +979,18 @@ The deployment checklist extends the stack adaptation checklist from Module 11 w
 </div>
 
 Agentic systems are not write-once artifacts. The codebase they operate on evolves, the libraries they reference change, and the conventions they encode drift. Without a maintenance discipline, a system that works reliably at deployment degrades silently over months.
+
+<p class="ix-instruct">Predict the first maintenance action before reviewing the full cadence.</p>
+
+<div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m12-maintenance-predict" data-xp="8">
+<span class="ix-title">Predict: First Response to Drift</span>
+<p class="ix-predict-prompt">Your quarterly check shows a formerly reliable pipeline now missing medium-severity findings. You have no recent incident alerts. What should be your first diagnostic step?</p>
+<textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Describe your first diagnostic action..."></textarea>
+<details class="ix-predict-reveal">
+<summary>Reveal reference reasoning</summary>
+<p>Start with a controlled baseline replay: run the same known-good validation inputs used at deployment and compare current outputs to historical outputs. This isolates drift before changing prompts or infrastructure. Only after confirming where behavior diverged should you decide whether the cause is prompt changes, skill updates, model updates, or stack evolution.</p>
+</details>
+</div>
 
 <p class="ix-instruct">Switch between tabs to review each maintenance topic and its action protocol.</p>
 
@@ -1133,6 +1145,52 @@ supersedes: go-error-handling@1.x
 <p><strong>Stack migration as maintenance trigger (Module 11)</strong>: Every stack migration checklist item from Module 11 doubles as a maintenance trigger. When you change your stack, run the full Module 11 adaptation process -- Context7 re-validation, stack CLAUDE.md review, TCEF prompt update. Do not treat stack adaptation as a one-time event; treat it as a recurring maintenance discipline triggered by every architectural decision.</p>
 </div>
 
+<p class="ix-instruct">Validate your maintenance decision-making before moving to course completion.</p>
+
+<div class="ix-diagram" data-component="quiz" data-diagram-id="m12-maintenance-quiz" data-xp="16">
+<span class="ix-title">Knowledge Check: Long-term Maintenance</span>
+<div class="ix-quiz-question">
+<p class="ix-quiz-prompt"><strong>Q1.</strong> Which change should trigger a major skill version bump?</p>
+<div class="ix-quiz-options">
+<button class="ix-quiz-option">Fixing a typo in an example comment</button>
+<button class="ix-quiz-option" data-correct="true">Changing the generated error-handling pattern used by downstream services</button>
+<button class="ix-quiz-option">Adding one explanatory sentence to a callout</button>
+<button class="ix-quiz-option">Reordering checklist bullets without behavioral change</button>
+</div>
+<p class="ix-quiz-explanation">Major versions are for behavior-changing updates that can alter generated outputs or compatibility expectations in active pipelines.</p>
+</div>
+<div class="ix-quiz-question">
+<p class="ix-quiz-prompt"><strong>Q2.</strong> A team updates model version and output style changes, but schema validity remains 100%. What is the right next action?</p>
+<div class="ix-quiz-options">
+<button class="ix-quiz-option">Rollback immediately because any change is a failure</button>
+<button class="ix-quiz-option" data-correct="true">Run representative regression tasks and assess whether style changes affect operational decisions</button>
+<button class="ix-quiz-option">Ignore it since schema validity passed</button>
+<button class="ix-quiz-option">Increase token limits to restore old style</button>
+</div>
+<p class="ix-quiz-explanation">Format compliance alone is insufficient. You still need behavioral review to ensure decision quality and downstream usability remain acceptable.</p>
+</div>
+<div class="ix-quiz-question">
+<p class="ix-quiz-prompt"><strong>Q3.</strong> When is retire-and-rebuild usually better than incremental refactor?</p>
+<div class="ix-quiz-options">
+<button class="ix-quiz-option">When one skill needs a minor update</button>
+<button class="ix-quiz-option">When a quarterly check finds one false positive</button>
+<button class="ix-quiz-option" data-correct="true">When multiple core pipeline components must change and original architecture no longer fits the task</button>
+<button class="ix-quiz-option">When documentation is outdated by one version</button>
+</div>
+<p class="ix-quiz-explanation">If scope changes touch several core components and architectural assumptions no longer hold, rebuilding from design phases is safer than patching.</p>
+</div>
+<div class="ix-quiz-question">
+<p class="ix-quiz-prompt"><strong>Q4.</strong> Which maintenance activity best protects new team members from inheriting stale patterns?</p>
+<div class="ix-quiz-options">
+<button class="ix-quiz-option">Rely on oral handoffs during onboarding</button>
+<button class="ix-quiz-option">Keep deprecated skills but mark them “old” in comments</button>
+<button class="ix-quiz-option" data-correct="true">Version skills, assign owners, and enforce scheduled review against current stack and outcomes</button>
+<button class="ix-quiz-option">Reduce number of skills to avoid confusion, even if patterns are missing</button>
+</div>
+<p class="ix-quiz-explanation">Institutional memory only compounds when skills are owned, versioned, and audited against current reality.</p>
+</div>
+</div>
+
 <details class="ix-collapse">
 <summary>Deep Dive: When to retire an agentic system vs refactor it</summary>
 <div class="ix-collapse-body">
@@ -1169,7 +1227,7 @@ supersedes: go-error-handling@1.x
 <label class="ix-checklist-item"><input type="checkbox"><span><strong>M05:</strong> I understand MCP architecture -- exactly three primitives (Tools, Resources, Prompts) -- and I can write output contracts as integration points for downstream systems</span></label>
 <label class="ix-checklist-item"><input type="checkbox"><span><strong>M06:</strong> I can select the right tool for each operation (Bash vs Read vs Write vs Edit vs Glob vs Grep) and write prompts that guide disciplined tool use without over-permissioning</span></label>
 <label class="ix-checklist-item"><input type="checkbox"><span><strong>M07:</strong> I can create skill files, load them in CLAUDE.md, build a reusable skill library, and distinguish LUXOR conventions (like <code>triggers</code>) from native Claude Code features</span></label>
-<label class="ix-checklist-item"><input type="checkbox"><span><strong>M08:</strong> I can configure MCP servers using stdio (local) and Streamable HTTP (remote -- not SSE, deprecated 2025-03-26) and use all three MCP primitives correctly</span></label>
+<label class="ix-checklist-item"><input type="checkbox"><span><strong>M08:</strong> I can configure MCP servers using stdio (local) and Streamable HTTP (remote) and identify when legacy HTTP+SSE configurations require migration planning</span></label>
 <label class="ix-checklist-item"><input type="checkbox"><span><strong>M09:</strong> I can apply the four-question decision framework to choose between single-agent and multi-agent architectures, and I default to single-agent until I can justify multi-agent with clear evidence</span></label>
 <label class="ix-checklist-item"><input type="checkbox"><span><strong>M10:</strong> I can configure permission boundaries with the principle of least privilege, manage secrets correctly (environment variables only, never in CLAUDE.md), and design approval gates for irreversible actions</span></label>
 <label class="ix-checklist-item"><input type="checkbox"><span><strong>M11:</strong> I can adapt any agentic system to a specific tech stack using Context7 for documentation pre-loading and a stack-specific CLAUDE.md encoding team conventions</span></label>

@@ -21,12 +21,16 @@
 
 ## Overview
 
+<div class="ix-diagram" data-component="objective">
+  <p>Understand why agentic coding represents a fundamental shift from previous AI-assisted development paradigms and identify the characteristics that define each era.</p>
+</div>
+
 <p class="ix-instruct">Write your prediction before reading further.</p>
 
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m01-overview-predict" data-xp="6">
   <span class="ix-title">Predict Before You Learn</span>
   <p class="ix-predict-prompt">You have probably used AI tools like Copilot or ChatGPT. What do you think changes when the AI can read your files, run your tests, and edit your code directly -- without you copy-pasting anything? What new risks does that introduce?</p>
-  <textarea class="ix-predict-input" placeholder="Write 2-3 sentences about what you think changes and what new risks emerge."></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write 2-3 sentences about what you think changes and what new risks emerge."></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference framing</summary>
     <p>The key shift: the AI moves from producing text you act on to taking actions you verify. This creates a closed feedback loop (the agent acts, observes results, adapts) that is far more powerful -- but also means the agent can modify files, run commands, and make mistakes at scale. Your role shifts from executor to director and reviewer.</p>
@@ -64,7 +68,7 @@ By the end of this module, you will be able to:
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m01-era-predict" data-xp="8">
   <span class="ix-title">Predict Before Reveal</span>
   <p class="ix-predict-prompt">Before opening the era panels, predict where your current team workflow sits today and one behavior you would change this week to move up one level.</p>
-  <textarea class="ix-predict-input" placeholder="Write a short prediction (2-4 sentences)."></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write a short prediction (2-4 sentences)."></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference pattern</summary>
     <p>Many teams are mixed: assistant-style planning with autocomplete-style execution. The fastest shift toward agentic work is to define outcome + constraints up front, then review diffs/tests at checkpoints instead of micro-directing each edit.</p>
@@ -330,19 +334,19 @@ The Agentic Loop -- the continuous cycle of Perceive, Reason, Act, Observe (PRAO
 <div class="ix-diagram" data-component="click-cards" data-diagram-id="prao-loop">
   <span class="ix-title">THE AGENTIC LOOP</span>
 
-  <div class="ix-card" data-accent="#6366f1">
+  <div class="ix-card" data-accent="#6366f1" data-phase="reason">
     <i data-lucide="eye" class="ix-card-icon"></i>
     <span class="ix-card-label">Perceive</span>
   </div>
-  <div class="ix-card" data-accent="#8b5cf6">
+  <div class="ix-card" data-accent="#8b5cf6" data-phase="reason">
     <i data-lucide="brain" class="ix-card-icon"></i>
     <span class="ix-card-label">Reason</span>
   </div>
-  <div class="ix-card" data-accent="#06b6d4">
+  <div class="ix-card" data-accent="#06b6d4" data-phase="act">
     <i data-lucide="zap" class="ix-card-icon"></i>
     <span class="ix-card-label">Act</span>
   </div>
-  <div class="ix-card" data-accent="#10b981">
+  <div class="ix-card" data-accent="#10b981" data-phase="observe">
     <i data-lucide="search" class="ix-card-icon"></i>
     <span class="ix-card-label">Observe</span>
   </div>
@@ -663,7 +667,7 @@ Agentic coding tools are a new category of development environment. They embed t
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m01-agentic-tools-predict" data-xp="8">
   <span class="ix-title">Predict Before You Learn</span>
   <p class="ix-predict-prompt">What do you think makes an "agentic" coding tool different from a regular AI assistant like ChatGPT? Write your answer, then explore the cards below.</p>
-  <textarea class="ix-predict-input" placeholder="Write 2-3 sentences about what you think distinguishes agentic coding tools."></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write 2-3 sentences about what you think distinguishes agentic coding tools."></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>
     <p>The key difference is <strong>autonomous action</strong>. A regular AI assistant produces text that you copy-paste and execute yourself. An agentic coding tool reads your codebase, writes edits, runs tests, and observes results -- all within a closed loop. You shift from being the executor to being the director and reviewer. This also means the tool needs a permission model, persistent project context, and external integrations to be effective and safe.</p>
@@ -674,27 +678,27 @@ Agentic coding tools are a new category of development environment. They embed t
 
 <div class="ix-diagram" data-component="click-cards" data-diagram-id="agentic-tool-traits">
   <span class="ix-title">Shared characteristics of agentic coding tools</span>
-  <div class="ix-card" data-accent="#06b6d4">
+  <div class="ix-card" data-accent="#06b6d4" data-phase="act">
     <i data-lucide="wrench" class="ix-card-icon"></i>
     <span class="ix-card-label">Autonomous tool use</span>
   </div>
-  <div class="ix-card" data-accent="#8b5cf6">
+  <div class="ix-card" data-accent="#8b5cf6" data-phase="reason">
     <i data-lucide="refresh-cw" class="ix-card-icon"></i>
     <span class="ix-card-label">The Agentic Loop</span>
   </div>
-  <div class="ix-card" data-accent="#10b981">
+  <div class="ix-card" data-accent="#10b981" data-phase="observe">
     <i data-lucide="terminal" class="ix-card-icon"></i>
     <span class="ix-card-label">Bash / terminal access</span>
   </div>
-  <div class="ix-card" data-accent="#f59e0b">
+  <div class="ix-card" data-accent="#f59e0b" data-phase="perceive">
     <i data-lucide="plug" class="ix-card-icon"></i>
     <span class="ix-card-label">External integrations</span>
   </div>
-  <div class="ix-card" data-accent="#6366f1">
+  <div class="ix-card" data-accent="#6366f1" data-phase="reason">
     <i data-lucide="hard-drive" class="ix-card-icon"></i>
     <span class="ix-card-label">Persistent context</span>
   </div>
-  <div class="ix-card" data-accent="#ef4444">
+  <div class="ix-card" data-accent="#ef4444" data-phase="error">
     <i data-lucide="shield" class="ix-card-icon"></i>
     <span class="ix-card-label">Permission models</span>
   </div>
@@ -778,19 +782,19 @@ Agentic coding tools are a new category of development environment. They embed t
 <div class="ix-diagram" data-component="click-cards" data-diagram-id="failure-modes">
   <span class="ix-title">Collaboration model -- failure modes and the productive pattern</span>
 
-  <div class="ix-card" data-accent="#f87171">
+  <div class="ix-card" data-accent="#f87171" data-phase="error">
     <i data-lucide="align-justify" class="ix-card-icon"></i>
     <span class="ix-card-label">Autocomplete mindset</span>
   </div>
-  <div class="ix-card" data-accent="#f59e0b">
+  <div class="ix-card" data-accent="#f59e0b" data-phase="perceive">
     <i data-lucide="box" class="ix-card-icon"></i>
     <span class="ix-card-label">Magic box mindset</span>
   </div>
-  <div class="ix-card" data-accent="#a78bfa">
+  <div class="ix-card" data-accent="#a78bfa" data-phase="reason">
     <i data-lucide="stamp" class="ix-card-icon"></i>
     <span class="ix-card-label">Rubber-stamping</span>
   </div>
-  <div class="ix-card" data-accent="#10b981">
+  <div class="ix-card" data-accent="#10b981" data-phase="observe">
     <i data-lucide="check-circle" class="ix-card-icon"></i>
     <span class="ix-card-label">Productive pattern</span>
   </div>
@@ -904,7 +908,7 @@ Agentic coding tools are a new category of development environment. They embed t
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m01-collaboration-predict" data-xp="10">
   <span class="ix-title">Predict First: Where Do You Usually Drift?</span>
   <p class="ix-predict-prompt">Before opening the reveal, predict your most common failure mode in real work: over-directing, under-specifying, or under-verifying. Write one concrete correction you will apply in your next session.</p>
-  <textarea class="ix-predict-input" placeholder="Name the failure mode and your correction."></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Name the failure mode and your correction."></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal coaching</summary>
     <p>Most teams improve fastest by tightening one behavior at a time: stronger prompts, clearer constraints, or stricter verification checkpoints. Pick one and run it for a full week.</p>
@@ -1090,7 +1094,7 @@ Summary: separated token issuance, preserved external API, updated route wiring.
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m01-suitability-predict" data-xp="8">
   <span class="ix-title">Predict Before You Learn</span>
   <p class="ix-predict-prompt">Think of a coding task you did last week. Would an AI agent have been a good fit for it? What criteria would you use to decide whether a task is suitable for an agentic workflow versus doing it manually?</p>
-  <textarea class="ix-predict-input" placeholder="Describe the task and your suitability criteria."></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Describe the task and your suitability criteria."></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal the decision framework</summary>
     <p>Four questions determine suitability: (1) How long would this take manually? Longer = more value from the agent. (2) How specific can you be about the goal? More specific = lower risk of the agent going off track. (3) How verifiable is the output? Tests and diffs make verification easy. (4) What is the cost if the agent gets it wrong? Lower cost = more appropriate for delegation. Tasks that score high on specificity and verifiability are the sweet spot.</p>
@@ -1136,19 +1140,19 @@ Summary: separated token issuance, preserved external API, updated route wiring.
 <div class="ix-diagram" data-component="click-cards" data-diagram-id="task-suitability">
   <span class="ix-title">Task suitability for agentic AI</span>
 
-  <div class="ix-card" data-accent="#10b981">
+  <div class="ix-card" data-accent="#10b981" data-phase="observe">
     <i data-lucide="check-circle" class="ix-card-icon"></i>
     <span class="ix-card-label">Best fit</span>
   </div>
-  <div class="ix-card" data-accent="#f59e0b">
+  <div class="ix-card" data-accent="#f59e0b" data-phase="perceive">
     <i data-lucide="alert-triangle" class="ix-card-icon"></i>
     <span class="ix-card-label">Needs better spec</span>
   </div>
-  <div class="ix-card" data-accent="#ef4444">
+  <div class="ix-card" data-accent="#ef4444" data-phase="error">
     <i data-lucide="x-circle" class="ix-card-icon"></i>
     <span class="ix-card-label">Poor fit</span>
   </div>
-  <div class="ix-card" data-accent="#6366f1">
+  <div class="ix-card" data-accent="#6366f1" data-phase="reason">
     <i data-lucide="eye" class="ix-card-icon"></i>
     <span class="ix-card-label">Verify manually</span>
   </div>
@@ -1282,34 +1286,69 @@ Summary: separated token issuance, preserved external API, updated route wiring.
 
 ## Best Practices Summary
 
-<div class="ix-diagram" data-component="callout" data-variant="tip">
-<p><strong>Prompt Design.</strong> Describe outcomes ("the tests should still pass after the refactor"). Specify constraints explicitly ("do not modify any files in /config"). Never issue step-by-step micro-instructions for tasks the agent can plan itself. Never use vague goals like "improve the code" without defining what improvement means.</p>
-</div>
-<div class="ix-diagram" data-component="callout" data-variant="tip">
-<p><strong>Context Management.</strong> Keep CLAUDE.md up to date with conventions and architecture. Include relevant file paths in your prompt when they are not already in CLAUDE.md. Never rely on in-session instructions for things that matter across sessions. Never include secrets, API keys, or credentials in CLAUDE.md.</p>
-</div>
-<div class="ix-diagram" data-component="callout" data-variant="warning">
-<p><strong>Verification.</strong> Read the diff of changed files before accepting. Run tests yourself -- do not just trust that the agent reported they pass. Ask the agent to explain its approach if the reasoning is unclear from the trace. Never accept agent output without understanding what changed and why.</p>
+<p class="ix-instruct">Use the tabs to review each best-practice category before moving to the key concept recap.</p>
+
+<div class="ix-diagram" data-component="tabbed-panel" data-diagram-id="m01-best-practices-tabs">
+  <span class="ix-title">Best Practices by Category</span>
+  <div data-tab="Prompt Design">
+    <p>Describe outcomes ("the tests should still pass after the refactor"). Specify constraints explicitly ("do not modify any files in <code>/config</code>"). Never issue step-by-step micro-instructions for tasks the agent can plan itself. Never use vague goals like "improve the code" without defining what improvement means.</p>
+  </div>
+  <div data-tab="Context Management">
+    <p>Keep <code>CLAUDE.md</code> up to date with conventions and architecture. Include relevant file paths in your prompt when they are not already in <code>CLAUDE.md</code>. Never rely on in-session instructions for things that matter across sessions. Never include secrets, API keys, or credentials in <code>CLAUDE.md</code>.</p>
+  </div>
+  <div data-tab="Verification">
+    <p>Read the diff of changed files before accepting. Run tests yourself -- do not just trust that the agent reported they pass. Ask the agent to explain its approach if the reasoning is unclear from the trace. Never accept agent output without understanding what changed and why.</p>
+  </div>
 </div>
 
 ---
 
 ## Key Concepts for Review
 
-<div class="ix-diagram" data-component="callout" data-variant="key-concept">
-<p><strong>Agentic AI</strong> -- An AI system that takes actions in the world, observes the results, and uses feedback to determine subsequent actions. Distinct from autocomplete (token prediction) and assistant AI (text generation in response to prompts).</p>
-</div>
-<div class="ix-diagram" data-component="callout" data-variant="key-concept">
-<p><strong>The Agentic Loop (PRAO)</strong> -- Perceive, Reason, Act, Observe. The four-phase cycle that defines agent operation. Most real tasks involve multiple Agentic Loop cycles.</p>
-</div>
-<div class="ix-diagram" data-component="callout" data-variant="key-concept">
-<p><strong>CLAUDE.md</strong> -- The persistent context file that Claude Code reads at the start of every session. The primary mechanism for maintaining continuity between sessions.</p>
-</div>
-<div class="ix-diagram" data-component="callout" data-variant="key-concept">
-<p><strong>Session context</strong> -- The conversation history that accumulates within a session. Does not persist between sessions unless explicitly resumed.</p>
-</div>
-<div class="ix-diagram" data-component="callout" data-variant="key-concept">
-<p><strong>Tool call</strong> -- The mechanism by which an agent takes actions: reading files, writing files, running bash commands, calling MCP servers. Every agent action is a tool call.</p>
+<p class="ix-instruct">Click each concept card to reveal its exact definition.</p>
+
+<div class="ix-diagram" data-component="click-cards" data-diagram-id="m01-key-concepts-cards">
+  <span class="ix-title">Module 01 Core Concepts</span>
+  <div class="ix-card" data-phase="perceive">
+    <i data-lucide="cpu" class="ix-card-icon"></i>
+    <span class="ix-card-label">Agentic AI</span>
+  </div>
+  <div class="ix-card" data-phase="reason">
+    <i data-lucide="repeat" class="ix-card-icon"></i>
+    <span class="ix-card-label">PRAO Loop</span>
+  </div>
+  <div class="ix-card" data-phase="observe">
+    <i data-lucide="book-open" class="ix-card-icon"></i>
+    <span class="ix-card-label">CLAUDE.md</span>
+  </div>
+  <div class="ix-card" data-phase="neutral">
+    <i data-lucide="message-square" class="ix-card-icon"></i>
+    <span class="ix-card-label">Session Context</span>
+  </div>
+  <div class="ix-card" data-phase="act">
+    <i data-lucide="wrench" class="ix-card-icon"></i>
+    <span class="ix-card-label">Tool Call</span>
+  </div>
+  <div class="ix-detail-panel">
+    <div class="ix-detail-header" data-phase="perceive">Agentic AI</div>
+    <div class="ix-detail-body">An AI system that takes actions in the world, observes the results, and uses feedback to determine subsequent actions. Distinct from autocomplete (token prediction) and assistant AI (text generation in response to prompts).</div>
+  </div>
+  <div class="ix-detail-panel">
+    <div class="ix-detail-header" data-phase="reason">The Agentic Loop (PRAO)</div>
+    <div class="ix-detail-body">Perceive, Reason, Act, Observe. The four-phase cycle that defines agent operation. Most real tasks involve multiple Agentic Loop cycles.</div>
+  </div>
+  <div class="ix-detail-panel">
+    <div class="ix-detail-header" data-phase="observe">CLAUDE.md</div>
+    <div class="ix-detail-body">The persistent context file that Claude Code reads at the start of every session. The primary mechanism for maintaining continuity between sessions.</div>
+  </div>
+  <div class="ix-detail-panel">
+    <div class="ix-detail-header" data-phase="neutral">Session context</div>
+    <div class="ix-detail-body">The conversation history that accumulates within a session. Does not persist between sessions unless explicitly resumed.</div>
+  </div>
+  <div class="ix-detail-panel">
+    <div class="ix-detail-header" data-phase="act">Tool call</div>
+    <div class="ix-detail-body">The mechanism by which an agent takes actions: reading files, writing files, running bash commands, calling MCP servers. Every agent action is a tool call.</div>
+  </div>
 </div>
 
 ---

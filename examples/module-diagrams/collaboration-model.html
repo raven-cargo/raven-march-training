@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collaboration Model</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:720px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:2rem}
+
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:1.5rem}
+.card{padding:16px 10px;border-radius:12px;border:1px solid #222228;background:#141418;cursor:pointer;text-align:center;transition:all .3s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s}
+.card:hover{border-color:#333;transform:translateY(-2px)}
+.card.active{transform:translateY(-2px)}
+.card .icon{font-size:24px;display:block;margin-bottom:6px;height:30px;line-height:30px;transition:all .3s}
+.card .name{font-size:12px;font-weight:500;color:#888;transition:color .3s}
+.card.active .name{color:#e8e6e1}
+
+.card[data-i="0"].active{border-color:#f87171;background:#1f0a0a}
+.card[data-i="0"].active .icon{color:#f87171}
+.card[data-i="1"].active{border-color:#f59e42;background:#1f1a0a}
+.card[data-i="1"].active .icon{color:#f59e42}
+.card[data-i="2"].active{border-color:#a78bfa;background:#1c1535}
+.card[data-i="2"].active .icon{color:#a78bfa}
+.card[data-i="3"].active{border-color:#4ade80;background:#0a1f14}
+.card[data-i="3"].active .icon{color:#4ade80}
+
+.panel{border-radius:16px;border:1px solid #222228;background:#141418;overflow:hidden;animation:slideUp .4s cubic-bezier(.22,1,.36,1)}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.panel-header{padding:16px 24px;font-size:15px;font-weight:600;border-bottom:1px solid #1a1a1e}
+.panel-body{padding:20px 24px}
+
+.section{margin-bottom:16px}
+.section:last-child{margin-bottom:0}
+.sec-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#555;margin-bottom:6px}
+.sec-text{font-size:14px;color:#aaa;line-height:1.6}
+
+.example-block{font-size:12px;font-family:'JetBrains Mono',monospace;color:#777;padding:12px 16px;background:#0c0c0f;border-radius:10px;border:1px solid #1a1a1e;line-height:1.8;margin-top:4px}
+
+.fix-block{font-size:14px;color:#c8c6c1;padding:14px 18px;background:#0a1f14;border-radius:10px;border:1px solid #1a4030;line-height:1.6;margin-top:4px}
+
+.cap-section{margin-top:20px;padding-top:16px;border-top:1px solid #1a1a1e}
+.cap-label{font-size:11px;color:#555;margin-bottom:8px}
+.cap-track{height:8px;border-radius:4px;background:#1a1a1e;overflow:hidden}
+.cap-fill{height:100%;border-radius:4px;transition:width .5s cubic-bezier(.22,1,.36,1),background .3s}
+.cap-val{font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace;margin-top:6px;text-align:right}
+
+.step-list{margin-top:4px}
+.step-item{display:flex;align-items:baseline;gap:12px;padding:8px 0;border-bottom:1px solid #1a1a1e}
+.step-item:last-child{border-bottom:none}
+.step-num{font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;min-width:24px;color:#4ade80}
+.step-text{font-size:14px;color:#c8c6c1;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Collaboration model — failure modes & the productive pattern</h1>
+
+<div class="cards">
+  <div class="card active" data-i="0" onclick="show(0)"><span class="icon" style="color:#f87171">|||</span><span class="name">Autocomplete mindset</span></div>
+  <div class="card" data-i="1" onclick="show(1)"><span class="icon">&#9670;</span><span class="name">Magic box mindset</span></div>
+  <div class="card" data-i="2" onclick="show(2)"><span class="icon">&#8212;</span><span class="name">Rubber-stamping</span></div>
+  <div class="card" data-i="3" onclick="show(3)"><span class="icon">&#10003;</span><span class="name">Productive pattern</span></div>
+</div>
+
+<div class="panel" id="panel"></div>
+</div>
+
+<script>
+const modes=[
+{title:'Failure: Autocomplete mindset',hc:'#f87171',
+ symptom:'Constant micro-prompts: "change line 23," "use a different name," "add a comment." The engineer directs every keystroke — never letting the agent perceive, reason, or plan.',
+ why:'Treats the agent as a faster typing tool. The continuous interruptions prevent the agent from building a coherent model of the task. Uses approximately 10% of capability.',
+ example:'"Now change line 23 to use const"<br>"Ok now add a comment above it"<br>"Rename the variable to userData"<br>"Now move to the next file"',
+ fix:'Start with the goal, not the steps. "Refactor the auth module to use JWT instead of session tokens. The existing tests should all pass after the refactor." Let the agent plan and execute through the full PRAO loop.',
+ capPct:10,capColor:'#f87171'},
+{title:'Failure: Magic box mindset',hc:'#f59e42',
+ symptom:'Vague, aspirational prompts with no constraints or definition of done. Expects the agent to read minds and produce brilliance from thin air.',
+ why:'Skips the briefing entirely. No CLAUDE.md context, no scope constraints, no definition of "done." The agent makes arbitrary choices that may not align with intent.',
+ example:'"Make the code better"<br>"Fix everything"<br>"Improve performance"<br>"Clean this up"',
+ fix:'Be specific about goal, scope, and constraints. "Make the auth module more testable by decoupling the database access from the business logic. Don\'t change the external API." Define what "done" looks like.',
+ capPct:35,capColor:'#f59e42'},
+{title:'Failure: Rubber-stamping',hc:'#a78bfa',
+ symptom:'Hands off to the agent and accepts output without review. Doesn\'t read diffs, doesn\'t run tests independently, doesn\'t verify the reasoning.',
+ why:'Over-trusts the agent. Forgets that verification is part of the engineering workflow, not optional overhead. The professional standard is understanding what changed and why.',
+ example:'Agent reports "all tests pass" →<br>Engineer merges without reading the diff<br>or running tests themselves<br>→ Bug ships to production',
+ fix:'Read the diff of changed files. Run the tests yourself. Ask the agent to explain its approach if the reasoning isn\'t clear from the trace. Understand what changed and why before accepting.',
+ capPct:60,capColor:'#a78bfa'},
+{title:'The productive pattern',hc:'#4ade80',
+ steps:['Specific goal — describe what "done" looks like, not the steps to get there','Rich context — ensure CLAUDE.md has architectural context; add file paths to prompt','Explicit constraints — state what must remain unchanged, what patterns to follow','Monitor execution — watch tool calls at a high level; intervene if clearly wrong','Verify outputs — read the diff, run tests, check behavior matches intent','Close the loop — if the agent made a good decision, write it to CLAUDE.md'],
+ capPct:95,capColor:'#4ade80'}
+];
+
+function show(i){
+  document.querySelectorAll('.card').forEach((c,j)=>c.classList.toggle('active',j===i));
+  const m=modes[i];
+  let h='<div class="panel-header" style="color:'+m.hc+'">'+m.title+'</div><div class="panel-body">';
+  if(m.symptom){
+    h+='<div class="section"><div class="sec-label">What it looks like</div><div class="sec-text">'+m.symptom+'</div></div>';
+    h+='<div class="section"><div class="sec-label">Why it fails</div><div class="sec-text">'+m.why+'</div></div>';
+    h+='<div class="section"><div class="sec-label">Typical prompts</div><div class="example-block">'+m.example+'</div></div>';
+    h+='<div class="section"><div class="sec-label">The fix</div><div class="fix-block">'+m.fix+'</div></div>';
+  } else {
+    h+='<div class="step-list">';
+    m.steps.forEach((s,j)=>{
+      h+='<div class="step-item"><span class="step-num">'+(j+1)+'</span><span class="step-text">'+s+'</span></div>';
+    });
+    h+='</div>';
+  }
+  h+='<div class="cap-section"><div class="cap-label">Agent capability utilized</div>';
+  h+='<div class="cap-track"><div class="cap-fill" style="width:'+m.capPct+'%;background:'+m.capColor+'"></div></div>';
+  h+='<div class="cap-val" style="color:'+m.capColor+'">'+m.capPct+'%</div>';
+  h+='</div></div>';
+  document.getElementById('panel').innerHTML=h;
+}
+show(0);
+</script>
+</body>
+</html>

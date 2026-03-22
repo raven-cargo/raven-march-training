@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Constraint Specification</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+
+.tabs{display:flex;gap:4px;margin-bottom:.5rem;background:#18181c;border-radius:12px;padding:4px}
+.tab{flex:1;padding:11px 8px;border:none;border-radius:10px;background:transparent;cursor:pointer;text-align:center;transition:all .3s;font-size:12px;font-weight:600;color:#555;font-family:'DM Sans',sans-serif}
+.tab.active{background:#1e1e24;color:#e8e6e1}
+
+.panel{display:none;animation:fadeUp .35s cubic-bezier(.22,1,.36,1)}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.cat-desc{font-size:13px;color:#aaa;line-height:1.6;margin-bottom:14px}
+
+.example-pair{margin-bottom:12px}
+.ex-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.ex-label.good{color:#4ade80}
+.ex-label.bad{color:#f87171}
+.ex-box{padding:12px 16px;border-radius:10px;font-size:12px;font-family:'JetBrains Mono',monospace;line-height:1.6;margin-bottom:8px}
+.ex-box.good{background:#0a1a14;border:1px solid #1a4030;color:#c8c6c1}
+.ex-box.bad{background:#1a0a0a;border:1px solid #401a1a;color:#888;text-decoration:line-through;text-decoration-color:#f8717130}
+
+.callout{padding:12px 16px;border-radius:10px;background:#0a1525;border:1px solid #1a3a6a;font-size:12px;color:#8ab8e8;line-height:1.55;margin-top:12px}
+.callout strong{color:#5ba4f5}
+
+.divider{border:none;border-top:1px solid #1a1a1e;margin:1.5rem 0}
+
+.anti-title{font-size:13px;font-weight:600;color:#e8e6e1;margin-bottom:10px}
+.anti-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.anti-item{padding:10px 14px;border-radius:8px;display:flex;gap:8px;align-items:flex-start}
+.anti-item.bad{background:#1a0a0a;border:1px solid #401a1a}
+.anti-item.good{background:#0a1a14;border:1px solid #1a4030}
+.anti-icon{font-size:12px;min-width:16px;margin-top:1px}
+.anti-text{font-size:12px;line-height:1.4}
+.anti-item.bad .anti-text{color:#888}
+.anti-item.good .anti-text{color:#c8c6c1}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Constraint specification</h1>
+<div class="objective">
+  <span class="goal">Safety &amp; precision</span>
+  <span class="text">Constraints define what the agent must not do. Four categories cover the space: scope (what's in/out), compatibility (what must be preserved), style (conventions to follow), and approval (where to pause for human confirmation).</span>
+</div>
+<div class="instruct">&#9654; Switch between constraint types to see what each protects, with verifiable examples vs. meaningless ones.</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="show(0)">Scope</div>
+  <div class="tab" onclick="show(1)">Compatibility</div>
+  <div class="tab" onclick="show(2)">Style</div>
+  <div class="tab" onclick="show(3)">Approval</div>
+</div>
+
+<div class="panel active" id="p0">
+  <div class="cat-desc">Define what files, functions, and systems are in and out of scope. Prevents the agent from wandering into adjacent code that shouldn't be touched.</div>
+  <div class="example-pair">
+    <div class="ex-label good">Verifiable constraint</div>
+    <div class="ex-box good">Only modify files in src/auth/. Do not modify files in src/middleware/, src/models/, or any test files.</div>
+  </div>
+  <div class="example-pair">
+    <div class="ex-label bad">Meaningless constraint</div>
+    <div class="ex-box bad">Don't break anything outside the auth module.</div>
+  </div>
+  <div class="callout"><strong>Why the bad version fails:</strong> "Don't break anything" requires the agent to know all downstream consumers of every file it touches. It can't verify this. Explicit file paths are verifiable.</div>
+</div>
+
+<div class="panel" id="p1">
+  <div class="cat-desc">Define interfaces, behaviors, and formats that must be preserved. Critical for refactoring and migrations where the internal implementation changes but the external contract must not.</div>
+  <div class="example-pair">
+    <div class="ex-label good">Verifiable constraint</div>
+    <div class="ex-box good">The function signature validateToken(token: string): Promise&lt;User | null&gt; must remain unchanged. All 47 existing unit tests must pass without modification.</div>
+  </div>
+  <div class="example-pair">
+    <div class="ex-label bad">Meaningless constraint</div>
+    <div class="ex-box bad">Make sure it's backward compatible.</div>
+  </div>
+  <div class="callout"><strong>Why the bad version fails:</strong> "Backward compatible" is undefined without specifying which interfaces, which callers, and which behaviors. The good version names the exact function signature and a measurable test suite.</div>
+</div>
+
+<div class="panel" id="p2">
+  <div class="cat-desc">Define conventions the output must follow. Ensures new code matches existing codebase style — generic correct ≠ project-correct.</div>
+  <div class="example-pair">
+    <div class="ex-label good">Verifiable constraint</div>
+    <div class="ex-box good">Use camelCase for all new variables and functions. Use snake_case for database column names. Use parameterized queries — no string concatenation in SQL.</div>
+  </div>
+  <div class="example-pair">
+    <div class="ex-label bad">Meaningless constraint</div>
+    <div class="ex-box bad">Follow best practices and keep it clean.</div>
+  </div>
+  <div class="callout"><strong>Why the bad version fails:</strong> "Best practices" varies by community, language, and era. "Clean" is a subjective aesthetic. The agent can't make a binary decision from either. Specific naming conventions are checkable.</div>
+</div>
+
+<div class="panel" id="p3">
+  <div class="cat-desc">Define points where the agent must pause and get human confirmation before proceeding. The most important safety mechanism in agentic workflows — converts autonomous executor to collaborative planner.</div>
+  <div class="example-pair">
+    <div class="ex-label good">Verifiable constraint</div>
+    <div class="ex-box good">Before writing any code, present a numbered list of changes you plan to make, specifying which files and what modifications. Do not write code until I reply "proceed."</div>
+  </div>
+  <div class="example-pair">
+    <div class="ex-label bad">Meaningless constraint</div>
+    <div class="ex-box bad">Be careful with your changes.</div>
+  </div>
+  <div class="callout"><strong>A well-formed approval constraint specifies three things:</strong> what must be shown before proceeding (numbered list of changes), what format the plan takes (files + modifications), and what the agent waits for (the word "proceed").</div>
+</div>
+
+<hr class="divider">
+
+<div class="anti-title">Meaningless vs. verifiable — quick reference</div>
+<div class="anti-grid">
+  <div class="anti-item bad"><span class="anti-icon" style="color:#f87171">&#10007;</span><span class="anti-text">"Follow best practices"</span></div>
+  <div class="anti-item good"><span class="anti-icon" style="color:#4ade80">&#10003;</span><span class="anti-text">"Use parameterized queries for all DB calls"</span></div>
+  <div class="anti-item bad"><span class="anti-icon" style="color:#f87171">&#10007;</span><span class="anti-text">"Make sure it's secure"</span></div>
+  <div class="anti-item good"><span class="anti-icon" style="color:#4ade80">&#10003;</span><span class="anti-text">"Validate all input with Zod before use"</span></div>
+  <div class="anti-item bad"><span class="anti-icon" style="color:#f87171">&#10007;</span><span class="anti-text">"Don't break anything"</span></div>
+  <div class="anti-item good"><span class="anti-icon" style="color:#4ade80">&#10003;</span><span class="anti-text">"The 47 unit tests must pass without modification"</span></div>
+  <div class="anti-item bad"><span class="anti-icon" style="color:#f87171">&#10007;</span><span class="anti-text">"Keep it clean"</span></div>
+  <div class="anti-item good"><span class="anti-icon" style="color:#4ade80">&#10003;</span><span class="anti-text">"Use camelCase for variables, snake_case for DB columns"</span></div>
+</div>
+</div>
+
+<script>
+function show(i){
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));
+}
+</script>
+</body>
+</html>

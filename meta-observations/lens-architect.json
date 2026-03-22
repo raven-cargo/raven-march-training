@@ -1,0 +1,260 @@
+{
+  "lens": "architect",
+  "generated": "2026-03-16",
+  "files_reviewed": [
+    "module-viewer.html",
+    "index.html",
+    "lab-framework/core.js",
+    "lab-framework/core.css",
+    "vercel.json",
+    "docs/curriculum/modules/04-prompt-engineering-depth.md",
+    "docs/curriculum/modules/12-capstone-production.md"
+  ],
+  "findings": [
+    {
+      "id": "ARCH-001",
+      "severity": "critical",
+      "category": "spof",
+      "title": "Three unpinned CDN dependencies with no fallback in module-viewer.html",
+      "description": "module-viewer.html:11 loads Lucide from unpkg.com/@latest, line 12 loads marked.js from cdn.jsdelivr.net (no version pin), and line 13 loads Mermaid@11 from cdn.jsdelivr.net. If any CDN is unreachable or a breaking version is pushed, the entire module viewer breaks. The marked.js library is the rendering engine -- without it, all 12 modules display as raw markdown. Lucide failure means all icons vanish. Mermaid failure breaks every diagram. There is a try/catch at line 3538 for marked parse failure but it only shows raw text -- not a degraded-but-usable experience.",
+      "affected_files": ["module-viewer.html"],
+      "recommendation": "Pin all CDN dependencies to exact versions (e.g., marked@15.0.7, lucide@0.469.0, mermaid@11.4.1). Add integrity hashes via SRI attributes. Implement graceful degradation: if marked fails to load, render raw markdown in a styled pre block; if Mermaid fails, show the mermaid source as a fenced code block; if Lucide fails, fall back to Unicode characters. Consider self-hosting these three libraries in /vendor/ for zero CDN dependency."
+    },
+    {
+      "id": "ARCH-002",
+      "severity": "critical",
+      "category": "spof",
+      "title": "index.html also loads unpinned Lucide from CDN with no fallback",
+      "description": "index.html:11 loads lucide@latest from unpkg.com. The dashboard uses Lucide icons for all meta-pills (calendar, flask, book-open, circle-check, shield) and multimedia section icons. Line 851 calls lucide.createIcons() with a conditional check, but if the script fails to load entirely, the icons will be invisible broken SVG placeholders. The dashboard is the primary entry point -- if it breaks, no content is reachable.",
+      "affected_files": ["index.html"],
+      "recommendation": "Pin lucide to a specific version. Add onerror fallback on the script tag that inserts text-based alternatives. Alternatively self-host lucide.min.js in /vendor/."
+    },
+    {
+      "id": "ARCH-003",
+      "severity": "critical",
+      "category": "coupling",
+      "title": "Lab framework (core.js/core.css) is built but NOT integrated -- labs use inline duplicated code",
+      "description": "lab-framework/core.js defines a LabFramework IIFE with a 15-function public API (lines 31-655). lab-framework/build.js (line 1-22) is designed to inline this into labs via config files. However, zero lab-XX-config.js files exist in the labs/ directory. Grep for 'LabFramework' across all labs returns zero matches. Lab 01 (lab-01-paradigm-shift.html) has its own inline localStorage calls at line 1903 using 'lab-01-complete' and line 1908 using 'lab01-' prefix (note: inconsistent hyphenation). Lab 04 (lab-04-mcp-explorer.html) has its own STORAGE_KEYS object at line 1630 with a completely different persistence pattern (JSON.parse for arrays). This means the framework was extracted but never adopted -- all 9 labs contain ~800 lines each of duplicated, divergent JS/CSS.",
+      "affected_files": [
+        "lab-framework/core.js",
+        "lab-framework/core.css",
+        "lab-framework/build.js",
+        "labs/day1/lab-01-paradigm-shift.html",
+        "labs/day2/lab-04-mcp-explorer.html"
+      ],
+      "recommendation": "Complete the framework migration: create lab-XX-config.js files for all 9 labs, run build.js to inline framework code, and remove duplicated inline JS/CSS. Until migration is complete, the framework is dead code that creates a false sense of abstraction."
+    },
+    {
+      "id": "ARCH-004",
+      "severity": "high",
+      "category": "data-flow",
+      "title": "Inconsistent localStorage key naming across labs creates collision risk and prevents cross-lab XP aggregation",
+      "description": "Lab 01 uses 'lab01-' prefix (no hyphen between 'lab' and '01') at line 1908 but 'lab-01-complete' (with hyphen) at line 1903. Lab 04 uses a STORAGE_KEYS object with keys like 'lab-04-xp', 'lab-04-streak'. The framework core.js uses LAB_KEY + '-' + key pattern (line 221). Module viewer uses slug-based keys like '01-paradigm-shift-xp-total' (line 2926) and '01-paradigm-shift-s1' (line 3461). There is no unified key namespace convention, no prefix registry, and no collision guard. A lab key like 'lab-01-s1' and a module key like '01-paradigm-shift-s1' could coexist but are semantically overlapping. The index.html dashboard shows '~220 Total XP per learner' (line 289) but there is no aggregation mechanism -- XP is siloed per lab and per module with no cross-cutting total.",
+      "affected_files": [
+        "lab-framework/core.js",
+        "labs/day1/lab-01-paradigm-shift.html",
+        "labs/day2/lab-04-mcp-explorer.html",
+        "module-viewer.html",
+        "index.html"
+      ],
+      "recommendation": "Define a key namespace convention: 'agentic-course:{lab|module}:{number}:{property}'. Implement a thin storage abstraction in the framework that enforces this pattern. Add a dashboard aggregation function that sums XP across all labs and modules by scanning localStorage keys with the course prefix."
+    },
+    {
+      "id": "ARCH-005",
+      "severity": "high",
+      "category": "spof",
+      "title": "Module viewer is a single monolithic file -- 3597 lines of HTML/CSS/JS with no separation of concerns",
+      "description": "module-viewer.html contains: 1767 lines of CSS (lines 14-1766), 1825 lines of JS (lines 1768-3593), and minimal HTML structure. The JS contains 9 interactive diagram component initializers, a full Mermaid integration, an XP/milestone system, IntersectionObserver-based read tracking, a process flow stepper, and a markdown fetch-and-render pipeline. A single bug in any component (e.g., initAgentTrace at line 2174, 370 lines long) crashes the entire module rendering pipeline because all components share one IIFE scope. The postProcess function (line 3152) calls 7 sub-functions sequentially -- if any throws, the try/catch at line 3569 catches it but the module is left in a partially-rendered state.",
+      "affected_files": ["module-viewer.html"],
+      "recommendation": "Extract the JS into a separate module-viewer.js file. Split the 9 interactive diagram components into individual files that are loaded on demand. Wrap each postProcess sub-step in its own try/catch so a Mermaid rendering failure does not prevent section cards, tables, or code blocks from rendering."
+    },
+    {
+      "id": "ARCH-006",
+      "severity": "high",
+      "category": "scalability",
+      "title": "vercel.json routing is a manually-maintained flat list that doubles for single/double-digit paths",
+      "description": "vercel.json contains 44 rewrite rules (lines 4-44). Every lab requires 2 rules ('/lab/1' and '/lab/01' pointing to the same destination). Every module requires 2 rules. The challenges route has 2 rules. Adding a new module requires adding 2 new rewrite entries, remembering both formats, and updating index.html. The challenge route at line 43 uses a relative path traversal '../CHALLENGE-MISSIONS' in the query param, which is fragile if the markdown file moves. At 20+ modules this file would exceed 80 rules and become error-prone to maintain.",
+      "affected_files": ["vercel.json"],
+      "recommendation": "Replace the flat rewrite list with regex-based rewrites: { \"source\": \"/lab/:num(\\\\d{1,2})\", \"destination\": \"...\" } using Vercel's path parameter syntax. This reduces 18 lab rules to 1 and 24 module rules to 1. Alternatively, add a Vercel serverless function or middleware that resolves paths programmatically."
+    },
+    {
+      "id": "ARCH-007",
+      "severity": "high",
+      "category": "coupling",
+      "title": "Module viewer is tightly coupled to exact markdown heading structure",
+      "description": "The postProcess function at line 3154 counts h2 elements to determine totalSections. It then wraps all content between h2s into .module-section cards (lines 3157-3197). If a module markdown uses h2 for a non-section purpose (e.g., a nested sub-heading within a section, or an h2 inside a code example blockquote), it will be incorrectly split into a separate tracked section. Module 04 has 6 h2 headings (Overview, Learning Objectives, 4.1-4.5, Lab Connection, Further Reading). Module 12 has 7 h2 headings. The 'Overview', 'Learning Objectives', 'Lab Connection', and 'Further Reading' h2s are treated as tracked sections even though they are structural boilerplate, not learning content. This inflates the 'read' count and triggers completion prematurely if a learner scrolls past boilerplate.",
+      "affected_files": [
+        "module-viewer.html",
+        "docs/curriculum/modules/04-prompt-engineering-depth.md",
+        "docs/curriculum/modules/12-capstone-production.md"
+      ],
+      "recommendation": "Add a data attribute or class convention to markdown headings that distinguishes trackable learning sections from structural boilerplate. Alternatively, use a frontmatter block in each markdown file that declares the section IDs to track, decoupling the viewer from heading semantics."
+    },
+    {
+      "id": "ARCH-008",
+      "severity": "high",
+      "category": "coupling",
+      "title": "Dual design token systems -- index.html and core.css define overlapping but divergent CSS variables",
+      "description": "index.html:13-28 defines --bg, --surface, --raised, --primary, --accent, --success, --warning, --danger, --text, --muted, --dim, --border, --radius. core.css:21-50 defines --bg-base, --bg-surface, --bg-raised, --primary, --accent, --success, --warning, --danger, --text, --text-muted, --text-dim, --border, --radius, --radius-sm. module-viewer.html:15-35 defines yet another set with --bg, --surface, --raised plus additional --ix-phase-* tokens. The naming is inconsistent: index.html uses --muted while core.css uses --text-muted; index.html uses --bg while core.css uses --bg-base. The --radius value is 14px in index.html (line 27), 16px in core.css (line 48), and 12px in module-viewer.html (line 33). Any design system update requires changing three files independently with no shared source of truth.",
+      "affected_files": [
+        "index.html",
+        "lab-framework/core.css",
+        "module-viewer.html"
+      ],
+      "recommendation": "Extract design tokens into a single shared CSS file (e.g., /assets/tokens.css) imported by all three consumers. Standardize on one naming convention (--bg-base or --bg, not both). The --radius discrepancy (12/14/16px) should be resolved to a single value or a documented scale (--radius-sm, --radius, --radius-lg)."
+    },
+    {
+      "id": "ARCH-009",
+      "severity": "high",
+      "category": "abstraction",
+      "title": "MODULE_SLUGS map is hardcoded in module-viewer.html JS with no shared source of truth",
+      "description": "module-viewer.html:2887-2900 hardcodes the MODULE_SLUGS map with all 12 module number-to-slug mappings. This same mapping is duplicated in vercel.json (lines 22-42) and in index.html (lines 426-554 as href attributes). Adding a new module 13 requires updating all three files plus creating the markdown file. There is no build step or shared config that enforces consistency. The challenge route in vercel.json line 43 uses '../CHALLENGE-MISSIONS' as a relative path traversal in the query parameter, which assumes the module-viewer.html markdown fetch path construction will correctly resolve '../CHALLENGE-MISSIONS.md' relative to '/docs/curriculum/modules/'. This works because line 3528 constructs: '/docs/curriculum/modules/' + slug + '.md' and slug becomes '../CHALLENGE-MISSIONS', making the fetch URL '/docs/curriculum/modules/../CHALLENGE-MISSIONS.md' which normalizes to '/docs/curriculum/CHALLENGE-MISSIONS.md'. This is fragile path traversal by convention.",
+      "affected_files": [
+        "module-viewer.html",
+        "vercel.json",
+        "index.html"
+      ],
+      "recommendation": "Create a /data/course-manifest.json that is the single source of truth for module slugs, titles, day assignments, and file paths. Have module-viewer.html fetch this manifest. Generate vercel.json rewrites from the manifest during build. Reference the manifest from index.html (or generate the dashboard from it)."
+    },
+    {
+      "id": "ARCH-010",
+      "severity": "medium",
+      "category": "data-flow",
+      "title": "Theme toggle state uses 'luxor-theme' key -- not namespaced to this course",
+      "description": "assets/theme-toggle.js:4 uses the storage key 'luxor-theme'. module-viewer.html:1779 reads this same key. This key is specific to the LUXOR ecosystem, not to this course. If this course is deployed to a domain shared with other LUXOR projects, the theme state will leak between applications. If the course is deployed standalone, the 'luxor-' prefix is misleading and suggests a dependency that does not exist.",
+      "affected_files": [
+        "assets/theme-toggle.js",
+        "module-viewer.html"
+      ],
+      "recommendation": "Rename the storage key to 'agentic-course-theme' for isolation. If cross-project theme consistency within LUXOR is desired, document this as an intentional shared key."
+    },
+    {
+      "id": "ARCH-011",
+      "severity": "medium",
+      "category": "spof",
+      "title": "Module viewer reloads entire page on theme switch when Mermaid diagrams are present",
+      "description": "module-viewer.html:3586-3590 listens for 'luxor-theme-change' and calls window.location.reload() if any .mermaid-wrapper exists. This is because Mermaid's theme variables are bound at mermaid.initialize() time (line 1848-1857) and cannot be updated dynamically. The reload destroys all in-progress interactive state: quiz answers, predict-reveal inputs, terminal simulation progress, and scroll position. For a module like 12-capstone-production.md that includes Mermaid diagrams, switching themes mid-read loses all engagement progress for that session.",
+      "affected_files": ["module-viewer.html"],
+      "recommendation": "Instead of reloading, re-initialize Mermaid with new theme variables and re-render only the .mermaid divs. Mermaid 11 supports mermaid.run() on specific nodes (already used at line 3096). Save scroll position and interactive state to sessionStorage before reload, then restore after."
+    },
+    {
+      "id": "ARCH-012",
+      "severity": "medium",
+      "category": "abstraction",
+      "title": "XP award logic is duplicated with different implementations in labs vs module-viewer",
+      "description": "core.js awardXP (line 170) adds to a module-level 'xp' variable, saves to localStorage with LAB_KEY + '-xp', and creates an XP toast. module-viewer.html awardXP (line 3042) uses a milestone deduplication system (hasMilestone/setMilestone), saves to slug + '-xp-total', and creates a milestone toast with different styling. Lab 04 has its own inline XP function that saves to STORAGE_KEYS.xp. These three implementations have different deduplication strategies: core.js uses xpAwardedFor object (line 41, memory-only), module-viewer uses localStorage milestones (line 2930-2945, persistent), and lab 04 uses ad-hoc localStorage flags per activity.",
+      "affected_files": [
+        "lab-framework/core.js",
+        "module-viewer.html",
+        "labs/day2/lab-04-mcp-explorer.html"
+      ],
+      "recommendation": "Create a shared XP module in /assets/xp-engine.js that handles award, deduplication (using persistent milestones), toast display, and aggregation. Import this from both the lab framework and the module viewer."
+    },
+    {
+      "id": "ARCH-013",
+      "severity": "medium",
+      "category": "scalability",
+      "title": "Lab framework core.js stores callbacks on window globals, risking collision at scale",
+      "description": "core.js:406 assigns window._challengeSubmit as a function. Line 410 reassigns it on every PredictionChallenge call, meaning the last PredictionChallenge rendered wins. Lines 463-464 use window._kcCallbacks and window._kcAnswer similarly. Lines 535-538 use window._applyCallbacks and window._applySubmit. If a lab has multiple PredictionChallenges, only the last one's onComplete callback will fire because window._challengeSubmit is overwritten. This is a latent bug that will manifest when labs grow beyond their current single-challenge structure.",
+      "affected_files": ["lab-framework/core.js"],
+      "recommendation": "Replace window globals with a closure-scoped callback registry keyed by container ID. The onclick handlers in the generated HTML (line 379: \"onclick=\\\"_challengeSubmit('${id}')\\\"'\") should call LabFramework._handleSubmit(id) instead of a global function."
+    },
+    {
+      "id": "ARCH-014",
+      "severity": "medium",
+      "category": "coupling",
+      "title": "Blast radius of core.css changes is unbounded -- no lab currently uses it",
+      "description": "core.css is 669 lines defining styles for nav, sections, cards, challenges, quizzes, callbacks, boss challenges, completion banners, toasts, streaks, and responsive breakpoints. Since no lab currently imports or inlines core.css (confirmed by zero grep matches for 'core.css' or 'LabFramework' in labs/), the blast radius of any change is currently zero -- the file is dead code. However, the intended blast radius once adopted is all 9 labs simultaneously. There is no versioning mechanism on the CSS. The build.js inlines CSS at build time, so a change to core.css requires rebuilding all 9 labs. There are no visual regression tests.",
+      "affected_files": [
+        "lab-framework/core.css",
+        "lab-framework/build.js"
+      ],
+      "recommendation": "Before adopting core.css, add CSS custom property overrides per lab so individual labs can customize without forking the framework. Add a visual snapshot test (e.g., Percy or Playwright screenshots) that validates all 9 labs render correctly after any core.css change."
+    },
+    {
+      "id": "ARCH-015",
+      "severity": "medium",
+      "category": "data-flow",
+      "title": "Module completion timestamp stored but never surfaced to the user",
+      "description": "module-viewer.html:3496 stores Date.now() under slug + '-complete' key when all sections are read. The computeCompletionStreak function (line 2980) reads these timestamps to calculate a day-streak. However, the streak is only displayed in the engagement strip of the module being viewed (line 3023). There is no course-wide completion dashboard. The index.html does not read any localStorage data at all -- it is entirely static. A learner completing all 12 modules has no way to see their overall progress.",
+      "affected_files": [
+        "module-viewer.html",
+        "index.html"
+      ],
+      "recommendation": "Add a lightweight JS block to index.html that reads completion timestamps from localStorage for all 12 modules and 9 labs. Display aggregate stats in the stat-bar: total XP, modules completed, labs completed, current streak. This closes the feedback loop for learners."
+    },
+    {
+      "id": "ARCH-016",
+      "severity": "low",
+      "category": "scalability",
+      "title": "Google Fonts loaded redundantly in every HTML entry point",
+      "description": "Google Fonts (Inter + JetBrains Mono) is loaded via link tags in index.html:7-8, via @import in core.css:18, and via link tags in module-viewer.html:7-8. Each lab HTML file presumably also loads these fonts independently. For a learner navigating from index.html to a lab to a module, the browser makes 3+ separate font requests to Google Fonts (cached by browser, but the CSS parsing overhead remains). The core.css uses @import which is render-blocking.",
+      "affected_files": [
+        "index.html",
+        "lab-framework/core.css",
+        "module-viewer.html"
+      ],
+      "recommendation": "Self-host the font files in /assets/fonts/ and reference them via a single shared @font-face CSS file. This eliminates the Google Fonts CDN dependency and the render-blocking @import in core.css."
+    },
+    {
+      "id": "ARCH-017",
+      "severity": "low",
+      "category": "abstraction",
+      "title": "Process flow stepper is generated twice -- once in module-viewer.html and once in lab-framework/core.js",
+      "description": "module-viewer.html:3262-3329 converts ordered lists into process-flow steppers with prev/next navigation. lab-framework/core.js does not have this exact feature but has a similar section-gating mechanism (checkSectionUnlock, markSectionComplete). Both implement prev/next navigation patterns independently. The module-viewer process flow has its own CSS (.process-flow, .process-step, .process-nav) at module-viewer.html:300-349 that is separate from any lab framework styles.",
+      "affected_files": [
+        "module-viewer.html",
+        "lab-framework/core.js"
+      ],
+      "recommendation": "If the process flow stepper is valuable in both contexts, extract it into a shared component. If the lab section gating and module process flow serve fundamentally different purposes, document this distinction to prevent future developers from attempting to unify them incorrectly."
+    },
+    {
+      "id": "ARCH-018",
+      "severity": "low",
+      "category": "data-flow",
+      "title": "No localStorage quota management or cleanup mechanism",
+      "description": "Each lab stores XP, streak, section completion flags, textarea values, and various activity flags. Each module stores XP totals, milestone flags, section read flags, and completion timestamps. With 9 labs and 12 modules, a fully-engaged learner accumulates approximately 200+ localStorage keys. localStorage has a 5-10MB limit per origin. While this course is unlikely to hit the limit, there is no try/catch around most localStorage.setItem calls in the lab code (core.js line 172, 295, 320 do not catch quota errors). Module-viewer.html does wrap calls in try/catch (lines 2699-2707, 2715-2719) but core.js does not.",
+      "affected_files": [
+        "lab-framework/core.js",
+        "module-viewer.html"
+      ],
+      "recommendation": "Wrap all localStorage.setItem calls in try/catch. Consider adding a 'clear course data' button in the dashboard footer. Add a storage audit function that reports total keys and estimated size used by the course."
+    },
+    {
+      "id": "ARCH-019",
+      "severity": "low",
+      "category": "spof",
+      "title": "Challenge route uses path traversal in query parameter",
+      "description": "vercel.json:43 maps '/challenges' to '/module-viewer.html?m=../CHALLENGE-MISSIONS'. The module-viewer.html at line 3528 constructs the fetch URL as '/docs/curriculum/modules/' + slug + '.md'. When slug is '../CHALLENGE-MISSIONS', the resulting URL is '/docs/curriculum/modules/../CHALLENGE-MISSIONS.md' which normalizes to '/docs/curriculum/CHALLENGE-MISSIONS.md'. This works but is a path traversal pattern that could be exploited if the slug were user-controllable (it is extracted from URL params at line 2907). While not a security vulnerability in this static-site context, it sets a fragile precedent.",
+      "affected_files": [
+        "vercel.json",
+        "module-viewer.html"
+      ],
+      "recommendation": "Add the challenge document to the MODULE_SLUGS map with a dedicated entry. Add path validation in the module-viewer to reject slugs containing '..' or '/'. Use a flat slug like 'challenge-missions' and store the file in the modules directory."
+    },
+    {
+      "id": "ARCH-020",
+      "severity": "medium",
+      "category": "abstraction",
+      "title": "Module 04 content depth is thin compared to Module 12 -- no structural abstraction for content density variance",
+      "description": "Module 04 (prompt-engineering-depth.md) is 342 lines with 5 core sections (4.1-4.5), no Mermaid diagrams, no interactive elements, and relatively short Further Reading. Module 12 (capstone-production.md) is 443 lines with 5 core sections (12.1-12.5), detailed checklists, structured log examples, and comprehensive incident playbooks. The module-viewer treats all modules identically -- same section tracking, same XP awards. There is no metadata in the markdown files indicating expected reading time, difficulty level, or content type distribution (prose vs code vs checklist). The index.html stat bar shows '~50k Module words' (line 286) but this is a hardcoded static value, not computed.",
+      "affected_files": [
+        "docs/curriculum/modules/04-prompt-engineering-depth.md",
+        "docs/curriculum/modules/12-capstone-production.md",
+        "module-viewer.html",
+        "index.html"
+      ],
+      "recommendation": "Add YAML frontmatter to each module markdown specifying estimated_reading_minutes, difficulty, and section_count. Have the module-viewer parse this frontmatter and display it in the engagement strip. Scale XP awards by content density so deeper modules reward proportionally more engagement."
+    }
+  ],
+  "scores": {
+    "structural_integrity": 0.45,
+    "extensibility": 0.35,
+    "maintainability": 0.40
+  },
+  "score_rationale": {
+    "structural_integrity": "0.45 -- The system works as deployed, but has three CDN SPOFs with no fallback (ARCH-001, ARCH-002), a monolithic 3597-line module viewer (ARCH-005), and a framework that was built but never integrated (ARCH-003). The path traversal in the challenge route (ARCH-019) is a structural fragility.",
+    "extensibility": "0.35 -- Adding a new module requires editing 3+ files manually with no shared manifest (ARCH-009). The vercel.json routing doubles every entry (ARCH-006). The lab framework is dead code (ARCH-003). The XP system cannot aggregate across labs and modules (ARCH-004). The MODULE_SLUGS map is hardcoded (ARCH-009).",
+    "maintainability": "0.40 -- Three divergent design token systems (ARCH-008). Three different XP implementations (ARCH-012). Inconsistent localStorage key naming (ARCH-004). No visual regression tests for CSS changes (ARCH-014). Module viewer mixes concerns in a single 3597-line file (ARCH-005). The framework that was supposed to reduce duplication is unused (ARCH-003)."
+  }
+}

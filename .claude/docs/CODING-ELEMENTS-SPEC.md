@@ -46,6 +46,8 @@ The `data-phase` attribute maps PRAO phases and semantic states to colors throug
 | `observe` | `--phase-observe` | green | Results, observations |
 | `success` | `--success` | green | Correct answers, includes, hold badges |
 | `error` | `--ix-err` | red | Errors, excludes, intervene badges |
+| `goal` | `--ix-warn` | amber | Goals, targets, capability meters |
+| `warning` | `--ix-warn` | amber | Warning states, caution indicators |
 | `neutral` | `--dim` | gray | Neutral states, unclassified |
 
 ### `data-variant` Callout System

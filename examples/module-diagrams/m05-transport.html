@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transport Configuration & Connection Handshake</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+
+.transport-tabs{display:flex;gap:4px;margin-bottom:.5rem;background:#18181c;border-radius:12px;padding:4px}
+.tr-tab{flex:1;padding:12px 10px;border:none;border-radius:10px;background:transparent;cursor:pointer;text-align:center;transition:all .3s;font-family:'DM Sans',sans-serif}
+.tr-tab .tr-name{font-size:13px;font-weight:600;color:#555;transition:color .3s}
+.tr-tab .tr-sub{font-size:10px;color:#333;transition:color .3s}
+.tr-tab.active{background:#1e1e24}
+.tr-tab.active .tr-name{color:#e8e6e1}
+.tr-tab.active .tr-sub{color:#666}
+.tr-tab.deprecated .tr-name{text-decoration:line-through;text-decoration-color:#f8717160}
+
+.panel{display:none;animation:fadeUp .35s cubic-bezier(.22,1,.36,1)}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.tr-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.tr-item{padding:12px 14px;border-radius:10px;background:#0a0a0c;border:1px solid #1a1a1e}
+.tr-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#444;margin-bottom:3px}
+.tr-val{font-size:12px;color:#aaa;line-height:1.5}
+
+.code-block{font-family:'JetBrains Mono',monospace;font-size:11px;background:#0a0a0c;border:1px solid #1a1a1e;border-radius:10px;padding:14px 16px;line-height:1.8;color:#888;overflow-x:auto;margin-bottom:10px}
+.code-block .key{color:#5ba4f5}
+.code-block .str{color:#4ade80}
+.code-block .var{color:#f59e42}
+.code-block .brace{color:#555}
+
+.cli-shorthand{padding:10px 14px;border-radius:8px;background:#141418;border:1px solid #1a1a1e;font-size:12px;margin-bottom:12px}
+.cli-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#444;margin-bottom:4px}
+.cli-cmd{font-family:'JetBrains Mono',monospace;font-size:11px;color:#c8c6c1}
+
+.deprecated-box{padding:14px 18px;border-radius:12px;background:#1a0a0a;border:1px solid #401a1a;font-size:13px;color:#888;line-height:1.6}
+.deprecated-box strong{color:#f87171}
+
+.divider{border:none;border-top:1px solid #1a1a1e;margin:1.5rem 0}
+
+.handshake-title{font-size:13px;font-weight:600;color:#e8e6e1;margin-bottom:4px}
+.handshake-instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px}
+.handshake{display:flex;flex-direction:column;gap:6px}
+.hs-phase{padding:14px 18px;border-radius:12px;border:1px solid #222228;background:#141418;display:flex;gap:14px;align-items:flex-start}
+.hs-num{font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;min-width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.hs-content{flex:1}
+.hs-name{font-size:13px;font-weight:600;color:#e8e6e1;margin-bottom:2px}
+.hs-desc{font-size:12px;color:#888;line-height:1.5}
+.hs-method{font-family:'JetBrains Mono',monospace;font-size:11px;color:#5ba4f5;margin-top:4px}
+
+.implication{padding:12px 16px;border-radius:10px;background:#1a150a;border:1px solid #40301a;font-size:12px;color:#f59e42;line-height:1.55;margin-top:12px}
+.implication strong{color:#e8e6e1}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Transport configuration</h1>
+<div class="objective">
+  <span class="goal">Configuration</span>
+  <span class="text">Two active transports: stdio (local subprocess) and Streamable HTTP (remote service). Know the config format for each, plus the three-phase connection handshake that loads tool schemas into the session.</span>
+</div>
+<div class="instruct">&#9654; Switch between transport types to see configuration, when to use each, and the CLI shorthand.</div>
+
+<div class="transport-tabs">
+  <div class="tr-tab active" onclick="showTr(0)"><div class="tr-name">stdio</div><div class="tr-sub">Local subprocess</div></div>
+  <div class="tr-tab" onclick="showTr(1)"><div class="tr-name">Streamable HTTP</div><div class="tr-sub">Remote service</div></div>
+  <div class="tr-tab deprecated" onclick="showTr(2)"><div class="tr-name">SSE</div><div class="tr-sub">Deprecated</div></div>
+</div>
+
+<div class="panel active" id="pt0">
+  <div class="tr-grid">
+    <div class="tr-item"><div class="tr-label">Communication</div><div class="tr-val">JSON via stdin/stdout with the subprocess</div></div>
+    <div class="tr-item"><div class="tr-label">Lifecycle</div><div class="tr-val">Starts with session, killed when session ends</div></div>
+    <div class="tr-item"><div class="tr-label">Best for</div><div class="tr-val">Local dev servers, database, filesystem tools</div></div>
+    <div class="tr-item"><div class="tr-label">Config fields</div><div class="tr-val">command, args, env (for secrets via ${VAR})</div></div>
+  </div>
+  <div class="code-block"><span class="brace">{</span>
+  <span class="key">"mcpServers"</span>: <span class="brace">{</span>
+    <span class="key">"my-tracker"</span>: <span class="brace">{</span>
+      <span class="key">"command"</span>: <span class="str">"node"</span>,
+      <span class="key">"args"</span>: <span class="brace">[</span><span class="str">"/path/to/tracker-mcp/index.js"</span><span class="brace">]</span>,
+      <span class="key">"env"</span>: <span class="brace">{</span>
+        <span class="key">"TRACKER_API_KEY"</span>: <span class="str">"<span class="var">${TRACKER_API_KEY}</span>"</span>
+      <span class="brace">}</span>
+    <span class="brace">}</span>
+  <span class="brace">}</span>
+<span class="brace">}</span></div>
+  <div class="cli-shorthand"><div class="cli-label">CLI shorthand</div><div class="cli-cmd">claude mcp add my-tracker node /path/to/index.js -e TRACKER_API_KEY</div></div>
+</div>
+
+<div class="panel" id="pt1">
+  <div class="tr-grid">
+    <div class="tr-item"><div class="tr-label">Communication</div><div class="tr-val">HTTP POST requests, supports streaming responses</div></div>
+    <div class="tr-item"><div class="tr-label">Lifecycle</div><div class="tr-val">Persists independently — always running</div></div>
+    <div class="tr-item"><div class="tr-label">Best for</div><div class="tr-val">Shared team servers, cloud APIs, SaaS integrations</div></div>
+    <div class="tr-item"><div class="tr-label">Config fields</div><div class="tr-val">url, headers (for auth via ${VAR})</div></div>
+  </div>
+  <div class="code-block"><span class="brace">{</span>
+  <span class="key">"mcpServers"</span>: <span class="brace">{</span>
+    <span class="key">"shared-tracker"</span>: <span class="brace">{</span>
+      <span class="key">"url"</span>: <span class="str">"https://mcp.example.com/tracker"</span>,
+      <span class="key">"headers"</span>: <span class="brace">{</span>
+        <span class="key">"Authorization"</span>: <span class="str">"Bearer <span class="var">${MCP_AUTH_TOKEN}</span>"</span>
+      <span class="brace">}</span>
+    <span class="brace">}</span>
+  <span class="brace">}</span>
+<span class="brace">}</span></div>
+  <div class="cli-shorthand"><div class="cli-label">CLI shorthand</div><div class="cli-cmd">claude mcp add --transport http shared-tracker https://mcp.example.com/tracker --header "Authorization: Bearer $TOKEN"</div></div>
+</div>
+
+<div class="panel" id="pt2">
+  <div class="deprecated-box"><strong>SSE (Server-Sent Events) was deprecated</strong> in the MCP specification on 2025-03-26. It used GET with SSE for server→client and POST for client→server — a split mechanism superseded by unified Streamable HTTP. If you encounter SSE in existing configs, migrate to Streamable HTTP. Current servers and clients do not support it.</div>
+</div>
+
+<hr class="divider">
+
+<div class="handshake-title">The connection handshake</div>
+<div class="handshake-instruct">Three phases when Claude Code connects to an MCP server.</div>
+<div class="handshake">
+  <div class="hs-phase"><div class="hs-num" style="background:#0a1525;color:#5ba4f5">1</div><div class="hs-content"><div class="hs-name">Initialize</div><div class="hs-desc">Client sends protocol version and capabilities. Server responds with its version, capabilities, and server info. Incompatible versions = connection fails here.</div><div class="hs-method">initialize → { protocolVersion, capabilities, serverInfo }</div></div></div>
+  <div class="hs-phase"><div class="hs-num" style="background:#1c1535;color:#a78bfa">2</div><div class="hs-content"><div class="hs-name">List capabilities</div><div class="hs-desc">Client requests all tools, resources, and prompts. Server returns all schemas. Claude loads them into the session's capability inventory.</div><div class="hs-method">tools/list → schemas | resources/list → URIs | prompts/list → templates</div></div></div>
+  <div class="hs-phase"><div class="hs-num" style="background:#0a1a14;color:#4ade80">3</div><div class="hs-content"><div class="hs-name">Available</div><div class="hs-desc">Connection active. Claude can call tools, read resources, and request prompts. Persists until the session ends.</div><div class="hs-method">tools/call, resources/read, prompts/get → active for session</div></div></div>
+</div>
+<div class="implication"><strong>Practical implication:</strong> MCP server changes (adding tools, modifying schemas) don't take effect until the next session — schemas are loaded at connection time during phase 2.</div>
+</div>
+
+<script>
+function showTr(i){
+  document.querySelectorAll('.tr-tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));
+}
+</script>
+</body>
+</html>

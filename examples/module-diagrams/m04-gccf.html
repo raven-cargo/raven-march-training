@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why GCCF Isn't Enough</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+
+.failures{display:flex;flex-direction:column;gap:8px}
+.fail{border-radius:14px;border:1px solid #222228;background:#141418;overflow:hidden;cursor:pointer;transition:all .3s}
+.fail:hover{border-color:#333}
+.fail.active{border-color:#f87171}
+
+.fail-header{padding:14px 18px;display:flex;align-items:center;gap:12px}
+.fail-num{font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;min-width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:#1a0a0a;color:#f87171;border:1px solid #401a1a;flex-shrink:0}
+.fail-title{font-size:14px;font-weight:600;color:#888;transition:color .3s}
+.fail.active .fail-title{color:#e8e6e1}
+.fail-arrow{margin-left:auto;font-size:10px;color:#333;transition:transform .2s}
+.fail.active .fail-arrow{transform:rotate(90deg);color:#555}
+
+.fail-body{padding:0 18px 18px;display:none;animation:fadeIn .3s ease}
+.fail.active .fail-body{display:block}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.fail-desc{font-size:13px;color:#aaa;line-height:1.6;margin-bottom:14px}
+
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.cbox{padding:12px 14px;border-radius:10px;font-size:12px;line-height:1.6}
+.cbox.gccf{background:#1a0a0a;border:1px solid #401a1a;color:#888}
+.cbox.tcef{background:#0a1a14;border:1px solid #1a4030;color:#c8c6c1}
+.cbox-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.cbox-label.gccf{color:#f87171}
+.cbox-label.tcef{color:#4ade80}
+
+.fix-note{font-size:12px;color:#666;line-height:1.5;padding:10px 14px;border-radius:8px;background:#0a0a0c;border:1px solid #1a1a1e}
+.fix-note strong{color:#aaa}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Why GCCF isn't enough</h1>
+<div class="objective">
+  <span class="goal">Motivation</span>
+  <span class="text">GCCF (Goal, Context, Constraints, Format) works for simple tasks. It breaks down in three specific, recurring scenarios that you'll encounter in real agentic engineering. Understanding these failure modes motivates the TCEF upgrade.</span>
+</div>
+<div class="instruct">&#9654; Click each failure mode to see the problem, a GCCF vs TCEF comparison, and what TCEF element fixes it.</div>
+
+<div class="failures">
+  <div class="fail active" onclick="toggle(0)" id="f0">
+    <div class="fail-header">
+      <span class="fail-num">1</span>
+      <span class="fail-title">Multiple valid interpretations</span>
+      <span class="fail-arrow">&#9654;</span>
+    </div>
+    <div class="fail-body">
+      <div class="fail-desc">"Refactor the authentication module" admits dozens of valid interpretations — extract functions, rename variables, convert to async/await, reorganize files, add types. Claude picks one (often the most common in training data) that may not be yours. Result: wasted iterations.</div>
+      <div class="compare">
+        <div class="cbox gccf"><div class="cbox-label gccf">GCCF goal</div>"Refactor the authentication module to improve quality."</div>
+        <div class="cbox tcef"><div class="cbox-label tcef">TCEF task</div>"Add explicit return type annotations to every exported function in auth/index.ts that currently lacks one. Do not modify signatures or implementations."</div>
+      </div>
+      <div class="fix-note"><strong>TCEF fix: precise verb + measurable outcome.</strong> "Add return type annotations" admits exactly one interpretation. "Refactor" admits dozens.</div>
+    </div>
+  </div>
+
+  <div class="fail" onclick="toggle(1)" id="f1">
+    <div class="fail-header">
+      <span class="fail-num">2</span>
+      <span class="fail-title">Pattern and style requirements</span>
+      <span class="fail-arrow">&#9654;</span>
+    </div>
+    <div class="fail-body">
+      <div class="fail-desc">"Follow our existing patterns" gives Claude no concrete data to pattern-match against. Output will be generic idiomatic code, not your-codebase code. In production, consistency is a maintenance requirement — generic correct ≠ project-correct.</div>
+      <div class="compare">
+        <div class="cbox gccf"><div class="cbox-label gccf">GCCF context</div>"Follow our existing error handling patterns in the Express routes."</div>
+        <div class="cbox tcef"><div class="cbox-label tcef">TCEF context + example</div>"Match this pattern from our codebase:" followed by a real code excerpt showing the try/catch structure, error types, status codes, and logger usage.</div>
+      </div>
+      <div class="fix-note"><strong>TCEF fix: Pattern Context + Examples.</strong> One concrete excerpt from production code communicates style with zero ambiguity. Prose descriptions of patterns always leak precision.</div>
+    </div>
+  </div>
+
+  <div class="fail" onclick="toggle(2)" id="f2">
+    <div class="fail-header">
+      <span class="fail-num">3</span>
+      <span class="fail-title">Output feeds another system</span>
+      <span class="fail-arrow">&#9654;</span>
+    </div>
+    <div class="fail-body">
+      <div class="fail-desc">When output is consumed by a parser, database, or CI pipeline, format precision is a correctness requirement. "Provide a JSON object" is insufficient when the consumer expects exact field names, specific nesting, particular data types.</div>
+      <div class="compare">
+        <div class="cbox gccf"><div class="cbox-label gccf">GCCF format</div>"Provide a JSON object with the review results."</div>
+        <div class="cbox tcef"><div class="cbox-label tcef">TCEF format</div>Full schema with field names, types, enum values, and constraints. A downstream parser can be written against the spec without seeing output.</div>
+      </div>
+      <div class="fix-note"><strong>TCEF fix: Format as output schema contract.</strong> The Format element is a contract between the agent's output and the downstream consumer. Any variation breaks the pipeline.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+function toggle(i){
+  document.querySelectorAll('.fail').forEach((f,j)=>{
+    if(j===i)f.classList.toggle('active');
+    else f.classList.remove('active');
+  });
+}
+</script>
+</body>
+</html>

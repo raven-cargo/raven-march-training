@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Disorientation Simulator</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:720px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.sub{font-size:12px;color:#444;margin-bottom:2rem;font-family:'JetBrains Mono',monospace}
+
+.terminal{background:#0a0a0c;border:1px solid #1a1a1e;border-radius:14px;padding:20px 22px;margin-bottom:1.5rem;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2;min-height:240px;position:relative;overflow:hidden}
+.terminal::before{content:'CLAUDE CODE SESSION';position:absolute;top:8px;right:12px;font-size:9px;letter-spacing:1px;color:#333;font-weight:600}
+.term-line{opacity:0;animation:typeLine .4s ease forwards;display:flex;gap:0}
+.term-line.prompt{color:#5ba4f5}
+.term-line.tool{color:#f59e42}
+.term-line.output{color:#555}
+.term-line.thinking{color:#a78bfa;font-style:italic}
+.term-line.success{color:#4ade80}
+.term-line.fail{color:#f87171}
+@keyframes typeLine{from{opacity:0;transform:translateX(-4px)}to{opacity:1;transform:translateX(0)}}
+.cursor-blink{display:inline-block;width:8px;height:14px;background:#5ba4f5;animation:blink 1s step-end infinite;vertical-align:middle;margin-left:2px}
+@keyframes blink{50%{opacity:0}}
+
+.scenario-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#555;margin-bottom:10px}
+.question{font-size:16px;font-weight:600;color:#e8e6e1;margin-bottom:16px;line-height:1.5}
+
+.choices{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem}
+.choice{padding:14px 18px;border-radius:12px;border:1px solid #222228;background:#141418;cursor:pointer;transition:all .25s;display:flex;gap:14px;align-items:flex-start}
+.choice:hover{border-color:#3a3a40;background:#1a1a1e;transform:translateX(4px)}
+.choice.selected{pointer-events:none}
+.choice.correct{border-color:#1a4030;background:#0a1a14}
+.choice.wrong{border-color:#401a1a;background:#1a0a0a}
+.choice.neutral{border-color:#40301a;background:#1a150a}
+.choice-key{font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;min-width:22px;height:22px;border-radius:6px;background:#222228;display:flex;align-items:center;justify-content:center;color:#888;flex-shrink:0;margin-top:1px}
+.choice.correct .choice-key{background:#1a4030;color:#4ade80}
+.choice.wrong .choice-key{background:#401a1a;color:#f87171}
+.choice.neutral .choice-key{background:#40301a;color:#f59e42}
+.choice-text{font-size:13px;color:#aaa;line-height:1.5}
+.choice.correct .choice-text{color:#c8c6c1}
+
+.feedback{padding:16px 20px;border-radius:12px;border:1px solid #222228;font-size:13px;color:#aaa;line-height:1.65;animation:slideUp .35s ease;display:none}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.feedback strong{font-weight:600}
+.feedback.show{display:block}
+
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:1rem}
+.nav-btn{padding:10px 24px;border-radius:10px;border:1px solid #222228;background:#141418;cursor:pointer;font-size:13px;font-weight:500;color:#aaa;font-family:'DM Sans',sans-serif;transition:all .2s}
+.nav-btn:hover{border-color:#3a3a40;color:#e8e6e1}
+.nav-btn:disabled{opacity:.2;cursor:default}
+.nav-counter{font-size:12px;color:#444;font-family:'JetBrains Mono',monospace}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>The disorientation simulator</h1>
+<div class="sub">Your first time watching an agent work — what would you do?</div>
+
+<div class="terminal" id="terminal"></div>
+
+<div class="scenario-label" id="sLabel">Scenario 1 of 4</div>
+<div class="question" id="question"></div>
+<div class="choices" id="choices"></div>
+<div class="feedback" id="feedback"></div>
+<div class="nav">
+  <button class="nav-btn" id="prevBtn" onclick="prevScenario()" disabled>&larr; Previous</button>
+  <span class="nav-counter" id="counter">1 / 4</span>
+  <button class="nav-btn" id="nextBtn" onclick="nextScenario()">Next &rarr;</button>
+</div>
+</div>
+
+<script>
+const scenarios=[
+{
+  terminal:[
+    {type:'prompt',text:'> Add error handling to all API routes in src/routes/'},
+    {type:'tool',text:'  Read("src/routes/")'},
+    {type:'output',text:'  → users.ts, products.ts, orders.ts, auth.ts'},
+    {type:'tool',text:'  Read("src/routes/users.ts")'},
+    {type:'thinking',text:'  thinking: 14 routes, 3 files have no try-catch...'},
+    {type:'tool',text:'  Read("src/middleware/errorHandler.ts")'},
+    {type:'tool',text:'  Write("src/routes/users.ts")'},
+  ],
+  question:'The agent started reading files and writing code immediately — you expected it to ask clarifying questions first. What do you do?',
+  choices:[
+    {key:'A',text:'Interrupt immediately and tell it to stop. Ask it to confirm its plan before making any changes.',rating:'neutral',label:'Partially right'},
+    {key:'B',text:'Let it work. It\'s perceiving the codebase (reading files) and has started acting. Review its changes when it\'s done.',rating:'correct',label:'Best approach'},
+    {key:'C',text:'Close the terminal. You didn\'t authorize file writes.',rating:'wrong',label:'Overreaction'},
+  ],
+  feedback:{
+    bg:'#0a1a14',border:'#1a4030',color:'#4ade80',
+    text:'<strong>This is normal agent behavior.</strong> The agent is running through PRAO: perceiving (reading files), reasoning (the thinking trace), and acting (writing the fix). It\'s doing exactly what you asked — you said "add error handling to all API routes" and it\'s methodically working through them. The disorientation you feel is the gap between expecting a response and watching an agent operate. Let it work, then review the diff.'
+  }
+},
+{
+  terminal:[
+    {type:'prompt',text:'> Refactor the auth module to use JWT'},
+    {type:'tool',text:'  Read("src/auth/session.ts")'},
+    {type:'tool',text:'  Read("src/auth/middleware.ts")'},
+    {type:'tool',text:'  Bash("npm install jsonwebtoken @types/jsonwebtoken")'},
+    {type:'thinking',text:'  thinking: need to replace session store with JWT...'},
+    {type:'tool',text:'  Write("src/auth/jwt.ts")  — new file'},
+    {type:'tool',text:'  Write("src/auth/middleware.ts")'},
+    {type:'tool',text:'  Bash("npm test")'},
+    {type:'fail',text:'  → 7 tests failing'},
+  ],
+  question:'The agent installed a new npm package without asking, then its changes broke 7 tests. What do you do?',
+  choices:[
+    {key:'A',text:'Let it continue — it can see the test failures and will try to fix them in the next PRAO cycle.',rating:'correct',label:'Best approach'},
+    {key:'B',text:'Interrupt and revert everything. It shouldn\'t install packages without permission.',rating:'neutral',label:'Partially right'},
+    {key:'C',text:'This is fine. The tests will probably fix themselves.',rating:'wrong',label:'Dangerous thinking'},
+  ],
+  feedback:{
+    bg:'#0a1a14',border:'#1a4030',color:'#4ade80',
+    text:'<strong>Test failures during a refactor are expected.</strong> The agent will observe the failures, read the output, and fix them — that\'s the feedback loop working correctly. However, the npm install is worth noting: if you don\'t want the agent installing packages without asking, add that rule to your <code>CLAUDE.md</code> or <code>settings.json</code>. Don\'t interrupt mid-cycle for this — add the constraint for next time.'
+  }
+},
+{
+  terminal:[
+    {type:'prompt',text:'> Update the user model to support roles'},
+    {type:'tool',text:'  Read("prisma/schema.prisma")'},
+    {type:'tool',text:'  Write("prisma/schema.prisma")'},
+    {type:'tool',text:'  Bash("npx prisma migrate dev --name add-user-roles")'},
+    {type:'thinking',text:'  thinking: migration created, now update the service...'},
+    {type:'tool',text:'  Write("src/services/user.ts")'},
+    {type:'tool',text:'  Write("src/routes/users.ts")'},
+  ],
+  question:'The agent modified your Prisma schema and ran a migration — creating a permanent database change. What do you do?',
+  choices:[
+    {key:'A',text:'This is fine. You asked it to update the user model, and it needs to change the schema to do that.',rating:'neutral',label:'Risky'},
+    {key:'B',text:'Interrupt NOW. Schema migrations are irreversible in production. Review the migration file before it runs.',rating:'correct',label:'Best approach'},
+    {key:'C',text:'Let it finish, then check the migration file after.',rating:'wrong',label:'Too late'},
+  ],
+  feedback:{
+    bg:'#0a1a14',border:'#1a4030',color:'#4ade80',
+    text:'<strong>This is where intervention is appropriate.</strong> Schema migrations are exactly the kind of action where the cost of error is high. In a dev environment this is recoverable, but it\'s still worth reviewing the migration SQL before it executes. The lesson: add <code>"Don\'t modify prisma/schema.prisma without asking"</code> to your CLAUDE.md. Constraints prevent repeat mistakes.'
+  }
+},
+{
+  terminal:[
+    {type:'prompt',text:'> Improve the performance of the product search'},
+    {type:'tool',text:'  Read("src/services/product.ts")'},
+    {type:'tool',text:'  Read("src/routes/products.ts")'},
+    {type:'thinking',text:'  thinking: the search queries all products then filters in JS...'},
+    {type:'thinking',text:'  thinking: could add a database index, or use SQL WHERE...'},
+    {type:'thinking',text:'  thinking: or implement elasticsearch...'},
+    {type:'thinking',text:'  thinking: going with SQL WHERE + index for now...'},
+    {type:'tool',text:'  Write("src/services/product.ts")'},
+    {type:'tool',text:'  Write("prisma/schema.prisma")  — adding @@index'},
+  ],
+  question:'The agent is reasoning through three approaches and picked one (SQL optimization) without asking you. But you wanted it to use Elasticsearch. What do you do?',
+  choices:[
+    {key:'A',text:'Let it finish with SQL optimization. It made a reasonable choice, and you can always do Elasticsearch later.',rating:'neutral',label:'Reasonable but not ideal'},
+    {key:'B',text:'Interrupt and redirect: "Use Elasticsearch instead — we\'re expecting 10M+ products and need full-text search."',rating:'correct',label:'Best approach'},
+    {key:'C',text:'Say nothing. The agent should have known you wanted Elasticsearch.',rating:'wrong',label:'Magic box thinking'},
+  ],
+  feedback:{
+    bg:'#0a1a14',border:'#1a4030',color:'#4ade80',
+    text:'<strong>This is a case for better prompting, not agent failure.</strong> "Improve performance" is vague — the agent made a reasonable default choice. If you had a specific approach in mind, the prompt should have been: "Improve product search performance by integrating Elasticsearch for full-text search. We expect 10M+ products." Intervening now is correct, but the root cause is an underspecified prompt. Next time, be specific about constraints and approach.'
+  }
+}
+];
+
+let sIdx=0;
+let answered=new Array(scenarios.length).fill(false);
+
+function renderTerminal(lines){
+  let h='';
+  lines.forEach((l,i)=>{
+    const delay=i*0.15;
+    h+='<div class="term-line '+l.type+'" style="animation-delay:'+delay+'s">'+l.text+'</div>';
+  });
+  h+='<span class="cursor-blink" style="animation-delay:'+(lines.length*0.15)+'s"></span>';
+  document.getElementById('terminal').innerHTML=h;
+}
+
+function renderScenario(){
+  const s=scenarios[sIdx];
+  renderTerminal(s.terminal);
+  document.getElementById('sLabel').textContent='Scenario '+(sIdx+1)+' of '+scenarios.length;
+  document.getElementById('counter').textContent=(sIdx+1)+' / '+scenarios.length;
+  document.getElementById('question').textContent=s.question;
+  
+  let h='';
+  s.choices.forEach((c,i)=>{
+    const cls=answered[sIdx]?'choice selected '+c.rating:'choice';
+    h+='<div class="'+cls+'" onclick="choose('+sIdx+','+i+')">';
+    h+='<span class="choice-key">'+c.key+'</span>';
+    h+='<span class="choice-text">'+c.text+(answered[sIdx]?' — <strong>'+c.label+'</strong>':'')+'</span>';
+    h+='</div>';
+  });
+  document.getElementById('choices').innerHTML=h;
+  
+  const fb=document.getElementById('feedback');
+  if(answered[sIdx]){
+    fb.className='feedback show';
+    fb.style.background=s.feedback.bg;
+    fb.style.borderColor=s.feedback.border;
+    fb.style.color=s.feedback.color;
+    fb.innerHTML=s.feedback.text;
+  } else {
+    fb.className='feedback';
+  }
+  
+  document.getElementById('prevBtn').disabled=sIdx===0;
+  document.getElementById('nextBtn').disabled=sIdx===scenarios.length-1;
+}
+
+function choose(si,ci){
+  if(answered[si])return;
+  answered[si]=true;
+  renderScenario();
+}
+function nextScenario(){if(sIdx<scenarios.length-1){sIdx++;renderScenario()}}
+function prevScenario(){if(sIdx>0){sIdx--;renderScenario()}}
+
+renderScenario();
+</script>
+</body>
+</html>

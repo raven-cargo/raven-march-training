@@ -41,7 +41,7 @@ A basic GCCF pattern works for narrow, well-defined tasks. It fails predictably 
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m04-gccf-limits" data-xp="8">
   <span class="ix-title">Predict Before You Learn</span>
   <p class="ix-predict-prompt">You have been using a simple Goal + Context + Constraints + Format pattern for prompts. Consider these two scenarios: (1) asking an agent to "refactor the authentication module," and (2) asking it to produce JSON output that feeds a CI pipeline parser. What could go wrong with a basic prompt pattern in each case? Where would you expect it to break?</p>
-  <textarea class="ix-predict-input" placeholder="Write your reasoning -- what failure modes would you expect and why?"></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- what failure modes would you expect and why?"></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>
     <p>The basic GCCF pattern breaks in three predictable ways. First, <strong>multiple valid interpretations</strong>: "refactor" admits dozens of operations (extract functions, rename variables, convert async) and GCCF provides no way to disambiguate which one you meant. Second, <strong>pattern and style requirements</strong>: when output must match your codebase's specific conventions, GCCF's context field rarely provides the concrete demonstration needed. Third, <strong>output feeds another system</strong>: when a parser expects exact field names like <code>issues</code> not <code>findings</code>, GCCF's format field ("provide JSON") is too vague to guarantee structural correctness.</p>
@@ -143,7 +143,7 @@ Building on the failure modes from Module 03's prompt foundations, TCEF provides
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m04-tcef-predict" data-xp="8">
   <span class="ix-title">Predict Before You Learn</span>
   <p class="ix-predict-prompt">If you were designing a prompt framework that fixes the three failure modes we just identified (ambiguity, pattern mismatch, format drift), what elements would you include? Think about what each failure mode was missing and what a prompt pattern needs to provide.</p>
-  <textarea class="ix-predict-input" placeholder="Write your reasoning -- what elements would your framework include and why?"></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- what elements would your framework include and why?"></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>
     <p>TCEF resolves each failure mode with a targeted element. <strong>Task</strong> eliminates ambiguity through precision verbs and measurable outcomes -- "add return type annotations to exported functions" not "improve types." <strong>Context</strong> provides the specific data Claude needs through five injection strategies (File Reference, Pattern, Constraint, Audience, State). <strong>Examples</strong> demonstrate the exact output pattern -- one concrete example replaces three paragraphs of abstract rules. <strong>Format</strong> locks output structure with an explicit schema including field names, types, and nesting. Each element targets a different failure mode.</p>
@@ -501,7 +501,7 @@ In Module 01, you learned how the Agentic Loop (PRAO) drives every agent action.
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m04-iteration-predict" data-xp="8">
   <span class="ix-title">Predict Before You Learn</span>
   <p class="ix-predict-prompt">When a prompt produces wrong output, most people rewrite the entire prompt. If you had to follow a disciplined process instead -- making exactly one change per iteration -- how would you decide WHAT to change? What diagnostic framework would you use to identify the root cause?</p>
-  <textarea class="ix-predict-input" placeholder="Write your reasoning -- how would you systematically diagnose a prompt failure?"></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- how would you systematically diagnose a prompt failure?"></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>
     <p>The four-step iteration loop uses PRAO as a diagnostic lens. <strong>Run</strong>: execute the prompt and collect complete output. <strong>Diagnose</strong>: ask which PRAO phase failed -- Perceive (missing context), Reason (ambiguous task), Act (wrong format), or Observe (misinterpreted feedback). <strong>Hypothesize</strong>: form one falsifiable hypothesis about what to change. <strong>Refine</strong>: apply that single change and re-run. Single-change discipline preserves your ability to attribute improvements to specific changes. A prompt that converged in four iterations with one change each is better understood than one that "worked" after five simultaneous changes.</p>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modules Second-Pass Defect Dashboard (2026-03-18)</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121a30;
+      --panel-2: #182242;
+      --text: #e8edf9;
+      --muted: #9aa8c7;
+      --ok: #16a34a;
+      --warn: #f59e0b;
+      --high: #ef4444;
+      --med: #f97316;
+      --low: #38bdf8;
+      --border: #26355f;
+      --chip: #22305a;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 20% 0%, #1a2751 0%, var(--bg) 50%);
+      color: var(--text);
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      line-height: 1.45;
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px 20px 40px;
+    }
+
+    h1, h2 {
+      margin: 0 0 10px;
+      letter-spacing: 0.2px;
+    }
+
+    .sub {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      margin: 16px 0 24px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .kpi {
+      font-size: 26px;
+      font-weight: 700;
+      margin: 6px 0;
+    }
+
+    .kpi.ok { color: var(--ok); }
+    .kpi.warn { color: var(--warn); }
+
+    .label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 980px) {
+      .row { grid-template-columns: 1fr; }
+    }
+
+    .list {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .list li {
+      margin: 8px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .chip {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 12px;
+      background: var(--chip);
+      border: 1px solid var(--border);
+    }
+
+    .sev-high { color: #ffd0d0; background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); }
+    .sev-medium { color: #ffe0bf; background: rgba(249, 115, 22, 0.2); border-color: rgba(249, 115, 22, 0.45); }
+    .sev-low { color: #cceeff; background: rgba(56, 189, 248, 0.18); border-color: rgba(56, 189, 248, 0.45); }
+
+    .ok-line { color: #b7f7c8; }
+    .muted { color: var(--muted); }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      margin: 10px 0 14px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 1px solid var(--border);
+      background: #1a274d;
+      color: var(--text);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    button.active {
+      border-color: #7aa2ff;
+      box-shadow: 0 0 0 1px rgba(122, 162, 255, 0.45) inset;
+    }
+
+    .footer {
+      margin-top: 18px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    a { color: #9fc4ff; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Modules 01–12 Defect Dashboard</h1>
+    <p class="sub">Second-pass review snapshot · 2026-03-18 · Focus: pedagogical integrity, runtime reliability, and spec consistency.</p>
+
+    <div class="grid">
+      <div class="card">
+        <div class="label">P0 Status</div>
+        <div class="kpi ok">9 / 9</div>
+        <div class="ok-line">All immediate defects resolved.</div>
+      </div>
+      <div class="card">
+        <div class="label">P1 Status</div>
+        <div class="kpi warn">10 / 12</div>
+        <div>Two quality-lift items remain open.</div>
+      </div>
+      <div class="card">
+        <div class="label">Routes Checked</div>
+        <div class="kpi ok">36 / 36</div>
+        <div>`lab`, `module`, `challenges`, and markdown endpoints returned HTTP 200.</div>
+      </div>
+      <div class="card">
+        <div class="label">This Pass Fixes</div>
+        <div class="kpi">8</div>
+        <div>M06/M08/M11/M12 interaction upgrades, terminology hardening, and module-viewer retry diagnostics.</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <section class="card">
+        <h2>Resolved This Pass</h2>
+        <ul class="list">
+          <li>M06: Added `m06-error-classification-predict`.</li>
+          <li>M08: Added `m08-loop-bottleneck-predict`, `m08-limits-predict`, and `m08-loop-knowledge-check`.</li>
+          <li>M11: Added `m11-adaptation-midpoint-check` quiz.</li>
+          <li>M12: Added `m12-maintenance-predict` and `m12-maintenance-quiz`.</li>
+          <li>M08 wording updated to avoid native/runtime confusion around `triggers`.</li>
+          <li>Module viewer error state upgraded with contextual diagnostics + retry button.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Coverage Snapshot</h2>
+        <table>
+          <thead>
+            <tr><th>Module</th><th>Quiz</th><th>Predict</th><th>Terminal</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>M06</td><td>1</td><td>2</td><td>0</td></tr>
+            <tr><td>M08</td><td>2</td><td>4</td><td>0</td></tr>
+            <tr><td>M11</td><td>2</td><td>2</td><td>0</td></tr>
+            <tr><td>M12</td><td>2</td><td>3</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <section class="card" style="margin-top:16px;">
+      <h2>Open Defects</h2>
+      <div class="filters">
+        <button class="active" data-filter="all">All</button>
+        <button data-filter="high">High</button>
+        <button data-filter="medium">Medium</button>
+        <button data-filter="low">Low</button>
+      </div>
+      <table id="defects-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Severity</th>
+            <th>Area</th>
+            <th>Risk</th>
+            <th>Recommended Fix</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-sev="high">
+            <td>R1</td>
+            <td><span class="chip sev-high">High</span></td>
+            <td>M04/M05/M06/M09</td>
+            <td>Low retrieval-practice cadence in mid-flow sections.</td>
+            <td>Add one mid-module quiz per module at section transitions with common misconceptions.</td>
+          </tr>
+          <tr data-sev="medium">
+            <td>R2</td>
+            <td><span class="chip sev-medium">Medium</span></td>
+            <td>Cross-module</td>
+            <td>Terminal simulation transfer weak in advanced modules.</td>
+            <td>Add `terminal-sim` in M06 and M12 for production-oriented CLI scenarios.</td>
+          </tr>
+          <tr data-sev="medium">
+            <td>R3</td>
+            <td><span class="chip sev-medium">Medium</span></td>
+            <td>M08</td>
+            <td>Disclosure depth still shallow; long-scroll fatigue risk.</td>
+            <td>Add 2–3 additional `<details class="ix-collapse">` sections in 8.4/8.5.</td>
+          </tr>
+          <tr data-sev="low">
+            <td>R4</td>
+            <td><span class="chip sev-low">Low</span></td>
+            <td>M01/M03</td>
+            <td>Stacked callouts reduce concept signal clarity.</td>
+            <td>Refactor stacked callouts into `tabbed-panel` or `click-cards` groups.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card" style="margin-top:16px;">
+      <h2>Confabulation Guardrail Sources</h2>
+      <ul class="list">
+        <li><a href="https://modelcontextprotocol.io/specification/2025-03-26/basic/transports" target="_blank" rel="noopener noreferrer">MCP Transports Spec (2025-03-26)</a> — Streamable HTTP and backward compatibility details.</li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/16507066/" target="_blank" rel="noopener noreferrer">Roediger &amp; Karpicke (2006)</a> — test-enhanced learning evidence.</li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/17645161/" target="_blank" rel="noopener noreferrer">Bertsch et al. (2007)</a> — generation-effect meta-analysis.</li>
+        <li><a href="https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html" target="_blank" rel="noopener noreferrer">W3C WCAG SC 1.4.3</a> — contrast minimum for readability.</li>
+      </ul>
+      <p class="footer">Detailed narrative report: <code>docs/reviews/modules-second-pass-clean-review-2026-03-18.md</code></p>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      const buttons = document.querySelectorAll('.filters button');
+      const rows = document.querySelectorAll('#defects-table tbody tr');
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          buttons.forEach(function (b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          const f = btn.getAttribute('data-filter');
+          rows.forEach(function (row) {
+            row.style.display = (f === 'all' || row.getAttribute('data-sev') === f) ? '' : 'none';
+          });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+{
+  "lens": "ux",
+  "generated": "2026-03-16",
+  "methodology": "Learner-perspective UX audit across landing page, module viewer, first lab (01), mid-course lab (04), and capstone lab (09), plus design system CSS",
+  "findings": [
+    {
+      "id": "UX-001",
+      "severity": "critical",
+      "category": "first-impression",
+      "title": "Landing page reads as internal build dashboard, not a learner-facing course homepage",
+      "description": "The header says 'Course Review Dashboard' and the stat bar leads with developer metrics like '17,440 Lab lines (HTML)' and '64.6% Code reduction (framework)'. A learner arriving here sees production stats, not a welcome experience. The anti-confabulation validation banner ('8 checks across 21 files') is meaningless to a student. The page communicates 'here is what we built' rather than 'here is where you learn'. There is no course description, no instructor introduction, no 'Start Here' call to action, and no indication of what skills the learner will gain.",
+      "affected_files": ["index.html"],
+      "recommendation": "Create a true learner landing page with: (1) a 1-sentence course tagline explaining the value proposition, (2) a prominent 'Start Day 1' CTA button, (3) a brief 'What You Will Learn' section with 4-5 outcomes, (4) move the build stats and validation banner to a separate /admin or /meta page. Keep the day-grouped lab/module cards but reframe them as the learner's journey, not an inventory."
+    },
+    {
+      "id": "UX-002",
+      "severity": "critical",
+      "category": "onboarding",
+      "title": "No onboarding flow or getting-started guidance exists",
+      "description": "A new learner arriving at index.html sees 9 labs, 12 modules, multimedia content, challenge exercises, and framework files all at once. There is no 'getting started' section, no prerequisite check, no 'read the module first then do the lab' guidance, and no indication of whether modules or labs come first. The relationship between Module 01 and Lab 01 is implied by matching names but never stated. A learner who clicks Lab 01 first will lack the conceptual foundation. A learner who reads Module 01 first may not realize Lab 01 exists.",
+      "affected_files": ["index.html"],
+      "recommendation": "Add an onboarding section at the top of the page that: (1) explains the module-then-lab flow explicitly, (2) provides a 'Start Course' button that links to Module 01, (3) adds a brief 'How This Course Works' card explaining the 3-day structure, the module/lab pairing, and the XP system. Consider adding a 'Recommended Path' visual showing Module 01 -> Lab 01 -> Module 02 -> Lab 02 etc."
+    },
+    {
+      "id": "UX-003",
+      "severity": "high",
+      "category": "navigation",
+      "title": "No persistent navigation between modules and their paired labs",
+      "description": "Lab 01 has no link to Module 01 and vice versa. The module viewer has back-navigation to the dashboard and prev/next module links, but no 'Go to the lab for this module' link. Lab 04 has prev/next lab links (Lab 03, Lab 05) but no link to Module 05 (MCP Architecture). The learner must mentally map lab numbers to module numbers and navigate back to the dashboard to switch between them. This creates friction at the exact moment a learner wants to cross-reference theory and practice.",
+      "affected_files": ["module-viewer.html", "labs/day1/lab-01-paradigm-shift.html", "labs/day2/lab-04-mcp-explorer.html", "labs/day3/lab-09-capstone.html"],
+      "recommendation": "Add a 'Related Module' link in each lab's navigation bar, and a 'Practice Lab' link in the module viewer's nav. These are the most natural cross-navigation points. For labs that span multiple modules (e.g., Lab 05 covers Module 04 and parts of 08), show the primary module link."
+    },
+    {
+      "id": "UX-004",
+      "severity": "high",
+      "category": "navigation",
+      "title": "No overall progress indicator across the full course",
+      "description": "Each lab tracks its own XP and section progress independently using localStorage, but there is no unified course progress view. The dashboard (index.html) shows all labs as 'Done' (hardcoded pills), which is misleading since it reflects build status, not learner progress. A learner completing Lab 03 has no way to see '33% of labs complete' or 'Day 1 finished, Day 2 next'. The XP system is per-lab and does not aggregate.",
+      "affected_files": ["index.html"],
+      "recommendation": "Add a progress bar at the top of the dashboard that reads from localStorage to show actual learner completion. Replace the hardcoded 'Done' pills with dynamic completion indicators that reflect localStorage state (e.g., lab-01-complete, lab-02-complete keys that the labs already set). Show aggregated XP from all labs. This transforms the dashboard from a static inventory into a personalized learning tracker."
+    },
+    {
+      "id": "UX-005",
+      "severity": "high",
+      "category": "in-lab",
+      "title": "Locked section messaging is too terse and does not guide the learner",
+      "description": "When a section is locked, the overlay shows only a lock icon and 'Complete Section N to unlock'. In Lab 09, the locked sections are blurred behind an overlay, but the learner cannot see what is coming next or why they need to complete the current section first. There is no preview of the locked section's topic, no estimate of effort, and no encouragement. This makes the lock feel punitive rather than motivating. A learner midway through a long textarea exercise cannot gauge whether they are 10% or 90% of the way to unlocking the next section.",
+      "affected_files": ["labs/day3/lab-09-capstone.html", "labs/day2/lab-04-mcp-explorer.html", "lab-framework/core.css"],
+      "recommendation": "Enhance lock overlays to show: (1) the title of the locked section, (2) a 1-line preview of what it covers, (3) what specific action unlocks it (e.g., 'Write at least 80 characters in the Architecture Design textarea above'). Consider showing a progress indicator within the current section so learners know how close they are to unlocking."
+    },
+    {
+      "id": "UX-006",
+      "severity": "high",
+      "category": "in-lab",
+      "title": "Inconsistent lab navigation patterns across labs",
+      "description": "Lab 01 uses full-viewport sections with IntersectionObserver-based scroll tracking and nav dots that represent vertical scroll position. Lab 04 uses a linear scrolling layout with numbered section dots in the nav center and prev/next lab links above the main content. Lab 09 uses a different layout again with fixed bottom-left nav links and section-block dividers. The nav dot size differs (8px in Lab 01/09 vs 28px in Lab 04). XP display position varies (right side in Lab 01, nav-right in Lab 04, nav-right in Lab 09). These inconsistencies mean the learner must re-learn navigation patterns in each lab.",
+      "affected_files": ["labs/day1/lab-01-paradigm-shift.html", "labs/day2/lab-04-mcp-explorer.html", "labs/day3/lab-09-capstone.html", "lab-framework/core.css"],
+      "recommendation": "Standardize the lab navigation pattern across all 9 labs. The framework CSS (core.css) already defines a consistent nav, nav-dot, xp-display, and progress-bar system. Ensure all labs use this shared pattern. The 28px numbered dots from Lab 04 are more usable than the 8px anonymous dots since they provide section count and current position information."
+    },
+    {
+      "id": "UX-007",
+      "severity": "medium",
+      "category": "in-lab",
+      "title": "XP system motivation undercut by unclear total and no cross-lab tracking",
+      "description": "The dashboard says '~220 Total XP per learner' but this is a static number in the stat bar, not dynamically calculated. Each lab awards XP independently. Lab 09's completeCourse() function attempts to aggregate XP from all labs, but this only happens at the very end. During the course, learners have no way to see their cumulative XP or compare it to the total possible. The XP amounts vary (10-200 per action) without clear rationale. The milestone system in Lab 04 ('Not started') and Lab 09 provides additional tracking but is not present in Lab 01.",
+      "affected_files": ["index.html", "labs/day1/lab-01-paradigm-shift.html", "labs/day2/lab-04-mcp-explorer.html", "labs/day3/lab-09-capstone.html"],
+      "recommendation": "Add a persistent XP counter to the dashboard that aggregates all localStorage lab XP values. Show XP breakdown by day (Day 1: X/Y, Day 2: X/Y, Day 3: X/Y). Add milestone badges that carry across labs. This makes the gamification feel like a coherent reward system rather than disconnected counters."
+    },
+    {
+      "id": "UX-008",
+      "severity": "medium",
+      "category": "in-lab",
+      "title": "Prediction-then-reveal flow works well but has no learner feedback loop",
+      "description": "The predict-then-reveal pattern (write your prediction, then see the answer) is pedagogically strong. Lab 01 does this with the PRAO trace prediction. Lab 04 uses prediction boxes before revealing model answers. Lab 09 has the Apply pattern (write, then see insight). However, after the reveal, the learner's prediction is never compared to the model answer. There is no 'how close were you?' reflection, no self-rating, and the prediction textarea becomes inert after submission. The reveal is a dead end rather than a learning moment.",
+      "affected_files": ["labs/day1/lab-01-paradigm-shift.html", "labs/day2/lab-04-mcp-explorer.html"],
+      "recommendation": "After revealing the model answer, add a brief self-assessment: 'How close was your prediction? (Spot on / Partially right / Way off)' with a 1-line reflection textarea. This closes the metacognitive loop and reinforces learning. Award bonus XP for completing the self-assessment."
+    },
+    {
+      "id": "UX-009",
+      "severity": "medium",
+      "category": "reading",
+      "title": "Module viewer reading progress is functional but section completion tracking is passive",
+      "description": "The module viewer has a reading progress bar at the top and marks sections with a green left border when read (using IntersectionObserver). The engagement strip shows reading stats. However, section 'read' status is determined purely by scrolling past content, not by any engagement signal. A learner who scrolls quickly through a module gets the same 'read' indicators as one who studied carefully. The interactive elements (quizzes, predict-then-reveal, terminal simulations) within modules provide engagement, but their completion does not influence the section read status.",
+      "affected_files": ["module-viewer.html"],
+      "recommendation": "Tie section completion to engagement signals: require at least one interactive element per section to be engaged (quiz answered, prediction submitted, or details panel opened) before marking the section as complete. Show 'Engaged' vs 'Skimmed' indicators on the section headers."
+    },
+    {
+      "id": "UX-010",
+      "severity": "medium",
+      "category": "reading",
+      "title": "Module viewer loads markdown dynamically with visible loading state but no error recovery",
+      "description": "The module viewer shows a spinner while loading markdown content. If the fetch fails, it shows an error message with the module number and a retry suggestion. However, the error state only shows 'Could not load module content' with no retry button, no link back to the dashboard, and no indication of whether the issue is a network error or a missing file. The learner is stranded.",
+      "affected_files": ["module-viewer.html"],
+      "recommendation": "Add a 'Retry' button and a 'Back to Dashboard' link to the error state. Show differentiated messages for network errors vs. 404s. Consider caching the last successfully loaded module in localStorage as a fallback."
+    },
+    {
+      "id": "UX-011",
+      "severity": "medium",
+      "category": "navigation",
+      "title": "Lab links on dashboard use server-side routes (/lab/01) that require Vercel routing",
+      "description": "The dashboard links use paths like /lab/01, /module/01, and /challenges which require vercel.json rewrites. If a learner opens the course locally (file:// or a simple HTTP server), all navigation breaks. The labs are actually at paths like /labs/day1/lab-01-paradigm-shift.html but the dashboard does not link there. This creates a hard dependency on the Vercel deployment infrastructure for basic navigation.",
+      "affected_files": ["index.html"],
+      "recommendation": "Either add fallback links that work without Vercel rewrites, or add a clear 'This course requires the deployed version' notice for local access. Consider making the dashboard detect its environment and adjust links accordingly."
+    },
+    {
+      "id": "UX-012",
+      "severity": "medium",
+      "category": "pain-point",
+      "title": "Long textarea exercises in Lab 09 have minimum character counts but no save-as-you-type",
+      "description": "Lab 09's capstone requires extensive writing (problem statement, architecture design, TCEF prompt, safety design, self-review, improvement plan) across multiple textareas with character minimums (60-80 chars). The loadAllReflections() function restores textarea content from localStorage on page load, and there are oninput handlers. However, the save-to-localStorage only happens via saveReflection() which is called on specific textarea blur/input events in some labs but not consistently. If a learner accidentally closes the tab mid-way through a long architecture design, they may lose work depending on which textarea they were in.",
+      "affected_files": ["labs/day3/lab-09-capstone.html"],
+      "recommendation": "Add auto-save on every input event for all textareas across all labs. Show a subtle 'Saved' indicator near the textarea to give learners confidence their work persists. Consider adding a manual 'Save Progress' button visible at all times."
+    },
+    {
+      "id": "UX-013",
+      "severity": "low",
+      "category": "delight",
+      "title": "Lab 01 hero section with particle field animation creates strong first impression",
+      "description": "Lab 01 opens with a cinematic hero section: floating particles, a large gradient-text title 'The Paradigm Shift', a compelling tagline ('You are about to see software development differently. Not incrementally differently -- fundamentally differently.'), clear learning objectives in chips, and a prominent 'Begin Lab' CTA with a scroll hint animation. This is a genuinely engaging moment that sets the tone for the course. The 'About This Lab' modal provides additional context without cluttering the hero.",
+      "affected_files": ["labs/day1/lab-01-paradigm-shift.html"],
+      "recommendation": "Maintain this quality. Consider adapting a similar hero pattern for other labs. Lab 04 and Lab 09 have weaker openings in comparison -- Lab 04 jumps straight to section content, and Lab 09's hero is simpler. Each lab deserves a moment of arrival."
+    },
+    {
+      "id": "UX-014",
+      "severity": "low",
+      "category": "delight",
+      "title": "Interactive PRAO loop visualization in Lab 01 is a strong learning moment",
+      "description": "The PRAO loop in Lab 01 uses an SVG circular diagram with clickable nodes, a traveling dot that moves between phases, and a detail panel that updates with each selection. The guided sequential traversal (forcing the learner to go P->R->A->O on first pass before allowing free exploration) is a thoughtful pedagogical constraint. The nudge messages ('Explore Reason next -- complete the loop in order') feel helpful rather than restrictive.",
+      "affected_files": ["labs/day1/lab-01-paradigm-shift.html"],
+      "recommendation": "This is a model for other interactive elements. The architecture diagram in Lab 04 (clickable boxes that expand) follows a similar pattern but less polished. Consider applying the guided-first-pass pattern to other multi-step interactive elements."
+    },
+    {
+      "id": "UX-015",
+      "severity": "low",
+      "category": "delight",
+      "title": "Callback cards create excellent cross-lab narrative continuity",
+      "description": "Lab 09's callback cards ('Callback -- PRAO Loop (Lab 01)', 'Callback -- TCEF Pattern (Lab 05, Section 2)', 'Callback -- Skill Anatomy (Lab 06, Section 1)', 'Callback -- Permission Scoping (Lab 08, Section 1)') explicitly connect the capstone to prior labs. This reinforces the spiral curriculum and makes the learner feel that everything they learned has been building toward this moment. The callbacks include enough context to be useful even without re-reading the original lab.",
+      "affected_files": ["labs/day3/lab-09-capstone.html"],
+      "recommendation": "These are working beautifully. Consider making the callback card lab references clickable links that open the original lab section (e.g., /lab/01#section-1). This would let learners quickly refresh their memory without leaving the capstone."
+    },
+    {
+      "id": "UX-016",
+      "severity": "low",
+      "category": "delight",
+      "title": "Capstone deliverable export is a satisfying culmination",
+      "description": "Lab 09 generates a comprehensive text document from all the learner's work across 5 sections, including their problem statement, architecture, TCEF prompt, safety design, self-review scores, and improvement notes. The document also lists the 'Concept Thread' showing which lab concepts were applied. The export as a downloadable .txt file creates a tangible takeaway. The 100 XP award for export and the 200 XP course-complete bonus create a strong finish.",
+      "affected_files": ["labs/day3/lab-09-capstone.html"],
+      "recommendation": "Consider exporting as markdown (.md) instead of plain text for better formatting when viewed later. Add a 'Copy to Clipboard' option alongside the download button for learners who want to paste into a team wiki or doc."
+    },
+    {
+      "id": "UX-017",
+      "severity": "medium",
+      "category": "pain-point",
+      "title": "Lab 04 nav dots show lock state but are not clickable for navigation",
+      "description": "Lab 04's nav dots are 28px numbered circles that show locked/active/complete states visually. However, clicking a locked dot does nothing -- there is no feedback explaining why it cannot be clicked and no visual cursor change beyond opacity reduction. Lab 01's dots are clickable (they call scrollToSection) but the 8px size makes them hard targets. Lab 09's dots appear purely decorative with no click handler. This inconsistency means learners cannot reliably use dots for navigation.",
+      "affected_files": ["labs/day2/lab-04-mcp-explorer.html", "labs/day1/lab-01-paradigm-shift.html", "labs/day3/lab-09-capstone.html"],
+      "recommendation": "Make all nav dots consistently clickable: completed dots scroll to their section, the active dot scrolls to current, and locked dots show a tooltip ('Complete Section N first'). Use the Lab 04 numbered-dot style across all labs for clarity."
+    },
+    {
+      "id": "UX-018",
+      "severity": "medium",
+      "category": "pain-point",
+      "title": "No mobile-optimized experience for the full-viewport section labs",
+      "description": "Lab 01 uses min-height: 100vh sections that assume desktop viewport dimensions. The comparison grid, PRAO container, and trace container all use 2-column grids that collapse to 1 column at 768px but the full-viewport scroll model on small screens means enormous white space on some sections and content overflow on others. Lab 04 and Lab 09 use a more mobile-friendly linear scroll model. The core.css responsive breakpoint only addresses font sizes, grid columns, and nav padding -- it does not address the fundamental full-viewport section paradigm.",
+      "affected_files": ["labs/day1/lab-01-paradigm-shift.html", "lab-framework/core.css"],
+      "recommendation": "On mobile (< 768px), switch from min-height: 100vh sections to auto-height sections with generous padding. This prevents the awkward half-empty viewport problem. The Lab 04/09 linear scroll model is more mobile-friendly and could serve as the universal pattern."
+    },
+    {
+      "id": "UX-019",
+      "severity": "low",
+      "category": "in-lab",
+      "title": "Quiz feedback messages are pedagogically strong",
+      "description": "Lab 01's quiz provides differentiated feedback for correct and incorrect answers, with specific explanations referencing course concepts. The score ring with conic-gradient fill is visually satisfying. The outcome messages scale from 'Perfect!' (4/4) down to 'Start Fresh' (0/4) with actionable advice at each level. The XP award is proportional. This is well-designed formative assessment.",
+      "affected_files": ["labs/day1/lab-01-paradigm-shift.html"],
+      "recommendation": "No change needed. This is a strong pattern. Consider adding a 'Review Mistakes' button after the score reveal that scrolls the learner to the questions they got wrong."
+    },
+    {
+      "id": "UX-020",
+      "severity": "high",
+      "category": "first-impression",
+      "title": "Multimedia section is overwhelming with 12 identical video links to same NotebookLM URL",
+      "description": "The 'Multimedia Learning' section on the dashboard shows 12 video cards that all link to the same NotebookLM notebook URL. A learner clicking 'M03 - Agent Thinking' and 'M07 - Amnesiac to Collaborator' lands on the same page both times. This breaks trust -- the UI suggests 12 distinct videos but delivers one destination. Similarly, slide deck downloads are 12 separate Google download links that may or may not resolve. The flashcard cards are not clickable (cursor:default) with no explanation of where to access them.",
+      "affected_files": ["index.html"],
+      "recommendation": "Either link each video card to a specific timestamp or section within NotebookLM, or consolidate into a single 'Watch All Videos' card that honestly communicates the experience. For flashcards, either make them interactive in-page or link to the NotebookLM with a clear label. Do not present non-functional cards with cursor:default -- explain where to access them."
+    },
+    {
+      "id": "UX-021",
+      "severity": "low",
+      "category": "reading",
+      "title": "Module viewer interactive diagrams are well-designed but heavy in concept density",
+      "description": "The module viewer includes interactive tabbed panels, terminal simulations, quizzes, predict-then-reveal exercises, and Mermaid diagrams. These are pedagogically rich but appear to be rendered inline within long-form reading content. The engagement strip at the top provides reading stats. The section-based card layout with green completion borders creates a clear sense of progression through the module.",
+      "affected_files": ["module-viewer.html"],
+      "recommendation": "Consider adding a 'Key Concepts' summary card at the beginning of each module section that lists the 2-3 main takeaways. This helps learners orient themselves before diving into the detailed content and interactive elements."
+    },
+    {
+      "id": "UX-022",
+      "severity": "medium",
+      "category": "pain-point",
+      "title": "CE (Challenge Exercise) validation uses hardcoded light-mode colors in a dark-mode UI",
+      "description": "The CE-09-A validation feedback uses hardcoded colors like background: '#fee2e2' (light pink) and color: '#166534' (dark green) that belong to a light-mode palette. The success message shows background: '#f0fdf4' with dark green text. In the dark-mode UI (--bg-base: #080d1a), these light-colored blocks create jarring visual contrast. This suggests the validation components were built or tested in isolation from the dark theme.",
+      "affected_files": ["labs/day3/lab-09-capstone.html"],
+      "recommendation": "Replace hardcoded light-mode colors with CSS custom properties: use rgba(16,185,129,0.12) backgrounds and var(--success) text for success states, and rgba(239,68,68,0.12) with var(--danger) for error states. This matches the existing quiz and knowledge check styling patterns used elsewhere in the labs."
+    },
+    {
+      "id": "UX-023",
+      "severity": "low",
+      "category": "delight",
+      "title": "Course completion banner in Lab 09 is a genuine celebration moment",
+      "description": "The course completion banner uses a gradient background with a radial glow, displays the total XP across all labs, shows completion stats, and ends with a reflective quote. The 200 XP award for course completion is the largest single XP grant. The banner scrolls into view with smooth animation. This creates a genuine 'I did it' moment.",
+      "affected_files": ["labs/day3/lab-09-capstone.html"],
+      "recommendation": "Consider adding a shareable certificate or social-media-ready image that the learner can download. This extends the delight moment beyond the browser session and gives learners something to show their team."
+    },
+    {
+      "id": "UX-024",
+      "severity": "medium",
+      "category": "navigation",
+      "title": "No way to reset progress or start over",
+      "description": "All progress is stored in localStorage with no reset mechanism. A learner who wants to redo a lab, or an instructor demonstrating the course to a new cohort, must manually clear browser localStorage. There is no 'Reset Lab' or 'Start Over' button anywhere in the UI.",
+      "affected_files": ["index.html", "labs/day1/lab-01-paradigm-shift.html", "labs/day2/lab-04-mcp-explorer.html", "labs/day3/lab-09-capstone.html"],
+      "recommendation": "Add a 'Reset Progress' option (with confirmation dialog) in the dashboard footer or settings area. For individual labs, add a 'Restart Lab' button in the lab footer. This is especially important for instructor-led settings where the same browser may be used for demonstration."
+    }
+  ],
+  "scores": {
+    "first_impression": 0.35,
+    "navigation_clarity": 0.45,
+    "learning_flow": 0.75,
+    "gamification_effectiveness": 0.60,
+    "overall_learner_experience": 0.62
+  },
+  "score_rationale": {
+    "first_impression": "The landing page is a developer dashboard, not a learner welcome. No value proposition, no 'start here', no course description. A learner who lands here would not know what to do within 5 seconds. The individual lab hero sections (especially Lab 01) are much stronger, but the entry point fails.",
+    "navigation_clarity": "Navigation within individual labs is functional but inconsistent across labs (3 different patterns for dots, layout, and prev/next links). Cross-navigation between modules and labs is absent. No overall progress view. The Vercel routing dependency makes local access impossible. The dashboard is an inventory, not a navigation aid.",
+    "learning_flow": "The pedagogical design is strong: predict-then-reveal, guided interactive exploration (PRAO), callback cards, progressive unlocking, and a capstone that synthesizes all prior labs. The Apply pattern (write -> see insight) creates genuine engagement. The weakness is in the connective tissue -- learners must navigate between modules and labs without guidance, and the XP system does not aggregate until the final lab.",
+    "gamification_effectiveness": "XP toasts, streak displays, milestone badges, and the completion banner provide satisfying micro-rewards. The weakness is lack of cross-lab aggregation and no persistent leaderboard or achievement wall. The ~220 XP total per learner is stated but never dynamically tracked. Milestones appear in some labs but not others. The system works within each lab but does not create a course-wide motivation arc.",
+    "overall_learner_experience": "The in-lab experience is genuinely well-designed -- the pedagogical patterns (PRAO visualization, prediction, callbacks, capstone synthesis) are among the best I have seen in a technical course. What drags the score down is everything around the labs: the dashboard that does not serve learners, the missing module-lab navigation, the inconsistent lab templates, and the disconnected gamification. The content and pedagogy are 0.85; the UX shell around them is 0.45."
+  },
+  "priority_actions": [
+    {
+      "rank": 1,
+      "action": "Redesign index.html as a learner-facing course homepage with value proposition, 'Start Here' CTA, and dynamic progress tracking",
+      "effort": "medium",
+      "impact": "critical -- this is the front door"
+    },
+    {
+      "rank": 2,
+      "action": "Add module<->lab cross-navigation links in both the module viewer and all lab nav bars",
+      "effort": "low",
+      "impact": "high -- reduces wayfinding friction at the most important transition point"
+    },
+    {
+      "rank": 3,
+      "action": "Standardize lab navigation pattern across all 9 labs using the framework CSS nav system",
+      "effort": "medium",
+      "impact": "high -- eliminates re-learning cost between labs"
+    },
+    {
+      "rank": 4,
+      "action": "Add dynamic progress tracking to dashboard reading from localStorage lab completion keys",
+      "effort": "low",
+      "impact": "high -- transforms static inventory into personalized learning tracker"
+    },
+    {
+      "rank": 5,
+      "action": "Fix light-mode validation colors in CE exercises to match dark theme",
+      "effort": "low",
+      "impact": "medium -- visual polish in the capstone"
+    }
+  ]
+}

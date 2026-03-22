@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reading Agent Output — When to Intervene</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:10px;padding-left:2px}
+
+.layers{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:.5rem}
+.layer{padding:16px 14px;border-radius:14px;border:1px solid #222228;background:#141418;cursor:pointer;transition:all .35s cubic-bezier(.22,1,.36,1)}
+.layer:hover{border-color:#333;transform:translateY(-2px)}
+.layer.active{transform:translateY(-2px)}
+.layer[data-l="0"].active{border-color:#a78bfa;background:#1c1535}
+.layer[data-l="1"].active{border-color:#f59e42;background:#1a150a}
+.layer[data-l="2"].active{border-color:#5ba4f5;background:#0a1525}
+.l-name{font-size:15px;font-weight:700;color:#666;margin-bottom:2px;transition:color .3s}
+.layer.active .l-name{color:#e8e6e1}
+.l-desc{font-size:11px;color:#444;transition:color .3s}
+.layer.active .l-desc{color:#888}
+
+.detail-panel{border-radius:14px;border:1px solid #222228;background:#141418;overflow:hidden;animation:fadeUp .35s cubic-bezier(.22,1,.36,1)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.dp-body{padding:20px 24px}
+
+.example-terminal{font-family:'JetBrains Mono',monospace;font-size:11px;background:#0a0a0c;border:1px solid #1a1a1e;border-radius:10px;padding:14px 16px;line-height:1.8;margin-bottom:14px;overflow-x:auto}
+.ex-thinking{color:#a78bfa;font-style:italic}
+.ex-tool{color:#f59e42}
+.ex-result{color:#555}
+.ex-response{color:#5ba4f5}
+.ex-error{color:#f87171}
+
+.takeaway{padding:12px 16px;border-radius:10px;border:1px solid #1a1a1e;background:#0a0a0c;margin-bottom:6px}
+.tw-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#444;margin-bottom:3px}
+.tw-text{font-size:13px;color:#c8c6c1;line-height:1.5}
+
+.divider{border:none;border-top:1px solid #1a1a1e;margin:1.5rem 0}
+
+.int-label{font-size:13px;font-weight:600;color:#e8e6e1;margin-bottom:12px}
+.int-grid{display:flex;flex-direction:column;gap:8px}
+.int-item{padding:14px 18px;border-radius:12px;border:1px solid #222228;background:#141418;display:flex;gap:14px;align-items:flex-start}
+.int-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:4px 10px;border-radius:6px;white-space:nowrap;flex-shrink:0;margin-top:2px}
+.int-badge.yes{background:#1a0a0a;color:#f87171;border:1px solid #401a1a}
+.int-badge.no{background:#0a1a14;color:#4ade80;border:1px solid #1a4030}
+.int-text{font-size:13px;color:#aaa;line-height:1.55}
+.int-text strong{color:#e8e6e1;font-weight:600}
+
+.approval-box{margin-top:1.5rem;padding:16px 20px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a}
+.ap-title{font-size:13px;font-weight:600;color:#5ba4f5;margin-bottom:8px}
+.ap-prompt{font-family:'JetBrains Mono',monospace;font-size:12px;color:#8ab8e8;background:#0a0a0c;padding:10px 14px;border-radius:8px;border:1px solid #1a1a1e;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Reading agent output</h1>
+
+<div class="objective">
+  <span class="goal">Learning objective</span>
+  <span class="text">Read agent output efficiently across its three layers — thinking, tool calls, and response. Know where to focus and when to step in vs. let the agent iterate.</span>
+</div>
+
+<div class="instruct">&#9654; Click each output layer to see what it looks like, what to watch for, and how to act on it.</div>
+
+<div class="layers">
+  <div class="layer active" data-l="0" onclick="showLayer(0)">
+    <div class="l-name">Thinking</div>
+    <div class="l-desc">Plan &amp; assumptions</div>
+  </div>
+  <div class="layer" data-l="1" onclick="showLayer(1)">
+    <div class="l-name">Tool calls</div>
+    <div class="l-desc">Actions &amp; results</div>
+  </div>
+  <div class="layer" data-l="2" onclick="showLayer(2)">
+    <div class="l-name">Response</div>
+    <div class="l-desc">Summary report</div>
+  </div>
+</div>
+
+<div class="detail-panel" id="detail"></div>
+
+<hr class="divider">
+
+<div class="int-label">When to intervene vs. hold</div>
+<div class="int-grid">
+  <div class="int-item"><div class="int-badge yes">Intervene</div><div class="int-text"><strong>Wrong plan</strong> — the thinking reveals a wrong assumption, wrong library, or wrong scope. Cheaper to fix now than after.</div></div>
+  <div class="int-item"><div class="int-badge yes">Intervene</div><div class="int-text"><strong>Loop detected</strong> — same edit, same failure, no progress. The agent is stuck and needs your redirect.</div></div>
+  <div class="int-item"><div class="int-badge no">Hold</div><div class="int-text"><strong>Unexpected path</strong> — the agent is doing something you didn't anticipate, but the reasoning looks sound. Read the thinking first.</div></div>
+  <div class="int-item"><div class="int-badge no">Hold</div><div class="int-text"><strong>Test failures mid-task</strong> — normal PRAO behavior. The agent will observe the failure and fix it in the next cycle.</div></div>
+</div>
+
+<div class="approval-box">
+  <div class="ap-title">For high-stakes tasks, use the approval pattern</div>
+  <div class="ap-prompt">Before making any changes, show me your complete plan: which files you'll modify, what changes you'll make to each, and in what order.</div>
+</div>
+</div>
+
+<script>
+const layers=[
+{
+  terminal:`<span class="ex-thinking">thinking: Looking at the auth module, I see session-based auth.</span>
+<span class="ex-thinking">thinking: The task asks for JWT. I'll need to:</span>
+<span class="ex-thinking">  1. Install jsonwebtoken + types</span>
+<span class="ex-thinking">  2. Create a new jwt.ts utility</span>
+<span class="ex-thinking">  3. Replace session middleware</span>
+<span class="ex-thinking">thinking: I'll use RS256 since CLAUDE.md says...</span>`,
+  focus:'The agent\'s plan — what steps, what order, what assumptions.',
+  action:'This is the best intervention point. If the plan is wrong (e.g., wrong algorithm), correct it before the agent acts. 30 seconds of reading that saves 10 minutes of rollback.'
+},
+{
+  terminal:`<span class="ex-tool">Read("src/auth/session.ts")</span>
+<span class="ex-result">→ 94 lines, express-session middleware</span>
+<span class="ex-tool">Bash("npm install jsonwebtoken @types/jsonwebtoken")</span>
+<span class="ex-result">→ added 2 packages</span>
+<span class="ex-tool">Write("src/auth/jwt.ts") — new file</span>
+<span class="ex-tool">Write("src/auth/middleware.ts") — modified</span>
+<span class="ex-tool">Bash("npm test")</span>
+<span class="ex-error">→ 7 tests failing</span>`,
+  focus:'The sequence of actions — is the agent making progress (new files, new actions) or looping (same edit, same failure)?',
+  action:'Skim for patterns, not every file content. Intervene if you see writes to files outside the task scope, or unexpected dependency installs.'
+},
+{
+  terminal:`<span class="ex-response">I've refactored the auth module from session-based to JWT.</span>
+<span class="ex-response"></span>
+<span class="ex-response">Changes: created src/auth/jwt.ts (RS256), replaced session</span>
+<span class="ex-response">middleware, updated 4 route files. All 23 tests passing.</span>
+<span class="ex-response"></span>
+<span class="ex-response">Note: added jsonwebtoken as a dependency.</span>`,
+  focus:'Does the summary match the actual changes? The response is a starting point, not a substitute for review.',
+  action:'Your next step: review the actual diff (git diff), run tests yourself, verify behavior. Don\'t trust the summary alone.'
+}
+];
+
+function showLayer(i){
+  document.querySelectorAll('.layer').forEach((l,j)=>l.classList.toggle('active',j===i));
+  const d=layers[i];
+  let h='<div class="dp-body"><div class="example-terminal">'+d.terminal+'</div>';
+  h+='<div class="takeaway"><div class="tw-label">What to watch for</div><div class="tw-text">'+d.focus+'</div></div>';
+  h+='<div class="takeaway"><div class="tw-label">Your move</div><div class="tw-text">'+d.action+'</div></div>';
+  h+='</div>';
+  document.getElementById('detail').innerHTML=h;
+}
+showLayer(0);
+</script>
+</body>
+</html>

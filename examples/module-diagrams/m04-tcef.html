@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The TCEF Pattern</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+
+.elements{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:.5rem}
+.el{padding:14px 10px;border-radius:12px;border:1px solid #222228;background:#141418;cursor:pointer;text-align:center;transition:all .35s cubic-bezier(.22,1,.36,1)}
+.el:hover{border-color:#333;transform:translateY(-2px)}
+.el.active{transform:translateY(-2px)}
+.el[data-e="0"].active{border-color:#5ba4f5;background:#0a1525}
+.el[data-e="1"].active{border-color:#a78bfa;background:#1c1535}
+.el[data-e="2"].active{border-color:#4ade80;background:#0a1a14}
+.el[data-e="3"].active{border-color:#f59e42;background:#1a150a}
+.el-letter{font-size:22px;font-weight:700;color:#333;transition:color .3s;font-family:'JetBrains Mono',monospace}
+.el[data-e="0"].active .el-letter{color:#5ba4f5}
+.el[data-e="1"].active .el-letter{color:#a78bfa}
+.el[data-e="2"].active .el-letter{color:#4ade80}
+.el[data-e="3"].active .el-letter{color:#f59e42}
+.el-name{font-size:12px;font-weight:600;color:#555;transition:color .3s}
+.el.active .el-name{color:#e8e6e1}
+
+.panel{border-radius:14px;border:1px solid #222228;background:#141418;overflow:hidden;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.pn-body{padding:20px 24px}
+
+.pn-role{font-size:14px;color:#aaa;line-height:1.6;margin-bottom:14px}
+.pn-role strong{color:#e8e6e1}
+
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.compare-box{padding:12px 14px;border-radius:10px;font-size:12px;line-height:1.6}
+.compare-box.bad{background:#1a0a0a;border:1px solid #401a1a;color:#888}
+.compare-box.good{background:#0a1a14;border:1px solid #1a4030;color:#c8c6c1}
+.compare-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.compare-label.bad{color:#f87171}
+.compare-label.good{color:#4ade80}
+
+.code-block{font-family:'JetBrains Mono',monospace;font-size:11px;background:#0a0a0c;border:1px solid #1a1a1e;border-radius:10px;padding:14px 16px;line-height:1.8;color:#888;overflow-x:auto;margin-bottom:10px}
+.code-block .key{color:#5ba4f5}
+.code-block .str{color:#4ade80}
+.code-block .type{color:#a78bfa}
+.code-block .comment{color:#333}
+
+.takeaway{padding:10px 14px;border-radius:8px;background:#0a0a0c;border:1px solid #1a1a1e;font-size:12px;color:#888;line-height:1.5}
+.takeaway strong{color:#c8c6c1}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>The TCEF pattern</h1>
+<div class="objective">
+  <span class="goal">Core framework</span>
+  <span class="text">TCEF = Task + Context + Examples + Format. Each element has a specific engineering function. Together they produce prompts that work reliably for agentic tasks — not just correct output, but correct output for your project.</span>
+</div>
+<div class="instruct">&#9654; Click each element to see its engineering function, a real before/after comparison, and the key principle.</div>
+
+<div class="elements">
+  <div class="el active" data-e="0" onclick="show(0)"><div class="el-letter">T</div><div class="el-name">Task</div></div>
+  <div class="el" data-e="1" onclick="show(1)"><div class="el-letter">C</div><div class="el-name">Context</div></div>
+  <div class="el" data-e="2" onclick="show(2)"><div class="el-letter">E</div><div class="el-name">Examples</div></div>
+  <div class="el" data-e="3" onclick="show(3)"><div class="el-letter">F</div><div class="el-name">Format</div></div>
+</div>
+
+<div class="panel" id="panel"></div>
+</div>
+
+<script>
+const data=[
+{role:'<strong>Precise verb + measurable outcome.</strong> Replace vague goals with a specific operation and a definition of "done" you can verify programmatically.',
+ bad:'Improve the TypeScript types in the authentication module.',
+ good:'Add explicit return type annotations to every exported function in auth/index.ts that currently lacks one. Do not modify function signatures, implementations, or internal types.',
+ extra:null,
+ takeaway:'<strong>Precision verbs:</strong> add, remove, convert, extract, rename, replace, wrap, generate, validate. <strong>Avoid at Task level:</strong> improve, update, fix, enhance, refactor — these admit multiple valid interpretations.'},
+{role:'<strong>Specific data Claude needs for your situation.</strong> Five injection strategies: File Reference (@filename), Pattern (code excerpt), Constraint (what not to change), Audience (who consumes output), State (current system facts).',
+ bad:'Follow our existing patterns for error handling.',
+ good:'Match this error handling pattern from our codebase:\n\ntry {\n  const result = await service.execute(input);\n  return res.status(200).json({ data: result });\n} catch (err) {\n  if (err instanceof ValidationError) {\n    return res.status(400).json({ error: err.message });\n  }\n  logger.error(\'Unhandled\', { err, endpoint: req.path });\n  return res.status(500).json({ error: \'Internal error\' });\n}',
+ extra:null,
+ takeaway:'<strong>Include only signal.</strong> Irrelevant context is not neutral — it adds noise that distracts. Start minimal, add context only when a failure mode indicates it\'s missing.'},
+{role:'<strong>Showing beats telling.</strong> One concrete example replaces three paragraphs of abstract rules. Examples communicate field names, data types, prose style, and edge cases with zero ambiguity.',
+ bad:'Each issue should include the file path, line number, severity level (critical/high/medium/low), a description, and a suggested fix.',
+ good:null,
+ extra:'<span class="key">"file"</span>: <span class="str">"src/auth/session.ts"</span>,\n<span class="key">"line"</span>: <span class="type">47</span>,\n<span class="key">"severity"</span>: <span class="str">"high"</span>,\n<span class="key">"issue"</span>: <span class="str">"Session token stored in localStorage, exposing to XSS."</span>,\n<span class="key">"suggestion"</span>: <span class="str">"Use HttpOnly cookies for session token storage."</span>',
+ takeaway:'<strong>This example silently communicates:</strong> exact field names (not filePath, not filename — exactly "file"), data types (line is number), severity vocab (four values, lowercase), prose style. No rule list achieves this precision.'},
+{role:'<strong>Output schema specification — a contract.</strong> The downstream consumer of this output should be able to write a parser against your Format spec without seeing example outputs.',
+ bad:'Provide a JSON object with the review results.',
+ good:null,
+ extra:'<span class="key">"review"</span>: {\n  <span class="key">"summary"</span>: <span class="type">string</span> <span class="comment">— one sentence, overall quality</span>\n  <span class="key">"issues"</span>: [\n    {\n      <span class="key">"file"</span>: <span class="type">string</span> <span class="comment">— relative path from project root</span>\n      <span class="key">"line"</span>: <span class="type">number</span> <span class="comment">— integer</span>\n      <span class="key">"severity"</span>: <span class="type">"critical" | "high" | "medium" | "low"</span>\n      <span class="key">"issue"</span>: <span class="type">string</span> <span class="comment">— present tense</span>\n      <span class="key">"suggestion"</span>: <span class="type">string</span> <span class="comment">— imperative mood</span>\n    }\n  ],\n  <span class="key">"approved"</span>: <span class="type">boolean</span>\n}',
+ takeaway:'<strong>Format matters most when output feeds another system</strong> (parser, CI, database). "Provide JSON" is insufficient when the consumer expects exact field names and specific nesting.'},
+];
+
+function show(i){
+  document.querySelectorAll('.el').forEach((e,j)=>e.classList.toggle('active',j===i));
+  const d=data[i];
+  let h='<div class="pn-body"><div class="pn-role">'+d.role+'</div>';
+  if(d.good){
+    h+='<div class="compare"><div class="compare-box bad"><div class="compare-label bad">Imprecise</div>'+d.bad+'</div>';
+    h+='<div class="compare-box good"><div class="compare-label good">Precise</div>'+d.good+'</div></div>';
+  } else {
+    h+='<div class="compare"><div class="compare-box bad"><div class="compare-label bad">Telling (verbose, ambiguous)</div>'+d.bad+'</div>';
+    h+='<div class="code-block" style="flex:1"><div class="compare-label good" style="margin-bottom:6px">Showing (exact, unambiguous)</div>'+d.extra+'</div></div>';
+  }
+  h+='<div class="takeaway">'+d.takeaway+'</div></div>';
+  document.getElementById('panel').innerHTML=h;
+}
+show(0);
+</script>
+</body>
+</html>

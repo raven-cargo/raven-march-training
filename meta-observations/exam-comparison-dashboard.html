@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCA Foundations vs Agentic AI Course -- Coverage Analysis</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --card-hover: #22263a;
+    --border: #2a2e3e;
+    --text: #e0e0e8;
+    --text-muted: #8b8fa3;
+    --green: #22c55e;
+    --green-bg: rgba(34,197,94,0.12);
+    --yellow: #eab308;
+    --yellow-bg: rgba(234,179,8,0.12);
+    --red: #ef4444;
+    --red-bg: rgba(239,68,68,0.12);
+    --blue: #3b82f6;
+    --blue-bg: rgba(59,130,246,0.12);
+    --purple: #a855f7;
+    --purple-bg: rgba(168,85,247,0.12);
+    --cyan: #06b6d4;
+    --cyan-bg: rgba(6,182,212,0.12);
+    --orange: #f97316;
+    --orange-bg: rgba(249,115,22,0.12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    padding: 2rem;
+  }
+  h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.25rem; }
+  h2 { font-size: 1.4rem; font-weight: 600; margin-bottom: 1rem; color: var(--cyan); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+  h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text); }
+  .subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem; }
+  .header { text-align: center; margin-bottom: 2.5rem; }
+  .header .badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; margin: 0 4px; }
+  .badge-green { background: var(--green-bg); color: var(--green); border: 1px solid var(--green); }
+  .badge-yellow { background: var(--yellow-bg); color: var(--yellow); border: 1px solid var(--yellow); }
+  .badge-red { background: var(--red-bg); color: var(--red); border: 1px solid var(--red); }
+  .badge-blue { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue); }
+  .badge-purple { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple); }
+  .badge-cyan { background: var(--cyan-bg); color: var(--cyan); border: 1px solid var(--cyan); }
+  .badge-orange { background: var(--orange-bg); color: var(--orange); border: 1px solid var(--orange); }
+
+  .section { margin-bottom: 3rem; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .card:hover { background: var(--card-hover); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+  .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; }
+
+  .stat-card { text-align: center; padding: 1.25rem; }
+  .stat-value { font-size: 2rem; font-weight: 700; }
+  .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th { text-align: left; padding: 10px 12px; background: rgba(255,255,255,0.04); color: var(--text-muted); font-weight: 600; border-bottom: 2px solid var(--border); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:hover { background: rgba(255,255,255,0.02); }
+  tr.row-green { border-left: 3px solid var(--green); }
+  tr.row-yellow { border-left: 3px solid var(--yellow); }
+  tr.row-red { border-left: 3px solid var(--red); }
+  tr.row-blue { border-left: 3px solid var(--blue); }
+
+  .coverage-bar { display: flex; align-items: center; gap: 8px; }
+  .bar-track { flex: 1; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+  .bar-fill-green { background: var(--green); }
+  .bar-fill-yellow { background: var(--yellow); }
+  .bar-fill-red { background: var(--red); }
+  .bar-label { font-size: 0.75rem; color: var(--text-muted); min-width: 35px; text-align: right; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 600; margin: 1px 2px; }
+  .tag-green { background: var(--green-bg); color: var(--green); }
+  .tag-yellow { background: var(--yellow-bg); color: var(--yellow); }
+  .tag-red { background: var(--red-bg); color: var(--red); }
+  .tag-blue { background: var(--blue-bg); color: var(--blue); }
+
+  .confidence-note { background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.3); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem; }
+  .confidence-note strong { color: var(--yellow); }
+
+  .gap-card { padding: 1rem 1.25rem; border-radius: 8px; margin-bottom: 0.75rem; }
+  .gap-red { background: var(--red-bg); border: 1px solid rgba(239,68,68,0.3); }
+  .gap-blue { background: var(--blue-bg); border: 1px solid rgba(59,130,246,0.3); }
+  .gap-green { background: var(--green-bg); border: 1px solid rgba(34,197,94,0.3); }
+  .gap-title { font-weight: 600; margin-bottom: 0.25rem; }
+  .gap-desc { font-size: 0.82rem; color: var(--text-muted); }
+
+  .radar-container { display: flex; justify-content: center; align-items: center; padding: 1rem; }
+
+  .rec-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1rem; }
+  .rec-card h4 { font-size: 0.95rem; margin-bottom: 0.5rem; }
+  .rec-card p { font-size: 0.82rem; color: var(--text-muted); }
+  .rec-priority { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+
+  .source-list { font-size: 0.82rem; }
+  .source-list li { padding: 6px 0; border-bottom: 1px solid var(--border); }
+  .source-list a { color: var(--cyan); text-decoration: none; }
+  .source-list a:hover { text-decoration: underline; }
+  .source-date { color: var(--text-muted); font-size: 0.75rem; margin-left: 8px; }
+
+  .domain-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+  .domain-weight { font-size: 1.5rem; font-weight: 700; }
+
+  .toc { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-bottom: 2rem; }
+  .toc a { color: var(--cyan); text-decoration: none; font-size: 0.85rem; padding: 6px 14px; border: 1px solid var(--border); border-radius: 8px; transition: all 0.2s; }
+  .toc a:hover { background: var(--card); border-color: var(--cyan); }
+
+  .scenario-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+  .scenario-card h4 { font-size: 0.9rem; color: var(--cyan); margin-bottom: 0.5rem; }
+  .scenario-card p { font-size: 0.8rem; color: var(--text-muted); }
+
+  @media (max-width: 1200px) {
+    .grid-5 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 768px) {
+    .grid-2, .grid-3, .grid-4, .grid-5 { grid-template-columns: 1fr; }
+    body { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <h1>Claude Certified Architect -- Foundations</h1>
+  <div class="subtitle">Exam Coverage Analysis vs. Agentic AI Engineering Course</div>
+  <div style="margin-top: 0.75rem;">
+    <span class="badge badge-green">CONFIRMED DATA</span>
+    <span class="badge badge-cyan">Official Exam Guide v0.1 (Feb 2025)</span>
+    <span class="badge badge-purple">Released March 12, 2026</span>
+  </div>
+</div>
+
+<div class="confidence-note">
+  <strong>Data Confidence: HIGH</strong> -- All exam data sourced from the official Anthropic "Claude Certified Architect -- Foundations Certification Exam Guide" PDF (40 pages, v0.1, Feb 10, 2025). This is a confidential NTK document obtained from Anthropic's Partner Network. Course data sourced from the complete concept architecture synthesis (397 concepts across 12 modules + 9 labs). No speculation is presented as confirmed fact.
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<nav class="toc">
+  <a href="#overview">Exam Overview</a>
+  <a href="#coverage">Coverage Matrix</a>
+  <a href="#radar">Radar Chart</a>
+  <a href="#gaps">Gap Analysis</a>
+  <a href="#recommendations">Recommendations</a>
+  <a href="#sources">Sources</a>
+</nav>
+
+<!-- SECTION 1: EXAM OVERVIEW -->
+<div class="section" id="overview">
+  <h2>Section 1: Exam Overview</h2>
+
+  <div class="grid-5">
+    <div class="card stat-card">
+      <div class="stat-value" style="color: var(--cyan);">60</div>
+      <div class="stat-label">Questions</div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-value" style="color: var(--purple);">720</div>
+      <div class="stat-label">Passing Score (of 1000)</div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-value" style="color: var(--green);">5</div>
+      <div class="stat-label">Domains</div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-value" style="color: var(--yellow);">$99</div>
+      <div class="stat-label">Per Attempt</div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-value" style="color: var(--orange);">6</div>
+      <div class="stat-label">Scenarios (4 per exam)</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>Exam Format</h3>
+      <table>
+        <tr><td style="color:var(--text-muted);width:40%;">Format</td><td>Multiple choice (4 options, 1 correct)</td></tr>
+        <tr><td style="color:var(--text-muted);">Duration</td><td>Proctored (duration unspecified in guide)</td></tr>
+        <tr><td style="color:var(--text-muted);">Scoring</td><td>Scaled score 100-1000, passing = 720</td></tr>
+        <tr><td style="color:var(--text-muted);">Penalty</td><td>No penalty for guessing</td></tr>
+        <tr><td style="color:var(--text-muted);">Resources</td><td>Closed-book (no Claude, no docs, no tools)</td></tr>
+        <tr><td style="color:var(--text-muted);">Access</td><td>Claude Partner Network members</td></tr>
+        <tr><td style="color:var(--text-muted);">Experience</td><td>6+ months building with Claude APIs</td></tr>
+        <tr><td style="color:var(--text-muted);">Guide Version</td><td>v0.1, Last Updated Feb 10, 2025</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Domain Weights</h3>
+      <div style="margin-top: 0.5rem;">
+        <div class="coverage-bar" style="margin-bottom:12px;">
+          <span style="width:220px;font-size:0.82rem;">D1: Agentic Architecture</span>
+          <div class="bar-track"><div class="bar-fill bar-fill-green" style="width:27%"></div></div>
+          <span class="bar-label">27%</span>
+        </div>
+        <div class="coverage-bar" style="margin-bottom:12px;">
+          <span style="width:220px;font-size:0.82rem;">D2: Tool Design &amp; MCP</span>
+          <div class="bar-track"><div class="bar-fill bar-fill-green" style="width:18%"></div></div>
+          <span class="bar-label">18%</span>
+        </div>
+        <div class="coverage-bar" style="margin-bottom:12px;">
+          <span style="width:220px;font-size:0.82rem;">D3: Claude Code Config</span>
+          <div class="bar-track"><div class="bar-fill bar-fill-green" style="width:20%"></div></div>
+          <span class="bar-label">20%</span>
+        </div>
+        <div class="coverage-bar" style="margin-bottom:12px;">
+          <span style="width:220px;font-size:0.82rem;">D4: Prompt Eng. &amp; Output</span>
+          <div class="bar-track"><div class="bar-fill bar-fill-green" style="width:20%"></div></div>
+          <span class="bar-label">20%</span>
+        </div>
+        <div class="coverage-bar" style="margin-bottom:12px;">
+          <span style="width:220px;font-size:0.82rem;">D5: Context &amp; Reliability</span>
+          <div class="bar-track"><div class="bar-fill bar-fill-green" style="width:15%"></div></div>
+          <span class="bar-label">15%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Exam Scenarios (4 of 6 randomly selected per exam)</h3>
+    <div class="grid-3">
+      <div class="scenario-card">
+        <h4>1. Customer Support Resolution Agent</h4>
+        <p>Build a support agent using Agent SDK with MCP tools (get_customer, lookup_order, process_refund, escalate_to_human). Target: 80%+ first-contact resolution.</p>
+        <div style="margin-top:6px;"><span class="tag tag-green">D1</span><span class="tag tag-green">D2</span><span class="tag tag-yellow">D5</span></div>
+      </div>
+      <div class="scenario-card">
+        <h4>2. Code Generation with Claude Code</h4>
+        <p>Accelerate development with custom slash commands, CLAUDE.md configurations, and plan mode vs direct execution decisions.</p>
+        <div style="margin-top:6px;"><span class="tag tag-green">D3</span><span class="tag tag-yellow">D5</span></div>
+      </div>
+      <div class="scenario-card">
+        <h4>3. Multi-Agent Research System</h4>
+        <p>Coordinator agent delegates to specialized subagents (web search, document analysis, report synthesis) producing cited reports.</p>
+        <div style="margin-top:6px;"><span class="tag tag-green">D1</span><span class="tag tag-green">D2</span><span class="tag tag-yellow">D5</span></div>
+      </div>
+      <div class="scenario-card">
+        <h4>4. Developer Productivity with Claude</h4>
+        <p>Agent helps engineers explore unfamiliar codebases, generate boilerplate, and automate tasks using built-in tools + MCP servers.</p>
+        <div style="margin-top:6px;"><span class="tag tag-green">D2</span><span class="tag tag-green">D3</span><span class="tag tag-green">D1</span></div>
+      </div>
+      <div class="scenario-card">
+        <h4>5. Claude Code for CI/CD</h4>
+        <p>Integrate Claude Code into CI/CD for automated code reviews, test generation, and actionable PR feedback with minimal false positives.</p>
+        <div style="margin-top:6px;"><span class="tag tag-green">D3</span><span class="tag tag-green">D4</span></div>
+      </div>
+      <div class="scenario-card">
+        <h4>6. Structured Data Extraction</h4>
+        <p>Extract structured data from unstructured documents using JSON schemas, validation-retry loops, and batch processing strategies.</p>
+        <div style="margin-top:6px;"><span class="tag tag-green">D4</span><span class="tag tag-yellow">D5</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: COVERAGE MATRIX -->
+<div class="section" id="coverage">
+  <h2>Section 2: Topic-by-Topic Coverage Matrix</h2>
+
+  <!-- DOMAIN 1 -->
+  <div class="card">
+    <div class="domain-header">
+      <h3 style="color:var(--green);">Domain 1: Agentic Architecture &amp; Orchestration</h3>
+      <div class="domain-weight" style="color:var(--green);">27%</div>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Exam Task Statement</th><th>Course Module(s)</th><th>Depth</th><th>Lab Practice</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr class="row-green"><td><strong>1.1</strong> Agentic loops (stop_reason, tool_use/end_turn, loop control)</td><td>M01 (PRAO), M03 (Tool patterns), M02 (Arch)</td><td><span class="tag tag-green">DEEP</span></td><td>Lab 01, 02, 03</td><td><span class="badge badge-green">COVERED</span></td></tr>
+        <tr class="row-green"><td><strong>1.2</strong> Multi-agent coordinator-subagent patterns (hub-and-spoke)</td><td>M09 (Fan-out/fan-in, Pipeline, Routing)</td><td><span class="tag tag-green">DEEP</span></td><td>Lab 07</td><td><span class="badge badge-green">COVERED</span></td></tr>
+        <tr class="row-green"><td><strong>1.3</strong> Subagent invocation, context passing, spawning (Task tool, AgentDefinition)</td><td>M09 (Multi-Agent), M07 (Subagents)</td><td><span class="tag tag-yellow">MODERATE</span></td><td>Lab 07</td><td><span class="badge badge-yellow">PARTIAL</span></td></tr>
+        <tr class="row-yellow"><td><strong>1.4</strong> Multi-step workflows with enforcement and handoff patterns (hooks, prerequisite gates)</td><td>M10 (Approval gates), M12 (Pipeline)</td><td><span class="tag tag-yellow">MODERATE</span></td><td>Lab 08</td><td><span class="badge badge-yellow">PARTIAL</span></td></tr>
+        <tr class="row-yellow"><td><strong>1.5</strong> Agent SDK hooks (PostToolUse, tool call interception, data normalization)</td><td>Not explicitly covered</td><td><span class="tag tag-red">ABSENT</span></td><td>None</td><td><span class="badge badge-red">GAP</span></td></tr>
+        <tr class="row-green"><td><strong>1.6</strong> Task decomposition strategies (prompt chaining vs dynamic decomposition)</td><td>M09 (Decomposition), M04 (Iteration)</td><td><span class="tag tag-green">DEEP</span></td><td>Lab 07</td><td><span class="badge badge-green">COVERED</span></td></tr>
+        <tr class="row-yellow"><td><strong>1.7</strong> Session state management (--resume, fork_session, named sessions)</td><td>M01 (Session), M02 (--continue)</td><td><span class="tag tag-yellow">MENTIONED</span></td><td>None</td><td><span class="badge badge-yellow">PARTIAL</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- DOMAIN 2 -->
+  <div class="card">
+    <div class="domain-header">
+      <h3 style="color:var(--cyan);">Domain 2: Tool Design &amp; MCP Integration</h3>
+      <div class="domain-weight" style="color:var(--cyan);">18%</div>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Exam Task Statement</th><th>Course Module(s)</th><th>Depth</th><th>Lab Practice</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr class="row-green"><td><strong>2.1</strong> Tool interface design (descriptions, boundaries, ambiguity resolution)</td><td>M05 (Tool schema), M06 (Description test)</td><td><span class="tag tag-green">DEEP</span></td><td>Lab 04</td><td><span class="badge badge-green">COVERED</span></td></tr>
+        <tr class="row-green"><td><strong>2.2</strong> Structured error responses for MCP tools (isError, errorCategory, isRetryable)</td><td>M06 (Error handling, isError flag)</td><td><span class="tag tag-green">DEEP</span></td><td>Lab 04</td><td><span class="badge badge-green">COVERED</span></td></tr>
+        <tr class="row-yellow"><td><strong>2.3</strong> Tool distribution across agents, tool_choice configuration</td><td>M09 (Multi-agent), M06 (Design)</td><td><span class="tag tag-yellow">MODERATE</span></td><td>Lab 07</td><td><span class="badge badge-yellow">PARTIAL</span></td></tr>
+        <tr class="row-green"><td><strong>2.4</strong> MCP server integration (.mcp.json, env vars, project vs user scope)</td><td>M02 (MCP intro), M05 (Architecture), M06 (Building)</td><td><span class="tag tag-green">DEEP</span></td><td>Lab 04</td><td><span class="badge badge-green">COVERED</span></td></tr>
+        <tr class="row-green"><td><strong>2.5</strong> Built-in tools (Read, Write, Edit, Bash, Grep, Glob)</td><td>M01 (Claude Code), M02 (Architecture)</td><td><span class="tag tag-green">DEEP</span></td><td>Lab 01, 02, 03</td><td><span class="badge badge-green">COVERED</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- DOMAIN 3 -->
+  <div class="card">
+    <div class="domain-header">
+      <h3 style="color:var(--purple);">Domain 3: Claude Code Configuration &amp; Workflows</h3>
+      <div class="domain-weight" style="color:var(--purple);">20%</div>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Exam Task Statement</th><th>Course Module(s)</th><th>Depth</th><th>Lab Practice</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr class="row-green"><td><strong>3.1</strong> CLAUDE.md hierarchy (user/project/directory, @import, .claude/rules/)</td><td>M02 (CLAUDE.md detailed), M11 (Stack CLAUDE.md)</td><td><span class="tag tag-green">DEEP</span></td><td>Lab 02, 05, 09</td><td><span class="badge badge-green">COVERED</span></td></tr>
+        <tr class="row-green"><td><strong>3.2</strong> Custom slash commands and skills (context: fork, allowed-tools, argument-hint)</td><td>M07 (Skills & Commands), M08 (Meta-prompting)</td><td><span class="tag tag-green">DEEP</span></td><td>Lab 06</td><td><span class="badge badge-green">COVERED</span></td></tr>
+        <tr class="row-yellow"><td><strong>3.3</strong> Path-specific rules (.claude/rules/ with YAML frontmatter paths)</td><td>M02 (mentioned), M11 (stack adaptation)</td><td><span class="tag tag-yellow">MENTIONED</span></td><td>None</td><td><span class="badge badge-yellow">PARTIAL</span></td></tr>
+        <tr class="row-green"><td><strong>3.4</strong> Plan mode vs direct execution</td><td>M03 (Agent Thinking), M12 (Pipeline design)</td><td><span class="tag tag-yellow">MODERATE</span></td><td>Lab 03</td><td><span class="badge badge-yellow">PARTIAL</span></td></tr>
+        <tr class="row-green"><td><strong>3.5</strong> Iterative refinement (input/output examples, TDD iteration, interview pattern)</td><td>M04 (Prompt iteration), M08 (Meta-prompting)</td><td><span class="tag tag-green">DEEP</span></td><td>Lab 05</td><td><span class="badge badge-green">COVERED</span></td></tr>
+        <tr class="row-yellow"><td><strong>3.6</strong> CI/CD integration (-p flag, --output-format json, --json-schema)</td><td>M02 (claude -p), M12 (Pipeline)</td><td><span class="tag tag-yellow">MODERATE</span></td><td>None specific</td><td><span class="badge badge-yellow">PARTIAL</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- DOMAIN 4 -->
+  <div class="card">
+    <div class="domain-header">
+      <h3 style="color:var(--orange);">Domain 4: Prompt Engineering &amp; Structured Output</h3>
+      <div class="domain-weight" style="color:var(--orange);">20%</div>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Exam Task Statement</th><th>Course Module(s)</th><th>Depth</th><th>Lab Practice</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr class="row-green"><td><strong>4.1</strong> Explicit criteria to improve precision, reduce false positives</td><td>M04 (TCEF, Constraint-First), M07 (Skills)</td><td><span class="tag tag-green">DEEP</span></td><td>Lab 05</td><td><span class="badge badge-green">COVERED</span></td></tr>
+        <tr class="row-green"><td><strong>4.2</strong> Few-shot prompting for output consistency</td><td>M04 (Examples element, TCEF)</td><td><span class="tag tag-green">DEEP</span></td><td>Lab 05</td><td><span class="badge badge-green">COVERED</span></td></tr>
+        <tr class="row-yellow"><td><strong>4.3</strong> Structured output via tool_use and JSON schemas (tool_choice config)</td><td>M05 (Tool schema), M06 (JSON)</td><td><span class="tag tag-yellow">MODERATE</span></td><td>Lab 04</td><td><span class="badge badge-yellow">PARTIAL</span></td></tr>
+        <tr class="row-yellow"><td><strong>4.4</strong> Validation-retry-feedback loops for extraction quality</td><td>M04 (Prompt iteration)</td><td><span class="tag tag-yellow">MODERATE</span></td><td>Lab 05</td><td><span class="badge badge-yellow">PARTIAL</span></td></tr>
+        <tr class="row-yellow"><td><strong>4.5</strong> Batch processing strategies (Message Batches API, custom_id, SLA calc)</td><td>Not covered</td><td><span class="tag tag-red">ABSENT</span></td><td>None</td><td><span class="badge badge-red">GAP</span></td></tr>
+        <tr class="row-yellow"><td><strong>4.6</strong> Multi-instance and multi-pass review architectures</td><td>M09 (Multi-agent), M12 (Pipeline)</td><td><span class="tag tag-yellow">MODERATE</span></td><td>Lab 07</td><td><span class="badge badge-yellow">PARTIAL</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- DOMAIN 5 -->
+  <div class="card">
+    <div class="domain-header">
+      <h3 style="color:var(--yellow);">Domain 5: Context Management &amp; Reliability</h3>
+      <div class="domain-weight" style="color:var(--yellow);">15%</div>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Exam Task Statement</th><th>Course Module(s)</th><th>Depth</th><th>Lab Practice</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr class="row-green"><td><strong>5.1</strong> Context preservation (progressive summarization risks, lost-in-the-middle, fact extraction)</td><td>M04 (Context injection), M02 (Context window)</td><td><span class="tag tag-yellow">MODERATE</span></td><td>Lab 05</td><td><span class="badge badge-yellow">PARTIAL</span></td></tr>
+        <tr class="row-green"><td><strong>5.2</strong> Escalation and ambiguity resolution patterns</td><td>M10 (Approval gates), M09 (Failure modes)</td><td><span class="tag tag-green">DEEP</span></td><td>Lab 08</td><td><span class="badge badge-green">COVERED</span></td></tr>
+        <tr class="row-green"><td><strong>5.3</strong> Error propagation across multi-agent systems</td><td>M09 (Failure modes &amp; recovery)</td><td><span class="tag tag-green">DEEP</span></td><td>Lab 07</td><td><span class="badge badge-green">COVERED</span></td></tr>
+        <tr class="row-yellow"><td><strong>5.4</strong> Context in large codebase exploration (scratchpad files, /compact, subagent delegation)</td><td>M03 (Trace reading), M11 (Stack adapt)</td><td><span class="tag tag-yellow">MODERATE</span></td><td>Lab 03</td><td><span class="badge badge-yellow">PARTIAL</span></td></tr>
+        <tr class="row-yellow"><td><strong>5.5</strong> Human review workflows and confidence calibration (stratified sampling, field-level confidence)</td><td>M10 (Human-in-the-loop)</td><td><span class="tag tag-yellow">MENTIONED</span></td><td>Lab 08</td><td><span class="badge badge-yellow">PARTIAL</span></td></tr>
+        <tr class="row-yellow"><td><strong>5.6</strong> Information provenance in multi-source synthesis (claim-source mappings, temporal data)</td><td>M09 (Provenance)</td><td><span class="tag tag-yellow">MODERATE</span></td><td>Lab 07</td><td><span class="badge badge-yellow">PARTIAL</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SUMMARY STATS -->
+  <div class="grid-4" style="margin-top:1.5rem;">
+    <div class="card stat-card">
+      <div class="stat-value" style="color:var(--green);">13</div>
+      <div class="stat-label">Fully Covered (of 30 tasks)</div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-value" style="color:var(--yellow);">15</div>
+      <div class="stat-label">Partially Covered</div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-value" style="color:var(--red);">2</div>
+      <div class="stat-label">Gaps (Absent)</div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-value" style="color:var(--cyan);">93%</div>
+      <div class="stat-label">At Least Mentioned</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: RADAR CHART -->
+<div class="section" id="radar">
+  <h2>Section 3: Coverage Radar -- Exam Domains vs Course Depth</h2>
+  <div class="card">
+    <div class="radar-container">
+      <svg viewBox="0 0 500 480" width="500" height="480" xmlns="http://www.w3.org/2000/svg">
+        <!-- Grid circles -->
+        <g transform="translate(250,240)">
+          <!-- Pentagon grid lines -->
+          <polygon points="0,-200 190.2,-61.8 117.6,161.8 -117.6,161.8 -190.2,-61.8" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+          <polygon points="0,-150 142.7,-46.4 88.2,121.4 -88.2,121.4 -142.7,-46.4" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+          <polygon points="0,-100 95.1,-30.9 58.8,80.9 -58.8,80.9 -95.1,-30.9" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <polygon points="0,-50 47.6,-15.5 29.4,40.5 -29.4,40.5 -47.6,-15.5" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+          <!-- Spokes -->
+          <line x1="0" y1="0" x2="0" y2="-200" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+          <line x1="0" y1="0" x2="190.2" y2="-61.8" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+          <line x1="0" y1="0" x2="117.6" y2="161.8" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+          <line x1="0" y1="0" x2="-117.6" y2="161.8" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+          <line x1="0" y1="0" x2="-190.2" y2="-61.8" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+
+          <!-- Exam weight polygon (outer boundary = what exam tests) -->
+          <!-- D1:27%, D2:18%, D3:20%, D4:20%, D5:15% -- normalized to 200px radius with 27% as max -->
+          <polygon points="0,-200 133.5,-43.4 87.1,119.9 -87.1,119.9 -133.5,-43.4"
+            fill="rgba(59,130,246,0.15)" stroke="var(--blue)" stroke-width="2" stroke-dasharray="6,4"/>
+
+          <!-- Course coverage polygon -->
+          <!-- D1: 75% of 200=150, D2: 85% of 133.5~113, D3: 70% of 130~91, D4: 80% of 148~118, D5: 65% of 111~72 -->
+          <polygon points="0,-150 114.5,-37.2 61,-83.9 -61,-83.9 -86.8,-40.2"
+            fill="rgba(34,197,94,0.2)" stroke="var(--green)" stroke-width="2.5"/>
+
+          <!-- Labels -->
+          <text x="0" y="-215" text-anchor="middle" fill="var(--text)" font-size="11" font-weight="600">D1: Agentic Architecture</text>
+          <text x="0" y="-225" text-anchor="middle" fill="var(--text-muted)" font-size="9">(27%)</text>
+          <text x="210" y="-55" text-anchor="start" fill="var(--text)" font-size="11" font-weight="600">D2: Tool &amp; MCP</text>
+          <text x="210" y="-43" text-anchor="start" fill="var(--text-muted)" font-size="9">(18%)</text>
+          <text x="135" y="185" text-anchor="start" fill="var(--text)" font-size="11" font-weight="600">D3: Claude Code Config</text>
+          <text x="135" y="197" text-anchor="start" fill="var(--text-muted)" font-size="9">(20%)</text>
+          <text x="-290" y="185" text-anchor="start" fill="var(--text)" font-size="11" font-weight="600">D4: Prompt Eng.</text>
+          <text x="-290" y="197" text-anchor="start" fill="var(--text-muted)" font-size="9">(20%)</text>
+          <text x="-280" y="-55" text-anchor="start" fill="var(--text)" font-size="11" font-weight="600">D5: Context &amp; Reliability</text>
+          <text x="-280" y="-43" text-anchor="start" fill="var(--text-muted)" font-size="9">(15%)</text>
+
+          <!-- Data points -->
+          <circle cx="0" cy="-150" r="4" fill="var(--green)"/>
+          <circle cx="114.5" cy="-37.2" r="4" fill="var(--green)"/>
+          <circle cx="61" cy="-83.9" r="4" fill="var(--green)"/>
+          <circle cx="-61" cy="-83.9" r="4" fill="var(--green)"/>
+          <circle cx="-86.8" cy="-40.2" r="4" fill="var(--green)"/>
+        </g>
+        <!-- Legend -->
+        <g transform="translate(20, 460)">
+          <line x1="0" y1="0" x2="20" y2="0" stroke="var(--blue)" stroke-width="2" stroke-dasharray="6,4"/>
+          <text x="28" y="4" fill="var(--text-muted)" font-size="10">Exam Weight</text>
+          <line x1="120" y1="0" x2="140" y2="0" stroke="var(--green)" stroke-width="2.5"/>
+          <text x="148" y="4" fill="var(--text-muted)" font-size="10">Course Coverage</text>
+        </g>
+      </svg>
+    </div>
+    <div class="grid-5" style="margin-top: 1rem;">
+      <div style="text-align:center;"><span class="badge badge-green">D1: ~75%</span></div>
+      <div style="text-align:center;"><span class="badge badge-green">D2: ~85%</span></div>
+      <div style="text-align:center;"><span class="badge badge-yellow">D3: ~70%</span></div>
+      <div style="text-align:center;"><span class="badge badge-green">D4: ~80%</span></div>
+      <div style="text-align:center;"><span class="badge badge-yellow">D5: ~65%</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: GAP ANALYSIS -->
+<div class="section" id="gaps">
+  <h2>Section 4: Gap Analysis</h2>
+  <div class="grid-2">
+    <div>
+      <h3 style="color:var(--red); margin-bottom:1rem;">Exam Topics the Course DOESN'T Cover</h3>
+      <div class="gap-card gap-red">
+        <div class="gap-title">Agent SDK Hooks (PostToolUse, tool call interception)</div>
+        <div class="gap-desc">Exam Task 1.5 tests knowledge of programmatic hooks for intercepting tool calls, normalizing data formats, and enforcing business rules deterministically. The course teaches approval gates (M10) but not the specific Agent SDK hook API.</div>
+        <div style="margin-top:6px;"><span class="tag tag-red">CRITICAL GAP</span> <span class="tag tag-yellow">27% domain</span></div>
+      </div>
+      <div class="gap-card gap-red">
+        <div class="gap-title">Message Batches API &amp; Batch Processing</div>
+        <div class="gap-desc">Exam Task 4.5 covers the Message Batches API (50% cost savings, 24h window, custom_id correlation, no multi-turn tool calling). Course does not mention batch processing at all.</div>
+        <div style="margin-top:6px;"><span class="tag tag-red">CRITICAL GAP</span> <span class="tag tag-yellow">20% domain</span></div>
+      </div>
+      <div class="gap-card gap-red">
+        <div class="gap-title">fork_session and Named Session Management</div>
+        <div class="gap-desc">Exam Task 1.7 tests --resume with session names, fork_session for parallel exploration, and when to start fresh vs resume. Course mentions --continue but not the full session management API.</div>
+        <div style="margin-top:6px;"><span class="tag tag-yellow">MODERATE GAP</span></div>
+      </div>
+      <div class="gap-card gap-red">
+        <div class="gap-title">.claude/rules/ with YAML Frontmatter Path Scoping</div>
+        <div class="gap-desc">Exam Task 3.3 tests path-specific rules files with YAML paths fields and glob patterns. Course mentions CLAUDE.md hierarchy but not the dedicated rules/ directory with conditional loading.</div>
+        <div style="margin-top:6px;"><span class="tag tag-yellow">MODERATE GAP</span></div>
+      </div>
+      <div class="gap-card gap-red">
+        <div class="gap-title">Confidence Calibration &amp; Stratified Sampling</div>
+        <div class="gap-desc">Exam Task 5.5 covers field-level confidence scores, calibration with labeled validation sets, and stratified random sampling. Course covers human-in-the-loop but not quantitative confidence calibration.</div>
+        <div style="margin-top:6px;"><span class="tag tag-yellow">MODERATE GAP</span></div>
+      </div>
+      <div class="gap-card gap-red">
+        <div class="gap-title">tool_choice Configuration Details</div>
+        <div class="gap-desc">Exam Tasks 2.3 and 4.3 test "auto" vs "any" vs forced tool selection semantics. Course teaches tool schema design but not the API-level tool_choice parameter configuration.</div>
+        <div style="margin-top:6px;"><span class="tag tag-yellow">MODERATE GAP</span></div>
+      </div>
+      <div class="gap-card gap-red">
+        <div class="gap-title">CI/CD Specific Patterns (--json-schema, session isolation for reviews)</div>
+        <div class="gap-desc">Exam Task 3.6 covers CI-specific patterns: -p flag, --output-format json with --json-schema, session context isolation for independent review, and prior review findings injection. Course mentions claude -p but doesn't go deep on CI patterns.</div>
+        <div style="margin-top:6px;"><span class="tag tag-yellow">MODERATE GAP</span></div>
+      </div>
+    </div>
+    <div>
+      <h3 style="color:var(--blue); margin-bottom:1rem;">Course Topics NOT in the Exam (Unique Value)</h3>
+      <div class="gap-card gap-blue">
+        <div class="gap-title">PRAO Loop Framework (Perceive-Reason-Act-Observe)</div>
+        <div class="gap-desc">The course's foundational mental model for understanding agentic behavior. Referenced in 7/9 labs. The exam tests agentic concepts but without this explicit framework, giving course graduates a richer mental model.</div>
+        <div style="margin-top:6px;"><span class="tag tag-blue">UNIQUE VALUE</span></div>
+      </div>
+      <div class="gap-card gap-blue">
+        <div class="gap-title">TCEF Prompt Pattern (Task-Context-Examples-Format)</div>
+        <div class="gap-desc">Structured prompt engineering framework referenced in 6/9 labs. The exam tests prompt engineering outcomes but not a named methodology, making this a transferable meta-skill.</div>
+        <div style="margin-top:6px;"><span class="tag tag-blue">UNIQUE VALUE</span></div>
+      </div>
+      <div class="gap-card gap-blue">
+        <div class="gap-title">Meta-Prompting (Module 08)</div>
+        <div class="gap-desc">Using Claude to generate, evaluate, and improve prompts and skills programmatically. Entirely absent from the exam but highly valuable for production workflow automation.</div>
+        <div style="margin-top:6px;"><span class="tag tag-blue">UNIQUE VALUE</span></div>
+      </div>
+      <div class="gap-card gap-blue">
+        <div class="gap-title">OpenCode Transparency / Reasoning Trace Analysis</div>
+        <div class="gap-desc">Module 03's deep dive into reading agent reasoning traces, identifying thinking pathologies, and using transparency to improve prompts. Not tested in the exam.</div>
+        <div style="margin-top:6px;"><span class="tag tag-blue">UNIQUE VALUE</span></div>
+      </div>
+      <div class="gap-card gap-blue">
+        <div class="gap-title">Context7 MCP Server for Stack Adaptation</div>
+        <div class="gap-desc">Module 11's approach to pre-loading framework documentation via Context7 for stack-specific development. Practical deployment skill not tested.</div>
+        <div style="margin-top:6px;"><span class="tag tag-blue">UNIQUE VALUE</span></div>
+      </div>
+      <div class="gap-card gap-blue">
+        <div class="gap-title">Organizational Deployment &amp; Change Management</div>
+        <div class="gap-desc">Module 11-12's focus on deployment checklists, rollout strategies, incident response playbooks, and prompt drift management. Real-world operations beyond exam scope.</div>
+        <div style="margin-top:6px;"><span class="tag tag-blue">UNIQUE VALUE</span></div>
+      </div>
+      <div class="gap-card gap-blue">
+        <div class="gap-title">Security Threat Modeling &amp; Sandbox Architecture</div>
+        <div class="gap-desc">Module 10 goes deeper than the exam on prompt injection defense, trust hierarchies, sandbox escape patterns, and the deployment maturity model. Exam tests reliability but not security-in-depth.</div>
+        <div style="margin-top:6px;"><span class="tag tag-blue">UNIQUE VALUE</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: RECOMMENDATIONS -->
+<div class="section" id="recommendations">
+  <h2>Section 5: Recommendations</h2>
+
+  <div class="grid-2">
+    <div>
+      <h3 style="margin-bottom:1rem;">Add to Course for Full Exam Coverage</h3>
+
+      <div class="rec-card" style="border-left: 3px solid var(--red);">
+        <div class="rec-priority" style="color:var(--red);">CRITICAL -- Required for exam readiness</div>
+        <h4>Add Agent SDK Hooks Module</h4>
+        <p>Create a new section in Module 09 or 10 covering PostToolUse hooks, tool call interception for compliance enforcement, and the distinction between deterministic hooks vs probabilistic prompt instructions. Include a lab exercise building a hook that blocks refunds over a threshold.</p>
+        <p style="margin-top:6px;"><strong>Exam mapping:</strong> Task 1.4, 1.5 (27% domain)</p>
+      </div>
+
+      <div class="rec-card" style="border-left: 3px solid var(--red);">
+        <div class="rec-priority" style="color:var(--red);">CRITICAL -- Required for exam readiness</div>
+        <h4>Add Message Batches API Section</h4>
+        <p>Add a section to Module 12 (or a new Module 4.5 addendum) covering batch processing: 50% cost savings, 24h SLA, custom_id correlation, when to use batch vs real-time, and failure handling for oversized documents. Include a batch cost calculation exercise.</p>
+        <p style="margin-top:6px;"><strong>Exam mapping:</strong> Task 4.5 (20% domain)</p>
+      </div>
+
+      <div class="rec-card" style="border-left: 3px solid var(--yellow);">
+        <div class="rec-priority" style="color:var(--yellow);">HIGH -- Strengthens exam performance</div>
+        <h4>Expand Session Management Coverage</h4>
+        <p>Expand M02's session coverage to include --resume with named sessions, fork_session for parallel exploration, when to start fresh vs resume (stale tool results), and informing resumed sessions about file changes.</p>
+        <p style="margin-top:6px;"><strong>Exam mapping:</strong> Task 1.7 (27% domain)</p>
+      </div>
+
+      <div class="rec-card" style="border-left: 3px solid var(--yellow);">
+        <div class="rec-priority" style="color:var(--yellow);">HIGH -- Strengthens exam performance</div>
+        <h4>Add .claude/rules/ Deep Dive</h4>
+        <p>Expand M07 or M11 to cover .claude/rules/ files with YAML frontmatter paths fields, glob pattern matching, and the advantage over directory-level CLAUDE.md files for cross-cutting conventions.</p>
+        <p style="margin-top:6px;"><strong>Exam mapping:</strong> Task 3.3 (20% domain)</p>
+      </div>
+
+      <div class="rec-card" style="border-left: 3px solid var(--yellow);">
+        <div class="rec-priority" style="color:var(--yellow);">HIGH -- Strengthens exam performance</div>
+        <h4>Add tool_choice API Section</h4>
+        <p>Add to M05 or M06: tool_choice "auto" vs "any" vs forced selection semantics, when to force a specific tool, and the relationship between tool_choice and structured output guarantees.</p>
+        <p style="margin-top:6px;"><strong>Exam mapping:</strong> Tasks 2.3, 4.3 (18% + 20% domains)</p>
+      </div>
+
+      <div class="rec-card" style="border-left: 3px solid var(--text-muted);">
+        <div class="rec-priority" style="color:var(--text-muted);">MODERATE -- Nice-to-have for exam prep</div>
+        <h4>Add CI/CD Integration Lab</h4>
+        <p>Add a lab exercise running Claude Code in CI with -p flag, --output-format json, and --json-schema. Show session isolation for independent reviews and prior findings injection to avoid duplicate comments.</p>
+        <p style="margin-top:6px;"><strong>Exam mapping:</strong> Task 3.6 (20% domain)</p>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="margin-bottom:1rem;">Course's Competitive Advantage Beyond the Exam</h3>
+
+      <div class="rec-card" style="border-left: 3px solid var(--blue);">
+        <h4>Mental Model Superiority</h4>
+        <p>The PRAO Loop and TCEF Pattern give course graduates a structured reasoning framework that exam-only preparation lacks. These transferable meta-skills accelerate learning in any new Claude feature or API surface.</p>
+      </div>
+
+      <div class="rec-card" style="border-left: 3px solid var(--blue);">
+        <h4>Hands-On Lab Practice</h4>
+        <p>9 interactive HTML labs with 116 exercises provide practical muscle memory. The exam tests conceptual knowledge; the course builds operational skill. Graduates can DO, not just KNOW.</p>
+      </div>
+
+      <div class="rec-card" style="border-left: 3px solid var(--blue);">
+        <h4>Production Operations Coverage</h4>
+        <p>Modules 10-12 cover security, deployment, incident response, and maintenance -- real-world concerns that the exam's architecture focus does not address. This is where certifications end and production success begins.</p>
+      </div>
+
+      <div class="rec-card" style="border-left: 3px solid var(--blue);">
+        <h4>Meta-Prompting &amp; Self-Improving Systems</h4>
+        <p>Module 08's meta-prompting curriculum is entirely absent from the exam. This is a force-multiplier skill: graduates can use Claude to generate, evaluate, and improve prompts at scale -- something the exam doesn't even test for.</p>
+      </div>
+
+      <div class="rec-card" style="border-left: 3px solid var(--purple);">
+        <h4 style="color:var(--purple);">Suggested Study Guide Mapping</h4>
+        <p style="font-size:0.82rem;">To prepare for each exam domain using the course:</p>
+        <table style="margin-top:8px;">
+          <tr><td style="color:var(--text-muted);width:35%;">D1: Agentic Arch.</td><td>M01 + M09 + M03 + Lab 01, 07</td></tr>
+          <tr><td style="color:var(--text-muted);">D2: Tool &amp; MCP</td><td>M05 + M06 + Lab 04</td></tr>
+          <tr><td style="color:var(--text-muted);">D3: Claude Code Config</td><td>M02 + M07 + M11 + Lab 02, 06</td></tr>
+          <tr><td style="color:var(--text-muted);">D4: Prompt Eng.</td><td>M04 + M08 + Lab 05</td></tr>
+          <tr><td style="color:var(--text-muted);">D5: Context &amp; Reliability</td><td>M09 + M10 + M12 + Lab 07, 08</td></tr>
+        </table>
+        <p style="margin-top:8px; font-size:0.82rem; color:var(--red);"><strong>Supplement needed:</strong> Agent SDK hooks (PostToolUse), Message Batches API, fork_session, .claude/rules/, tool_choice API, CI/CD integration with --json-schema.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 6: SOURCES -->
+<div class="section" id="sources">
+  <h2>Section 6: Research Sources</h2>
+  <div class="card">
+    <h3>Primary Sources (Official)</h3>
+    <ul class="source-list">
+      <li><a href="https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F8lsy243ftffjjy1cx9lm3o2bw%2Fpublic%2F1773274827%2FClaude+Certified+Architect+%E2%80%93+Foundations+Certification+Exam+Guide.pdf" target="_blank">Claude Certified Architect -- Foundations Certification Exam Guide (PDF, 40 pages)</a> <span class="source-date">v0.1, Feb 10 2025 | Anthropic, PBC -- Confidential NTK</span></li>
+      <li><a href="https://www.anthropic.com/news/claude-partner-network" target="_blank">Anthropic: Claude Partner Network Announcement</a> <span class="source-date">March 12, 2026</span></li>
+      <li><a href="https://anthropic.skilljar.com/" target="_blank">Anthropic Academy (Skilljar) -- Course Listings</a> <span class="source-date">Accessed March 17, 2026</span></li>
+    </ul>
+
+    <h3 style="margin-top:1.5rem;">Secondary Sources (Community Analysis)</h3>
+    <ul class="source-list">
+      <li><a href="https://dev.to/mcrolly/inside-anthropics-claude-certified-architect-program-what-it-tests-and-who-should-pursue-it-1dk6" target="_blank">Inside Anthropic's Claude Certified Architect Program -- DEV Community</a> <span class="source-date">March 15, 2026</span></li>
+      <li><a href="https://www.lowcode.agency/blog/how-to-become-claude-certified-architect" target="_blank">How to Become a Claude Certified Architect -- LowCode Agency</a> <span class="source-date">March 2026</span></li>
+      <li><a href="https://claudecertifications.com/" target="_blank">Claude Certifications -- Study Guide &amp; Practice Questions</a> <span class="source-date">Accessed March 17, 2026</span></li>
+    </ul>
+
+    <h3 style="margin-top:1.5rem;">Course Data Sources</h3>
+    <ul class="source-list">
+      <li>Concept Map M01-06: <code>meta-observations/04-OBSERVE-concept-map-M01-06.md</code> <span class="source-date">187 new concepts extracted</span></li>
+      <li>Concept Map M07-12: <code>meta-observations/05-OBSERVE-concept-map-M07-12.md</code> <span class="source-date">210 concepts extracted</span></li>
+      <li>Lab-Concept Alignment: <code>meta-observations/06-OBSERVE-lab-concept-alignment.md</code> <span class="source-date">116 exercises mapped</span></li>
+      <li>Concept Architecture Synthesis: <code>meta-observations/07-SYNTHESIS-concept-architecture.md</code> <span class="source-date">397 total unique concepts</span></li>
+      <li>Master Curriculum Outline: <code>docs/curriculum/master-outline.md</code> <span class="source-date">12 modules, 3-day structure</span></li>
+    </ul>
+
+    <h3 style="margin-top:1.5rem;">Methodology</h3>
+    <p style="font-size:0.82rem; color:var(--text-muted); margin-top:0.5rem;">
+      Coverage assessment performed by mapping each of the 30 exam task statements (from the official exam guide) against the course's 397 concept registry. "COVERED" = concept taught in depth with lab practice. "PARTIAL" = concept mentioned or taught at a different level of specificity than the exam expects. "GAP" = concept entirely absent from course materials. Coverage percentages per domain are estimated based on task statement coverage weighted by the granularity of knowledge/skills bullets in the exam guide.
+    </p>
+  </div>
+</div>
+
+<div style="text-align:center; padding: 2rem 0; color: var(--text-muted); font-size: 0.75rem; border-top: 1px solid var(--border); margin-top: 2rem;">
+  Generated March 17, 2026 | Exam Guide v0.1 (Feb 10, 2025) | Course: CETI-AGT-301 (397 concepts, 12 modules, 9 labs)
+</div>
+
+</body>
+</html>

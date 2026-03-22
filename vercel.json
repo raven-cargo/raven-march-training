@@ -40,8 +40,8 @@
     { "source": "/module/10", "destination": "/module-viewer.html?m=10-security-sandboxing" },
     { "source": "/module/11", "destination": "/module-viewer.html?m=11-tech-stack-adaptation" },
     { "source": "/module/12", "destination": "/module-viewer.html?m=12-capstone-production" },
-    { "source": "/challenges", "destination": "/module-viewer.html?m=../CHALLENGE-MISSIONS" },
-    { "source": "/challenge", "destination": "/module-viewer.html?m=../CHALLENGE-MISSIONS" }
+    { "source": "/challenges", "destination": "/module-viewer.html" },
+    { "source": "/challenge", "destination": "/module-viewer.html" }
   ],
   "headers": [
     {

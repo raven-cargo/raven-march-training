@@ -1,0 +1,206 @@
+{
+  "lens": "pedagogy",
+  "reviewer": "Ed.D.-level pedagogical expert",
+  "date": "2026-03-16",
+  "files_reviewed": [
+    "docs/curriculum/modules/01-paradigm-shift.md",
+    "docs/curriculum/modules/03-agent-thinking.md",
+    "docs/curriculum/modules/08-meta-prompting.md",
+    "docs/curriculum/modules/12-capstone-production.md",
+    "docs/curriculum/master-outline.md",
+    "labs/day1/lab-01-paradigm-shift.html",
+    "labs/day2/lab-05-prompt-engineering.html",
+    "labs/day3/lab-09-capstone.html",
+    "docs/curriculum/progressive-game-lab-framework.md"
+  ],
+  "findings": [
+    {
+      "id": "PED-001",
+      "severity": "critical",
+      "category": "cognitive-load",
+      "title": "Module 03 introduces 5 learning objectives plus 4 new concept layers in 90 minutes",
+      "description": "Module 03 (Agent Thinking) requires learners to simultaneously master: (1) three layers of agent output (thinking, tool call, response), (2) extended thinking as a distinct concept, (3) PRAO phase mapping for every tool call step, (4) intervention vs. non-intervention heuristics, and (5) common thinking pathologies (4 types: premature commitment, context blindness, overconfidence, recursive confusion). This totals 5 learning objectives and at least 12 distinct sub-concepts in a 90-minute block. Sweller's Cognitive Load Theory recommends no more than 7 +/- 2 elements in working memory. The module overloads intrinsic load by combining the novel schema of 'reading reasoning traces' with the procedural skill of 'knowing when to intervene' — two fundamentally different cognitive tasks.",
+      "affected_modules": ["M03"],
+      "recommendation": "Split Module 03 into two 45-minute segments. Segment A: Reading traces (layers, PRAO mapping, worked examples). Segment B: Intervention decisions (pathologies, heuristics, practice). This reduces per-segment concept count to 6-7 and allows the worked example from Segment A to scaffold Segment B. Insert a 5-minute consolidation activity between segments."
+    },
+    {
+      "id": "PED-002",
+      "severity": "high",
+      "category": "cognitive-load",
+      "title": "Day 2 packs 4 modules (TCEF, MCP, Skills/Commands, Meta-prompting) with insufficient consolidation",
+      "description": "Day 2 introduces four entirely new conceptual frameworks in sequence: TCEF prompt pattern (Module 05), MCP architecture with three primitives and two transports (Module 06), Skills/Commands/Subagents (Module 07), and Meta-prompting (Module 08). The master-outline.md shows each as a 90-minute block with only 15-minute breaks between them. By the afternoon, learners must hold PRAO (Day 1), GCCF (Day 1), TCEF, MCP primitives, skill anatomy, command syntax, subagent patterns, AND meta-prompting simultaneously. The concept count by Day 2 close exceeds 25 distinct technical concepts. The 'spaced practice' design principle stated in the master outline (principle 4) is violated — Day 2 content is entirely new with no retrieval of Day 1 concepts until the Day 3 morning sprint.",
+      "affected_modules": ["M05", "M06", "M07", "M08"],
+      "recommendation": "Add a 15-minute retrieval practice activity between Module 06 (MCP) and Module 07 (Skills) that requires learners to connect MCP primitives to the PRAO loop from Day 1. Reduce Module 08 (Meta-prompting) to a 45-minute introduction with the generate-evaluate loop as homework/pre-work for Day 3. Use the recovered 45 minutes for a Day 2 integration lab that requires combining TCEF + MCP + Skills in a single exercise."
+    },
+    {
+      "id": "PED-003",
+      "severity": "high",
+      "category": "alignment",
+      "title": "Module 01 Learning Objective 4 ('Recognize task categories') is never formally assessed",
+      "description": "Module 01 lists four learning objectives. Objective 4 states: 'Recognize which task categories are well-suited to agentic AI and which are not.' The module text in Section 1.4 ('What Agents Are Bad At') covers this content well with a taxonomy of good/bad task fits. However, Lab 01 (lab-01-paradigm-shift.html) does not include a knowledge check or challenge exercise that tests this objective. The quiz section (Section 5 in Lab 01) tests PRAO identification and era classification but never asks learners to classify a task as suitable or unsuitable for agentic AI. This is a constructive alignment gap — the objective is stated and taught but never assessed.",
+      "affected_modules": ["M01"],
+      "recommendation": "Add one knowledge check question to Lab 01 Section 5 that presents 4 task descriptions and asks which is LEAST suitable for agentic AI (with misconception-specific distractors: e.g., 'repetitive data entry' as a tempting wrong answer because it sounds boring but is actually well-suited). Alternatively, add a prediction challenge in which learners classify 5 tasks before seeing the taxonomy."
+    },
+    {
+      "id": "PED-004",
+      "severity": "high",
+      "category": "alignment",
+      "title": "GCCF pattern taught in Lab 02 is superseded by TCEF in Lab 05 without explicit bridge",
+      "description": "The master outline and Lab 02 blueprint introduce the GCCF pattern (Goal + Context + Constraints + Format) as the primary prompt structure on Day 1. On Day 2, Module 05 and Lab 05 introduce TCEF (Task + Context + Examples + Format) as the canonical prompt pattern. The Concept Registry in progressive-game-lab-framework.md registers both gccf-pattern and tcef-pattern as separate concepts. However, there is no explicit instructional moment that addresses the relationship between GCCF and TCEF. Learners are left to infer whether TCEF replaces GCCF, extends it, or is a different tool. This creates a split attention effect (Mayer, 2009) where learners must simultaneously process two competing schemas for the same activity. Lab 05 includes a callback to gccf-pattern but the callback card text does not explicitly reconcile the two frameworks.",
+      "affected_modules": ["M02", "M05"],
+      "recommendation": "Add an explicit bridging statement at the start of Lab 05 Section 2 (TCEF introduction): 'On Day 1 you learned GCCF — a good starting framework. TCEF is the production-grade evolution: T replaces G with a more precise verb, E adds the worked example that GCCF omitted, and C absorbs Constraints into the Context component. From this point forward, TCEF is the canonical pattern.' This resolves the schema conflict and leverages the germane load of comparing two related structures."
+    },
+    {
+      "id": "PED-005",
+      "severity": "medium",
+      "category": "zpd",
+      "title": "Day 2 to Day 3 difficulty spike: from component exercises to full production pipeline design",
+      "description": "Day 2 labs ask learners to build individual components: write a TCEF prompt (Lab 05), connect an MCP server (Lab 04), create a skill file (Lab 06). Day 3 Module 09 and Lab 09 immediately require designing a complete multi-agent production pipeline integrating ALL components with security, observability, and deployment concerns. The master outline allocates 150 minutes for this capstone, but the jump from 'I can write a skill file' to 'I can design a production agentic pipeline with observability, incident response playbooks, and cost projection' is a ZPD leap of at least 2-3 complexity levels. Module 12's content alone (12.3 Production Checklist, 12.4 Observability, 12.5 Evolution) introduces 15+ new concepts that have never been practiced individually.",
+      "affected_modules": ["M09", "M12"],
+      "recommendation": "Insert a 'mini-capstone' at the end of Day 2 that requires learners to design a simple 2-component pipeline (e.g., trigger + TCEF prompt + output, no multi-agent). This creates an intermediate scaffold between component exercises and full pipeline design. Alternatively, provide a partially-completed pipeline template in Lab 09 where learners fill in specific sections rather than designing from blank, reducing the blank-page paralysis and the number of simultaneous decisions."
+    },
+    {
+      "id": "PED-006",
+      "severity": "medium",
+      "category": "zpd",
+      "title": "Module 08 (Meta-prompting) may feel slow for advanced learners while confusing novices",
+      "description": "Module 08 spends 450 lines covering meta-prompting with three applications (generation, evaluation, improvement) plus limits. For engineers who already prompt LLMs daily, the concept of 'using an LLM to write prompts' is intuitive and the worked examples may feel belabored. For engineers with minimal AI exposure (the stated audience), the meta-level abstraction ('a prompt that writes prompts') risks conceptual vertigo — they're still consolidating basic TCEF prompting from 4 hours earlier. The module sits at an awkward difficulty level: too detailed for fast learners, too abstract for slow learners.",
+      "affected_modules": ["M08"],
+      "recommendation": "Restructure Module 08 as a tiered activity. Core tier (30 min): one worked example of prompt generation + one evaluation exercise — everyone does this. Advanced tier (30 min): the automated generate-evaluate-improve loop and prompt library construction — optional for those who completed the core tier quickly. This respects diverse pacing without boring or overwhelming either group. The progressive-game-lab-framework.md already supports this via section unlocking."
+    },
+    {
+      "id": "PED-007",
+      "severity": "medium",
+      "category": "transfer",
+      "title": "Near transfer dominates; far transfer opportunities are limited to the capstone",
+      "description": "Labs 01-08 use near transfer almost exclusively: the examples in the labs use the same tools, same CLI, same file structures that were just taught. The TCEF examples in Lab 05 generate prompts for code review — the same domain used in every example. The MCP examples use GitHub and databases — common but narrow. Far transfer — applying the learned principles to genuinely new contexts — is deferred entirely to the capstone (Lab 09), where learners must apply everything to their own organizational problem. Research on transfer (Barnett & Ceci, 2002) shows that far transfer requires practice with varied examples across at least 3 different contexts during learning, not just at the end.",
+      "affected_modules": ["M05", "M06", "M07"],
+      "recommendation": "Add one 'transfer scenario' exercise to each Day 2 lab that presents a non-engineering use case. For example: Lab 05 (prompt engineering) could include a challenge to write a TCEF prompt for a legal document review or a customer support triage — domains that test whether learners grasped the structural principle vs. just memorized the code review application. Lab 06 (skills) could ask learners to design a skill for a non-technical domain (e.g., HR onboarding, scientific literature review)."
+    },
+    {
+      "id": "PED-008",
+      "severity": "medium",
+      "category": "transfer",
+      "title": "Capstone requires genuine transfer but assessment rubric does not distinguish transfer quality",
+      "description": "The capstone rubric in the master outline has five dimensions (Correctness, Architecture, Safety, Adaptability, Communication) with 4-level behavioral anchors. The Adaptability dimension (15%) asks whether the learner can 'demonstrate how to swap one component.' This tests configurational knowledge, not deep transfer. A learner who designed a code review pipeline and can swap GitHub for GitLab demonstrates near transfer only. The rubric does not assess whether the learner could apply the pipeline design principles to a fundamentally different problem domain — which is the ultimate course goal per the stated outcome: 'design, build, and deploy agentic AI systems using Claude Code, MCP, and advanced prompt engineering in their organizational context.'",
+      "affected_modules": ["M12"],
+      "recommendation": "Add a transfer question to the capstone self-review: 'Describe a problem in a DIFFERENT domain from your capstone that could use the same pipeline pattern but with different components. Identify what stays the same (principles) and what changes (implementation).' Score this as part of the Adaptability dimension. This forces explicit reflection on the abstract principles behind the concrete implementation."
+    },
+    {
+      "id": "PED-009",
+      "severity": "low",
+      "category": "assessment",
+      "title": "Lab 01 quiz questions test recognition, not application",
+      "description": "Lab 01's quiz section (Section 5 in the HTML) contains 4 multiple-choice questions. All four test recognition-level knowledge: 'Which era is this?' and 'What does PRAO stand for?' These are Bloom's Level 1 (Remember) and Level 2 (Understand) at best. The stated learning objectives require Level 3 (Apply) and Level 4 (Analyze): 'Identify the mental model shift required' and 'Recognize which task categories are well-suited.' The quiz does not test these higher-order objectives. The progressive-game-lab-framework.md specifies 'test application, not recall — scenario-based questions,' but Lab 01's implementation falls short of this spec.",
+      "affected_modules": ["M01"],
+      "recommendation": "Replace at least 2 of the 4 quiz questions with scenario-based items. Example: 'A junior developer pastes this prompt into Claude Code: [prompt]. Which PRAO phase is most likely to fail, and what would you add to fix it?' This tests application (using PRAO to diagnose) rather than recognition (naming PRAO phases). Keep 1-2 recognition questions as warm-up, but the majority should require applying the framework to a novel scenario."
+    },
+    {
+      "id": "PED-010",
+      "severity": "low",
+      "category": "assessment",
+      "title": "Knowledge check distractors are pedagogically strong with one exception",
+      "description": "The progressive-game-lab-framework.md specifies per-option misconception feedback, and Lab 02's blueprint demonstrates this excellently — each wrong answer names the specific misconception (e.g., 'Difficulty does not equal confusion. The agent has the capability.') and explains why the reasoning is wrong. Lab 05's HTML and Lab 09's capstone self-review rubric follow this pattern consistently. The one exception is Lab 01's quiz implementation in HTML, where some feedback is brief and does not always name the misconception pattern. For example, the Era identification questions have explanations but they explain why the correct answer is right rather than why the wrong answer reveals a specific confusion.",
+      "affected_modules": ["M01"],
+      "recommendation": "Update Lab 01 quiz feedback to name the specific misconception each distractor represents. For the 'Could be any era equally' distractor: 'This reflects the misconception that all three eras are interchangeable. They are qualitatively different — each has a defining characteristic (scope, memory, agency) that makes it identifiable.' The Lab 02 blueprint is the gold standard here — apply its pattern retroactively to Lab 01."
+    },
+    {
+      "id": "PED-011",
+      "severity": "medium",
+      "category": "motivation",
+      "title": "ARCS Attention hooks are strong on Day 1, weaken on Day 2",
+      "description": "Day 1 Lab 01 opens with a compelling attention hook: 'You're about to see software development differently. Not incrementally differently — fundamentally differently.' The particle animation, the old-vs-new comparison, and the interactive PRAO loop visualizer create genuine curiosity. Day 2 Lab 05 opens with a more utilitarian framing: 'Prompt Engineering Workshop.' The section headers are functional ('Prompt Anatomy and Layers') rather than tension-creating. Module 08 (Meta-prompting) opens with a definition ('Meta-prompting is the practice of using an LLM to generate, evaluate, or improve prompts') rather than a problem statement. Per Keller's ARCS model, Attention requires perceptual arousal (novelty, surprise) or inquiry arousal (posing problems). Day 2 modules rely on content interest rather than active arousal mechanisms.",
+      "affected_modules": ["M05", "M08"],
+      "recommendation": "Add problem-framing hooks to Day 2 modules. Lab 05 should open with: 'You just wrote a prompt that worked. But can you write 10 prompts that all work? 100? The difference between a good prompt and a prompt PATTERN is the difference between a lucky shot and a repeatable skill.' Module 08 should open with a concrete failure: 'You need to create 15 skill files for your team by Friday. Writing each one manually takes 45 minutes. Meta-prompting gets you to first draft in 5 minutes. Here is how.' These create tension and relevance before content delivery."
+    },
+    {
+      "id": "PED-012",
+      "severity": "low",
+      "category": "motivation",
+      "title": "XP system provides Satisfaction but lacks Relevance connection",
+      "description": "The progressive-game-lab-framework.md defines a well-structured XP system with clear point schedules, streak mechanics, and milestone markers. This addresses the Satisfaction component of ARCS well — learners get immediate feedback and visible progress. However, the XP points are disconnected from professional relevance. The XP totals do not map to course competencies or certification benchmarks. The Relevance component of ARCS requires that learners see a connection between effort and real-world value. Currently, XP is a motivational wrapper, not a competency signal. The 'Next 30 Days Commitment' section in Module 3.4 addresses relevance well but arrives only at the course's end.",
+      "affected_modules": ["M01", "M02", "M03"],
+      "recommendation": "Add a brief 'Why This Matters' connection at each XP milestone. When learners hit 200 XP on Lab 01: 'You now have the conceptual vocabulary to read any agent trace and diagnose where things went wrong — a skill that saves 15-30 minutes per debugging session.' When hitting 500 XP on Lab 05: 'You can now write prompts that produce reliable, repeatable results — this is the difference between an engineer who uses AI occasionally and one who integrates it into daily workflow.' These bridge the Satisfaction of XP with the Relevance of professional value."
+    },
+    {
+      "id": "PED-013",
+      "severity": "high",
+      "category": "cognitive-load",
+      "title": "Module 12 introduces production concepts (observability, incident response, skill versioning) without prior practice",
+      "description": "Module 12 (Capstone and Production Deployment) is the only location where observability (structured logging, trace correlation, alerting thresholds), incident response (5-minute playbook), cost projection, skill versioning (major/minor), and prompt drift are covered. These are 15+ distinct production concepts introduced in the module that immediately precedes (or coincides with) the capstone exercise. Learners encounter structured JSON logging schemas, session ID propagation, alert threshold configuration, and incident response procedures for the first time while simultaneously trying to design their capstone pipeline. This violates the worked-example effect — learners should see and practice with worked examples of each production concept before being asked to apply them in a design exercise.",
+      "affected_modules": ["M12"],
+      "recommendation": "Extract the observability and incident response content into a dedicated Module 11 (or expand the existing Module 10/11) with its own lab exercise. A 30-minute 'Observability Design Exercise' lab where learners design a logging schema for a provided pipeline (not their own) would provide the worked-example scaffolding. Then the capstone can build on practiced production skills rather than introducing them simultaneously."
+    },
+    {
+      "id": "PED-014",
+      "severity": "medium",
+      "category": "alignment",
+      "title": "Lab 09 capstone self-review may inflate scores due to self-assessment bias",
+      "description": "The capstone in Lab 09 uses a self-review rubric where learners rate their own designs across 5 dimensions using behavioral anchors. Self-assessment research (Dunning-Kruger effect; Boud & Falchikov, 1989) consistently shows that novice learners overestimate their performance, particularly on dimensions they understand least (Safety, Adaptability). The rubric has good behavioral anchors, but without peer or facilitator calibration, the self-scores are likely to cluster at Proficient and Distinguished even when work is at Developing level. The lab framework note says 'Peer design review' is part of the capstone (Module 3.4.1 mentions '5-minute design share'), but Lab 09 HTML implements only the self-review, not the peer review.",
+      "affected_modules": ["M12"],
+      "recommendation": "Add a calibration exercise before self-review: present 2 example pipeline designs (one Distinguished, one Developing) with pre-scored rubrics and explanations. Learners calibrate their scoring against expert ratings before applying the rubric to their own work. Additionally, implement the peer review protocol described in master-outline.md Module 3.4.1 as a required step in Lab 09 — even if digital peer review is just 'swap screens for 5 minutes and score each other using the same rubric.'"
+    },
+    {
+      "id": "PED-015",
+      "severity": "low",
+      "category": "motivation",
+      "title": "Confidence building is well-paced with early achievable wins",
+      "description": "This is a POSITIVE finding. The Day 1 progression is well-designed for the Confidence component of ARCS. Lab 01 starts with low-risk conceptual activities (classify eras, explore PRAO interactively), awards XP for predictions (10 XP for just writing 15 characters), and provides immediate visual feedback (particle animations, progress dots). The first 'real' task — running Claude Code commands — comes after the conceptual foundation is established. Lab 02's blueprint starts with diagnosing failed prompts (lower stakes than writing perfect prompts) before asking learners to write their own. This graduated difficulty with early success experiences is textbook confidence-building (Keller, 2010).",
+      "affected_modules": ["M01", "M02"],
+      "recommendation": "No change needed. Document this as a design pattern to maintain when creating additional modules. The pattern is: (1) observe/classify before create, (2) diagnose failure before design success, (3) award XP for effort (predictions) before requiring correctness."
+    },
+    {
+      "id": "PED-016",
+      "severity": "medium",
+      "category": "cognitive-load",
+      "title": "Seven-beat engagement loop is rigorous but risks procedural overhead in knowledge-dense sections",
+      "description": "The progressive-game-lab-framework.md mandates a seven-beat loop (Activate, Frame, Predict, Reveal, Apply, Feedback, Connect Forward) for EVERY section. In labs with 5-6 sections, this means learners cycle through 35-42 interaction beats per lab. For concept-heavy sections like Lab 05 Section 2 (TCEF pattern introduction, which requires learning 4 distinct components), the predict-before-reveal gate (minimum 15 characters) adds germane cognitive load when learners genuinely have no basis for prediction. A learner who has never heard of TCEF cannot meaningfully predict what the pattern contains — forcing a prediction here produces guessing, not activation of prior knowledge. The framework's own specification notes 'Beats 3 and 5 are never optional in a knowledge-bearing section,' which is overly rigid for genuinely novel content.",
+      "affected_modules": ["M05", "M06"],
+      "recommendation": "Distinguish between 'schema-activating predictions' (learner has relevant prior knowledge to draw on) and 'curiosity-priming predictions' (learner is guessing). For genuinely novel content like TCEF or MCP architecture, replace the prediction beat with a 'What questions do you have about X?' prompt. This activates curiosity (Loewenstein's Information Gap Theory) without creating artificial prediction pressure. Reserve true prediction gates for sections where learners have Day-1 foundations to draw on."
+    },
+    {
+      "id": "PED-017",
+      "severity": "high",
+      "category": "alignment",
+      "title": "Module 03 Objective 5 (extended thinking) is taught but Lab 03 assessment is unclear",
+      "description": "Module 03 Learning Objective 5 states: 'Understand what extended thinking provides, when it's valuable, and when it isn't.' The module content covers extended thinking in detail (Section 3.2 in the module text) including activation conditions, token budget implications, and use cases. However, the Lab 03 blueprint in the progressive framework document says only 'Concepts covered: Chain-of-thought, tool call sequences, when agents ask for clarification, reading extended thinking' and 'Full section design follows same template — section outlines to be written during implementation.' This suggests Lab 03's extended thinking assessment has not been designed yet. An objective without a corresponding assessment is an alignment gap by definition.",
+      "affected_modules": ["M03"],
+      "recommendation": "Design and implement a knowledge check in Lab 03 that tests Objective 5. Suggested question: 'You are debugging a simple off-by-one error in a 10-line function. Extended thinking activates and produces 3,000 tokens of reasoning before the agent writes a one-line fix. Is this desirable? (A) Yes, deeper reasoning always produces better fixes. (B) No, the overhead is disproportionate to the problem complexity — extended thinking is most valuable for multi-constraint architectural decisions. (C) Yes, the extra tokens are free. (D) It depends on the model version.' Option B is correct; the distractors test specific misconceptions about when extended thinking adds value."
+    },
+    {
+      "id": "PED-018",
+      "severity": "low",
+      "category": "assessment",
+      "title": "Lab 09 capstone Build Challenges (CE-09-A, CE-09-C) add production-quality assessment depth",
+      "description": "This is a POSITIVE finding. Lab 09 includes two 'Required Build' challenges (CE-09-A: Write Actual Skill YAML, CE-09-C: Issue Tracker Integration Specification) that require learners to produce real artifacts rather than just designing on paper. CE-09-A validates the skill YAML programmatically (checking for required fields: name, description, triggers, behavior, output_format, examples). CE-09-C asks four specific questions about tracker integration that force concrete specification. These are performance-based assessments at Bloom's Level 5 (Evaluate) and Level 6 (Create), going beyond the typical design-only capstone. The validation feedback is specific and structural, not just 'good job.'",
+      "affected_modules": ["M12"],
+      "recommendation": "No change needed. This is the strongest assessment design in the course. Consider backporting the 'Required Build' pattern to Day 2 labs — e.g., a CE in Lab 06 that requires writing and validating an actual skill YAML file, not just describing one."
+    }
+  ],
+  "scores": {
+    "cognitive_load_management": 0.62,
+    "constructive_alignment": 0.71,
+    "transfer_design": 0.58,
+    "motivation_design": 0.78,
+    "assessment_quality": 0.74
+  },
+  "score_rationale": {
+    "cognitive_load_management": "0.62 — Day 1 is well-paced, but Day 2 concept density is excessive (25+ concepts across 4 modules). Module 03 overloads working memory with 12 sub-concepts in 90 minutes. Module 12 introduces 15+ production concepts without prior practice. The seven-beat loop adds procedural load in some sections. Strength: graduated difficulty on Day 1, effective use of worked examples in Lab 01.",
+    "constructive_alignment": "0.71 — Strong alignment between stated objectives and activities in most modules. Three specific gaps: Module 01 Objective 4 (task suitability) untested, Module 03 Objective 5 (extended thinking) lacks lab assessment, GCCF-to-TCEF transition creates schema confusion. Strength: master-outline explicitly maps each lab to objectives, capstone rubric has behavioral anchors.",
+    "transfer_design": "0.58 — Near transfer is well-supported throughout; every lab practices the concept just taught. Far transfer is weak: all examples use code review / engineering domains until the capstone, where learners must suddenly transfer to their own organizational context with no prior practice. No varied-context examples during Days 1-2. The capstone adaptability rubric tests component swapping (near transfer) rather than principle generalization (far transfer).",
+    "motivation_design": "0.78 — ARCS model analysis: Attention is strong on Day 1 (interactive visualizations, compelling hooks, particle effects) but weakens on Day 2 (functional headers, definitional openings). Relevance is addressed by the organizational-context framing and the 'Next 30 Days Commitment' but is deferred too late. Confidence is excellent — graduated difficulty, early XP awards, prediction gates lower the activation energy. Satisfaction is well-served by the XP/streak system and export functionality.",
+    "assessment_quality": "0.74 — The progressive-game-lab-framework.md sets a high standard with per-option misconception feedback, and Labs 02-09 largely follow it. Lab 01 quizzes are recognition-level rather than application-level, slightly below the framework's own specification. Lab 09's Required Build challenges (CE-09-A, CE-09-C) are the strongest assessments — production-quality artifact creation with structural validation. Self-review bias in the capstone rubric is the main weakness."
+  },
+  "summary": {
+    "top_3_strengths": [
+      "Day 1 cognitive scaffolding: The progression from conceptual (eras taxonomy) to interactive (PRAO visualizer) to simulated (trace viewer) to applied (first commands) is pedagogically exemplary. Each step builds on the prior without cognitive overload.",
+      "Seven-beat engagement loop: The framework's ACTIVATE-FRAME-PREDICT-REVEAL-APPLY-FEEDBACK-CONNECT_FORWARD architecture ensures learners are never passive. The prediction gates (15-char minimum) and section locking create genuine engagement barriers that force active processing.",
+      "Misconception-targeted feedback: The Lab 02 blueprint and Lab 09 implementation demonstrate best-practice assessment design — each wrong answer names the specific confusion it represents, not just 'incorrect.' This turns errors into learning moments."
+    ],
+    "top_3_risks": [
+      "Day 2 cognitive overload: Four new conceptual frameworks in one day (TCEF + MCP + Skills + Meta-prompting) without adequate retrieval practice or consolidation time. Risk: learners leave Day 2 with fragile, surface-level understanding of all four rather than deep understanding of any.",
+      "Production concepts introduced too late: Observability, incident response, cost projection, and skill versioning are all introduced in Module 12 alongside the capstone. Learners cannot practice these individually before being asked to apply them in their pipeline design. Risk: capstone designs will systematically omit or superficially address production concerns.",
+      "Far transfer not practiced until capstone: All pre-capstone examples use engineering/code review domains. The capstone demands transfer to learners' own organizational contexts with no prior practice. Risk: learners who succeeded on near-transfer labs may struggle or produce shallow capstones because transfer is a skill that requires graduated practice, not a single leap."
+    ]
+  }
+}

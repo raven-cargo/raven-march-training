@@ -1,0 +1,93 @@
+# Agentic AI Engineering Course — Restricted Student Sandbox Configuration
+# Used for student environments during labs.
+# More restrictive than base: writes confined to sandbox/experiments/ only.
+# Extend base.yaml — overrides listed below take precedence.
+
+version: "1.0"
+environment: restricted
+extends: base
+
+# ─── Permission Overrides (more restrictive than base) ────────────────────────
+permissions:
+  allow:
+    - "Read"                              # Full read access (students need to explore)
+    - "Write(sandbox/experiments/**)"     # Writes ONLY in experiments subfolder
+    - "Write(sandbox/outputs/**)"         # And outputs subfolder
+    - "Bash(git status)"
+    - "Bash(git diff *)"
+    - "Bash(git log *)"
+    - "Bash(cat *)"
+    - "Bash(ls *)"
+    - "Bash(echo *)"
+    - "Bash(pwd)"
+    - "Bash(node *)"                      # Allow running Node.js scripts
+    - "Bash(python3 *)"                   # Allow running Python scripts
+    - "Bash(npm test)"                    # Allow running tests
+    - "Bash(npm run *)"                   # Allow npm scripts (read-only operations)
+
+  deny:
+    - "Bash(rm *)"
+    - "Bash(rmdir *)"
+    - "Bash(curl *)"
+    - "Bash(wget *)"
+    - "Bash(fetch *)"
+    - "Bash(ssh *)"
+    - "Bash(scp *)"
+    - "Bash(git push *)"                  # Students cannot push remotely
+    - "Bash(git remote *)"
+    - "Bash(npm install *)"               # No package installation mid-lab
+    - "Bash(pip install *)"
+    - "Write(*.env)"
+    - "Write(*.env.*)"
+    - "Write(**/.env)"
+    - "Write(**/secrets/**)"
+    - "Write(package.json)"              # Don't let students modify project config
+    - "Write(package-lock.json)"
+    - "Write(.claude/**)"                # Don't modify Claude Code config
+
+# ─── MCP Servers ──────────────────────────────────────────────────────────────
+# Restricted to course-specific safe demo servers only.
+mcp_servers:
+  course-demo:
+    command: node
+    args: ["./sandbox/mcp-servers/course-demo-server.js"]
+    env:
+      DEMO_MODE: "true"
+
+# ─── CLAUDE.md Context ────────────────────────────────────────────────────────
+claude_md: |
+  # Student Sandbox — Agentic AI Engineering Course
+
+  ## Your Workspace
+  - Experiments: `sandbox/experiments/` (you can write here)
+  - Outputs: `sandbox/outputs/` (save your work here)
+  - Everything else: read-only
+
+  ## Constraints
+  - No external network access
+  - No package installation
+  - No git push (local commits only)
+
+  ## Lab Context
+  Follow the instructions in your current lab HTML file.
+  Ask Claude Code questions — that's the point of the lab.
+
+# ─── Session Settings ─────────────────────────────────────────────────────────
+session:
+  max_turns: 30                 # Shorter limit for student focus
+  timeout_minutes: 20
+  auto_approve_reads: true
+  auto_approve_writes: false    # Always confirm writes — pedagogically valuable
+
+# ─── Logging ──────────────────────────────────────────────────────────────────
+logging:
+  enabled: true
+  level: info
+  format: json
+  output: logs/student-session.jsonl
+  include:
+    - tool_calls
+    - tool_results
+    - session_id
+    - timestamp
+    - student_id             # For progress tracking (set by setup script)

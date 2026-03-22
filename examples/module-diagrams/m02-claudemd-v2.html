@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLAUDE.md — The Session Briefing System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+
+.tabs{display:flex;gap:4px;margin-bottom:.5rem;background:#18181c;border-radius:12px;padding:4px}
+.tab{flex:1;padding:12px 10px;border:none;border-radius:10px;background:transparent;cursor:pointer;text-align:center;transition:all .3s;font-size:13px;font-weight:600;color:#555;font-family:'DM Sans',sans-serif}
+.tab.active{background:#1e1e24;color:#e8e6e1}
+.tab.active::after{content:'';display:block;width:20px;height:2px;border-radius:1px;margin:6px auto 0}
+.tab[data-t="0"].active::after{background:#4ade80}
+.tab[data-t="1"].active::after{background:#f87171}
+.tab[data-t="2"].active::after{background:#5ba4f5}
+
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+
+.panel{display:none;animation:fadeUp .35s cubic-bezier(.22,1,.36,1)}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.entry{padding:16px 18px;border-radius:12px;border:1px solid #1a1a1e;background:#141418;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start}
+.entry-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:4px 10px;border-radius:6px;white-space:nowrap;margin-top:2px;flex-shrink:0}
+.entry-badge.yes{background:#0a1a14;color:#4ade80;border:1px solid #1a4030}
+.entry-badge.no{background:#1a0a0a;color:#f87171;border:1px solid #401a1a}
+.entry-content{flex:1}
+.entry-example{font-family:'JetBrains Mono',monospace;font-size:12px;color:#c8c6c1;line-height:1.6;margin-bottom:6px}
+.entry-why{font-size:12px;color:#666;line-height:1.5}
+.entry-category{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#444;margin-bottom:4px}
+
+.hierarchy{display:flex;flex-direction:column;gap:0;position:relative;padding-left:24px}
+.hierarchy::before{content:'';position:absolute;left:11px;top:20px;bottom:20px;width:2px;background:linear-gradient(to bottom,#1a4030,#1a3a6a,#2d2555,#40301a);border-radius:1px}
+.h-level{padding:16px 18px;border-radius:12px;border:1px solid #1a1a1e;background:#141418;position:relative;margin-bottom:8px}
+.h-level::before{content:'';position:absolute;left:-17px;top:22px;width:10px;height:10px;border-radius:50%;border:2px solid #333;background:#222228}
+.h-path{font-family:'JetBrains Mono',monospace;font-size:12px;color:#888;margin-bottom:4px}
+.h-scope{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+.h-desc{font-size:13px;color:#aaa;line-height:1.5}
+.h-level[data-l="0"] .h-scope{color:#4ade80}
+.h-level[data-l="0"]::before{background:#4ade80;border-color:#4ade80}
+.h-level[data-l="1"] .h-scope{color:#5ba4f5}
+.h-level[data-l="1"]::before{background:#5ba4f5;border-color:#5ba4f5}
+.h-level[data-l="2"] .h-scope{color:#a78bfa}
+.h-level[data-l="2"]::before{background:#a78bfa;border-color:#a78bfa}
+.h-level[data-l="3"] .h-scope{color:#f59e42}
+.h-level[data-l="3"]::before{background:#f59e42;border-color:#f59e42}
+
+.merge-note{margin-top:16px;padding:14px 18px;border-radius:10px;background:#141418;border:1px solid #1a1a1e;font-size:13px;color:#888;line-height:1.6}
+.merge-note strong{color:#e8e6e1;font-weight:600}
+
+.update-triggers{margin-top:16px}
+.update-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#444;margin-bottom:10px}
+.trigger-item{padding:10px 14px;border-radius:8px;background:#0a0a0c;border:1px solid #1a1a1e;font-size:13px;color:#aaa;margin-bottom:6px;display:flex;align-items:center;gap:10px;line-height:1.4}
+.trigger-icon{color:#f59e42;font-size:14px;min-width:16px}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>CLAUDE.md — the session briefing system</h1>
+
+<div class="objective">
+  <span class="goal">Learning objective</span>
+  <span class="text">Write effective CLAUDE.md content that gives the agent durable project knowledge. Know exactly what belongs in the file, what doesn't, and how the four-level hierarchy merges at runtime.</span>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-t="0" onclick="showTab(0)">What belongs</div>
+  <div class="tab" data-t="1" onclick="showTab(1)">What doesn't</div>
+  <div class="tab" data-t="2" onclick="showTab(2)">Hierarchy &amp; layers</div>
+</div>
+
+<div class="panel active" id="t0">
+  <div class="instruct">&#9654; Review each category — these are the five types of content that make CLAUDE.md effective.</div>
+
+  <div class="entry"><div class="entry-badge yes">Include</div><div class="entry-content"><div class="entry-category">Architecture overview</div><div class="entry-example">TypeScript monorepo with pnpm workspaces. Three packages: packages/api (Express), packages/web (Next.js 14), packages/shared (types).</div><div class="entry-why">The agent needs to know what it's working with before it reads a single file.</div></div></div>
+
+  <div class="entry"><div class="entry-badge yes">Include</div><div class="entry-content"><div class="entry-category">Coding conventions</div><div class="entry-example">Use zod for all runtime validation — do not use joi or yup. Prefer named exports over default exports.</div><div class="entry-why">Specific and decidable. The agent can check any new code against this rule.</div></div></div>
+
+  <div class="entry"><div class="entry-badge yes">Include</div><div class="entry-content"><div class="entry-category">Key file locations</div><div class="entry-example">packages/api/src/db/schema.ts — Drizzle schema definitions. packages/api/src/routes/ — one file per resource.</div><div class="entry-why">Saves the agent from spelunking through the filesystem to find important files.</div></div></div>
+
+  <div class="entry"><div class="entry-badge yes">Include</div><div class="entry-content"><div class="entry-category">Constraints / never-dos</div><div class="entry-example">Never modify files in packages/shared/src/generated/ — these are auto-generated. Never add npm deps without noting them.</div><div class="entry-why">Prevents costly mistakes. The agent won't hand-edit generated code.</div></div></div>
+
+  <div class="entry"><div class="entry-badge yes">Include</div><div class="entry-content"><div class="entry-category">Decisions made</div><div class="entry-example">Auth: JWT with 24h expiry, stateless. Database: PostgreSQL + Drizzle only. Testing: Vitest, not Jest.</div><div class="entry-why">Stops the agent from re-litigating settled choices in every new session.</div></div></div>
+
+  <div class="update-triggers">
+    <div class="update-label">When to update CLAUDE.md</div>
+    <div class="trigger-item"><span class="trigger-icon">&#8227;</span>The agent made a mistake that better context would have prevented</div>
+    <div class="trigger-item"><span class="trigger-icon">&#8227;</span>A new architectural decision was made</div>
+    <div class="trigger-item"><span class="trigger-icon">&#8227;</span>A new convention was established by the team</div>
+    <div class="trigger-item"><span class="trigger-icon">&#8227;</span>A new constraint became important</div>
+  </div>
+</div>
+
+<div class="panel" id="t1">
+  <div class="instruct">&#9654; These five anti-patterns waste context window or cause operational problems. Learn to recognize them.</div>
+
+  <div class="entry"><div class="entry-badge no">Exclude</div><div class="entry-content"><div class="entry-category">Secrets and credentials</div><div class="entry-example">API_KEY=sk-abc123... DATABASE_URL=postgresql://user:pass@host/db</div><div class="entry-why">CLAUDE.md gets committed. Secrets in CLAUDE.md = secrets in your git history. Use .env + .gitignore.</div></div></div>
+
+  <div class="entry"><div class="entry-badge no">Exclude</div><div class="entry-content"><div class="entry-category">Per-task instructions</div><div class="entry-example">Add types to src/utils.ts. Fix the bug in the auth middleware.</div><div class="entry-why">These belong in the prompt, not CLAUDE.md. If left permanently, the agent treats them as standing orders.</div></div></div>
+
+  <div class="entry"><div class="entry-badge no">Exclude</div><div class="entry-content"><div class="entry-category">Aspirational principles</div><div class="entry-example">Write clean, maintainable, well-documented code. Follow best practices.</div><div class="entry-why">Not actionable. The agent can't make concrete decisions from "write clean code." What does "clean" mean here?</div></div></div>
+
+  <div class="entry"><div class="entry-badge no">Exclude</div><div class="entry-content"><div class="entry-category">Duplicated documentation</div><div class="entry-example">Full API reference, complete style guide, entire README contents.</div><div class="entry-why">Wastes context window. CLAUDE.md should be a briefing, not a manual. Link to docs instead.</div></div></div>
+
+  <div class="entry"><div class="entry-badge no">Exclude</div><div class="entry-content"><div class="entry-category">Unstable or frequently changing info</div><div class="entry-example">Current sprint goals. Today's deployment schedule. WIP feature flags.</div><div class="entry-why">CLAUDE.md is for durable context. Ephemeral info goes in the prompt for that session.</div></div></div>
+
+  <div class="merge-note">
+    <strong>The litmus test:</strong> Could an agent use this entry to make a concrete, binary decision? If it requires interpretation, it's too vague. "Use zod for validation" → decidable. "Use good libraries" → not decidable.
+  </div>
+</div>
+
+<div class="panel" id="t2">
+  <div class="instruct">&#9654; CLAUDE.md files stack from broad to specific. Understand the four levels and how they merge.</div>
+
+  <div class="hierarchy">
+    <div class="h-level" data-l="0">
+      <div class="h-path">~/.claude/CLAUDE.md</div>
+      <div class="h-scope">Global — applies everywhere</div>
+      <div class="h-desc">Cross-project defaults: personal style preferences, universal guardrails, recurring tool habits. Things true regardless of which project you're in.</div>
+    </div>
+    <div class="h-level" data-l="1">
+      <div class="h-path">./CLAUDE.md</div>
+      <div class="h-scope">Project — repo root, team-shared</div>
+      <div class="h-desc">Architecture, conventions, constraints, decisions. This is the primary briefing document. Committed to git so every team member's agent gets the same context.</div>
+    </div>
+    <div class="h-level" data-l="2">
+      <div class="h-path">./.claude/CLAUDE.md</div>
+      <div class="h-scope">Local project — personal overrides</div>
+      <div class="h-desc">Machine-local or personal overrides that shouldn't be team policy. Typically gitignored. Example: "I prefer verbose output" or custom MCP server paths.</div>
+    </div>
+    <div class="h-level" data-l="3">
+      <div class="h-path">./subdir/CLAUDE.md</div>
+      <div class="h-scope">Subdirectory — domain-specific</div>
+      <div class="h-desc">Loaded when work enters that subtree. Narrower, domain-specific guidance. Example: packages/api/CLAUDE.md with API-specific conventions.</div>
+    </div>
+  </div>
+  <div class="merge-note">
+    <strong>Layers stack.</strong> More specific context augments or overrides broader context when they conflict. The agent sees the merged result of all applicable layers — global defaults + project rules + local overrides + subdirectory specifics.
+  </div>
+</div>
+</div>
+
+<script>
+function showTab(i){
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));
+}
+</script>
+</body>
+</html>

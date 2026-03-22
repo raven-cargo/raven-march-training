@@ -1,0 +1,517 @@
+{
+  "lens": "production",
+  "generated": "2026-03-16T00:00:00Z",
+  "auditor": "production-engineer",
+  "files_scanned": [
+    "index.html",
+    "module-viewer.html",
+    "labs/day1/lab-01-paradigm-shift.html",
+    "labs/day1/lab-02-first-agent.html",
+    "labs/day1/lab-03-agent-thinking.html",
+    "labs/day2/lab-04-mcp-explorer.html",
+    "labs/day2/lab-05-prompt-engineering.html",
+    "labs/day2/lab-06-skills-commands.html",
+    "labs/day3/lab-07-multi-agent.html",
+    "labs/day3/lab-08-production.html",
+    "labs/day3/lab-09-capstone.html",
+    "vercel.json",
+    "lab-framework/core.js",
+    "lab-framework/core.css",
+    "lab-framework/build.js",
+    ".gitignore"
+  ],
+  "findings": [
+    {
+      "id": "PROD-001",
+      "severity": "critical",
+      "category": "dependency",
+      "title": "Lucide loaded via unpinned @latest tag on every page",
+      "description": "All 11 HTML pages load lucide from 'https://unpkg.com/lucide@latest/dist/umd/lucide.min.js'. The @latest tag means any breaking change to the Lucide API (e.g. icon renames, removed icons, API changes) will silently break the site in production without any code change. This is a ticking time bomb. Affected files: index.html:11, module-viewer.html:11, all 9 lab HTML files line 9 or 12.",
+      "affected_files": [
+        "index.html",
+        "module-viewer.html",
+        "labs/day1/lab-01-paradigm-shift.html",
+        "labs/day1/lab-02-first-agent.html",
+        "labs/day1/lab-03-agent-thinking.html",
+        "labs/day2/lab-04-mcp-explorer.html",
+        "labs/day2/lab-05-prompt-engineering.html",
+        "labs/day2/lab-06-skills-commands.html",
+        "labs/day3/lab-07-multi-agent.html",
+        "labs/day3/lab-08-production.html",
+        "labs/day3/lab-09-capstone.html"
+      ],
+      "recommendation": "Pin to a specific version: 'https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js' (or current stable). Add SRI hash."
+    },
+    {
+      "id": "PROD-002",
+      "severity": "critical",
+      "category": "dependency",
+      "title": "marked.js loaded without version pin",
+      "description": "module-viewer.html:12 loads 'https://cdn.jsdelivr.net/npm/marked/marked.min.js' without any version specifier. A major version bump (e.g. marked v15 to v17 API changes) could break markdown rendering of all 12 curriculum modules. The module-viewer is the sole reader for all curriculum content.",
+      "affected_files": ["module-viewer.html"],
+      "recommendation": "Pin version: 'https://cdn.jsdelivr.net/npm/marked@17.0.4/marked.min.js'. Add SRI hash."
+    },
+    {
+      "id": "PROD-003",
+      "severity": "critical",
+      "category": "security",
+      "title": "marked.js renders unsanitized HTML into DOM via innerHTML",
+      "description": "module-viewer.html:3540 executes 'contentEl.innerHTML = marked.parse(md)'. The markdown files are fetched from the same origin (/docs/curriculum/modules/), so the risk is lower than user-generated content. However, marked.js passes raw HTML through by default. If the markdown source is ever compromised (supply chain, accidental injection), arbitrary script execution is possible. No DOMPurify or sanitize option is configured.",
+      "affected_files": ["module-viewer.html"],
+      "recommendation": "Add DOMPurify: 'contentEl.innerHTML = DOMPurify.sanitize(marked.parse(md))'. Alternatively, configure marked with {sanitize: true} or a custom sanitizer. Since interactive diagrams use raw HTML blocks in markdown, a targeted allowlist sanitizer is the right approach."
+    },
+    {
+      "id": "PROD-004",
+      "severity": "high",
+      "category": "security",
+      "title": "No Content-Security-Policy header configured",
+      "description": "vercel.json defines only X-Frame-Options for /labs/ routes. No CSP header is set anywhere. The site loads scripts from 3 external CDN origins (unpkg.com, cdn.jsdelivr.net, fonts.googleapis.com) and uses extensive inline scripts and styles. Without CSP, there is no defense-in-depth against XSS.",
+      "affected_files": ["vercel.json"],
+      "recommendation": "Add a CSP header in vercel.json that allows the known CDN origins and 'unsafe-inline' for styles (since inline <style> blocks are used throughout). For scripts, use nonces or 'unsafe-inline' initially, then migrate to nonce-based CSP."
+    },
+    {
+      "id": "PROD-005",
+      "severity": "high",
+      "category": "security",
+      "title": "X-Frame-Options only covers /labs/ routes, not index or module-viewer",
+      "description": "vercel.json:48-50 sets X-Frame-Options: SAMEORIGIN only for '/labs/(.*)'. The index.html and module-viewer.html can be embedded in iframes on any domain, enabling clickjacking attacks.",
+      "affected_files": ["vercel.json"],
+      "recommendation": "Add X-Frame-Options: SAMEORIGIN header for all routes: { \"source\": \"/(.*)\", \"headers\": [...] }"
+    },
+    {
+      "id": "PROD-006",
+      "severity": "high",
+      "category": "security",
+      "title": "innerHTML used extensively in lab framework without sanitization",
+      "description": "lab-framework/core.js uses innerHTML in PredictionChallenge (line 349), KnowledgeCheck (line 452), ApplyTask (line 514), renderCallbackCard (line 566), and renderInfoCard (line 607). While config.body in renderInfoCard passes raw HTML directly (line 610: '${config.body || \"\"}'), the other components use the _esc() helper for user-facing strings. The config.revealContent and config.modelAnswer parameters in PredictionChallenge (lines 368, 384) are injected as raw HTML without escaping. These are developer-controlled values, but the pattern is fragile.",
+      "affected_files": ["lab-framework/core.js"],
+      "recommendation": "Audit all innerHTML assignments. For developer-authored content (revealContent, modelAnswer, body), document the trust boundary. Consider using textContent where HTML is not needed, and DOMPurify for rich content."
+    },
+    {
+      "id": "PROD-007",
+      "severity": "high",
+      "category": "performance",
+      "title": "Lab HTML files are 100-122 KB each with fully inlined CSS",
+      "description": "Each lab file is a self-contained ~100-120 KB HTML file with the entire design system CSS inlined. 9 labs total = ~1 MB of HTML. This was an intentional design choice (USB/air-gapped delivery per build.js comments), but for the Vercel deployment it means: (1) no shared CSS caching between labs, (2) ~800 lines of identical CSS downloaded per lab transition, (3) increased TTFB due to document size.",
+      "affected_files": [
+        "labs/day1/lab-01-paradigm-shift.html",
+        "labs/day1/lab-02-first-agent.html",
+        "labs/day1/lab-03-agent-thinking.html",
+        "labs/day2/lab-04-mcp-explorer.html",
+        "labs/day2/lab-05-prompt-engineering.html",
+        "labs/day2/lab-06-skills-commands.html",
+        "labs/day3/lab-07-multi-agent.html",
+        "labs/day3/lab-08-production.html",
+        "labs/day3/lab-09-capstone.html"
+      ],
+      "recommendation": "For the Vercel deployment, consider a build variant that uses <link rel='stylesheet'> for core.css instead of inlining. Keep the inlined variant for USB/offline distribution. This would allow browser caching of the 19 KB CSS across all 9 labs."
+    },
+    {
+      "id": "PROD-008",
+      "severity": "high",
+      "category": "performance",
+      "title": "Lucide JS is render-blocking on all pages",
+      "description": "The <script src='https://unpkg.com/lucide@latest/...'></script> tag in every HTML file lacks 'defer' or 'async' attributes. This blocks HTML parsing until the ~80 KB Lucide library downloads and executes. On slow connections this significantly delays LCP. Affected: all 11 HTML pages.",
+      "affected_files": [
+        "index.html",
+        "module-viewer.html",
+        "labs/day1/lab-01-paradigm-shift.html",
+        "labs/day1/lab-02-first-agent.html",
+        "labs/day1/lab-03-agent-thinking.html",
+        "labs/day2/lab-04-mcp-explorer.html",
+        "labs/day2/lab-05-prompt-engineering.html",
+        "labs/day2/lab-06-skills-commands.html",
+        "labs/day3/lab-07-multi-agent.html",
+        "labs/day3/lab-08-production.html",
+        "labs/day3/lab-09-capstone.html"
+      ],
+      "recommendation": "Add 'defer' attribute to the Lucide script tag. Move lucide.createIcons() call to DOMContentLoaded event handler. Icons will still render before user interaction."
+    },
+    {
+      "id": "PROD-009",
+      "severity": "high",
+      "category": "performance",
+      "title": "marked.js and mermaid.js are render-blocking on module-viewer",
+      "description": "module-viewer.html:12-13 loads marked.js (~40 KB) and mermaid.js (~1.5 MB) as synchronous scripts in <head>. Mermaid alone is ~1.5 MB uncompressed. This blocks page rendering until both download. The module-viewer is the most visited page type (12 modules).",
+      "affected_files": ["module-viewer.html"],
+      "recommendation": "Add 'defer' to both script tags. Mermaid could also be loaded conditionally only when mermaid code blocks are detected in the markdown."
+    },
+    {
+      "id": "PROD-010",
+      "severity": "high",
+      "category": "dependency",
+      "title": "Mermaid pinned only to major version @11",
+      "description": "module-viewer.html:13 loads 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js'. While better than @latest, @11 resolves to the latest minor/patch under v11, which could still introduce breaking changes or bugs.",
+      "affected_files": ["module-viewer.html"],
+      "recommendation": "Pin to exact version: 'https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js'. Add SRI hash."
+    },
+    {
+      "id": "PROD-011",
+      "severity": "high",
+      "category": "dependency",
+      "title": "No SRI (Subresource Integrity) hashes on any CDN resource",
+      "description": "None of the 5 CDN script/style references across the site use integrity attributes. If unpkg.com or cdn.jsdelivr.net is compromised, malicious code could be injected into every page. This is a known supply-chain attack vector (event-stream incident, ua-parser-js incident).",
+      "affected_files": [
+        "index.html",
+        "module-viewer.html",
+        "labs/day1/lab-01-paradigm-shift.html"
+      ],
+      "recommendation": "Generate SRI hashes for all CDN resources: <script src='...' integrity='sha384-...' crossorigin='anonymous'>. This requires pinned versions first (see PROD-001, PROD-002, PROD-010)."
+    },
+    {
+      "id": "PROD-012",
+      "severity": "high",
+      "category": "dependency",
+      "title": "No fallback if any CDN fails",
+      "description": "If unpkg.com goes down, all icons disappear across all pages. If jsdelivr goes down, module-viewer cannot render any content (marked.js) and mermaid diagrams break. There is a graceful degradation for marked.js failure (raw text shown), but no script-level fallback loading.",
+      "affected_files": ["module-viewer.html", "index.html"],
+      "recommendation": "Add local fallback scripts: <script src='cdn-url' onerror=\"this.src='/vendor/lucide.min.js'\"></script>. Bundle critical dependencies in a /vendor/ directory."
+    },
+    {
+      "id": "PROD-013",
+      "severity": "medium",
+      "category": "security",
+      "title": "localStorage data is not validated on read",
+      "description": "lab-framework/core.js reads localStorage values and uses them without validation: XP values parsed via parseInt (line 239), section completion checked as string '1' (line 233), textarea values restored directly (line 226-228). A user could manipulate localStorage to set XP to any value, skip sections, or inject content into textarea values. While this is a learning tool where cheating has limited impact, textarea restoration could theoretically inject script content if the textarea value is later used in innerHTML.",
+      "affected_files": ["lab-framework/core.js"],
+      "recommendation": "Add parseInt bounds checking for XP (0-1000 range). Textarea values are already used safely (assigned to .value not .innerHTML). Document that XP/progress is client-side only and not a trust boundary."
+    },
+    {
+      "id": "PROD-014",
+      "severity": "medium",
+      "category": "security",
+      "title": "Global function pollution via window._challengeSubmit and window._kcAnswer",
+      "description": "lab-framework/core.js:406-415 and 466-490 assign handler functions directly to window globals (_challengeSubmit, _kcAnswer, _applySubmit). These are accessible from the browser console and could be called with arbitrary IDs, though the impact is limited to UI state changes.",
+      "affected_files": ["lab-framework/core.js"],
+      "recommendation": "Move these callbacks inside the IIFE closure using a private registry object instead of window globals. Use data attributes and event delegation instead of inline onclick handlers with global function calls."
+    },
+    {
+      "id": "PROD-015",
+      "severity": "medium",
+      "category": "performance",
+      "title": "Google Fonts loaded inconsistently across pages",
+      "description": "Font loading strategy varies across pages: (1) index.html and module-viewer.html use <link> tag with preconnect, (2) Labs 04 and 05 use <link> tag with preconnect to both googleapis.com and gstatic.com, (3) Labs 01, 02, 03, 06, 07, 08, 09 do NOT load Google Fonts via <link> at all but rely on the @import in inlined core.css. The CSS @import is render-blocking and slower than <link>. (4) Labs 01, 02, 03, 06, 07, 08, 09 have no preconnect hints.",
+      "affected_files": [
+        "labs/day1/lab-01-paradigm-shift.html",
+        "labs/day1/lab-02-first-agent.html",
+        "labs/day1/lab-03-agent-thinking.html",
+        "labs/day2/lab-06-skills-commands.html",
+        "labs/day3/lab-07-multi-agent.html",
+        "labs/day3/lab-08-production.html",
+        "labs/day3/lab-09-capstone.html"
+      ],
+      "recommendation": "Standardize: add <link rel='preconnect'> to all pages and use <link> for font loading instead of CSS @import. Remove the @import from core.css to avoid double-loading on pages that have both."
+    },
+    {
+      "id": "PROD-016",
+      "severity": "medium",
+      "category": "performance",
+      "title": "No lazy loading or code splitting",
+      "description": "All CSS and JS are loaded eagerly on page load. Lab sections below the fold are rendered immediately (though hidden via the section-gate pattern). There is no lazy loading of images, no dynamic import of heavy libraries. The module-viewer loads mermaid.js (~1.5 MB) even for modules that contain no mermaid diagrams.",
+      "affected_files": ["module-viewer.html"],
+      "recommendation": "Dynamically load mermaid.js only when a ```mermaid code block is detected in the parsed markdown. This saves ~1.5 MB on modules without diagrams."
+    },
+    {
+      "id": "PROD-017",
+      "severity": "medium",
+      "category": "accessibility",
+      "title": "Nav dots lack keyboard focus indicators and keyboard activation",
+      "description": "lab-framework/core.js:118 adds click listeners to nav dots, but nav dots are plain <div> elements without tabindex, role='button', or keydown handlers. Keyboard users cannot navigate to or activate section dots. The dots do have aria-label attributes (line 117, 133-139), which is good.",
+      "affected_files": ["lab-framework/core.js", "lab-framework/core.css"],
+      "recommendation": "Add tabindex='0' and role='button' to each nav dot. Add keydown handler for Enter/Space to trigger the click. Add :focus-visible styles."
+    },
+    {
+      "id": "PROD-018",
+      "severity": "medium",
+      "category": "accessibility",
+      "title": "Quiz answer buttons lack ARIA roles and states",
+      "description": "lab-framework/core.js KnowledgeCheck component renders answer options as <button> elements (good), but does not use role='radio' or aria-selected for the mutually exclusive selection pattern. After selection, the correct/incorrect state is communicated only via CSS color (red/green), not via aria-live or aria-label updates.",
+      "affected_files": ["lab-framework/core.js"],
+      "recommendation": "Add role='radiogroup' to options container, role='radio' to each option. After selection, update aria-label to include 'Correct' or 'Incorrect'. Add aria-live='polite' region for feedback text."
+    },
+    {
+      "id": "PROD-019",
+      "severity": "medium",
+      "category": "accessibility",
+      "title": "Color contrast concerns with dark theme",
+      "description": "Multiple text colors may not meet WCAG AA contrast ratios against the dark background (#080d1a): --text-dim (#475569) = 3.1:1 ratio (fails AA for normal text, needs 4.5:1), --muted (#94a3b8) = 6.7:1 (passes), --dim (#475569) on --bg = 3.1:1 (fails). The --text-dim color is used extensively for secondary information, meta text, and card descriptions.",
+      "affected_files": ["lab-framework/core.css", "index.html", "module-viewer.html"],
+      "recommendation": "Increase --text-dim to at least #6b7a90 (~4.5:1 ratio) or use --text-muted (#94a3b8) for any text that must be readable. Apply WCAG AA to all text elements."
+    },
+    {
+      "id": "PROD-020",
+      "severity": "medium",
+      "category": "accessibility",
+      "title": "Locked sections use pointer-events:none but no screen reader indication",
+      "description": "lab-framework/core.css:160 sets 'pointer-events: none' on section.locked. The visual lock overlay (lines 164-177) shows a lock icon and message, but this is not communicated to screen readers via aria-hidden on the content or aria-disabled on the section.",
+      "affected_files": ["lab-framework/core.css", "lab-framework/core.js"],
+      "recommendation": "Add aria-disabled='true' to locked sections. Add aria-hidden='true' to the lock overlay decorative icon. Ensure the lock message is exposed to screen readers."
+    },
+    {
+      "id": "PROD-021",
+      "severity": "medium",
+      "category": "compatibility",
+      "title": "backdrop-filter may not work in older browsers",
+      "description": "backdrop-filter: blur() is used in lab-framework/core.css:86 (nav), core.css:169 (lock overlay), core.css:229 (card), and throughout lab HTML files. This CSS property is not supported in Firefox < 103, IE 11, or older Safari versions. No fallback background color is provided.",
+      "affected_files": ["lab-framework/core.css", "module-viewer.html"],
+      "recommendation": "Add fallback: 'background: rgba(8, 13, 26, 0.95);' before the backdrop-filter line, or use @supports for progressive enhancement."
+    },
+    {
+      "id": "PROD-022",
+      "severity": "medium",
+      "category": "compatibility",
+      "title": "CSS 'inset' shorthand not supported in Safari < 14.1",
+      "description": "lab-framework/core.css:168 uses 'inset: 0' which is shorthand for top/right/bottom/left: 0. This is not supported in Safari < 14.1 or Chrome < 87.",
+      "affected_files": ["lab-framework/core.css"],
+      "recommendation": "Replace 'inset: 0' with 'top: 0; right: 0; bottom: 0; left: 0;' for wider compatibility."
+    },
+    {
+      "id": "PROD-023",
+      "severity": "medium",
+      "category": "operations",
+      "title": "No error monitoring or reporting",
+      "description": "There is no error tracking service (Sentry, LogRocket, etc.) integrated. JavaScript errors are caught and logged to console.warn (module-viewer.html:3542, 3570) but never reported. If a CDN fails or a markdown file 404s in production, there is no alerting mechanism.",
+      "affected_files": ["module-viewer.html", "lab-framework/core.js"],
+      "recommendation": "Add a lightweight error reporter: window.onerror and window.onunhandledrejection handlers that POST to an endpoint, or integrate Sentry free tier."
+    },
+    {
+      "id": "PROD-024",
+      "severity": "medium",
+      "category": "operations",
+      "title": "No analytics integration",
+      "description": "There is no analytics tracking (Vercel Analytics, Plausible, or similar). Lab completion rates, module reading progress, XP distribution, and engagement metrics are stored only in client localStorage and never reported. There is no way to measure course effectiveness.",
+      "affected_files": ["index.html", "module-viewer.html"],
+      "recommendation": "Add Vercel Analytics (zero-config for Vercel deployments) or Plausible (privacy-focused). Track: page views, lab completion events, module reading completion, and average time on page."
+    },
+    {
+      "id": "PROD-025",
+      "severity": "low",
+      "category": "operations",
+      "title": "Markdown 404 shows error but with limited diagnostic info",
+      "description": "module-viewer.html:3531 catches HTTP errors with 'HTTP ' + res.status + ': ' + url and displays them. This is good error handling, but the error div (line 1754-1756) shows a generic message. The specific error is set via textContent on #error-msg, which is correct.",
+      "affected_files": ["module-viewer.html"],
+      "recommendation": "Add a 'Return to Course Dashboard' link in the error state. Consider logging 404s to an analytics endpoint."
+    },
+    {
+      "id": "PROD-026",
+      "severity": "low",
+      "category": "performance",
+      "title": "module-viewer.html is 112 KB with massive inline CSS",
+      "description": "module-viewer.html contains ~1700 lines of inline CSS for interactive diagram components (terminal simulations, flow diagrams, decision trees, quiz components, etc.). At 112 KB, this is the largest single file. The CSS includes styles for every possible interactive diagram type even if the loaded module uses none of them.",
+      "affected_files": ["module-viewer.html"],
+      "recommendation": "Extract interactive diagram CSS to a separate file (e.g., ix-diagrams.css) loaded via <link>. This allows caching across module navigations."
+    },
+    {
+      "id": "PROD-027",
+      "severity": "low",
+      "category": "security",
+      "title": "Missing X-Content-Type-Options and other security headers",
+      "description": "vercel.json only sets X-Frame-Options. Missing: X-Content-Type-Options: nosniff, Referrer-Policy, Permissions-Policy. These are defense-in-depth headers recommended by OWASP.",
+      "affected_files": ["vercel.json"],
+      "recommendation": "Add to vercel.json headers for all routes: X-Content-Type-Options: nosniff, Referrer-Policy: strict-origin-when-cross-origin, Permissions-Policy: camera=(), microphone=(), geolocation=()"
+    },
+    {
+      "id": "PROD-028",
+      "severity": "low",
+      "category": "operations",
+      "title": ".gitignore only excludes .vercel directory",
+      "description": ".gitignore contains only '.vercel'. Standard exclusions are missing: node_modules/, .DS_Store, *.log, .env, .env.local. If build.js is run, no node_modules would be gitignored.",
+      "affected_files": [".gitignore"],
+      "recommendation": "Add standard exclusions: node_modules/, .DS_Store, *.log, .env*, dist/, .cache/"
+    },
+    {
+      "id": "PROD-029",
+      "severity": "low",
+      "category": "compatibility",
+      "title": "background-clip: text needs -webkit- prefix",
+      "description": "index.html:53 and lab-framework/core.css:209 correctly include both -webkit-background-clip and background-clip. However, some inline styles in lab files may only use one or the other. This is well-handled in the framework CSS.",
+      "affected_files": ["index.html", "lab-framework/core.css"],
+      "recommendation": "No immediate action needed. The current dual-prefix approach is correct."
+    },
+    {
+      "id": "PROD-030",
+      "severity": "low",
+      "category": "performance",
+      "title": "CSS @import in core.css creates extra network round-trip",
+      "description": "lab-framework/core.css:18 uses '@import url(https://fonts.googleapis.com/css2?...)' which is discovered only after the CSS is parsed, creating a waterfall: HTML -> parse CSS -> discover @import -> fetch Google Fonts CSS -> fetch font files. This adds 1-2 round trips compared to a <link> in <head>.",
+      "affected_files": ["lab-framework/core.css"],
+      "recommendation": "Remove the @import from core.css. Ensure all HTML files use <link rel='preconnect'> and <link href='fonts.googleapis.com/css2?...'> in <head> instead."
+    },
+    {
+      "id": "PROD-031",
+      "severity": "low",
+      "category": "accessibility",
+      "title": "prefers-reduced-motion is properly handled",
+      "description": "lab-framework/core.css:663-668 correctly includes '@media (prefers-reduced-motion: reduce)' that disables animations and transitions. This is a positive finding.",
+      "affected_files": ["lab-framework/core.css"],
+      "recommendation": "No action needed. This is well-implemented."
+    },
+    {
+      "id": "PROD-032",
+      "severity": "low",
+      "category": "operations",
+      "title": "Loading state exists for module-viewer but not for lab pages",
+      "description": "module-viewer.html has a spinner (#loading) and error state (#error) for async markdown loading. Lab pages load synchronously (all content is inline HTML), so no loading state is needed. However, the lucide.createIcons() call has no loading indicator -- icons may flash from placeholder to rendered state.",
+      "affected_files": ["module-viewer.html", "index.html"],
+      "recommendation": "Add CSS that hides [data-lucide] SVGs until lucide.createIcons() runs, then reveals them. This prevents icon flash."
+    }
+  ],
+  "cdn_dependencies": [
+    {
+      "url": "https://unpkg.com/lucide@latest/dist/umd/lucide.min.js",
+      "used_in": ["index.html", "module-viewer.html", "all 9 lab HTML files"],
+      "pinned": false,
+      "sri": false,
+      "fallback": false,
+      "estimated_size_kb": 80,
+      "notes": "@latest resolves to whatever is current -- extremely fragile"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/marked/marked.min.js",
+      "used_in": ["module-viewer.html"],
+      "pinned": false,
+      "sri": false,
+      "fallback": true,
+      "estimated_size_kb": 40,
+      "notes": "No version specified. Fallback: raw text shown if marked unavailable"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js",
+      "used_in": ["module-viewer.html"],
+      "pinned": false,
+      "sri": false,
+      "fallback": false,
+      "estimated_size_kb": 1500,
+      "notes": "Major version pinned (@11) but minor/patch float. No fallback -- diagrams simply won't render"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap",
+      "used_in": ["index.html", "module-viewer.html", "lab-04", "lab-05", "core.css (via @import)"],
+      "pinned": true,
+      "sri": false,
+      "fallback": true,
+      "estimated_size_kb": 2,
+      "notes": "Google Fonts is highly reliable. Fallback: system-ui font stack in CSS. display=swap ensures text visible during load"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap",
+      "used_in": ["examples/module-diagrams/*.html (7 files)"],
+      "pinned": true,
+      "sri": false,
+      "fallback": true,
+      "estimated_size_kb": 2,
+      "notes": "Only used in example diagrams, not in main course pages"
+    }
+  ],
+  "page_weight_analysis": {
+    "index_html": {
+      "html_kb": 42,
+      "external_requests": 4,
+      "external_requests_detail": [
+        "fonts.googleapis.com preconnect",
+        "fonts.googleapis.com CSS",
+        "unpkg.com lucide.js",
+        "/assets/theme-toggle.css + .js"
+      ],
+      "estimated_total_kb": 130,
+      "render_blocking_scripts": 1,
+      "render_blocking_styles": 1
+    },
+    "module_viewer_html": {
+      "html_kb": 112,
+      "external_requests": 6,
+      "external_requests_detail": [
+        "fonts.googleapis.com preconnect",
+        "fonts.googleapis.com CSS",
+        "unpkg.com lucide.js",
+        "cdn.jsdelivr.net marked.js",
+        "cdn.jsdelivr.net mermaid.js",
+        "/assets/theme-toggle.css + .js"
+      ],
+      "estimated_total_kb": 1740,
+      "render_blocking_scripts": 3,
+      "render_blocking_styles": 1,
+      "notes": "Mermaid alone is ~1.5 MB. This is the heaviest page by far."
+    },
+    "lab_pages_average": {
+      "html_kb": 113,
+      "external_requests": 3,
+      "external_requests_detail": [
+        "unpkg.com lucide.js",
+        "/assets/theme-toggle.css + .js",
+        "fonts.googleapis.com (via CSS @import in 7 of 9 labs)"
+      ],
+      "estimated_total_kb": 200,
+      "render_blocking_scripts": 1,
+      "render_blocking_styles": 0,
+      "notes": "Lab-04 and Lab-05 add Google Fonts <link> tags (2 extra requests). Other labs use CSS @import."
+    }
+  },
+  "estimated_lcp": {
+    "index_html": "1.5-2.5s (render-blocked by lucide.js, then text paint)",
+    "module_viewer": "3-5s (blocked by lucide + marked + mermaid, then fetch markdown, then parse and render)",
+    "lab_pages": "1.5-3s (blocked by lucide.js, large HTML document to parse, CSS @import waterfall on 7 labs)"
+  },
+  "scores": {
+    "performance": 0.45,
+    "security": 0.35,
+    "accessibility": 0.55,
+    "operational_readiness": 0.30
+  },
+  "score_rationale": {
+    "performance": "0.45 -- Heavy pages (100-120KB HTML), render-blocking CDN scripts, no code splitting, CSS @import waterfall, ~1.5MB mermaid loaded unconditionally. Offset by: good responsive breakpoints, passive scroll listeners, IntersectionObserver for sections.",
+    "security": "0.35 -- No CSP, no SRI hashes, unpinned CDN dependencies, marked.js innerHTML without sanitization, incomplete X-Frame-Options coverage, no X-Content-Type-Options. Offset by: _esc() helper used for user-facing strings, same-origin markdown fetch, noopener on external links.",
+    "accessibility": "0.55 -- Good: aria-label on nav dots, role='list' on nav container, prefers-reduced-motion support, aria-hidden on decorative icons, semantic button elements for quiz. Lacking: nav dots not keyboard-accessible, color contrast failures (--text-dim), no ARIA states on quiz selections, locked sections not aria-disabled.",
+    "operational_readiness": "0.30 -- No error monitoring, no analytics, no alerting on CDN failures, minimal .gitignore, no build-time validation of CDN availability, no health check endpoint. Good: loading spinner for async content, error state with message for markdown 404s, graceful degradation if marked.js fails."
+  },
+  "priority_actions": [
+    {
+      "priority": "P0",
+      "action": "Pin all CDN dependencies to exact versions and add SRI hashes",
+      "findings": ["PROD-001", "PROD-002", "PROD-010", "PROD-011"],
+      "effort": "30 minutes"
+    },
+    {
+      "priority": "P0",
+      "action": "Add defer to all external CDN script tags",
+      "findings": ["PROD-008", "PROD-009"],
+      "effort": "15 minutes"
+    },
+    {
+      "priority": "P1",
+      "action": "Add security headers (CSP, X-Frame-Options, X-Content-Type-Options) to vercel.json",
+      "findings": ["PROD-004", "PROD-005", "PROD-027"],
+      "effort": "30 minutes"
+    },
+    {
+      "priority": "P1",
+      "action": "Add DOMPurify for marked.js output sanitization",
+      "findings": ["PROD-003"],
+      "effort": "20 minutes"
+    },
+    {
+      "priority": "P2",
+      "action": "Standardize Google Fonts loading across all pages (remove CSS @import, add <link>)",
+      "findings": ["PROD-015", "PROD-030"],
+      "effort": "45 minutes"
+    },
+    {
+      "priority": "P2",
+      "action": "Lazy-load mermaid.js only when needed",
+      "findings": ["PROD-016"],
+      "effort": "30 minutes"
+    },
+    {
+      "priority": "P3",
+      "action": "Add error monitoring (Sentry) and analytics (Vercel Analytics)",
+      "findings": ["PROD-023", "PROD-024"],
+      "effort": "1 hour"
+    },
+    {
+      "priority": "P3",
+      "action": "Fix accessibility gaps (keyboard nav, contrast, ARIA states)",
+      "findings": ["PROD-017", "PROD-018", "PROD-019", "PROD-020"],
+      "effort": "2 hours"
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trace Reading Exercise</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+
+.task-box{padding:12px 16px;border-radius:10px;background:#141418;border:1px solid #222228;font-family:'JetBrains Mono',monospace;font-size:12px;color:#f59e42;margin-bottom:1.5rem}
+.task-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#444;margin-bottom:4px;font-family:'DM Sans',sans-serif}
+
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+
+.progress{display:flex;gap:4px;margin-bottom:1rem}
+.prog-dot{flex:1;height:4px;border-radius:2px;background:#1a1a1e;transition:background .3s}
+.prog-dot.done{background:#4ade80}
+.prog-dot.current{background:#5ba4f5}
+
+.step-card{border-radius:14px;border:1px solid #222228;background:#141418;overflow:hidden;margin-bottom:1rem;animation:fadeUp .35s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.step-header{padding:14px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #1a1a1e}
+.step-num{font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;min-width:28px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-phase{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px}
+.step-title{font-size:13px;font-weight:600;color:#e8e6e1;flex:1}
+
+.step-body{padding:16px 18px}
+.trace{font-family:'JetBrains Mono',monospace;font-size:11px;background:#0a0a0c;border:1px solid #1a1a1e;border-radius:8px;padding:12px 14px;line-height:1.8;overflow-x:auto;margin-bottom:10px}
+.t-tool{color:#f59e42}
+.t-think{color:#a78bfa;font-style:italic}
+.t-result{color:#555}
+.t-response{color:#5ba4f5}
+.t-success{color:#4ade80}
+
+.annotation{padding:10px 14px;border-radius:8px;font-size:12px;color:#888;line-height:1.55;display:none;cursor:pointer}
+.annotation.visible{display:block}
+.ann-toggle{font-size:12px;color:#444;cursor:pointer;padding:6px 0;transition:color .2s;display:flex;align-items:center;gap:6px}
+.ann-toggle:hover{color:#888}
+.ann-arrow{transition:transform .2s;font-size:10px}
+.ann-toggle.open .ann-arrow{transform:rotate(90deg)}
+
+.controls{display:flex;align-items:center;gap:12px;justify-content:center}
+.ctrl-btn{padding:10px 28px;border-radius:10px;border:1px solid #222228;background:#141418;cursor:pointer;font-size:13px;font-weight:500;color:#aaa;font-family:'DM Sans',sans-serif;transition:all .2s}
+.ctrl-btn:hover:not(:disabled){border-color:#3a3a40;color:#e8e6e1}
+.ctrl-btn:disabled{opacity:.2;cursor:default}
+.step-counter{font-size:12px;color:#444;font-family:'JetBrains Mono',monospace;min-width:60px;text-align:center}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Trace reading exercise</h1>
+<div class="objective">
+  <span class="goal">Practice</span>
+  <span class="text">Walk through a complete agent trace for a real debugging task. At each step, identify the PRAO phase, read the reasoning, and evaluate whether the agent is on track. Toggle annotations to check your reading.</span>
+</div>
+<div class="task-box">
+  <div class="task-label">Task prompt</div>
+  "Find and fix the bug causing intermittent 500 errors on /api/users."
+</div>
+<div class="instruct">&#9654; Step through the trace with the arrows below. Click "Show annotation" at each step to check your understanding.</div>
+
+<div class="progress" id="progress"></div>
+<div id="stepArea"></div>
+<div class="controls">
+  <button class="ctrl-btn" id="prevBtn" onclick="prev()" disabled>&larr; Back</button>
+  <span class="step-counter" id="counter">1 / 7</span>
+  <button class="ctrl-btn" id="nextBtn" onclick="next()">Next &rarr;</button>
+</div>
+</div>
+
+<script>
+const steps=[
+{phase:'Perceive',phaseColor:'#5ba4f5',phaseBg:'#0a1525',title:'Exploration — find relevant files',
+ trace:`<span class="t-tool">Bash("grep -r '/api/users' src/ --include='*.ts' -l")</span>
+<span class="t-result">→ src/routes/users.ts</span>
+<span class="t-result">→ src/services/userService.ts</span>
+<span class="t-result">→ src/middleware/authenticate.ts</span>`,
+ annotation:'The agent starts with broad exploration — grep to find all files referencing the endpoint. Three files found. This is Pattern 3 (Bash exploration) at task start, which is correct. No action yet — pure perception.'},
+
+{phase:'Perceive',phaseColor:'#5ba4f5',phaseBg:'#0a1525',title:'Targeted reading of key files',
+ trace:`<span class="t-tool">Read("src/routes/users.ts")</span>
+<span class="t-result">→ 45 lines, GET /api/users/:id route handler</span>
+
+<span class="t-tool">Read("src/services/userService.ts")</span>
+<span class="t-result">→ 62 lines, getUser(id) queries PostgreSQL</span>`,
+ annotation:'Pattern 2 (Read×N) — reading multiple related files to build a complete picture before acting. Thoroughness, not looping: each read is a new file, each provides new information. The agent is mapping the call chain: route → service → database.'},
+
+{phase:'Reason',phaseColor:'#a78bfa',phaseBg:'#1c1535',title:'Hypothesis formation',
+ trace:`<span class="t-think">thinking: Route handler calls userService.getUser(id).</span>
+<span class="t-think">The query could fail if connection pool is exhausted or</span>
+<span class="t-think">query throws. No error handling in route handler — not</span>
+<span class="t-think">catching promise rejection → 500.</span>
+<span class="t-think"></span>
+<span class="t-think">Let me check whether getUser throws for not-found vs</span>
+<span class="t-think">database unavailability...</span>`,
+ annotation:'This is the Reason phase producing a hypothesis: unhandled promise rejection in the route handler. Key observation: the agent identifies a specific mechanism (connection pool exhaustion) for the "intermittent" part. It then plans to verify before acting — correct behavior.'},
+
+{phase:'Perceive + Reason',phaseColor:'#a78bfa',phaseBg:'#1c1535',title:'Hypothesis verification',
+ trace:`<span class="t-tool">Read("src/services/userService.ts")</span> <span class="t-result">← focused re-read</span>
+<span class="t-think">thinking: getUser throws when database is unavailable —</span>
+<span class="t-think">doesn't catch connection errors. Route handler is async</span>
+<span class="t-think">with no try/catch, no .catch().</span>
+<span class="t-think"></span>
+<span class="t-think">Any database error = unhandled rejection = 500.</span>
+<span class="t-think">Intermittent because it only occurs under database load.</span>`,
+ annotation:'Re-reading the same file — but this time it\'s justified: the agent is looking for specific error behavior it wasn\'t focused on in the first read. This is thoroughness (focused re-read with new question), not looping (same question, no progress). The hypothesis is now confirmed with a root cause.'},
+
+{phase:'Act',phaseColor:'#f59e42',phaseBg:'#1a150a',title:'Apply the fix',
+ trace:`<span class="t-tool">Write("src/routes/users.ts", ...)</span>
+<span class="t-result">→ Added try/catch around userService.getUser()</span>
+<span class="t-result">→ 503 for database connection errors</span>
+<span class="t-result">→ 404 for user not found</span>`,
+ annotation:'Pattern 1 (Read → Think → Write) for the actual fix. Single file change, well-targeted. The agent chose appropriate HTTP status codes: 503 for infrastructure failure (database), 404 for missing resources. This differentiates between "something is broken" and "that user doesn\'t exist."'},
+
+{phase:'Observe',phaseColor:'#4ade80',phaseBg:'#0a1a14',title:'Verify the fix',
+ trace:`<span class="t-tool">Bash("npm test")</span>
+<span class="t-success">→ 31 passing, 0 failing</span>
+
+<span class="t-tool">Bash("npx tsc --noEmit")</span>
+<span class="t-success">→ no type errors</span>`,
+ annotation:'Pattern 4 (Act → Verify). The agent runs both tests and type checking after the fix. This is the Observe phase closing the PRAO loop. Tests pass and types check — the fix didn\'t break anything. Good discipline.'},
+
+{phase:'Response',phaseColor:'#5ba4f5',phaseBg:'#0a1525',title:'Summary and recommendation',
+ trace:`<span class="t-response">Fixed intermittent 500 errors on /api/users.</span>
+<span class="t-response"></span>
+<span class="t-response">Root cause: route handler had no error handling for</span>
+<span class="t-response">userService.getUser() — database connection failures</span>
+<span class="t-response">caused unhandled promise rejections → 500.</span>
+<span class="t-response"></span>
+<span class="t-response">Fix: added try/catch with:</span>
+<span class="t-response">  • 503 for database unavailability</span>
+<span class="t-response">  • 404 for user not found</span>
+<span class="t-response"></span>
+<span class="t-response">Tests pass. Recommend adding a specific test for the</span>
+<span class="t-response">database failure case.</span>`,
+ annotation:'The response matches the trace: root cause correctly identified, fix correctly described, and the agent proactively recommends additional test coverage. Your next step: review the actual diff, run tests yourself, and consider adding that database failure test. The trace reading confirms the agent\'s work is sound.'},
+];
+
+let idx=0;
+function render(){
+  const s=steps[idx];
+  let prog='';
+  steps.forEach((_,i)=>{prog+='<div class="prog-dot'+(i<idx?' done':i===idx?' current':'')+'"></div>'});
+  document.getElementById('progress').innerHTML=prog;
+
+  let h='<div class="step-card"><div class="step-header">';
+  h+='<span class="step-num" style="background:'+s.phaseBg+';color:'+s.phaseColor+'">'+(idx+1)+'</span>';
+  h+='<span class="step-phase" style="color:'+s.phaseColor+'">'+s.phase+'</span>';
+  h+='<span class="step-title">'+s.title+'</span></div>';
+  h+='<div class="step-body"><div class="trace">'+s.trace+'</div>';
+  h+='<div class="ann-toggle" id="toggle" onclick="toggleAnn()"><span class="ann-arrow" id="arrow">&#9654;</span> Show annotation</div>';
+  h+='<div class="annotation" id="ann" style="background:'+s.phaseBg+';border:1px solid '+s.phaseColor+'30">'+s.annotation+'</div>';
+  h+='</div></div>';
+  document.getElementById('stepArea').innerHTML=h;
+  document.getElementById('counter').textContent=(idx+1)+' / '+steps.length;
+  document.getElementById('prevBtn').disabled=idx===0;
+  document.getElementById('nextBtn').disabled=idx===steps.length-1;
+}
+
+function toggleAnn(){
+  const ann=document.getElementById('ann');
+  const toggle=document.getElementById('toggle');
+  const visible=ann.classList.toggle('visible');
+  toggle.classList.toggle('open',visible);
+  toggle.childNodes[1].textContent=visible?' Hide annotation':' Show annotation';
+}
+function next(){if(idx<steps.length-1){idx++;render()}}
+function prev(){if(idx>0){idx--;render()}}
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Extension Problem MCP Solves</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+
+.tabs{display:flex;gap:4px;margin-bottom:.5rem;background:#18181c;border-radius:12px;padding:4px}
+.tab{flex:1;padding:12px 10px;border:none;border-radius:10px;background:transparent;cursor:pointer;text-align:center;transition:all .3s;font-size:13px;font-weight:600;color:#555;font-family:'DM Sans',sans-serif}
+.tab.active{background:#1e1e24;color:#e8e6e1}
+
+.panel{display:none;animation:fadeUp .35s cubic-bezier(.22,1,.36,1)}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.pain-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.pain{padding:10px 14px;border-radius:8px;background:#1a0a0a;border:1px solid #401a1a;font-size:12px;color:#888;display:flex;gap:10px;align-items:flex-start;line-height:1.5}
+.pain-icon{color:#f87171;min-width:16px;font-size:12px;margin-top:1px}
+
+.std-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.std-item{padding:14px 16px;border-radius:10px;background:#0a1a14;border:1px solid #1a4030}
+.std-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#4ade80;margin-bottom:3px}
+.std-text{font-size:12px;color:#aaa;line-height:1.5}
+.std-method{font-family:'JetBrains Mono',monospace;font-size:11px;color:#4ade80;margin-top:4px}
+
+.analogy{padding:16px 20px;border-radius:12px;background:#141418;border:1px solid #222228;font-size:13px;color:#aaa;line-height:1.65;margin-bottom:14px}
+.analogy strong{color:#e8e6e1}
+
+.benefit-list{display:flex;flex-direction:column;gap:6px}
+.benefit{padding:10px 14px;border-radius:8px;background:#0a1a14;border:1px solid #1a4030;font-size:12px;color:#aaa;display:flex;gap:10px;align-items:flex-start;line-height:1.5}
+.benefit-icon{color:#4ade80;min-width:16px;font-size:12px;margin-top:1px}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>The extension problem MCP solves</h1>
+<div class="objective">
+  <span class="goal">Why MCP exists</span>
+  <span class="text">Before MCP, every agent integration was bespoke — custom prompts, custom parsing, custom error handling. MCP standardizes the protocol so capabilities are composable, auditable, and portable across any MCP-compatible client.</span>
+</div>
+<div class="instruct">&#9654; Switch between tabs to see the problem (without MCP) and the solution (with MCP).</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="show(0)">Without MCP</div>
+  <div class="tab" onclick="show(1)">With MCP</div>
+</div>
+
+<div class="panel active" id="p0">
+  <div class="pain-list">
+    <div class="pain"><span class="pain-icon">&#10007;</span>System prompt section describing the API surface in natural language</div>
+    <div class="pain"><span class="pain-icon">&#10007;</span>Agent generates HTTP requests as text; custom wrapper parses and executes them</div>
+    <div class="pain"><span class="pain-icon">&#10007;</span>Wrapper returns responses in a format the agent wasn't trained to parse</div>
+    <div class="pain"><span class="pain-icon">&#10007;</span>Ad hoc error handling — agent may retry incorrectly or silently ignore failures</div>
+    <div class="pain"><span class="pain-icon">&#10007;</span>Integration encoded in natural language that drifts as the API evolves</div>
+    <div class="pain"><span class="pain-icon">&#10007;</span>No other agent can reuse it — embedded in one system prompt</div>
+  </div>
+  <div class="analogy">Every integration is a <strong>custom cable</strong> — built for one device, unusable with any other. Each new system means starting from scratch: new prompts, new parsing, new error handling.</div>
+</div>
+
+<div class="panel" id="p1">
+  <div class="analogy"><strong>The USB-C analogy:</strong> MCP is to AI capabilities what USB-C is to hardware. One standard protocol — any MCP client connects to any MCP server. Capability author implements the server once; every compatible client gains access.</div>
+  <div class="std-grid">
+    <div class="std-item"><div class="std-label">Discovery</div><div class="std-text">Client learns what server provides</div><div class="std-method">tools/list, resources/list, prompts/list</div></div>
+    <div class="std-item"><div class="std-label">Invocation</div><div class="std-text">Client calls a capability</div><div class="std-method">tools/call, resources/read, prompts/get</div></div>
+    <div class="std-item"><div class="std-label">Schema</div><div class="std-text">Capabilities describe themselves</div><div class="std-method">JSON Schema for inputs, URIs for resources</div></div>
+    <div class="std-item"><div class="std-label">Transport</div><div class="std-text">How client and server communicate</div><div class="std-method">stdio (local), Streamable HTTP (remote)</div></div>
+  </div>
+  <div class="benefit-list">
+    <div class="benefit"><span class="benefit-icon">&#10003;</span><strong style="color:#e8e6e1">Composable:</strong> combine multiple MCP servers in one session — database + issue tracker + docs</div>
+    <div class="benefit"><span class="benefit-icon">&#10003;</span><strong style="color:#e8e6e1">Auditable:</strong> every tool call is a structured request with typed parameters, not free-text HTTP</div>
+    <div class="benefit"><span class="benefit-icon">&#10003;</span><strong style="color:#e8e6e1">Portable:</strong> same MCP server works with Claude Code, any compatible framework, any future client</div>
+  </div>
+</div>
+</div>
+
+<script>
+function show(i){
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));
+}
+</script>
+</body>
+</html>

@@ -40,7 +40,7 @@ Module 05 established the architecture of MCP -- the three primitives, the trans
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m06-design-predict" data-xp="8">
   <span class="ix-title">Predict Before You Learn</span>
   <p class="ix-predict-prompt">You are about to build an MCP server. Before writing any code, what design decisions do you think you need to make? Consider: how many domains should one server cover, how you decide what gets exposed as a Tool vs. a Resource vs. a Prompt, and how you handle credentials. What could go wrong if you skip this design step?</p>
-  <textarea class="ix-predict-input" placeholder="Write your reasoning -- what design decisions matter before implementation?"></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- what design decisions matter before implementation?"></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>
     <p>Three design decisions must come before any code: <strong>domain scope</strong> (one server per coherent domain -- not an omnibus server covering everything), <strong>primitive classification</strong> (systematically deciding Tool vs. Resource vs. Prompt for each capability), and <strong>authentication boundaries</strong> (minimum-privilege credentials scoped to the server's domain). The most common design mistake is "everything as Tools" -- exposing stable data as Tool calls when Resources would be more appropriate, or embedding prompt templates in tool descriptions when the Prompt primitive exists for exactly that purpose. Skipping the design step produces servers that technically work but that Claude uses poorly or inconsistently.</p>
@@ -52,23 +52,23 @@ Module 05 established the architecture of MCP -- the three primitives, the trans
 <div class="ix-diagram" data-component="entry-list" data-diagram-id="m06-server-boundaries">
   <span class="ix-title">MCP server domain boundaries</span>
   <div class="ix-entry" data-badge="include">
-    <span class="ix-entry-label">GitHub server</span>
+    <span class="ix-entry-title">GitHub server</span>
     <span class="ix-entry-detail">Repository operations, PR management, issue tracking -- one coherent domain with shared GitHub credentials</span>
   </div>
   <div class="ix-entry" data-badge="include">
-    <span class="ix-entry-label">Database server</span>
+    <span class="ix-entry-title">Database server</span>
     <span class="ix-entry-detail">Query execution, schema inspection, migration status -- single database system with scoped read/write credentials</span>
   </div>
   <div class="ix-entry" data-badge="include">
-    <span class="ix-entry-label">Slack server</span>
+    <span class="ix-entry-title">Slack server</span>
     <span class="ix-entry-detail">Message posting, channel listing, user lookup -- one communication platform with its own API token</span>
   </div>
   <div class="ix-entry" data-badge="exclude">
-    <span class="ix-entry-label">Infrastructure server</span>
+    <span class="ix-entry-title">Infrastructure server</span>
     <span class="ix-entry-detail">Talks to GitHub, runs database queries, posts to Slack, and manages AWS resources -- too many domains, all credentials co-located, compromise of one exposes all</span>
   </div>
   <div class="ix-entry" data-badge="exclude">
-    <span class="ix-entry-label">All-in-one agent server</span>
+    <span class="ix-entry-title">All-in-one agent server</span>
     <span class="ix-entry-detail">Exposes every external system the organization uses through one MCP endpoint -- tool selection degrades as count grows, no clear ownership, impossible to scope permissions</span>
   </div>
 </div>
@@ -114,15 +114,15 @@ Module 05 established the architecture of MCP -- the three primitives, the trans
 
 <div class="ix-diagram" data-component="click-cards" data-diagram-id="m06-auth-boundaries">
   <span class="ix-title">Authentication boundary examples</span>
-  <div class="ix-card" data-accent="#06b6d4">
+  <div class="ix-card" data-phase="act">
     <i data-lucide="eye" class="ix-card-icon"></i>
     <span class="ix-card-label">Read-Only Analytics</span>
   </div>
-  <div class="ix-card" data-accent="#6366f1">
+  <div class="ix-card" data-phase="reason">
     <i data-lucide="git-pull-request" class="ix-card-icon"></i>
     <span class="ix-card-label">PR Review Assistant</span>
   </div>
-  <div class="ix-card" data-accent="#10b981">
+  <div class="ix-card" data-phase="observe">
     <i data-lucide="list-checks" class="ix-card-icon"></i>
     <span class="ix-card-label">Issue Management</span>
   </div>
@@ -422,15 +422,15 @@ The tool schema -- name, description, and input specification -- is the interfac
 
 <div class="ix-diagram" data-component="click-cards" data-diagram-id="m06-schema-mistakes">
   <span class="ix-title">Common schema mistakes</span>
-  <div class="ix-card" data-accent="#94a3b8">
+  <div class="ix-card" data-phase="neutral">
     <i data-lucide="cloud-fog" class="ix-card-icon"></i>
     <span class="ix-card-label">Too Vague</span>
   </div>
-  <div class="ix-card" data-accent="#f59e0b">
+  <div class="ix-card" data-phase="perceive">
     <i data-lucide="alert-circle" class="ix-card-icon"></i>
     <span class="ix-card-label">Missing Constraints</span>
   </div>
-  <div class="ix-card" data-accent="#6366f1">
+  <div class="ix-card" data-phase="reason">
     <i data-lucide="toggle-left" class="ix-card-icon"></i>
     <span class="ix-card-label">Wrong Required Fields</span>
   </div>
@@ -498,6 +498,18 @@ The tool schema -- name, description, and input specification -- is the interfac
 </div>
 
 In Module 05, you learned that tool results flow back through the Observe phase of the Agentic Loop. Good error messages help Claude reason about failures -- retry, try alternatives, or report to the user. Poor error handling produces servers that crash silently or return confusing results.
+
+<p class="ix-instruct">Predict the handler behavior before comparing the reference implementation.</p>
+
+<div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m06-error-classification-predict" data-xp="8">
+  <span class="ix-title">Predict: Structured Error or Exception?</span>
+  <p class="ix-predict-prompt">Your <code>create_issue</code> tool receives an invalid assignee ID from the user request. Should the tool return <code>isError: true</code> with guidance, or throw an exception? Explain how Claude should recover.</p>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your decision and rationale..."></textarea>
+  <details class="ix-predict-reveal">
+    <summary>Reveal reference reasoning</summary>
+    <p>Return a structured error with <code>isError: true</code>. This is a recoverable input problem that Claude can act on by asking for a valid assignee or retrying with corrected arguments. Throw exceptions for server-side failures Claude cannot fix (missing credentials, infrastructure outage, internal defects). Use structured errors for caller-correctable issues; use exceptions for system failures.</p>
+  </details>
+</div>
 
 <p class="ix-instruct">Switch between tabs to compare three error handling patterns.</p>
 
@@ -663,15 +675,15 @@ A server that works in development differs from one that can be relied upon in p
 
 <div class="ix-diagram" data-component="click-cards" data-diagram-id="m06-production-checklist">
   <span class="ix-title">Production hardening checklist</span>
-  <div class="ix-card" data-accent="#f59e0b">
+  <div class="ix-card" data-phase="perceive">
     <i data-lucide="lock" class="ix-card-icon"></i>
     <span class="ix-card-label">Secrets</span>
   </div>
-  <div class="ix-card" data-accent="#06b6d4">
+  <div class="ix-card" data-phase="act">
     <i data-lucide="scroll" class="ix-card-icon"></i>
     <span class="ix-card-label">Logging</span>
   </div>
-  <div class="ix-card" data-accent="#10b981">
+  <div class="ix-card" data-phase="observe">
     <i data-lucide="tag" class="ix-card-icon"></i>
     <span class="ix-card-label">Versioning</span>
   </div>

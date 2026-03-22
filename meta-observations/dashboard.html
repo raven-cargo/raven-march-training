@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CC2 Meta-Observation Dashboard -- Agentic AI Course</title>
+<style>
+:root {
+  --bg: #0a0a0f;
+  --bg2: #12121a;
+  --bg3: #1a1a28;
+  --bg4: #222236;
+  --text: #e0e0e0;
+  --text2: #a0a0b0;
+  --text3: #707088;
+  --critical: #ff4444;
+  --high: #ff8c00;
+  --medium: #ffd700;
+  --low: #4CAF50;
+  --info: #64b5f6;
+  --accent: #bb86fc;
+  --success: #00e676;
+  --border: #2a2a40;
+  --radius: 8px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+a { color: var(--info); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Navigation */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  display: flex; gap: 4px;
+  overflow-x: auto;
+}
+.nav-btn {
+  background: none; border: none; color: var(--text2);
+  padding: 12px 16px; cursor: pointer; font-size: 13px;
+  white-space: nowrap; border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.nav-btn:hover { color: var(--text); background: var(--bg3); }
+.nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* Sections */
+.section { display: none; padding: 24px; max-width: 1400px; margin: 0 auto; }
+.section.active { display: block; }
+.section-title {
+  font-size: 22px; font-weight: 700; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-title .badge {
+  font-size: 12px; padding: 3px 10px; border-radius: 12px;
+  font-weight: 500;
+}
+
+/* Hero */
+.hero {
+  padding: 48px 24px;
+  text-align: center;
+  background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2a 50%, #0a1020 100%);
+  border-bottom: 1px solid var(--border);
+}
+.hero h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+.hero h1 span { color: var(--accent); }
+.hero .subtitle { color: var(--text2); font-size: 14px; margin-bottom: 32px; }
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px; max-width: 900px; margin: 0 auto;
+}
+.kpi-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px; text-align: center;
+}
+.kpi-value { font-size: 36px; font-weight: 700; }
+.kpi-label { font-size: 12px; color: var(--text2); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Tables */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { background: var(--bg3); text-align: left; padding: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; border-bottom: 2px solid var(--border); }
+td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:hover td { background: var(--bg3); }
+tr.clickable { cursor: pointer; }
+.expand-row { display: none; }
+.expand-row.open { display: table-row; }
+.expand-row td { background: var(--bg2); padding: 16px 24px; }
+
+/* Health bars */
+.health-bar { display: flex; align-items: center; gap: 8px; }
+.health-bar-track { flex: 1; height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; max-width: 100px; }
+.health-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+.health-bar-value { font-size: 13px; font-weight: 600; min-width: 36px; }
+
+/* Severity badges */
+.sev { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.sev-critical { background: rgba(255,68,68,0.15); color: var(--critical); }
+.sev-high { background: rgba(255,140,0,0.15); color: var(--high); }
+.sev-medium { background: rgba(255,215,0,0.15); color: var(--medium); }
+.sev-low { background: rgba(76,175,80,0.15); color: var(--low); }
+.sev-info { background: rgba(100,181,246,0.15); color: var(--info); }
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.tab-btn {
+  background: none; border: none; color: var(--text2);
+  padding: 10px 18px; cursor: pointer; font-size: 14px;
+  border-bottom: 2px solid transparent; transition: all 0.2s;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Cards */
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.card-title { font-weight: 600; font-size: 16px; }
+.card ul { margin-left: 20px; }
+.card li { margin-bottom: 6px; color: var(--text2); }
+
+/* Concept map */
+.concept-cluster {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 12px;
+}
+.cluster-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.cluster-name { font-weight: 600; color: var(--accent); }
+.cluster-modules { font-size: 12px; color: var(--text3); }
+.concept-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.concept-tag {
+  background: var(--bg3); border: 1px solid var(--border);
+  padding: 4px 12px; border-radius: 14px; font-size: 12px;
+}
+.concept-tag.orphaned { border-color: var(--critical); color: var(--critical); }
+.concept-tag.assumed { border-color: var(--high); color: var(--high); }
+
+/* Gap analysis */
+.gap-item {
+  display: flex; gap: 16px; padding: 16px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); margin-bottom: 12px;
+}
+.gap-priority {
+  writing-mode: vertical-lr; text-orientation: mixed;
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; padding: 8px 4px; border-radius: 4px;
+  text-align: center; min-width: 28px;
+}
+.gap-must { background: rgba(255,68,68,0.1); color: var(--critical); }
+.gap-should { background: rgba(255,140,0,0.1); color: var(--high); }
+.gap-nice { background: rgba(100,181,246,0.1); color: var(--info); }
+.gap-body { flex: 1; }
+.gap-title { font-weight: 600; margin-bottom: 4px; }
+.gap-desc { font-size: 13px; color: var(--text2); }
+
+/* Diagram assessment */
+.diagram-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+.diagram-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; text-align: center;
+}
+.diagram-card .module-num { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.diagram-card .count { font-size: 14px; color: var(--text2); }
+.diagram-card.has-diagrams { border-color: var(--success); }
+.diagram-card.no-diagrams { border-color: var(--border); opacity: 0.6; }
+
+/* Categorical */
+.functor-map {
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  gap: 0; align-items: center; margin-bottom: 16px;
+}
+.functor-domain, .functor-codomain {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px;
+}
+.functor-arrow {
+  font-size: 20px; color: var(--accent); padding: 0 20px;
+  display: flex; align-items: center; font-family: monospace;
+}
+.functor-title { font-weight: 600; margin-bottom: 8px; color: var(--accent); font-size: 13px; }
+.functor-items { font-size: 13px; color: var(--text2); }
+.functor-items div { padding: 3px 0; }
+
+/* Async */
+.async-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.async-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+.async-week { font-size: 20px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+
+/* Count badges */
+.count-badges { display: flex; gap: 8px; margin-left: auto; }
+.count-badge { display: flex; align-items: center; gap: 4px; font-size: 12px; padding: 4px 10px; border-radius: 12px; }
+
+/* Filter bar */
+.filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+.filter-bar label { font-size: 12px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+.filter-bar select {
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text); padding: 6px 12px; border-radius: var(--radius);
+  font-size: 13px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero h1 { font-size: 20px; }
+  .functor-map { grid-template-columns: 1fr; }
+  .functor-arrow { justify-content: center; transform: rotate(90deg); padding: 10px 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <h1><span>CC2</span> Meta-Observation Dashboard</h1>
+  <div class="subtitle">Agentic AI Course -- Clean Slate Analysis -- 2026-03-18 -- 7-Lens Council of Elders</div>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-value" style="color:var(--text)">34</div>
+      <div class="kpi-label">Total Issues</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value" style="color:var(--critical)">2</div>
+      <div class="kpi-label">Critical</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value" style="color:var(--info)">88%</div>
+      <div class="kpi-label">Concept Coverage</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value" style="color:var(--success)">82</div>
+      <div class="kpi-label">Health Score</div>
+    </div>
+  </div>
+</div>
+
+<!-- Navigation -->
+<nav class="nav">
+  <button class="nav-btn active" data-section="health">Module Health</button>
+  <button class="nav-btn" data-section="concepts">Concept Map</button>
+  <button class="nav-btn" data-section="lenses">Sample^7 Lenses</button>
+  <button class="nav-btn" data-section="issues">Issue Tracker</button>
+  <button class="nav-btn" data-section="categorical">Categorical Structure</button>
+  <button class="nav-btn" data-section="gaps">Gap Analysis</button>
+  <button class="nav-btn" data-section="async">Async Curriculum</button>
+  <button class="nav-btn" data-section="diagrams">Diagrams Assessment</button>
+</nav>
+
+<!-- Section 1: Module Health Matrix -->
+<div id="health" class="section active">
+  <div class="section-title">Module Health Matrix</div>
+  <div class="table-wrap">
+    <table id="health-table">
+      <thead>
+        <tr>
+          <th>Module</th>
+          <th>Title</th>
+          <th>Words</th>
+          <th>Interactive</th>
+          <th>Concepts</th>
+          <th>Cross-Refs</th>
+          <th>Diagrams</th>
+          <th>Health</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="clickable" data-expand="e01">
+          <td>01</td><td>The Paradigm Shift</td><td>8,202</td><td>20</td><td>12</td><td>8</td><td>4</td>
+          <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:88%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">88</span></div></td>
+        </tr>
+        <tr class="expand-row" id="e01"><td colspan="8">
+          <strong>Strengths:</strong> Excellent foundation-setting module. PRAO framework introduced with rich interactive components (5 predict-reveals, 3 agent-traces, 4 tabbed-panels). Strong scaffolding for the entire course.<br>
+          <strong>Concerns:</strong> No dedicated lab file maps directly to this module alone (lab-01 covers paradigm shift). Terminal-sim and agent-trace components make Day 1 opening highly engaging.<br>
+          <strong>Key Concepts:</strong> PRAO loop, Three Eras, Collaboration Patterns, Task Suitability, Autonomy Gradient
+        </td></tr>
+
+        <tr class="clickable" data-expand="e02">
+          <td>02</td><td>Claude Code Foundations</td><td>10,356</td><td>24</td><td>15</td><td>8</td><td>7</td>
+          <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:92%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">92</span></div></td>
+        </tr>
+        <tr class="expand-row" id="e02"><td colspan="8">
+          <strong>Strengths:</strong> Gold standard module. Highest interactive density (24 elements). Thorough coverage of modes, CLAUDE.md, permissions, MCP basics. SSE deprecation correctly handled. Excellent quiz design with scenario-based questions.<br>
+          <strong>Concerns:</strong> Web tools availability may vary by plan -- should note this. At 10,356 words, pacing needs attention for a Day 1 module.<br>
+          <strong>Key Concepts:</strong> Interactive/Non-interactive modes, CLAUDE.md hierarchy, settings.json permissions, MCP server configuration, Session vs Persistent context
+        </td></tr>
+
+        <tr class="clickable" data-expand="e03">
+          <td>03</td><td>Agent Thinking</td><td>10,412</td><td>23</td><td>11</td><td>9</td><td>4</td>
+          <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:90%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">90</span></div></td>
+        </tr>
+        <tr class="expand-row" id="e03"><td colspan="8">
+          <strong>Strengths:</strong> Uniquely effective agent-trace components with step-by-step annotations. Teaching trace reading through interactive replay is pedagogically innovative. PRAO mapping to trace layers is clear and well-executed.<br>
+          <strong>Concerns:</strong> Longest module (10,412 words) -- may need pacing breaks. Intervention decision exercises are excellent but could use more edge cases.<br>
+          <strong>Key Concepts:</strong> Three Output Layers, Chain-of-Thought, Intervention vs Hold, Extended Thinking, Tool Call Patterns
+        </td></tr>
+
+        <tr class="clickable" data-expand="e04">
+          <td>04</td><td>Prompt Engineering Depth</td><td>6,144</td><td>11</td><td>10</td><td>10</td><td>5</td>
+          <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:75%;background:var(--medium)"></div></div><span class="health-bar-value" style="color:var(--medium)">75</span></div></td>
+        </tr>
+        <tr class="expand-row" id="e04"><td colspan="8">
+          <strong>Strengths:</strong> TCEF framework is well-defined. GCCF-to-TCEF transition provides clear upgrade path. Good cross-references to Module 01 (PRAO as diagnostic lens).<br>
+          <strong>Concerns:</strong> Content depth cliff begins here -- 6,144 words is 41% less than M02. Interactive elements drop to 11 (54% less than M02). Needs more agent-trace examples showing TCEF in practice. Missing terminal-sim exercises.<br>
+          <strong>Key Concepts:</strong> GCCF baseline, TCEF framework, Context Injection, Constraint Specification, Diagnostic Iteration
+        </td></tr>
+
+        <tr class="clickable" data-expand="e05">
+          <td>05</td><td>MCP Architecture</td><td>4,938</td><td>12</td><td>9</td><td>8</td><td>4</td>
+          <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:80%;background:var(--low)"></div></div><span class="health-bar-value" style="color:var(--low)">80</span></div></td>
+        </tr>
+        <tr class="expand-row" id="e05"><td colspan="8">
+          <strong>Strengths:</strong> Three primitives clearly distinguished (Tools=verbs, Resources=nouns, Prompts=templates). Tool schema anatomy is excellent. USB-C analogy is effective. SSE deprecation handled correctly.<br>
+          <strong>Concerns:</strong> At 4,938 words, relatively thin for a foundational protocol module. Could use more real-world MCP server examples. No mention of Context7 (which is introduced later in M11).<br>
+          <strong>Key Concepts:</strong> Three Primitives, Tool Schemas, Transport mechanisms, Discovery/Invocation, MCP Handshake
+        </td></tr>
+
+        <tr class="clickable" data-expand="e06">
+          <td>06</td><td>Building MCP Servers</td><td>5,373</td><td>11</td><td>10</td><td>8</td><td>0</td>
+          <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:78%;background:var(--medium)"></div></div><span class="health-bar-value" style="color:var(--medium)">78</span></div></td>
+        </tr>
+        <tr class="expand-row" id="e06"><td colspan="8">
+          <strong>Strengths:</strong> Excellent primitive selection framework (decision tree). TypeScript SDK walkthrough is step-by-step. Schema quality comparison (vague vs effective) teaches by contrast. 15-tool threshold rule is practical.<br>
+          <strong>Concerns:</strong> No standalone HTML diagrams. Zod used without formal introduction. Error handling section could use more production examples. No terminal-sim for building a server live.<br>
+          <strong>Key Concepts:</strong> TypeScript SDK, Domain Boundaries, Primitive Selection, Schema Design, Error Handling (isError)
+        </td></tr>
+
+        <tr class="clickable" data-expand="e07">
+          <td>07</td><td>Skills and Commands</td><td>5,209</td><td>13</td><td>8</td><td>11</td><td>0</td>
+          <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:79%;background:var(--medium)"></div></div><span class="health-bar-value" style="color:var(--medium)">79</span></div></td>
+        </tr>
+        <tr class="expand-row" id="e07"><td colspan="8">
+          <strong>Strengths:</strong> "Senior Engineer on Day One" test is exemplary. TCEF applied to skill bodies creates strong Module 04 connection. triggers field correctly identified as LUXOR convention. Skill vs CLAUDE.md distinction is clear.<br>
+          <strong>Concerns:</strong> No standalone diagrams. Skill composition patterns could be more explicit. Highest cross-ref count (11) shows strong integration.<br>
+          <strong>Key Concepts:</strong> Skill Files, YAML Frontmatter, Slash Commands, Skill Composition, Persistence Problem
+        </td></tr>
+
+        <tr class="clickable" data-expand="e08">
+          <td>08</td><td>Meta-Prompting</td><td>4,267</td><td>10</td><td>7</td><td>5</td><td>0</td>
+          <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:73%;background:var(--medium)"></div></div><span class="health-bar-value" style="color:var(--medium)">73</span></div></td>
+        </tr>
+        <tr class="expand-row" id="e08"><td colspan="8">
+          <strong>Strengths:</strong> Clear three-application taxonomy (generate, evaluate, improve). Metaprogramming analogy is apt and well-developed. Generate-evaluate-improve loop is practically described.<br>
+          <strong>Concerns:</strong> Thinnest module at 4,267 words. Only 1 quiz. No terminal-sim or hands-on exercise. Students cannot practice meta-prompting within the module. Weakest compositional link to M09.<br>
+          <strong>Key Concepts:</strong> Meta-Prompting, Prompt Generation, Prompt Evaluation, GEI Loop, Bootstrapping Pattern
+        </td></tr>
+
+        <tr class="clickable" data-expand="e09">
+          <td>09</td><td>Multi-Agent Systems</td><td>5,757</td><td>12</td><td>10</td><td>6</td><td>0</td>
+          <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:80%;background:var(--low)"></div></div><span class="health-bar-value" style="color:var(--low)">80</span></div></td>
+        </tr>
+        <tr class="expand-row" id="e09"><td colspan="8">
+          <strong>Strengths:</strong> Four-question decision framework is excellent. "Start single-agent" principle is well-argued. Fan-out/fan-in trace with annotations is effective. Three decomposability conditions are crisp.<br>
+          <strong>Concerns:</strong> No standalone diagrams. Could use more concrete Claude Code examples (Task tool usage, agent team patterns). Costs of multi-agent are well-described but mitigation strategies are thin.<br>
+          <strong>Key Concepts:</strong> Single vs Multi-Agent Decision, Fan-Out/Fan-In, Pipeline, Conditional Routing, Task Decomposition
+        </td></tr>
+
+        <tr class="clickable" data-expand="e10">
+          <td>10</td><td>Security and Sandboxing</td><td>8,932</td><td>16</td><td>12</td><td>6</td><td>0</td>
+          <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:85%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">85</span></div></td>
+        </tr>
+        <tr class="expand-row" id="e10"><td colspan="8">
+          <strong>Strengths:</strong> Three risk categories (scope creep, secret exposure, prompt injection) are well-defined. Production-grade settings.json examples for 3 contexts. Permission evaluation tree is clear. Audit trail section is production-realistic.<br>
+          <strong>Concerns:</strong> No standalone diagrams. Prompt injection defenses are conceptual (trust hierarchy) without concrete code-level mitigations. Approval gate patterns could use more interactive exercises.<br>
+          <strong>Key Concepts:</strong> Scope Creep, Secret Exposure, Prompt Injection, Least Privilege, Permission Evaluation, Approval Gates
+        </td></tr>
+
+        <tr class="clickable" data-expand="e11">
+          <td>11</td><td>Tech Stack Adaptation</td><td>7,509</td><td>10</td><td>9</td><td>7</td><td>0</td>
+          <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:82%;background:var(--low)"></div></div><span class="health-bar-value" style="color:var(--low)">82</span></div></td>
+        </tr>
+        <tr class="expand-row" id="e11"><td colspan="8">
+          <strong>Strengths:</strong> Three adaptation gaps (documentation currency, convention encoding, context grounding) are precisely defined. Context7 pre-loading workflow is practical. Multi-stack CLAUDE.md examples are excellent.<br>
+          <strong>Concerns:</strong> Context7 introduced here with no prior mention in M05 (orphaned concept). No standalone diagrams. Deployment checklist section could use more interactive validation exercises.<br>
+          <strong>Key Concepts:</strong> Documentation Currency, Convention Encoding, Context Grounding, Context7, Stack CLAUDE.md, Deployment Checklist
+        </td></tr>
+
+        <tr class="clickable" data-expand="e12">
+          <td>12</td><td>Capstone and Production</td><td>11,138</td><td>15</td><td>14</td><td>45</td><td>0</td>
+          <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:84%;background:var(--low)"></div></div><span class="health-bar-value" style="color:var(--low)">84</span></div></td>
+        </tr>
+        <tr class="expand-row" id="e12"><td colspan="8">
+          <strong>Strengths:</strong> Masterful integration of all 11 prior modules (45 cross-references). Five pipeline components provide clear design framework. Three pipeline archetypes (chain, fan-out, router) are production-realistic. PR review trace ties everything together.<br>
+          <strong>Concerns:</strong> At 11,138 words on Day 3, pacing is a concern. No standalone diagrams. Minor back-reference inaccuracies ("Output contracts from Module 05" when M05 is MCP Architecture). No token cost coverage.<br>
+          <strong>Key Concepts:</strong> Pipeline Archetypes, Five Components, Deployment Checklist, Observability, Long-term Maintenance
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Section 2: Concept Map -->
+<div id="concepts" class="section">
+  <div class="section-title">Concept Map <span class="badge" style="background:var(--accent);color:#000">67 concepts</span></div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:24px;">
+    <div class="card" style="border-color:var(--critical)">
+      <div class="card-title" style="color:var(--critical)">Orphaned Concepts (Introduced, Never Reinforced)</div>
+      <div class="concept-tags" style="margin-top:10px">
+        <span class="concept-tag orphaned">Context7 (M11 only)</span>
+        <span class="concept-tag orphaned">Approval Gates (M10, missing from M12 exercises)</span>
+      </div>
+    </div>
+    <div class="card" style="border-color:var(--high)">
+      <div class="card-title" style="color:var(--high)">Assumed Concepts (Used Without Introduction)</div>
+      <div class="concept-tags" style="margin-top:10px">
+        <span class="concept-tag assumed">JSON Schema (M05-M06)</span>
+        <span class="concept-tag assumed">Zod (M06)</span>
+        <span class="concept-tag assumed">CI/CD Pipelines (M02, M10, M12)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title" style="font-size:18px;">Concept Clusters by Module</div>
+
+  <div class="concept-cluster">
+    <div class="cluster-header"><span class="cluster-name">Core Framework</span><span class="cluster-modules">M01</span></div>
+    <div class="concept-tags">
+      <span class="concept-tag">Agentic Loop (PRAO)</span>
+      <span class="concept-tag">Three Eras of AI Coding</span>
+      <span class="concept-tag">Collaboration Patterns</span>
+      <span class="concept-tag">Task Suitability Framework</span>
+      <span class="concept-tag">Autonomy Gradient</span>
+    </div>
+  </div>
+
+  <div class="concept-cluster">
+    <div class="cluster-header"><span class="cluster-name">Configuration and Environment</span><span class="cluster-modules">M02</span></div>
+    <div class="concept-tags">
+      <span class="concept-tag">CLAUDE.md</span>
+      <span class="concept-tag">settings.json</span>
+      <span class="concept-tag">Permissions Model</span>
+      <span class="concept-tag">Interactive vs Non-interactive Mode</span>
+      <span class="concept-tag">Session vs Persistent Context</span>
+    </div>
+  </div>
+
+  <div class="concept-cluster">
+    <div class="cluster-header"><span class="cluster-name">Agent Observation</span><span class="cluster-modules">M03</span></div>
+    <div class="concept-tags">
+      <span class="concept-tag">Three Output Layers</span>
+      <span class="concept-tag">Chain-of-Thought</span>
+      <span class="concept-tag">Intervention Decisions</span>
+      <span class="concept-tag">Extended Thinking</span>
+      <span class="concept-tag">Tool Call Patterns</span>
+    </div>
+  </div>
+
+  <div class="concept-cluster">
+    <div class="cluster-header"><span class="cluster-name">Prompt Engineering</span><span class="cluster-modules">M04</span></div>
+    <div class="concept-tags">
+      <span class="concept-tag">GCCF Pattern</span>
+      <span class="concept-tag">TCEF Framework</span>
+      <span class="concept-tag">Context Injection</span>
+      <span class="concept-tag">Constraint Specification</span>
+      <span class="concept-tag">Diagnostic Iteration</span>
+    </div>
+  </div>
+
+  <div class="concept-cluster">
+    <div class="cluster-header"><span class="cluster-name">MCP Protocol</span><span class="cluster-modules">M05 + M06</span></div>
+    <div class="concept-tags">
+      <span class="concept-tag">Three Primitives (T/R/P)</span>
+      <span class="concept-tag">Tool Schemas</span>
+      <span class="concept-tag">stdio / Streamable HTTP</span>
+      <span class="concept-tag">Discovery / Invocation</span>
+      <span class="concept-tag">TypeScript SDK</span>
+      <span class="concept-tag">Schema Design for LLMs</span>
+      <span class="concept-tag">Error Handling (isError)</span>
+    </div>
+  </div>
+
+  <div class="concept-cluster">
+    <div class="cluster-header"><span class="cluster-name">Knowledge Persistence</span><span class="cluster-modules">M07 + M08</span></div>
+    <div class="concept-tags">
+      <span class="concept-tag">Skill Files</span>
+      <span class="concept-tag">Slash Commands</span>
+      <span class="concept-tag">YAML Frontmatter</span>
+      <span class="concept-tag">Meta-Prompting</span>
+      <span class="concept-tag">GEI Loop</span>
+      <span class="concept-tag">Skill Template Libraries</span>
+    </div>
+  </div>
+
+  <div class="concept-cluster">
+    <div class="cluster-header"><span class="cluster-name">Multi-Agent and Security</span><span class="cluster-modules">M09 + M10</span></div>
+    <div class="concept-tags">
+      <span class="concept-tag">Single vs Multi-Agent</span>
+      <span class="concept-tag">Fan-Out/Fan-In</span>
+      <span class="concept-tag">Pipeline / Routing</span>
+      <span class="concept-tag">Scope Creep</span>
+      <span class="concept-tag">Prompt Injection</span>
+      <span class="concept-tag">Least Privilege</span>
+      <span class="concept-tag">Approval Gates</span>
+    </div>
+  </div>
+
+  <div class="concept-cluster">
+    <div class="cluster-header"><span class="cluster-name">Deployment and Integration</span><span class="cluster-modules">M11 + M12</span></div>
+    <div class="concept-tags">
+      <span class="concept-tag">Documentation Currency</span>
+      <span class="concept-tag">Convention Encoding</span>
+      <span class="concept-tag assumed">Context7</span>
+      <span class="concept-tag">Pipeline Archetypes</span>
+      <span class="concept-tag">Observability</span>
+      <span class="concept-tag">Long-term Maintenance</span>
+    </div>
+  </div>
+
+  <div class="section-title" style="font-size:18px;margin-top:24px;">Prerequisite Chain</div>
+  <div class="card">
+    <div style="font-family:monospace;font-size:13px;color:var(--text2);line-height:2;">
+      <div>M01 (PRAO) <span style="color:var(--accent)">--&gt;</span> M02 (CLAUDE.md, settings.json) <span style="color:var(--accent)">--&gt;</span> M03 (Trace Reading)</div>
+      <div style="margin-left:40px"><span style="color:var(--accent)">|</span></div>
+      <div style="margin-left:40px"><span style="color:var(--accent)">v</span></div>
+      <div>M04 (TCEF) <span style="color:var(--accent)">--&gt;</span> M05 (MCP Architecture) <span style="color:var(--accent)">--&gt;</span> M06 (MCP Building)</div>
+      <div style="margin-left:40px"><span style="color:var(--accent)">|</span></div>
+      <div style="margin-left:40px"><span style="color:var(--accent)">v</span></div>
+      <div>M07 (Skills) <span style="color:var(--accent)">--&gt;</span> M08 (Meta-Prompting) <span style="color:var(--high)">- - -&gt;</span> M09 (Multi-Agent) <span style="color:var(--critical)">[weak link]</span></div>
+      <div style="margin-left:40px"><span style="color:var(--accent)">|</span></div>
+      <div style="margin-left:40px"><span style="color:var(--accent)">v</span></div>
+      <div>M10 (Security) <span style="color:var(--accent)">--&gt;</span> M11 (Stack Adaptation) <span style="color:var(--accent)">--&gt;</span> M12 (Capstone)</div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 3: Sample^7 Lenses -->
+<div id="lenses" class="section">
+  <div class="section-title">Sample^7 -- Seven Expert Lenses</div>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="lens-architect">Senior Architect</button>
+    <button class="tab-btn" data-tab="lens-pedagogy">Pedagogical Expert</button>
+    <button class="tab-btn" data-tab="lens-accuracy">Accuracy Auditor</button>
+    <button class="tab-btn" data-tab="lens-production">Production Engineer</button>
+    <button class="tab-btn" data-tab="lens-editor">Content Editor</button>
+    <button class="tab-btn" data-tab="lens-ux">UX Designer</button>
+    <button class="tab-btn" data-tab="lens-categorical">Category Theorist</button>
+    <button class="tab-btn" data-tab="lens-synthesis">Synthesis</button>
+  </div>
+
+  <div id="lens-architect" class="tab-content active">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Senior Architect -- Score: 85/100</div><span class="sev sev-high">3 issues</span></div>
+      <ul>
+        <li>Strong spiral structure: PRAO (M01) threads through every subsequent module as organizing principle</li>
+        <li><strong style="color:var(--high)">Content depth cliff:</strong> M04-M09 average 5,281 words vs 9,657 for M01-M03 -- 45% thinner</li>
+        <li>Module 12 capstone has 45 cross-references, effectively synthesizing all prior modules</li>
+        <li>Missing: No explicit coverage of Claude SDK programmatic API for building production agents</li>
+        <li>The PRAO framework provides an excellent structural backbone -- every concept maps to a loop phase</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left:3px solid var(--high)">
+      <div class="card-title" style="color:var(--high)">ARCH-01: Content Depth Inconsistency (HIGH)</div>
+      <p style="color:var(--text2);margin-top:8px">Modules 04-09 average 5,281 words with 11.5 interactive elements, compared to 9,657 words and 22.3 elements for M01-M03. This creates a noticeable quality cliff after the strong opening three modules.</p>
+      <p style="color:var(--text);margin-top:8px"><strong>Recommendation:</strong> Expand M04-M09 to match the depth and interactive richness of M01-M03. Priority targets: M08 (4,267 words) and M04 (6,144 words).</p>
+    </div>
+  </div>
+
+  <div id="lens-pedagogy" class="tab-content">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Pedagogical Expert -- Score: 88/100</div><span class="sev sev-medium">3 issues</span></div>
+      <ul>
+        <li>Predict-before-explain pattern used consistently across all 12 modules -- exemplary practice</li>
+        <li>Every module opens with clear learning objectives via objective components</li>
+        <li>Deep Dive collapsibles provide optional depth without cognitive overload</li>
+        <li>Quiz questions align with Bloom's taxonomy (apply/analyze level, not just recall)</li>
+        <li>The "Senior Engineer on Day One" skill assessment heuristic (M07) is brilliant</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left:3px solid var(--high)">
+      <div class="card-title" style="color:var(--high)">PED-01: Interactive Density Drop (HIGH)</div>
+      <p style="color:var(--text2);margin-top:8px">M04-M09 average 11.5 interactive elements vs 22.3 for M01-M03. Students may disengage during the middle of the course precisely when concepts become more abstract.</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--medium)">
+      <div class="card-title" style="color:var(--medium)">PED-02: Insufficient Assessment in M08 (MEDIUM)</div>
+      <p style="color:var(--text2);margin-top:8px">Meta-Prompting has only 1 quiz -- insufficient formative assessment for a concept that requires practice to internalize.</p>
+    </div>
+  </div>
+
+  <div id="lens-accuracy" class="tab-content">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Accuracy Auditor -- Score: 95/100</div><span class="sev sev-low">3 issues</span></div>
+      <ul>
+        <li style="color:var(--success)"><strong>Zero violations</strong> of the 8 prohibited hallucinations (--thinking, --context, /memory, SSE-as-current, wrong primitive count, triggers activation, settings.json format, CLAUDE.md-as-command)</li>
+        <li>SSE correctly identified as deprecated in M02, M05, M11 with proper Streamable HTTP guidance</li>
+        <li>Three MCP primitives consistently and correctly stated throughout</li>
+        <li>triggers field correctly identified as LUXOR convention, not native Claude Code (M07, M11)</li>
+        <li>CLAUDE.md correctly described as read-at-session-start, not a command</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left:3px solid var(--critical)">
+      <div class="card-title" style="color:var(--critical)">ACC-01: Module 12 Back-Reference Inaccuracy (CRITICAL)</div>
+      <p style="color:var(--text2);margin-top:8px">M12 overview says "Output contracts from Module 05" and "Tool orchestration from Module 06". M05 is actually MCP Architecture and M06 is Building MCP Servers. While related, these descriptions do not precisely match module content.</p>
+      <p style="color:var(--text);margin-top:8px"><strong>Recommendation:</strong> Audit all 45 cross-references in M12 for precision.</p>
+    </div>
+  </div>
+
+  <div id="lens-production" class="tab-content">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Production Engineer -- Score: 80/100</div><span class="sev sev-critical">1 critical</span></div>
+      <ul>
+        <li>M10 security coverage is strong and production-realistic</li>
+        <li>Permission configurations for three deployment contexts are practical</li>
+        <li>M12 pipeline archetypes map to real production patterns</li>
+        <li style="color:var(--critical)"><strong>Missing:</strong> No coverage of token economics, cost management, or context budgeting</li>
+        <li>Observability guidance is conceptual without concrete tool recommendations</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left:3px solid var(--critical)">
+      <div class="card-title" style="color:var(--critical)">PROD-01: No Token Economics Coverage (CRITICAL)</div>
+      <p style="color:var(--text2);margin-top:8px">No module covers cost per API call, context window limits, strategies for staying within budget, or cost monitoring. This is the #1 question senior engineers and managers will ask.</p>
+      <p style="color:var(--text);margin-top:8px"><strong>Recommendation:</strong> Add a dedicated section in M02 or M12 covering token costs, context budgeting, and cost monitoring dashboards.</p>
+    </div>
+  </div>
+
+  <div id="lens-editor" class="tab-content">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Content Editor -- Score: 87/100</div><span class="sev sev-medium">2 issues</span></div>
+      <ul>
+        <li>Consistent professional voice across all 12 modules -- second person, direct address</li>
+        <li>Terminology consistency: PRAO, TCEF, Agentic Loop used uniformly</li>
+        <li>Module transitions are smooth with clear connections to prior concepts</li>
+        <li>Jargon introduced before use in every observed case</li>
+        <li>Minor dash convention inconsistency in subtitles (-- vs em-dash)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="lens-ux" class="tab-content">
+    <div class="card">
+      <div class="card-header"><div class="card-title">UX Designer -- Score: 78/100</div><span class="sev sev-high">1 high, 2 medium</span></div>
+      <ul>
+        <li>Component variety is excellent: 12+ distinct interactive component types</li>
+        <li>Hero sections with chip tags provide immediate topic scannability</li>
+        <li>Agent-trace with annotations is uniquely effective for trace reading (M03)</li>
+        <li style="color:var(--high)"><strong>Diagram gap:</strong> HTML diagrams exist only for M01-M05. Modules 06-12 have zero standalone diagrams.</li>
+        <li>M04 has lowest interactive density per word (1.8 elements per 1000 words)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="lens-categorical" class="tab-content">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Category Theorist -- Score: 75/100</div><span class="sev sev-medium">3 issues</span></div>
+      <ul>
+        <li>PRAO loop acts as a natural endofunctor: P-&gt;R-&gt;A-&gt;O-&gt;P providing compositional structure</li>
+        <li>Modules compose sequentially as a chain category: M_n outputs become M_{n+1} inputs</li>
+        <li>TCEF framework is a clear functor from Task category to Prompt category</li>
+        <li>Module 12 acts as a colimit -- the universal cone over all prior module objects</li>
+        <li style="color:var(--high)"><strong>Composition break:</strong> M08-&gt;M09 link is the weakest -- meta-prompting does not feed directly into multi-agent</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left:3px solid var(--accent)">
+      <div class="card-title" style="color:var(--accent)">CAT-01: Broken Functorial Mapping M08 -&gt; M09</div>
+      <p style="color:var(--text2);margin-top:8px">The composition from meta-prompting to multi-agent systems is the weakest link. Meta-prompted skills could naturally feed into multi-agent orchestrators (generating skill files for specialized sub-agents), but this connection is not made explicit.</p>
+    </div>
+  </div>
+
+  <div id="lens-synthesis" class="tab-content">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Cross-Lens Synthesis</div></div>
+      <div style="margin-top:12px">
+        <h4 style="color:var(--accent);margin-bottom:8px;">Pattern 1: The Content Cliff</h4>
+        <p style="color:var(--text2);margin-bottom:16px">All seven lenses converge on the same finding: Modules 01-03 are substantially more developed than Modules 04-09. The Architect sees it as content depth, the Pedagogue as engagement risk, the UX Designer as interactive density, and the Category Theorist as compositional weakness. This is the single most impactful improvement area.</p>
+
+        <h4 style="color:var(--accent);margin-bottom:8px;">Pattern 2: Production Readiness Gap</h4>
+        <p style="color:var(--text2);margin-bottom:16px">The Production Engineer and Architect agree: token economics, observability tooling, and concrete prompt injection defenses are missing. The course teaches excellent conceptual patterns but needs more production-actionable content in the later modules.</p>
+
+        <h4 style="color:var(--accent);margin-bottom:8px;">Pattern 3: Accuracy is Excellent</h4>
+        <p style="color:var(--text2);margin-bottom:16px">Zero hallucination violations across 88,237 total words and 12 modules is remarkable. The content team has clearly enforced the zero-tolerance accuracy rules. The only accuracy issue is a minor back-reference mapping error in M12.</p>
+
+        <h4 style="color:var(--accent);margin-bottom:8px;">Pattern 4: Diagram Coverage Drops</h4>
+        <p style="color:var(--text2)">UX and Architect lenses note that standalone HTML diagrams exist for M01-M05 (24 diagrams total) but none for M06-M12. This likely reflects the build-out sequence -- early modules received full visual treatment while later modules are still pending.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 4: Issue Tracker -->
+<div id="issues" class="section">
+  <div class="section-title">Issue Tracker <span class="badge" style="background:var(--bg3);color:var(--text2)">34 issues</span></div>
+
+  <div class="filter-bar">
+    <label>Severity:</label>
+    <select id="filter-severity">
+      <option value="all">All</option>
+      <option value="critical">Critical (2)</option>
+      <option value="high">High (8)</option>
+      <option value="medium">Medium (14)</option>
+      <option value="low">Low (10)</option>
+    </select>
+    <label>Module:</label>
+    <select id="filter-module">
+      <option value="all">All Modules</option>
+      <option value="01">M01</option><option value="02">M02</option><option value="03">M03</option>
+      <option value="04">M04</option><option value="05">M05</option><option value="06">M06</option>
+      <option value="07">M07</option><option value="08">M08</option><option value="09">M09</option>
+      <option value="10">M10</option><option value="11">M11</option><option value="12">M12</option>
+      <option value="cross">Cross-module</option>
+    </select>
+    <label>Lens:</label>
+    <select id="filter-lens">
+      <option value="all">All Lenses</option>
+      <option value="architect">Architect</option>
+      <option value="pedagogy">Pedagogy</option>
+      <option value="accuracy">Accuracy</option>
+      <option value="production">Production</option>
+      <option value="editor">Editor</option>
+      <option value="ux">UX</option>
+      <option value="categorical">Categorical</option>
+    </select>
+    <div class="count-badges">
+      <span class="count-badge sev-critical">2 Critical</span>
+      <span class="count-badge sev-high">8 High</span>
+      <span class="count-badge sev-medium">14 Med</span>
+      <span class="count-badge sev-low">10 Low</span>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table id="issue-table">
+      <thead>
+        <tr><th>ID</th><th>Severity</th><th>Module</th><th>Lens</th><th>Description</th><th>Recommendation</th></tr>
+      </thead>
+      <tbody>
+        <tr data-severity="critical" data-module="cross" data-lens="production"><td>PROD-01</td><td><span class="sev sev-critical">Critical</span></td><td>All</td><td>Production</td><td>No module covers token economics: cost per API call, context window limits, budget strategies</td><td>Add dedicated section in M02 or M12</td></tr>
+        <tr data-severity="critical" data-module="12" data-lens="accuracy"><td>ACC-01</td><td><span class="sev sev-critical">Critical</span></td><td>M12</td><td>Accuracy</td><td>M12 back-references inaccurate: "Output contracts from Module 05" but M05 is MCP Architecture</td><td>Audit all 45 cross-references in M12</td></tr>
+        <tr data-severity="high" data-module="04" data-lens="architect"><td>ARCH-01</td><td><span class="sev sev-high">High</span></td><td>M04-09</td><td>Architect</td><td>Content depth cliff: M04-09 avg 5,281 words vs 9,657 for M01-03</td><td>Expand M04-M09 to M01-M03 depth</td></tr>
+        <tr data-severity="high" data-module="04" data-lens="pedagogy"><td>PED-01</td><td><span class="sev sev-high">High</span></td><td>M04-09</td><td>Pedagogy</td><td>Interactive density drops: avg 11.5 (M04-09) vs 22.3 (M01-03)</td><td>Add agent-trace, terminal-sim components</td></tr>
+        <tr data-severity="high" data-module="12" data-lens="production"><td>PROD-02</td><td><span class="sev sev-high">High</span></td><td>M12</td><td>Production</td><td>Observability lacks concrete tooling (OTel, tracing IDs, cost dashboards)</td><td>Expand with concrete tool recommendations</td></tr>
+        <tr data-severity="high" data-module="06" data-lens="ux"><td>UX-01</td><td><span class="sev sev-high">High</span></td><td>M06-12</td><td>UX</td><td>Zero standalone HTML diagrams for M06-M12 (24 exist for M01-M05)</td><td>Create diagrams for M06-M12</td></tr>
+        <tr data-severity="high" data-module="08" data-lens="categorical"><td>CAT-01</td><td><span class="sev sev-high">High</span></td><td>M08-09</td><td>Categorical</td><td>Weakest compositional link: meta-prompting does not feed into multi-agent</td><td>Add bridge: meta-prompts generate sub-agent skills</td></tr>
+        <tr data-severity="high" data-module="cross" data-lens="architect"><td>ARCH-02</td><td><span class="sev sev-high">High</span></td><td>All</td><td>Architect</td><td>No explicit module on Claude SDK programmatic API</td><td>Add SDK coverage to M09 or M12</td></tr>
+        <tr data-severity="high" data-module="04" data-lens="ux"><td>UX-02</td><td><span class="sev sev-high">High</span></td><td>M04</td><td>UX</td><td>Lowest interactive density per word (1.8/1000w)</td><td>Add interactive components</td></tr>
+        <tr data-severity="high" data-module="08" data-lens="architect"><td>ARCH-03</td><td><span class="sev sev-high">High</span></td><td>M08</td><td>Architect</td><td>Thinnest module (4,267 words) covering complex topic</td><td>Expand with examples and exercises</td></tr>
+        <tr data-severity="medium" data-module="08" data-lens="pedagogy"><td>PED-02</td><td><span class="sev sev-medium">Medium</span></td><td>M08</td><td>Pedagogy</td><td>Only 1 quiz -- insufficient formative assessment</td><td>Add 2+ quiz checkpoints</td></tr>
+        <tr data-severity="medium" data-module="12" data-lens="pedagogy"><td>PED-03</td><td><span class="sev sev-medium">Medium</span></td><td>M12</td><td>Pedagogy</td><td>11,138 words on Day 3 may overwhelm. No pacing guidance</td><td>Add time estimates per section</td></tr>
+        <tr data-severity="medium" data-module="02" data-lens="accuracy"><td>ACC-02</td><td><span class="sev sev-medium">Medium</span></td><td>M02</td><td>Accuracy</td><td>Web tools may not be available in all configurations</td><td>Add availability note</td></tr>
+        <tr data-severity="medium" data-module="10" data-lens="production"><td>PROD-03</td><td><span class="sev sev-medium">Medium</span></td><td>M10</td><td>Production</td><td>Prompt injection defenses conceptual without code examples</td><td>Add code-level mitigation examples</td></tr>
+        <tr data-severity="medium" data-module="04" data-lens="editor"><td>EDIT-01</td><td><span class="sev sev-medium">Medium</span></td><td>M04</td><td>Editor</td><td>GCCF-to-TCEF transition could be clearer</td><td>Add explicit upgrade framing</td></tr>
+        <tr data-severity="medium" data-module="08" data-lens="ux"><td>UX-03</td><td><span class="sev sev-medium">Medium</span></td><td>M08</td><td>UX</td><td>No terminal-sim or hands-on exercise in M08</td><td>Add interactive meta-prompt builder</td></tr>
+        <tr data-severity="medium" data-module="cross" data-lens="categorical"><td>CAT-02</td><td><span class="sev sev-medium">Medium</span></td><td>All</td><td>Categorical</td><td>No monoidal structure for skill composition</td><td>Add composition operators to M07</td></tr>
+        <tr data-severity="medium" data-module="cross" data-lens="editor"><td>EDIT-03</td><td><span class="sev sev-medium">Medium</span></td><td>All</td><td>Editor</td><td>Dash convention inconsistency in subtitles</td><td>Standardize to one convention</td></tr>
+        <tr data-severity="medium" data-module="06" data-lens="accuracy"><td>ACC-03a</td><td><span class="sev sev-medium">Medium</span></td><td>M06</td><td>Accuracy</td><td>Zod used without formal introduction</td><td>Add brief Zod introduction</td></tr>
+        <tr data-severity="medium" data-module="cross" data-lens="accuracy"><td>ACC-04</td><td><span class="sev sev-medium">Medium</span></td><td>M05-06</td><td>Accuracy</td><td>JSON Schema used without formal introduction</td><td>Add JSON Schema primer or link</td></tr>
+        <tr data-severity="medium" data-module="cross" data-lens="accuracy"><td>ACC-05</td><td><span class="sev sev-medium">Medium</span></td><td>M02,10,12</td><td>Accuracy</td><td>CI/CD pipelines concept assumed</td><td>Add brief CI/CD context</td></tr>
+        <tr data-severity="medium" data-module="11" data-lens="categorical"><td>CAT-03</td><td><span class="sev sev-medium">Medium</span></td><td>M11</td><td>Categorical</td><td>Context7 orphaned: introduced M11, no prior mention</td><td>Add Context7 mention in M05</td></tr>
+        <tr data-severity="medium" data-module="09" data-lens="production"><td>PROD-04</td><td><span class="sev sev-medium">Medium</span></td><td>M09</td><td>Production</td><td>Multi-agent examples lack Claude Code syntax</td><td>Add Task tool and agent team examples</td></tr>
+        <tr data-severity="medium" data-module="10" data-lens="ux"><td>UX-04</td><td><span class="sev sev-medium">Medium</span></td><td>M10</td><td>UX</td><td>Approval gates need more interactive exercises</td><td>Add scenario-based practice</td></tr>
+        <tr data-severity="low" data-module="12" data-lens="editor"><td>EDIT-02</td><td><span class="sev sev-low">Low</span></td><td>M12</td><td>Editor</td><td>Back-reference text should say "MCP architecture"</td><td>Fix reference text</td></tr>
+        <tr data-severity="low" data-module="06" data-lens="accuracy"><td>ACC-03</td><td><span class="sev sev-low">Low</span></td><td>M06</td><td>Accuracy</td><td>ESM .js extension may confuse newcomers</td><td>Add brief note</td></tr>
+        <tr data-severity="low" data-module="08" data-lens="architect"><td>ARCH-04</td><td><span class="sev sev-low">Low</span></td><td>M08</td><td>Architect</td><td>Meta-prompting limits could address adversarial risks</td><td>Add adversarial meta-prompting note</td></tr>
+        <tr data-severity="low" data-module="01" data-lens="pedagogy"><td>PED-04</td><td><span class="sev sev-low">Low</span></td><td>M01</td><td>Pedagogy</td><td>No explicit time estimate for classroom delivery</td><td>Add 60-90 min estimate</td></tr>
+        <tr data-severity="low" data-module="07" data-lens="ux"><td>UX-05</td><td><span class="sev sev-low">Low</span></td><td>M07</td><td>UX</td><td>Skill file examples could use syntax highlighting hints</td><td>Add language hints for YAML</td></tr>
+        <tr data-severity="low" data-module="11" data-lens="production"><td>PROD-05</td><td><span class="sev sev-low">Low</span></td><td>M11</td><td>Production</td><td>Deployment checklist missing rollback procedures</td><td>Add rollback section</td></tr>
+        <tr data-severity="low" data-module="03" data-lens="pedagogy"><td>PED-05</td><td><span class="sev sev-low">Low</span></td><td>M03</td><td>Pedagogy</td><td>10,412 words may be long -- pacing breaks recommended</td><td>Add section dividers with time</td></tr>
+        <tr data-severity="low" data-module="05" data-lens="ux"><td>UX-06</td><td><span class="sev sev-low">Low</span></td><td>M05</td><td>UX</td><td>USB-C analogy could include visual comparison</td><td>Add visual diagram</td></tr>
+        <tr data-severity="low" data-module="09" data-lens="editor"><td>EDIT-04</td><td><span class="sev sev-low">Low</span></td><td>M09</td><td>Editor</td><td>Coordination overhead could be more precisely quantified</td><td>Add benchmark data</td></tr>
+        <tr data-severity="low" data-module="02" data-lens="production"><td>PROD-06</td><td><span class="sev sev-low">Low</span></td><td>M02</td><td>Production</td><td>No real-world large-scale CLAUDE.md example shown</td><td>Add link or excerpt</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Section 5: Categorical Structure -->
+<div id="categorical" class="section">
+  <div class="section-title">Categorical Structure Map</div>
+
+  <div class="card">
+    <div class="card-title" style="color:var(--accent)">Endofunctor: The PRAO Loop</div>
+    <p style="color:var(--text2);margin:12px 0">The Agentic Loop (PRAO) acts as an endofunctor on the category of Agent States. It maps each state to a successor state through four natural transformations: Perceive, Reason, Act, Observe. Every module's interactive exercises compose with this functor.</p>
+    <div style="text-align:center;padding:20px;font-family:monospace;font-size:16px;color:var(--accent)">
+      AgentState <span style="color:var(--text3)">--PRAO--&gt;</span> AgentState <span style="color:var(--text3)">--PRAO--&gt;</span> AgentState <span style="color:var(--text3)">--PRAO--&gt;</span> ...
+    </div>
+  </div>
+
+  <div class="section-title" style="font-size:18px;margin-top:20px;">Functorial Mappings</div>
+
+  <div class="functor-map">
+    <div class="functor-domain">
+      <div class="functor-title">Category: Tasks</div>
+      <div class="functor-items">
+        <div>Bug fix request</div>
+        <div>Code review request</div>
+        <div>Feature implementation</div>
+        <div>Security audit</div>
+      </div>
+    </div>
+    <div class="functor-arrow">F(TCEF) --&gt;</div>
+    <div class="functor-codomain">
+      <div class="functor-title">Category: Prompts</div>
+      <div class="functor-items">
+        <div>TCEF bug-fix prompt</div>
+        <div>TCEF review prompt</div>
+        <div>TCEF feature prompt</div>
+        <div>TCEF security prompt</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="functor-map">
+    <div class="functor-domain">
+      <div class="functor-title">Category: Concepts</div>
+      <div class="functor-items">
+        <div>PRAO theory (M01)</div>
+        <div>TCEF theory (M04)</div>
+        <div>MCP architecture (M05)</div>
+        <div>Security principles (M10)</div>
+      </div>
+    </div>
+    <div class="functor-arrow">eta --&gt;</div>
+    <div class="functor-codomain">
+      <div class="functor-title">Category: Practice</div>
+      <div class="functor-items">
+        <div>Trace reading lab (M03)</div>
+        <div>Prompt engineering lab (M04)</div>
+        <div>MCP server build (M06)</div>
+        <div>Permission config lab (M10)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="functor-map">
+    <div class="functor-domain">
+      <div class="functor-title">Category: Modules</div>
+      <div class="functor-items">
+        <div>M01 -&gt; M02 -&gt; ... -&gt; M12</div>
+        <div style="color:var(--text3)">(Chain category)</div>
+      </div>
+    </div>
+    <div class="functor-arrow">colim --&gt;</div>
+    <div class="functor-codomain">
+      <div class="functor-title">Colimit: M12 Capstone</div>
+      <div class="functor-items">
+        <div>Universal cone over all modules</div>
+        <div>45 morphisms (cross-refs)</div>
+        <div style="color:var(--text3)">Integrates all concept clusters</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;border-color:var(--high)">
+    <div class="card-title" style="color:var(--high)">Composition Failure: M08 -&gt; M09</div>
+    <p style="color:var(--text2);margin-top:8px">The morphism from Meta-Prompting to Multi-Agent Systems is the weakest in the chain. Meta-prompted skill files are natural inputs to multi-agent orchestrators (generating specialized sub-agent configurations), but this compositional relationship is not made explicit in the curriculum. This breaks the otherwise clean functorial structure of the module sequence.</p>
+  </div>
+</div>
+
+<!-- Section 6: Gap Analysis -->
+<div id="gaps" class="section">
+  <div class="section-title">Gap Analysis</div>
+
+  <div class="gap-item">
+    <div class="gap-priority gap-must">MUST</div>
+    <div class="gap-body">
+      <div class="gap-title">Token Economics and Cost Management</div>
+      <div class="gap-desc">No module covers API call costs, context window limits, budget strategies, or cost monitoring. Every production deployment requires this knowledge. A senior architect would expect this in M02 (foundations) or M12 (production). Estimated effort: 1 new section (1,500-2,000 words).</div>
+    </div>
+  </div>
+
+  <div class="gap-item">
+    <div class="gap-priority gap-must">MUST</div>
+    <div class="gap-body">
+      <div class="gap-title">Expand Modules 04-09 Content Depth</div>
+      <div class="gap-desc">The content cliff between M01-M03 (avg 9,657 words, 22.3 interactive elements) and M04-M09 (avg 5,281 words, 11.5 elements) will be noticeable to students. Priority targets: M08 (4,267 words), M04 (6,144 words), M05 (4,938 words). Estimated effort: 15,000-20,000 additional words across 6 modules.</div>
+    </div>
+  </div>
+
+  <div class="gap-item">
+    <div class="gap-priority gap-should">SHOULD</div>
+    <div class="gap-body">
+      <div class="gap-title">HTML Diagrams for Modules 06-12</div>
+      <div class="gap-desc">24 standalone HTML diagrams exist for M01-M05 (era-diagram, collaboration-model, m02-*, m03-*, m04-*, m05-*). Zero exist for M06-M12. Visual learning support drops entirely in the second half. Estimated effort: 20-28 diagram HTML files.</div>
+    </div>
+  </div>
+
+  <div class="gap-item">
+    <div class="gap-priority gap-should">SHOULD</div>
+    <div class="gap-body">
+      <div class="gap-title">Concrete Prompt Injection Defense Code</div>
+      <div class="gap-desc">Module 10 covers prompt injection conceptually (trust hierarchy, CLAUDE.md directives) but lacks concrete code-level defenses: input sanitization, output validation, sandboxed execution contexts. A senior security engineer would expect working examples.</div>
+    </div>
+  </div>
+
+  <div class="gap-item">
+    <div class="gap-priority gap-should">SHOULD</div>
+    <div class="gap-body">
+      <div class="gap-title">M08 to M09 Compositional Bridge</div>
+      <div class="gap-desc">Add a section showing how meta-prompted skill files feed into multi-agent orchestrators. Example: use meta-prompting to generate four specialized review skills, then orchestrate them with fan-out/fan-in from M09. Closes the weakest link in the module chain.</div>
+    </div>
+  </div>
+
+  <div class="gap-item">
+    <div class="gap-priority gap-should">SHOULD</div>
+    <div class="gap-body">
+      <div class="gap-title">Claude SDK Programmatic API Coverage</div>
+      <div class="gap-desc">The course teaches Claude Code CLI extensively but does not cover the programmatic Claude SDK for building agent applications. Production multi-agent systems often use the SDK, not CLI orchestration. This gap means students can use agents but cannot build agent systems.</div>
+    </div>
+  </div>
+
+  <div class="gap-item">
+    <div class="gap-priority gap-nice">NICE</div>
+    <div class="gap-body">
+      <div class="gap-title">Context7 Early Introduction</div>
+      <div class="gap-desc">Context7 appears only in M11 but would benefit from a brief mention in M05 (MCP Architecture) as a real-world MCP server example. This removes it from the orphaned concept list.</div>
+    </div>
+  </div>
+
+  <div class="gap-item">
+    <div class="gap-priority gap-nice">NICE</div>
+    <div class="gap-body">
+      <div class="gap-title">JSON Schema and Zod Prerequisites</div>
+      <div class="gap-desc">Both are used extensively in M05-M06 without formal introduction. A brief "Prerequisites" callout or link to resources would help students unfamiliar with these technologies.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 7: Async Curriculum -->
+<div id="async" class="section">
+  <div class="section-title">Async Curriculum Integration</div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title">Bridge Curriculum Assessment</div>
+    <p style="color:var(--text2);margin-top:8px">The Async Bridge Curriculum (4 weeks, 32 hours) bridges Phase 1 (2-day live) to Phase 2. It follows strong design principles: real codebase work, progressive artifact building, consolidation before advancement, and explicit unlock moments.</p>
+  </div>
+
+  <div class="async-grid">
+    <div class="async-card">
+      <div class="async-week">Week 1: Consolidation</div>
+      <p style="color:var(--text2)">Solidifies M01-M04 concepts. Production CLAUDE.md, internalized TCEF. 7 hours.</p>
+      <p style="color:var(--low);margin-top:8px;font-size:13px">Coverage: Strong overlap with M01-M04. Reinforcement, not new content.</p>
+    </div>
+    <div class="async-card">
+      <div class="async-week">Week 2: MCP Integration</div>
+      <p style="color:var(--text2)">Working MCP server against real API. 7.75 hours.</p>
+      <p style="color:var(--low);margin-top:8px;font-size:13px">Coverage: Extends M05-M06. Gap filled: hands-on MCP building.</p>
+    </div>
+    <div class="async-card">
+      <div class="async-week">Week 3: System Thinking</div>
+      <p style="color:var(--text2)">Multi-agent workflow mapping. 8.75 hours.</p>
+      <p style="color:var(--low);margin-top:8px;font-size:13px">Coverage: Extends M09. Gap filled: real workflow decomposition practice.</p>
+    </div>
+    <div class="async-card">
+      <div class="async-week">Week 4: Phase 2 Prep</div>
+      <p style="color:var(--text2)">Production spec document. 8.5 hours.</p>
+      <p style="color:var(--low);margin-top:8px;font-size:13px">Coverage: Extends M12. Gap filled: spec-driven development practice.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <div class="card-title">Content Overlap Analysis</div>
+    <div style="margin-top:12px">
+      <table>
+        <thead><tr><th>Module</th><th>Phase 1 Coverage</th><th>Bridge Fills</th><th>Gap Status</th></tr></thead>
+        <tbody>
+          <tr><td>M01-M03</td><td>Deep</td><td>Reinforced through practice</td><td style="color:var(--success)">Covered</td></tr>
+          <tr><td>M04 TCEF</td><td>Deep</td><td>Extended to real codebase</td><td style="color:var(--success)">Covered</td></tr>
+          <tr><td>M05-M06 MCP</td><td>Partial</td><td>Full coverage in Week 2</td><td style="color:var(--success)">Filled</td></tr>
+          <tr><td>M07-M08</td><td>Moderate</td><td>Extended in Weeks 1-2</td><td style="color:var(--low)">Mostly filled</td></tr>
+          <tr><td>M09 Multi-Agent</td><td>Light</td><td>Week 3 deep coverage</td><td style="color:var(--success)">Filled</td></tr>
+          <tr><td>M10 Security</td><td>Partial</td><td>Implicit in all weeks</td><td style="color:var(--medium)">Partially filled</td></tr>
+          <tr><td>M11-M12</td><td>Light</td><td>Week 4 capstone prep</td><td style="color:var(--low)">Mostly filled</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Section 8: Diagrams Assessment -->
+<div id="diagrams" class="section">
+  <div class="section-title">Module Diagrams Assessment</div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title">Coverage Summary</div>
+    <p style="color:var(--text2);margin-top:8px">24 standalone HTML diagrams exist in <code style="color:var(--accent)">examples/module-diagrams/</code>. All cover Modules 01-05. Modules 06-12 have zero standalone diagrams. The diagrams use HTML/CSS/JS for interactive visualizations with no external dependencies.</p>
+  </div>
+
+  <div class="diagram-grid">
+    <div class="diagram-card has-diagrams">
+      <div class="module-num" style="color:var(--success)">M01</div>
+      <div class="count">4 diagrams</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px">era-diagram, collaboration-model, disorientation-sim, claude-md-evolution</div>
+    </div>
+    <div class="diagram-card has-diagrams">
+      <div class="module-num" style="color:var(--success)">M02</div>
+      <div class="count">7 diagrams</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px">modes-v2, claudemd-v2, permissions-v2, mcp-v2, output-v2, patterns, setup</div>
+    </div>
+    <div class="diagram-card has-diagrams">
+      <div class="module-num" style="color:var(--success)">M03</div>
+      <div class="count">4 diagrams</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px">layers, looping, exercise, questions</div>
+    </div>
+    <div class="diagram-card has-diagrams">
+      <div class="module-num" style="color:var(--success)">M04</div>
+      <div class="count">5 diagrams</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px">gccf, tcef, constraints, context, iteration</div>
+    </div>
+    <div class="diagram-card has-diagrams">
+      <div class="module-num" style="color:var(--success)">M05</div>
+      <div class="count">4 diagrams</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px">problem, primitives, schemas, transport</div>
+    </div>
+    <div class="diagram-card no-diagrams"><div class="module-num">M06</div><div class="count" style="color:var(--critical)">0 diagrams</div></div>
+    <div class="diagram-card no-diagrams"><div class="module-num">M07</div><div class="count" style="color:var(--critical)">0 diagrams</div></div>
+    <div class="diagram-card no-diagrams"><div class="module-num">M08</div><div class="count" style="color:var(--critical)">0 diagrams</div></div>
+    <div class="diagram-card no-diagrams"><div class="module-num">M09</div><div class="count" style="color:var(--critical)">0 diagrams</div></div>
+    <div class="diagram-card no-diagrams"><div class="module-num">M10</div><div class="count" style="color:var(--critical)">0 diagrams</div></div>
+    <div class="diagram-card no-diagrams"><div class="module-num">M11</div><div class="count" style="color:var(--critical)">0 diagrams</div></div>
+    <div class="diagram-card no-diagrams"><div class="module-num">M12</div><div class="count" style="color:var(--critical)">0 diagrams</div></div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <div class="card-title">Recommended Diagrams for M06-M12</div>
+    <table style="margin-top:12px">
+      <thead><tr><th>Module</th><th>Recommended Diagrams</th><th>Priority</th></tr></thead>
+      <tbody>
+        <tr><td>M06</td><td>SDK architecture, primitive implementation flow, error handling patterns</td><td><span class="sev sev-high">High</span></td></tr>
+        <tr><td>M07</td><td>Skill file anatomy, skill loading sequence, composition patterns</td><td><span class="sev sev-high">High</span></td></tr>
+        <tr><td>M08</td><td>GEI loop visualization, meta-prompt template anatomy</td><td><span class="sev sev-medium">Medium</span></td></tr>
+        <tr><td>M09</td><td>Fan-out/fan-in architecture, pipeline vs router, decomposition decision</td><td><span class="sev sev-high">High</span></td></tr>
+        <tr><td>M10</td><td>Permission evaluation flow, threat surface map, approval gate sequence</td><td><span class="sev sev-high">High</span></td></tr>
+        <tr><td>M11</td><td>Adaptation gap visualization, Context7 workflow, stack encoding template</td><td><span class="sev sev-medium">Medium</span></td></tr>
+        <tr><td>M12</td><td>Pipeline archetype comparison, PRAO complete cycle, deployment checklist</td><td><span class="sev sev-high">High</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+// Navigation
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.section).classList.add('active');
+    window.scrollTo({ top: document.querySelector('.nav').offsetTop, behavior: 'smooth' });
+  });
+});
+
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tabGroup = btn.parentElement;
+    tabGroup.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    // Find sibling tab-content elements
+    const parent = tabGroup.parentElement;
+    parent.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    const target = document.getElementById(btn.dataset.tab);
+    if (target) target.classList.add('active');
+  });
+});
+
+// Expandable table rows
+document.querySelectorAll('.clickable').forEach(row => {
+  row.addEventListener('click', () => {
+    const target = document.getElementById(row.dataset.expand);
+    if (target) target.classList.toggle('open');
+  });
+});
+
+// Issue filtering
+function filterIssues() {
+  const sev = document.getElementById('filter-severity').value;
+  const mod = document.getElementById('filter-module').value;
+  const lens = document.getElementById('filter-lens').value;
+  document.querySelectorAll('#issue-table tbody tr').forEach(row => {
+    const matchSev = sev === 'all' || row.dataset.severity === sev;
+    const matchMod = mod === 'all' || row.dataset.module === mod || (mod === 'cross' && row.dataset.module === 'cross');
+    const matchLens = lens === 'all' || row.dataset.lens === lens;
+    row.style.display = (matchSev && matchMod && matchLens) ? '' : 'none';
+  });
+}
+document.getElementById('filter-severity').addEventListener('change', filterIssues);
+document.getElementById('filter-module').addEventListener('change', filterIssues);
+document.getElementById('filter-lens').addEventListener('change', filterIssues);
+</script>
+
+</body>
+</html>

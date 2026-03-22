@@ -1,0 +1,251 @@
+{
+  "timestamp": "2026-03-18T12:00:00Z",
+  "overall_health": 82,
+  "total_issues": 34,
+  "critical_issues": 2,
+  "modules": {
+    "01": { "words": 8202, "interactive_elements": 20, "concept_density": 12, "cross_refs": 8, "health": 88, "diagram_count": 4 },
+    "02": { "words": 10356, "interactive_elements": 24, "concept_density": 15, "cross_refs": 8, "health": 92, "diagram_count": 7 },
+    "03": { "words": 10412, "interactive_elements": 23, "concept_density": 11, "cross_refs": 9, "health": 90, "diagram_count": 4 },
+    "04": { "words": 6144, "interactive_elements": 11, "concept_density": 10, "cross_refs": 10, "health": 75, "diagram_count": 5 },
+    "05": { "words": 4938, "interactive_elements": 12, "concept_density": 9, "cross_refs": 8, "health": 80, "diagram_count": 4 },
+    "06": { "words": 5373, "interactive_elements": 11, "concept_density": 10, "cross_refs": 8, "health": 78, "diagram_count": 0 },
+    "07": { "words": 5209, "interactive_elements": 13, "concept_density": 8, "cross_refs": 11, "health": 79, "diagram_count": 0 },
+    "08": { "words": 4267, "interactive_elements": 10, "concept_density": 7, "cross_refs": 5, "health": 73, "diagram_count": 0 },
+    "09": { "words": 5757, "interactive_elements": 12, "concept_density": 10, "cross_refs": 6, "health": 80, "diagram_count": 0 },
+    "10": { "words": 8932, "interactive_elements": 16, "concept_density": 12, "cross_refs": 6, "health": 85, "diagram_count": 0 },
+    "11": { "words": 7509, "interactive_elements": 10, "concept_density": 9, "cross_refs": 7, "health": 82, "diagram_count": 0 },
+    "12": { "words": 11138, "interactive_elements": 15, "concept_density": 14, "cross_refs": 45, "health": 84, "diagram_count": 0 }
+  },
+  "lenses": {
+    "architect": {
+      "score": 85,
+      "findings": [
+        "Strong spiral structure: M01 PRAO -> M03 Trace Reading -> M04 TCEF -> M07 Skills -> M12 Capstone forms a coherent learning arc",
+        "Modules 04-09 show a content depth cliff (6144-5757 words vs 8202-10412 for M01-M03), suggesting incomplete build-out",
+        "Module 12 capstone effectively synthesizes all prior modules with explicit back-references (45 cross-refs)",
+        "Missing: No module explicitly covers Claude SDK/API integration (programmatic multi-agent), though M09 covers conceptual patterns",
+        "The PRAO framework provides excellent structural backbone across all modules"
+      ],
+      "top_issues": [
+        { "id": "ARCH-01", "severity": "high", "module": "04-09", "description": "Modules 04-09 average 5,281 words vs 9,657 for M01-M03 — content depth inconsistency suggests incomplete development", "recommendation": "Expand M04-M09 to match the depth and interactive richness of M01-M03" },
+        { "id": "ARCH-02", "severity": "medium", "module": "all", "description": "No explicit module on Claude SDK programmatic API (claude.ai SDK, agent builder patterns)", "recommendation": "Consider adding SDK coverage to M09 or M12, or a dedicated module" },
+        { "id": "ARCH-03", "severity": "low", "module": "08", "description": "Module 08 (Meta-Prompting) at 4,267 words is the thinnest module, yet covers a complex topic", "recommendation": "Expand with more concrete meta-prompting examples and evaluation exercises" }
+      ]
+    },
+    "pedagogy": {
+      "score": 88,
+      "findings": [
+        "Predict-before-explain pattern used consistently across all 12 modules — excellent pedagogical practice",
+        "Every module opens with clear learning objectives via ix-diagram objective components",
+        "Deep Dive collapsibles provide optional depth without cognitive overload — well-designed progressive disclosure",
+        "Quiz questions align with learning objectives and use Bloom's taxonomy (apply/analyze level, not just recall)",
+        "The 'Senior Engineer on Day One' test in M07 is an exemplary skill assessment heuristic"
+      ],
+      "top_issues": [
+        { "id": "PED-01", "severity": "high", "module": "04-09", "description": "Interactive element density drops significantly in M04-M09 (avg 11.5 elements vs 22.3 for M01-M03). Students may disengage.", "recommendation": "Add more agent-trace, terminal-sim, and intervention components to maintain engagement" },
+        { "id": "PED-02", "severity": "medium", "module": "08", "description": "Module 08 has only 1 quiz with limited question count — insufficient formative assessment for meta-prompting concepts", "recommendation": "Add at least 2 more quiz checkpoints and a hands-on meta-prompt evaluation exercise" },
+        { "id": "PED-03", "severity": "medium", "module": "12", "description": "Capstone module is content-heavy (11,138 words) but may overwhelm on Day 3 of intensive. No pacing guidance.", "recommendation": "Add explicit time estimates per section and consider splitting into design + execution phases" }
+      ]
+    },
+    "accuracy": {
+      "score": 95,
+      "findings": [
+        "Zero violations of the 8 prohibited hallucinations (--thinking, --context, /memory, SSE-as-current, wrong primitive count, triggers activation)",
+        "SSE correctly identified as deprecated in M02, M05, M11 with proper Streamable HTTP guidance",
+        "Three MCP primitives (Tools, Resources, Prompts) consistently and correctly stated",
+        "triggers field in skill YAML correctly identified as LUXOR convention, not native Claude Code feature (M07, M11)",
+        "CLAUDE.md correctly described as read-at-session-start, not a command (M02, M07, M12)"
+      ],
+      "top_issues": [
+        { "id": "ACC-01", "severity": "critical", "module": "12", "description": "Module 12 refers to 'Output contracts from Module 05' and 'Tool orchestration from Module 06' — but M05 covers MCP Architecture and M06 covers Building MCP Servers. The mental mapping is slightly misleading.", "recommendation": "Verify each back-reference in M12 precisely matches the module's actual content focus" },
+        { "id": "ACC-02", "severity": "medium", "module": "02", "description": "M02 references four tool categories (Files, Bash, Web, MCP) — Web tools (WebSearch, WebFetch) may not be available in all Claude Code configurations", "recommendation": "Add a note that Web tools availability depends on the Claude Code plan/configuration" },
+        { "id": "ACC-03", "severity": "low", "module": "06", "description": "MCP TypeScript SDK import paths use .js extensions (e.g., server/mcp.js) which is correct for ESM but may confuse TypeScript newcomers", "recommendation": "Add a brief note explaining ESM .js extension convention in TypeScript" }
+      ]
+    },
+    "production": {
+      "score": 80,
+      "findings": [
+        "Module 10 security coverage is strong: scope creep, secret exposure, prompt injection all addressed with concrete settings.json examples",
+        "Permission configurations for three deployment contexts (dev, read-only, CI) are production-realistic",
+        "Module 06 error handling covers isError flag pattern and timeout strategies",
+        "Module 12 pipeline archetypes (simple chain, fan-out, conditional router) map to real production patterns",
+        "Missing: No coverage of token cost management, rate limiting, or context window budgeting"
+      ],
+      "top_issues": [
+        { "id": "PROD-01", "severity": "critical", "module": "all", "description": "No module covers token economics: cost per API call, context window limits, strategies for staying within budget. Senior engineers will ask about this.", "recommendation": "Add a section in M02 or M12 covering token costs, context budgeting, and cost monitoring" },
+        { "id": "PROD-02", "severity": "high", "module": "12", "description": "Observability section mentions structured logging but does not cover OpenTelemetry integration, tracing correlation IDs, or cost dashboards", "recommendation": "Expand observability guidance with concrete tool recommendations" },
+        { "id": "PROD-03", "severity": "medium", "module": "10", "description": "Prompt injection defenses are conceptual (trust hierarchy) without concrete code-level mitigations (input sanitization, output validation)", "recommendation": "Add concrete code examples for prompt injection defense patterns" }
+      ]
+    },
+    "editor": {
+      "score": 87,
+      "findings": [
+        "Consistent voice across all 12 modules: professional, direct, second-person address",
+        "Terminology is consistent: PRAO, TCEF, Agentic Loop used uniformly with the same definitions",
+        "Module transitions are smooth — each module opens by connecting to prior concepts",
+        "Double-dash (--) used consistently instead of em-dash across all modules",
+        "Jargon is introduced before use in every case observed"
+      ],
+      "top_issues": [
+        { "id": "EDIT-01", "severity": "medium", "module": "04", "description": "Module 04 title says 'Prompt Engineering Depth' but the module refers to both GCCF and TCEF frameworks — the transition from GCCF to TCEF could be clearer", "recommendation": "Add explicit framing: 'GCCF is the baseline you already know; TCEF is the upgrade this module teaches'" },
+        { "id": "EDIT-02", "severity": "low", "module": "12", "description": "Module 12 overview paragraph has a minor factual mapping error: says 'Output contracts from Module 05' but M05 is MCP Architecture, not output contracts specifically", "recommendation": "Fix to 'MCP architecture and primitives from Module 05'" },
+        { "id": "EDIT-03", "severity": "low", "module": "01-12", "description": "Some modules use 'Agentic AI Engineering — 3-Day Intensive Course' and others use 'Agentic AI Engineering -- 3-Day Intensive Course' (em-dash vs double-dash inconsistency in subtitle)", "recommendation": "Standardize to one dash convention throughout" }
+      ]
+    },
+    "ux": {
+      "score": 78,
+      "findings": [
+        "Component variety is excellent: 12+ distinct interactive component types used across the course",
+        "Hero sections with chip tags provide immediate module topic scannability",
+        "Click-cards and tabbed-panels enable self-paced exploration without forced linear reading",
+        "Agent-trace components with annotations are uniquely effective for teaching trace reading (M03)",
+        "Module diagrams exist for M02-M05 but not M06-M12 — visual support drops sharply"
+      ],
+      "top_issues": [
+        { "id": "UX-01", "severity": "high", "module": "06-12", "description": "Zero standalone HTML diagrams exist for Modules 06-12. The examples/module-diagrams/ directory only covers M02-M05.", "recommendation": "Create diagrams for M06-M12 to maintain consistent visual learning support" },
+        { "id": "UX-02", "severity": "medium", "module": "04", "description": "Module 04 has the fewest interactive elements per word (11 elements / 6144 words = 1.8/1000w) vs M02 (24/10356 = 2.3/1000w)", "recommendation": "Add more interactive components, especially agent-trace examples showing TCEF in action" },
+        { "id": "UX-03", "severity": "medium", "module": "08", "description": "Module 08 (Meta-Prompting) lacks a terminal-sim or hands-on code block exercise — students have no chance to try meta-prompting", "recommendation": "Add an interactive meta-prompt builder exercise" }
+      ]
+    },
+    "categorical": {
+      "score": 75,
+      "findings": [
+        "The PRAO loop acts as a natural endofunctor: P->R->A->O->P, providing compositional structure for every module",
+        "Modules compose sequentially: M_n outputs (concepts, skills) become M_{n+1} inputs, forming a chain category",
+        "The TCEF framework is a clear functor from the category of tasks to the category of prompts",
+        "Natural transformation from theory to practice is visible: each concept has a corresponding interactive exercise",
+        "Module 12 acts as a colimit — the universal cone over all prior module objects"
+      ],
+      "top_issues": [
+        { "id": "CAT-01", "severity": "medium", "module": "08-09", "description": "The composition M08->M09 is weakest: meta-prompting (M08) does not feed directly into multi-agent systems (M09). The functorial mapping breaks.", "recommendation": "Add a bridge section showing how meta-prompting generates skill files used by multi-agent orchestrators" },
+        { "id": "CAT-02", "severity": "medium", "module": "all", "description": "No explicit monoidal structure for combining skills. Skills are introduced (M07) but skill composition/combination operators are not formalized.", "recommendation": "Add skill composition patterns (sequential, parallel, conditional) to M07 or M09" },
+        { "id": "CAT-03", "severity": "low", "module": "all", "description": "The concept prerequisite graph has a single orphaned concept: 'Context7' introduced in M11 with no prior mention in M02 or M05 where MCP servers are covered", "recommendation": "Add a brief Context7 mention in M05 when discussing MCP server examples" }
+      ]
+    }
+  },
+  "concept_map": {
+    "total_concepts": 67,
+    "orphaned": [
+      "Context7 (introduced M11, never mentioned earlier)",
+      "Approval gates (introduced M10, not reinforced in M12 capstone exercises)"
+    ],
+    "assumed": [
+      "JSON Schema (used in M05-M06 without formal introduction)",
+      "Zod (used in M06 SDK examples without introduction)",
+      "CI/CD pipelines (referenced in M02, M10, M12 but never explained)"
+    ],
+    "clusters": [
+      {
+        "name": "Core Framework",
+        "concepts": ["Agentic Loop (PRAO)", "Three Eras of AI Coding", "Collaboration Patterns", "Task Suitability Framework", "Autonomy Gradient"],
+        "modules": ["01"]
+      },
+      {
+        "name": "Configuration & Environment",
+        "concepts": ["CLAUDE.md", "settings.json", "Permissions Model", "Interactive vs Non-interactive Mode", "Session vs Persistent Context"],
+        "modules": ["02"]
+      },
+      {
+        "name": "Agent Observation",
+        "concepts": ["Three Output Layers", "Chain-of-Thought", "Intervention Decisions", "Extended Thinking", "Tool Call Patterns"],
+        "modules": ["03"]
+      },
+      {
+        "name": "Prompt Engineering",
+        "concepts": ["GCCF Pattern", "TCEF Framework", "Context Injection", "Constraint Specification", "Diagnostic Iteration"],
+        "modules": ["04"]
+      },
+      {
+        "name": "MCP Protocol",
+        "concepts": ["Three Primitives (Tools/Resources/Prompts)", "Tool Schemas", "Transport (stdio/Streamable HTTP)", "Discovery/Invocation", "Connection Handshake"],
+        "modules": ["05", "06"]
+      },
+      {
+        "name": "MCP Implementation",
+        "concepts": ["TypeScript SDK", "Zod Schema", "Error Handling (isError)", "Server Domain Boundaries", "Schema Design for LLMs"],
+        "modules": ["06"]
+      },
+      {
+        "name": "Knowledge Persistence",
+        "concepts": ["Skill Files", "Slash Commands", "YAML Frontmatter", "Skill Composition", "Skill vs Prompt Decision"],
+        "modules": ["07"]
+      },
+      {
+        "name": "Meta-Level Engineering",
+        "concepts": ["Meta-Prompting", "Prompt Generation", "Prompt Evaluation", "Generate-Evaluate-Improve Loop", "Skill Template Libraries"],
+        "modules": ["08"]
+      },
+      {
+        "name": "Multi-Agent",
+        "concepts": ["Single vs Multi-Agent Decision", "Fan-Out/Fan-In", "Pipeline Pattern", "Conditional Routing", "Task Decomposition"],
+        "modules": ["09"]
+      },
+      {
+        "name": "Security",
+        "concepts": ["Scope Creep", "Secret Exposure", "Prompt Injection", "Least Privilege", "Approval Gates", "Audit Trails"],
+        "modules": ["10"]
+      },
+      {
+        "name": "Deployment",
+        "concepts": ["Documentation Currency", "Convention Encoding", "Context Grounding", "Context7", "Stack CLAUDE.md"],
+        "modules": ["11"]
+      },
+      {
+        "name": "Integration",
+        "concepts": ["Pipeline Archetypes", "Five Pipeline Components", "Deployment Checklist", "Observability", "Long-term Maintenance"],
+        "modules": ["12"]
+      }
+    ]
+  },
+  "recommendations": [
+    {
+      "priority": "must-have",
+      "description": "Expand Modules 04-09 to match M01-M03 depth and interactive density",
+      "effort": "high",
+      "impact": "Eliminates the content cliff in the middle of the course"
+    },
+    {
+      "priority": "must-have",
+      "description": "Add token economics coverage (cost management, context budgeting)",
+      "effort": "medium",
+      "impact": "Addresses the #1 question senior engineers will ask"
+    },
+    {
+      "priority": "should-have",
+      "description": "Create HTML diagrams for Modules 06-12",
+      "effort": "high",
+      "impact": "Maintains visual learning support consistency across the entire course"
+    },
+    {
+      "priority": "should-have",
+      "description": "Strengthen M08->M09 compositional bridge",
+      "effort": "low",
+      "impact": "Improves learning flow through the most disconnected transition"
+    },
+    {
+      "priority": "should-have",
+      "description": "Add concrete prompt injection defense code examples to M10",
+      "effort": "medium",
+      "impact": "Makes security module production-actionable"
+    },
+    {
+      "priority": "nice-to-have",
+      "description": "Mention Context7 earlier in M05 MCP examples",
+      "effort": "low",
+      "impact": "Removes orphaned concept, creates smoother M05->M11 connection"
+    },
+    {
+      "priority": "nice-to-have",
+      "description": "Add Claude SDK/API programmatic integration coverage",
+      "effort": "high",
+      "impact": "Closes the gap between CLI usage and production deployment"
+    },
+    {
+      "priority": "nice-to-have",
+      "description": "Standardize dash convention (-- vs em-dash) in module subtitles",
+      "effort": "low",
+      "impact": "Polish and consistency"
+    }
+  ]
+}

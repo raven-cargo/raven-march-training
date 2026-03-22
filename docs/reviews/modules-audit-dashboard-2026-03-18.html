@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modules Audit Dashboard - 2026-03-18</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b1220;
+      --bg-soft: #111a2d;
+      --bg-card: #17233b;
+      --text: #e7eefc;
+      --muted: #a8b5cf;
+      --line: #2a3a5c;
+      --critical: #ef4444;
+      --high: #f59e0b;
+      --medium: #38bdf8;
+      --ok: #22c55e;
+      --accent: #7dd3fc;
+      --shadow: 0 10px 32px rgba(0, 0, 0, 0.32);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 700px at 8% -10%, rgba(56, 189, 248, 0.18), transparent 55%),
+        radial-gradient(1000px 600px at 96% -10%, rgba(245, 158, 11, 0.15), transparent 52%),
+        var(--bg);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 28px 20px 52px;
+    }
+
+    .hero {
+      background: linear-gradient(140deg, rgba(125, 211, 252, 0.14), rgba(245, 158, 11, 0.12));
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(1.35rem, 2.2vw, 1.9rem);
+      line-height: 1.2;
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      max-width: 860px;
+      line-height: 1.5;
+    }
+
+    .chips {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      color: var(--muted);
+      background: rgba(23, 35, 59, 0.7);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .kpi {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .kpi .label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .kpi .value {
+      font-size: 1.45rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .kpi .sub {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .panel {
+      margin-top: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 1.02rem;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    select {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--bg-soft);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 13px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      padding: 9px 8px;
+      vertical-align: top;
+    }
+
+    th { color: var(--muted); font-weight: 600; }
+
+    .sev {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .sev-critical { color: var(--critical); }
+    .sev-high { color: var(--high); }
+    .sev-medium { color: var(--medium); }
+
+    .mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: 170px 1fr;
+      gap: 10px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .bar-track {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--bg-soft);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #38bdf8, #22c55e);
+    }
+
+    .legend {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      display: inline-block;
+      margin-right: 4px;
+    }
+
+    .dot-red { background: var(--critical); }
+    .dot-amber { background: var(--high); }
+    .dot-cyan { background: var(--medium); }
+
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .lane {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--bg-soft);
+      padding: 10px;
+    }
+
+    .lane h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+    }
+
+    .lane ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .source-list {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    a { color: var(--accent); }
+
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .roadmap { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      .grid { grid-template-columns: 1fr; }
+      .metric-row { grid-template-columns: 1fr; }
+      table { font-size: 12px; }
+      th:nth-child(4), td:nth-child(4) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <h1>Interactive Modules Audit Dashboard</h1>
+      <p>
+        Multi-lens review of Modules 01-12 across pedagogy, accessibility, runtime integrity, and factual consistency.
+        This dashboard mirrors the detailed markdown audit and is intended for triage and execution planning.
+      </p>
+      <div class="chips">
+        <span class="chip">Date: 2026-03-18</span>
+        <span class="chip">Scope: /module/01 to /module/12</span>
+        <span class="chip">Specs: Framework + Runtime + Primary docs</span>
+      </div>
+    </section>
+
+    <section class="grid" aria-label="Summary KPIs">
+      <article class="kpi">
+        <div class="label">Total Findings</div>
+        <div class="value" id="kpi-findings">10</div>
+        <div class="sub">Prioritized defects affecting quality or outcomes</div>
+      </article>
+      <article class="kpi">
+        <div class="label">Critical</div>
+        <div class="value" id="kpi-critical" style="color: var(--critical);">1</div>
+        <div class="sub">Core route failure impacting challenge track access</div>
+      </article>
+      <article class="kpi">
+        <div class="label">High</div>
+        <div class="value" id="kpi-high" style="color: var(--high);">5</div>
+        <div class="sub">State loss, accessibility, and factual drift risks</div>
+      </article>
+      <article class="kpi">
+        <div class="label">Interactive Surface</div>
+        <div class="value">404</div>
+        <div class="sub">Total interactive components across 12 modules</div>
+      </article>
+    </section>
+
+    <section class="panel" aria-labelledby="findings-title">
+      <h2 id="findings-title">Defect Register</h2>
+      <div class="controls" role="group" aria-label="Defect filters">
+        <label>
+          <span class="mono">severity</span>
+          <select id="sev-filter">
+            <option value="all">all</option>
+            <option value="critical">critical</option>
+            <option value="high">high</option>
+            <option value="medium">medium</option>
+          </select>
+        </label>
+        <label>
+          <span class="mono">category</span>
+          <select id="cat-filter">
+            <option value="all">all</option>
+            <option value="runtime">runtime</option>
+            <option value="accessibility">accessibility</option>
+            <option value="pedagogy">pedagogy</option>
+            <option value="factual">factual</option>
+            <option value="content-ops">content-ops</option>
+          </select>
+        </label>
+      </div>
+
+      <table aria-describedby="findings-help">
+        <thead>
+          <tr>
+            <th>Severity</th>
+            <th>Finding</th>
+            <th>Category</th>
+            <th>Evidence</th>
+          </tr>
+        </thead>
+        <tbody id="findings-body"></tbody>
+      </table>
+      <p id="findings-help" class="legend">Filtered rows are shown from the canonical audit dataset.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="module-title">
+      <h2 id="module-title">Module Interaction Profile</h2>
+      <div class="metric-grid" id="module-metrics"></div>
+      <div class="legend">
+        <span><span class="dot dot-red"></span>long non-interactive spans = cognitive load risk</span>
+        <span><span class="dot dot-amber"></span>quiz/predict imbalance = low retrieval cadence</span>
+        <span><span class="dot dot-cyan"></span>terminal sim gaps after M03 = transfer risk</span>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="roadmap-title">
+      <h2 id="roadmap-title">Remediation Roadmap</h2>
+      <div class="roadmap">
+        <article class="lane">
+          <h3>P0 (Immediate)</h3>
+          <ul>
+            <li>Fix `/challenges` and `/challenge` routing and slug resolution.</li>
+            <li>Replace theme-triggered hard reload with in-place Mermaid retheme.</li>
+            <li>Add keyboard and ARIA parity to click-only components.</li>
+            <li>Auto-label prediction textareas from prompt content.</li>
+            <li>Correct CLAUDE.md hierarchy and MCP transport wording.</li>
+          </ul>
+        </article>
+        <article class="lane">
+          <h3>P1 (Quality Lift)</h3>
+          <ul>
+            <li>Add terminal simulations in modules 04-12 where operational flow is taught.</li>
+            <li>Increase check cadence in low-density modules (notably M06, M08).</li>
+            <li>Split long non-interactive spans into micro-check interactions.</li>
+            <li>Map companion media labels to distinct, direct resources.</li>
+          </ul>
+        </article>
+        <article class="lane">
+          <h3>P2 (Sustainability)</h3>
+          <ul>
+            <li>Add lint checks for route validity, ARIA/label coverage, and citation presence.</li>
+            <li>Add citation blocks in M11-M12 for high-stakes operational claims.</li>
+            <li>Consolidate routing/source-of-truth config to prevent drift.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="sources-title">
+      <h2 id="sources-title">Primary Validation Sources</h2>
+      <div class="source-list">
+        <div><a href="https://code.claude.com/docs/en/memory" target="_blank" rel="noopener noreferrer">https://code.claude.com/docs/en/memory</a></div>
+        <div><a href="https://code.claude.com/docs/en/settings" target="_blank" rel="noopener noreferrer">https://code.claude.com/docs/en/settings</a></div>
+        <div><a href="https://code.claude.com/docs/en/permissions" target="_blank" rel="noopener noreferrer">https://code.claude.com/docs/en/permissions</a></div>
+        <div><a href="https://modelcontextprotocol.io/specification/2025-03-26/basic/transports" target="_blank" rel="noopener noreferrer">https://modelcontextprotocol.io/specification/2025-03-26/basic/transports</a></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const findings = [
+      {
+        severity: 'critical',
+        category: 'runtime',
+        title: 'Challenge routes are miswired for module viewer slug resolution',
+        evidence: 'vercel.json:43-44; module-viewer.html:5236; index.html:737'
+      },
+      {
+        severity: 'high',
+        category: 'runtime',
+        title: 'Theme toggle can hard-reload module pages when Mermaid exists',
+        evidence: 'module-viewer.html:5911-5913'
+      },
+      {
+        severity: 'high',
+        category: 'accessibility',
+        title: 'Decision tree, hierarchy, and reveal quiz rely on click-only interaction',
+        evidence: 'module-viewer.html:3445, 4377, 4678'
+      },
+      {
+        severity: 'high',
+        category: 'accessibility',
+        title: 'Prediction textareas are typically unlabeled for assistive tech',
+        evidence: 'modules: M01/M02/M10/M12 sampled lines in audit'
+      },
+      {
+        severity: 'high',
+        category: 'factual',
+        title: 'Module 02 CLAUDE.md hierarchy framing is out of date',
+        evidence: '02-claude-code-foundations.md:703-704 vs code.claude.com/docs/en/memory'
+      },
+      {
+        severity: 'high',
+        category: 'factual',
+        title: 'MCP SSE deprecation language is over-absolute',
+        evidence: '11-tech-stack-adaptation.md:149; 12-capstone-production.md:296'
+      },
+      {
+        severity: 'medium',
+        category: 'content-ops',
+        title: 'Companion media labels map to same NotebookLM URL in M01-M03',
+        evidence: 'M01:1327-1329; M02:1929-1931; M03:1661-1663'
+      },
+      {
+        severity: 'medium',
+        category: 'pedagogy',
+        title: 'Interaction density is uneven in mid-course modules',
+        evidence: 'M06 and M08 each have quiz_count=1; terminal sims absent M04-M12'
+      },
+      {
+        severity: 'medium',
+        category: 'pedagogy',
+        title: 'Long non-interactive spans remain in several modules',
+        evidence: 'Long-span counts: M01(6), M02(6), M03(3), M06(3), M11(1), M12(1)'
+      },
+      {
+        severity: 'medium',
+        category: 'factual',
+        title: 'Citation/reference coverage drops in advanced modules',
+        evidence: 'M11 and M12 lack explicit further-reading sections'
+      }
+    ];
+
+    const moduleMetrics = [
+      { m: 'M01', c: 43, q: 6, p: 5, t: 1, gap: 6 },
+      { m: 'M02', c: 52, q: 6, p: 2, t: 2, gap: 6 },
+      { m: 'M03', c: 41, q: 9, p: 2, t: 1, gap: 3 },
+      { m: 'M04', c: 25, q: 3, p: 3, t: 0, gap: 1 },
+      { m: 'M05', c: 27, q: 2, p: 2, t: 0, gap: 2 },
+      { m: 'M06', c: 26, q: 1, p: 1, t: 0, gap: 3 },
+      { m: 'M07', c: 27, q: 2, p: 3, t: 0, gap: 0 },
+      { m: 'M08', c: 27, q: 1, p: 2, t: 0, gap: 0 },
+      { m: 'M09', c: 27, q: 2, p: 2, t: 0, gap: 0 },
+      { m: 'M10', c: 40, q: 3, p: 4, t: 0, gap: 0 },
+      { m: 'M11', c: 28, q: 3, p: 2, t: 0, gap: 1 },
+      { m: 'M12', c: 41, q: 3, p: 2, t: 0, gap: 1 }
+    ];
+
+    const sevFilter = document.getElementById('sev-filter');
+    const catFilter = document.getElementById('cat-filter');
+    const body = document.getElementById('findings-body');
+
+    function sevClass(sev) {
+      if (sev === 'critical') return 'sev sev-critical';
+      if (sev === 'high') return 'sev sev-high';
+      return 'sev sev-medium';
+    }
+
+    function renderFindings() {
+      const sev = sevFilter.value;
+      const cat = catFilter.value;
+      const rows = findings.filter(f => (sev === 'all' || f.severity === sev) && (cat === 'all' || f.category === cat));
+
+      body.innerHTML = rows.map(f => `
+        <tr>
+          <td><span class="${sevClass(f.severity)}">${f.severity}</span></td>
+          <td>${f.title}</td>
+          <td><span class="mono">${f.category}</span></td>
+          <td><span class="mono">${f.evidence}</span></td>
+        </tr>
+      `).join('');
+
+      if (!rows.length) {
+        body.innerHTML = '<tr><td colspan="4" class="mono">No findings match current filter.</td></tr>';
+      }
+    }
+
+    function renderMetrics() {
+      const host = document.getElementById('module-metrics');
+      const maxComponents = Math.max(...moduleMetrics.map(x => x.c));
+
+      host.innerHTML = moduleMetrics.map(item => {
+        const pct = Math.max(4, Math.round((item.c / maxComponents) * 100));
+        const flags = [];
+        if (item.gap >= 3) flags.push('long-gap-risk');
+        if (item.q <= 1) flags.push('low-quiz-cadence');
+        if (item.t === 0 && ['M04','M05','M06','M07','M08','M09','M10','M11','M12'].includes(item.m)) flags.push('no-terminal-sim');
+        return `
+          <div class="metric-row">
+            <div>
+              <strong>${item.m}</strong>
+              <span class="mono"> C:${item.c} Q:${item.q} P:${item.p} T:${item.t} G:${item.gap}</span>
+            </div>
+            <div>
+              <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+              <div class="legend">${flags.length ? flags.map(f => `<span class="mono">${f}</span>`).join(' ') : '<span class="mono">balanced</span>'}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    sevFilter.addEventListener('change', renderFindings);
+    catFilter.addEventListener('change', renderFindings);
+
+    renderFindings();
+    renderMetrics();
+  </script>
+</body>
+</html>

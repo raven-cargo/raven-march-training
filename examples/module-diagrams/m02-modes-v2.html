@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Two Modes of Claude Code</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+
+.mode-tabs{display:flex;gap:4px;margin-bottom:1.5rem;background:#18181c;border-radius:12px;padding:4px}
+.mode-tab{flex:1;padding:14px 16px;border:none;border-radius:10px;background:transparent;cursor:pointer;transition:all .3s cubic-bezier(.22,1,.36,1);position:relative;text-align:left}
+.mode-tab.active{background:#1e1e24}
+.mode-tab.active::after{content:'';position:absolute;top:0;left:16px;width:32px;height:2px;border-radius:1px}
+.mode-tab[data-m="i"].active::after{background:#5ba4f5}
+.mode-tab[data-m="n"].active::after{background:#f59e42}
+.mode-cmd{font-size:13px;font-family:'JetBrains Mono',monospace;color:#555;display:block;margin-bottom:2px;transition:color .3s}
+.mode-tab.active .mode-cmd{color:#888}
+.mode-name{font-size:15px;font-weight:600;color:#666;transition:color .3s}
+.mode-tab.active .mode-name{color:#e8e6e1}
+
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:10px;padding-left:2px}
+
+.panel{display:none;animation:fadeUp .4s cubic-bezier(.22,1,.36,1)}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.mode-detail{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem}
+.md-item{padding:14px 16px;border-radius:10px;background:#141418;border:1px solid #1a1a1e}
+.md-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#444;margin-bottom:4px}
+.md-val{font-size:13px;color:#c8c6c1;line-height:1.5}
+
+.use-cases{margin-bottom:1.5rem}
+.use-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#444;margin-bottom:10px}
+.use-list{display:flex;flex-direction:column;gap:6px}
+.use-item{padding:10px 14px;border-radius:8px;background:#141418;border:1px solid #1a1a1e;font-size:13px;color:#aaa;display:flex;align-items:center;gap:10px}
+.use-icon{min-width:18px;text-align:center;font-size:12px}
+
+.code-block{font-family:'JetBrains Mono',monospace;font-size:12px;background:#0a0a0c;border:1px solid #1a1a1e;border-radius:10px;padding:16px 18px;line-height:1.9;color:#888;overflow-x:auto;margin-bottom:1.5rem}
+.code-block .cmd{color:#5ba4f5}
+.code-block .flag{color:#f59e42}
+.code-block .str{color:#4ade80}
+.code-block .comment{color:#333}
+.code-block .pipe{color:#a78bfa}
+
+.divider{border:none;border-top:1px solid #1a1a1e;margin:1.5rem 0}
+
+.scenario-section{margin-top:0}
+.scenario-label{font-size:13px;font-weight:600;color:#e8e6e1;margin-bottom:4px}
+.scenario-instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px}
+.scenario-grid{display:flex;flex-direction:column;gap:8px}
+.scenario{padding:14px 18px;border-radius:12px;border:1px solid #222228;background:#141418;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all .25s}
+.scenario:hover{border-color:#333;transform:translateX(4px)}
+.scenario.revealed{cursor:default}
+.sc-task{font-size:13px;color:#aaa;flex:1;line-height:1.4}
+.sc-answer{font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace;padding:4px 12px;border-radius:6px;transition:all .3s;min-width:110px;text-align:center}
+.sc-answer.hidden{background:#1a1a1e;color:#333}
+.sc-answer.interactive{background:#0a1525;color:#5ba4f5;border:1px solid #1a3a6a}
+.sc-answer.noninteractive{background:#1a150a;color:#f59e42;border:1px solid #40301a}
+.sc-answer.both{background:#1c1535;color:#a78bfa;border:1px solid #2d2555}
+.sc-why{font-size:11px;color:#555;margin-top:6px;line-height:1.5;display:none}
+.scenario.revealed .sc-why{display:block}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Two modes of Claude Code</h1>
+
+<div class="objective">
+  <span class="goal">Learning objective</span>
+  <span class="text">Choose the right invocation mode for any task. Interactive mode keeps you in the loop; non-interactive mode produces pipeable output for automation. Knowing which to reach for saves real time.</span>
+</div>
+
+<div class="instruct">&#9654; Switch between tabs to compare the two modes side-by-side.</div>
+
+<div class="mode-tabs">
+  <div class="mode-tab active" data-m="i" onclick="showMode('i')"><span class="mode-cmd">$ claude</span><span class="mode-name">Interactive mode</span></div>
+  <div class="mode-tab" data-m="n" onclick="showMode('n')"><span class="mode-cmd">$ claude -p "..."</span><span class="mode-name">Non-interactive mode</span></div>
+</div>
+
+<div class="panel active" id="pi">
+  <div class="mode-detail">
+    <div class="md-item"><div class="md-label">Context</div><div class="md-val">Accumulates across exchanges — each message sees full history</div></div>
+    <div class="md-item"><div class="md-label">Human role</div><div class="md-val">In the loop — can redirect, answer questions, add context mid-task</div></div>
+    <div class="md-item"><div class="md-label">Session end</div><div class="md-val">History vanishes. Decisions must be written to CLAUDE.md or files.</div></div>
+    <div class="md-item"><div class="md-label">Output</div><div class="md-val">Streamed to terminal with thinking, tool calls, and responses</div></div>
+  </div>
+  <div class="use-cases">
+    <div class="use-label">Strong fit</div>
+    <div class="use-list">
+      <div class="use-item"><span class="use-icon" style="color:#5ba4f5">&#9679;</span>Exploratory work — you're learning the task as you go</div>
+      <div class="use-item"><span class="use-icon" style="color:#5ba4f5">&#9679;</span>Complex multi-step refactoring where you might redirect</div>
+      <div class="use-item"><span class="use-icon" style="color:#5ba4f5">&#9679;</span>Debugging — each discovery changes direction</div>
+      <div class="use-item"><span class="use-icon" style="color:#5ba4f5">&#9679;</span>Initial project setup with clarifying questions</div>
+    </div>
+  </div>
+  <div class="code-block">
+<span class="comment"># Start a session, work interactively</span>
+<span class="cmd">$</span> claude
+<span class="str">> Refactor auth to use JWT. Keep tests passing.</span>
+<span class="comment"># ...watch it work, redirect if needed...</span>
+<span class="str">> Actually, use RS256 not HS256 for the signing.</span>
+<span class="comment"># ...review output, then persist decisions...</span>
+<span class="str">> Add the JWT decision to CLAUDE.md under Decided.</span>
+  </div>
+</div>
+
+<div class="panel" id="pn">
+  <div class="mode-detail">
+    <div class="md-item"><div class="md-label">Context</div><div class="md-val">Single-shot — reads CLAUDE.md, executes prompt, exits. No history.</div></div>
+    <div class="md-item"><div class="md-label">Human role</div><div class="md-val">Not in the loop — you define the task upfront, review output after</div></div>
+    <div class="md-item"><div class="md-label">Session end</div><div class="md-val">Immediate — prints result to stdout and process terminates</div></div>
+    <div class="md-item"><div class="md-label">Output</div><div class="md-val">Stdout only — pipeable, redirectable, capturable in variables</div></div>
+  </div>
+  <div class="use-cases">
+    <div class="use-label">Strong fit</div>
+    <div class="use-list">
+      <div class="use-item"><span class="use-icon" style="color:#f59e42">&#9679;</span>CI/CD pipelines — automated code review on PRs</div>
+      <div class="use-item"><span class="use-icon" style="color:#f59e42">&#9679;</span>Scripted workflows — chaining agent tasks in shell</div>
+      <div class="use-item"><span class="use-icon" style="color:#f59e42">&#9679;</span>Scheduled automation — nightly docs or test generation</div>
+      <div class="use-item"><span class="use-icon" style="color:#f59e42">&#9679;</span>Integration — agent output as input to another tool</div>
+    </div>
+  </div>
+  <div class="code-block">
+<span class="comment"># Single-shot: pipe diff into review, email result</span>
+<span class="cmd">REVIEW</span>=<span class="pipe">$(</span>claude <span class="flag">-p</span> <span class="str">"Review for security issues: $(git diff main)"</span><span class="pipe">)</span>
+echo <span class="str">"$REVIEW"</span> <span class="pipe">|</span> mail <span class="flag">-s</span> <span class="str">"Security Review"</span> team@co.com
+
+<span class="comment"># Generate changelog from git log</span>
+claude <span class="flag">-p</span> <span class="str">"Generate changelog: $(git log $(git describe --tags --abbrev=0)..HEAD --oneline)"</span>
+
+<span class="comment"># Check JSDoc coverage</span>
+claude <span class="flag">-p</span> <span class="str">"Check if all exports in src/api.ts have JSDoc comments"</span>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="scenario-section">
+  <div class="scenario-label">Test yourself: which mode for this task?</div>
+  <div class="scenario-instruct">&#9654; Click each scenario to reveal the recommended mode and reasoning.</div>
+  <div class="scenario-grid" id="scenarios"></div>
+</div>
+</div>
+
+<script>
+const scenarios=[
+  {task:'Review a PR diff for security vulnerabilities in a GitHub Actions workflow',answer:'noninteractive',label:'claude -p',why:'Well-specified, no mid-task input needed, output goes to CI.'},
+  {task:'Debug a flaky integration test that fails intermittently',answer:'interactive',label:'claude',why:'Each discovery changes direction. You need to be in the loop.'},
+  {task:'Add JSDoc comments to all exported functions across 12 files',answer:'both',label:'Start interactive → promote',why:'Develop the approach interactively on 1-2 files, then script the rest with -p.'},
+  {task:'Generate a nightly changelog from git commits and post to Slack',answer:'noninteractive',label:'claude -p',why:'Automated, repeatable, output pipes to another tool.'},
+  {task:'Refactor a monolith service into three microservices',answer:'interactive',label:'claude',why:'Complex, multi-step, high-stakes. You need to redirect, verify, and approve.'},
+  {task:'Check that new code follows naming conventions on every PR',answer:'noninteractive',label:'claude -p',why:'Runs in CI, well-specified rules, no human in the loop.'},
+  {task:'Set up a new Next.js project with your team\'s standard config',answer:'interactive',label:'claude',why:'Initial setup involves decisions and clarifying questions.'},
+];
+
+function renderScenarios(){
+  let h='';
+  scenarios.forEach((s,i)=>{
+    h+='<div class="scenario" id="sc'+i+'" onclick="reveal('+i+')">';
+    h+='<div style="flex:1"><div class="sc-task">'+s.task+'</div>';
+    h+='<div class="sc-why" id="why'+i+'">'+s.why+'</div></div>';
+    h+='<div class="sc-answer hidden" id="ans'+i+'">?</div>';
+    h+='</div>';
+  });
+  document.getElementById('scenarios').innerHTML=h;
+}
+
+function reveal(i){
+  const sc=document.getElementById('sc'+i);
+  if(sc.classList.contains('revealed'))return;
+  sc.classList.add('revealed');
+  const ans=document.getElementById('ans'+i);
+  const s=scenarios[i];
+  ans.textContent=s.label;
+  ans.className='sc-answer '+s.answer;
+}
+
+function showMode(m){
+  document.querySelectorAll('.mode-tab').forEach(t=>t.classList.toggle('active',t.dataset.m===m));
+  document.getElementById('pi').classList.toggle('active',m==='i');
+  document.getElementById('pn').classList.toggle('active',m==='n');
+}
+
+renderScenarios();
+</script>
+</body>
+</html>

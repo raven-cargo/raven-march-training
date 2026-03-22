@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Five Context Injection Strategies</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+
+.strategies{display:flex;flex-direction:column;gap:6px;margin-bottom:.5rem}
+.strat{padding:14px 18px;border-radius:12px;border:1px solid #222228;background:#141418;cursor:pointer;transition:all .3s;display:flex;align-items:center;gap:14px}
+.strat:hover{border-color:#333;transform:translateX(4px)}
+.strat.active{transform:translateX(4px)}
+.strat[data-s="0"].active{border-color:#5ba4f5;background:#0a1525}
+.strat[data-s="1"].active{border-color:#a78bfa;background:#1c1535}
+.strat[data-s="2"].active{border-color:#f59e42;background:#1a150a}
+.strat[data-s="3"].active{border-color:#4ade80;background:#0a1a14}
+.strat[data-s="4"].active{border-color:#f87171;background:#1a0a0a}
+
+.st-num{font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;min-width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:#1a1a1e;color:#555;flex-shrink:0;transition:all .3s}
+.strat[data-s="0"].active .st-num{background:#0a1525;color:#5ba4f5}
+.strat[data-s="1"].active .st-num{background:#1c1535;color:#a78bfa}
+.strat[data-s="2"].active .st-num{background:#1a150a;color:#f59e42}
+.strat[data-s="3"].active .st-num{background:#0a1a14;color:#4ade80}
+.strat[data-s="4"].active .st-num{background:#1a0a0a;color:#f87171}
+
+.st-info{flex:1;min-width:0}
+.st-name{font-size:14px;font-weight:600;color:#888;transition:color .3s}
+.strat.active .st-name{color:#e8e6e1}
+.st-sub{font-size:11px;color:#444;transition:color .3s}
+.strat.active .st-sub{color:#666}
+
+.st-freq{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:3px 10px;border-radius:5px;white-space:nowrap;flex-shrink:0;background:#1a1a1e;color:#555}
+
+.detail{border-radius:14px;border:1px solid #222228;background:#141418;overflow:hidden;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.dt-body{padding:20px 24px}
+
+.dt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.dt-item{padding:12px 14px;border-radius:10px;background:#0a0a0c;border:1px solid #1a1a1e}
+.dt-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#444;margin-bottom:3px}
+.dt-text{font-size:12px;color:#aaa;line-height:1.5}
+
+.example-block{font-family:'JetBrains Mono',monospace;font-size:11px;background:#0a0a0c;border:1px solid #1a1a1e;border-radius:10px;padding:12px 14px;line-height:1.7;color:#888;overflow-x:auto}
+.example-block .key{color:#5ba4f5}
+.example-block .str{color:#4ade80}
+
+.divider{border:none;border-top:1px solid #1a1a1e;margin:1.5rem 0}
+
+.principle{padding:14px 18px;border-radius:12px;background:#141418;border:1px solid #222228;font-size:13px;color:#aaa;line-height:1.6}
+.principle strong{color:#e8e6e1}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Five context injection strategies</h1>
+<div class="objective">
+  <span class="goal">Right context, right time</span>
+  <span class="text">Context in TCEF isn't "background information." It's specific data Claude needs to produce the right output for your situation. Five strategies cover the space — knowing which to use (and when to skip one) prevents over- and under-specifying.</span>
+</div>
+<div class="instruct">&#9654; Click each strategy to see when to use it, what to include, and a real prompt example.</div>
+
+<div class="strategies" id="strats"></div>
+<div class="detail" id="detail"></div>
+
+<hr class="divider">
+
+<div class="principle"><strong>Progressive context strategy:</strong> Start with Task + Format only. Run. Observe what failed. Add only the context type the failure mode indicates is missing. This prevents over-specifying before knowing what's actually needed. Irrelevant context isn't neutral — it's noise that distracts.</div>
+</div>
+
+<script>
+const strategies=[
+{name:'File Reference',sub:'The actual code the task operates on',freq:'Most common',
+ grid:[
+  {l:'Use for',t:'Code review, refactoring, documentation, test writing — any task operating on specific files'},
+  {l:'How',t:'@filename syntax loads current content. Include only files directly relevant — not entire directories.'},
+  {l:'Don\'t',t:'Don\'t include 10 files when 3 suffice. Every irrelevant file adds noise to the context window.'},
+  {l:'Signal',t:'The agent uses generic patterns instead of matching your code → missing File Reference context.'},
+ ],
+ example:'<span class="str">@src/auth/jwt.ts @src/middleware/authenticate.ts</span>\n\nAdd explicit return types to all exported functions in these files.'},
+{name:'Pattern',sub:'Code excerpt showing the style to match',freq:'High impact',
+ grid:[
+  {l:'Use for',t:'Adding new code that must match existing style — functions, components, error handlers, API routes'},
+  {l:'How',t:'Short excerpt from production code that exemplifies the pattern. Not a description — the actual code.'},
+  {l:'Don\'t',t:'Don\'t describe the pattern in prose when a code example is available. Showing always beats telling.'},
+  {l:'Signal',t:'Output is "correct" but doesn\'t match your codebase style → missing Pattern context.'},
+ ],
+ example:'Match this error handling pattern from our codebase:\n\n<span class="key">try</span> {\n  <span class="key">const</span> result = <span class="key">await</span> service.execute(input);\n  <span class="key">return</span> res.status(200).json({ data: result });\n} <span class="key">catch</span> (err) {\n  <span class="key">if</span> (err <span class="key">instanceof</span> ValidationError)\n    <span class="key">return</span> res.status(400).json({ error: err.message });\n  logger.error(<span class="str">\'Unhandled\'</span>, { err });\n  <span class="key">return</span> res.status(500).json({ error: <span class="str">\'Internal error\'</span> });\n}'},
+{name:'Constraint',sub:'What must not change',freq:'Critical for refactoring',
+ grid:[
+  {l:'Use for',t:'Refactoring, migrations, any task touching shared interfaces or configuration'},
+  {l:'How',t:'Explicit list of files, functions, signatures, behaviors that must be preserved unchanged'},
+  {l:'Don\'t',t:'Don\'t use generic constraints like "don\'t break anything" — no useful guidance for the agent.'},
+  {l:'Signal',t:'Agent modifies files or interfaces outside scope → missing Constraint context.'},
+ ],
+ example:'Constraints:\n- Only modify files in <span class="str">src/auth/</span>\n- Do NOT modify <span class="str">src/middleware/</span>, <span class="str">src/models/</span>, or test files\n- <span class="key">validateToken(token: string): Promise&lt;User | null&gt;</span>\n  signature must remain unchanged'},
+{name:'Audience',sub:'Who consumes the output',freq:'For docs & UX',
+ grid:[
+  {l:'Use for',t:'Documentation, error messages, user-facing content, API descriptions — anything humans read'},
+  {l:'How',t:'Specify who reads it and their expertise level. "Junior developer onboarding" vs "senior SRE debugging."'},
+  {l:'Don\'t',t:'Don\'t use for pure engineering tasks where the output is code — Audience context adds noise there.'},
+  {l:'Signal',t:'Output tone is wrong (too technical for users, too basic for seniors) → missing Audience context.'},
+ ],
+ example:'Write error messages for the auth module.\nAudience: end users of a consumer web app.\nAssume no technical knowledge.\nBe specific about what went wrong and what to do next.'},
+{name:'State',sub:'Current system facts and recent changes',freq:'Essential for debugging',
+ grid:[
+  {l:'Use for',t:'Debugging tasks where history matters, post-deployment issues, tasks depending on environment state'},
+  {l:'How',t:'Recent changes, active issues, environmental facts. "We deployed v2.3 yesterday, Redis was upgraded last week."'},
+  {l:'Don\'t',t:'Don\'t include irrelevant system state. Focus on changes that could plausibly cause the issue.'},
+  {l:'Signal',t:'Agent\'s fix doesn\'t account for recent changes → missing State context.'},
+ ],
+ example:'State: Intermittent 500 errors started after yesterday\'s deploy.\nRecent changes: upgraded pg driver from 8.7 to 8.11,\nadded connection pooling (max 20 connections).\nNo other changes to auth module in 2 weeks.'},
+];
+
+function renderStrats(){
+  let h='';
+  strategies.forEach((s,i)=>{
+    h+='<div class="strat" data-s="'+i+'" onclick="sel('+i+')">';
+    h+='<span class="st-num">'+(i+1)+'</span>';
+    h+='<div class="st-info"><div class="st-name">'+s.name+'</div><div class="st-sub">'+s.sub+'</div></div>';
+    h+='<span class="st-freq">'+s.freq+'</span>';
+    h+='</div>';
+  });
+  document.getElementById('strats').innerHTML=h;
+}
+
+function sel(i){
+  document.querySelectorAll('.strat').forEach((s,j)=>s.classList.toggle('active',j===i));
+  const s=strategies[i];
+  let h='<div class="dt-body"><div class="dt-grid">';
+  s.grid.forEach(g=>{h+='<div class="dt-item"><div class="dt-label">'+g.l+'</div><div class="dt-text">'+g.t+'</div></div>'});
+  h+='</div><div class="example-block">'+s.example+'</div></div>';
+  document.getElementById('detail').innerHTML=h;
+}
+
+renderStrats();
+sel(0);
+</script>
+</body>
+</html>

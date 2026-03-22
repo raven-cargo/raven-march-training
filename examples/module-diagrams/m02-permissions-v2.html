@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Permissions — The settings.json System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+
+.flow-summary{margin-bottom:1.5rem;padding:16px 20px;border-radius:12px;background:#141418;border:1px solid #222228}
+.flow-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#444;margin-bottom:10px}
+.flow-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.flow-row:last-child{margin-bottom:0}
+.flow-step{font-size:12px;font-weight:600;padding:6px 14px;border-radius:8px;min-width:90px;text-align:center}
+.flow-arrow{color:#333;font-size:14px}
+.flow-desc{font-size:12px;color:#777}
+
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:1.5rem}
+
+.config-section{position:relative}
+.config-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#444;margin-bottom:8px}
+.config-panel{background:#0a0a0c;border:1px solid #1a1a1e;border-radius:14px;padding:16px 18px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8}
+.config-panel .key{color:#5ba4f5}
+.config-panel .str{color:#4ade80}
+.config-panel .deny-str{color:#f87171}
+.config-panel .brace{color:#555}
+
+.test-section{}
+.test-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#444;margin-bottom:4px}
+.test-instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:10px}
+.test-action{padding:10px 14px;border-radius:8px;border:1px solid #1a1a1e;background:#141418;cursor:pointer;transition:all .3s;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.test-action:hover{border-color:#333;transform:translateX(3px)}
+.test-action.tested{cursor:default}
+.ta-cmd{font-family:'JetBrains Mono',monospace;font-size:11px;color:#aaa;flex:1}
+.ta-result{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 10px;border-radius:5px;transition:all .3s}
+.ta-result.hidden{background:#1a1a1e;color:#333;font-weight:500;text-transform:none;letter-spacing:0}
+.ta-result.allow{background:#0a1a14;color:#4ade80;border:1px solid #1a4030}
+.ta-result.deny{background:#1a0a0a;color:#f87171;border:1px solid #401a1a}
+.ta-result.ask{background:#1a150a;color:#f59e42;border:1px solid #40301a}
+.ta-why{font-size:10px;color:#555;margin-top:4px;display:none;line-height:1.4}
+.test-action.tested .ta-why{display:block}
+
+.divider{border:none;border-top:1px solid #1a1a1e;margin:1.5rem 0}
+
+.principles{display:flex;flex-direction:column;gap:8px}
+.principles-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#444;margin-bottom:8px}
+.principle{padding:14px 18px;border-radius:12px;border:1px solid #1a1a1e;background:#141418;display:flex;gap:14px;align-items:flex-start}
+.p-icon{font-size:14px;min-width:20px;text-align:center;margin-top:2px}
+.p-text{font-size:13px;color:#aaa;line-height:1.55}
+.p-text strong{color:#e8e6e1;font-weight:600}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Permissions — the settings.json system</h1>
+
+<div class="objective">
+  <span class="goal">Learning objective</span>
+  <span class="text">Configure allow/deny permissions so the agent can work autonomously within safe boundaries. Understand how every action resolves through the three-state model: permitted, blocked, or ask.</span>
+</div>
+
+<div class="flow-summary">
+  <div class="flow-label">How every agent action resolves</div>
+  <div class="flow-row"><div class="flow-step" style="background:#0a1a14;color:#4ade80;border:1px solid #1a4030">In allow?</div><span class="flow-arrow">&rarr;</span><span class="flow-desc">Execute immediately, no prompt</span></div>
+  <div class="flow-row"><div class="flow-step" style="background:#1a0a0a;color:#f87171;border:1px solid #401a1a">In deny?</div><span class="flow-arrow">&rarr;</span><span class="flow-desc">Blocked entirely, agent cannot proceed</span></div>
+  <div class="flow-row"><div class="flow-step" style="background:#1a150a;color:#f59e42;border:1px solid #40301a">Neither?</div><span class="flow-arrow">&rarr;</span><span class="flow-desc">Ask human (interactive) or skip (non-interactive)</span></div>
+</div>
+
+<div class="layout">
+  <div class="config-section">
+    <div class="config-label">Example settings.json</div>
+    <div class="config-panel">
+<span class="brace">{</span>
+  <span class="key">"permissions"</span>: <span class="brace">{</span>
+    <span class="key">"allow"</span>: <span class="brace">[</span>
+      <span class="str">"Read"</span>,
+      <span class="str">"Write(src/**)"</span>,
+      <span class="str">"Write(tests/**)"</span>,
+      <span class="str">"Bash(npm test)"</span>,
+      <span class="str">"Bash(npm run build)"</span>,
+      <span class="str">"Bash(npx tsc *)"</span>,
+      <span class="str">"Bash(git status)"</span>,
+      <span class="str">"Bash(git diff *)"</span>
+    <span class="brace">]</span>,
+    <span class="key">"deny"</span>: <span class="brace">[</span>
+      <span class="deny-str">"Bash(rm *)"</span>,
+      <span class="deny-str">"Bash(sudo *)"</span>,
+      <span class="deny-str">"Bash(git push *)"</span>,
+      <span class="deny-str">"Bash(git commit *)"</span>,
+      <span class="deny-str">"Write(.env*)"</span>,
+      <span class="deny-str">"Write(config/prod*)"</span>
+    <span class="brace">]</span>
+  <span class="brace">}</span>
+<span class="brace">}</span>
+    </div>
+  </div>
+  <div class="test-section">
+    <div class="test-label">Test: how does each action resolve?</div>
+    <div class="test-instruct">&#9654; Click each action to see if it's permitted, blocked, or requires approval — and which rule matched.</div>
+    <div id="tests"></div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="principles-label">Key principles</div>
+<div class="principles">
+  <div class="principle"><span class="p-icon" style="color:#5ba4f5">1</span><div class="p-text"><strong>Least privilege.</strong> Configure only what the agent needs for the current task. Refactoring src/? It doesn't need Write access to config/.</div></div>
+  <div class="principle"><span class="p-icon" style="color:#5ba4f5">2</span><div class="p-text"><strong>Approval as signal.</strong> If the agent keeps asking to approve the same action, either add it to allow (if you trust it) or investigate why it's attempting it.</div></div>
+  <div class="principle"><span class="p-icon" style="color:#5ba4f5">3</span><div class="p-text"><strong>Two layers stack.</strong> Global (~/.claude/settings.json) sets your baseline. Project (.claude/settings.json) adds project-specific permissions on top.</div></div>
+</div>
+</div>
+
+<script>
+const tests=[
+  {cmd:'Read("src/auth.ts")',result:'allow',why:'Matches "Read" — all reads are allowed.'},
+  {cmd:'Write("src/auth.ts")',result:'allow',why:'Matches "Write(src/**)" — writes within src/ allowed.'},
+  {cmd:'Write("config/production.ts")',result:'deny',why:'Matches "Write(config/prod*)" — production config denied.'},
+  {cmd:'Bash("npm test")',result:'allow',why:'Exact match in allow list.'},
+  {cmd:'Bash("rm -rf node_modules")',result:'deny',why:'Matches "Bash(rm *)" — all rm commands blocked.'},
+  {cmd:'Bash("git push origin main")',result:'deny',why:'Matches "Bash(git push *)" — git push blocked.'},
+  {cmd:'Write("docs/README.md")',result:'ask',why:'Not in allow (only src/** and tests/**) and not in deny. Agent asks.'},
+  {cmd:'Bash("npm install lodash")',result:'ask',why:'Not in allow or deny. Agent must ask for approval.'},
+  {cmd:'Write(".env.local")',result:'deny',why:'Matches "Write(.env*)" — env files are protected.'},
+  {cmd:'Bash("curl https://api.com")',result:'ask',why:'Not in allow or deny. Consider adding to deny if you block outbound HTTP.'},
+];
+
+function renderTests(){
+  let h='';
+  tests.forEach((t,i)=>{
+    h+='<div class="test-action" id="ta'+i+'" onclick="testAction('+i+')">';
+    h+='<span class="ta-cmd">'+t.cmd+'</span>';
+    h+='<span class="ta-result hidden" id="tr'+i+'">?</span>';
+    h+='</div>';
+  });
+  document.getElementById('tests').innerHTML=h;
+}
+
+function testAction(i){
+  const el=document.getElementById('ta'+i);
+  if(el.classList.contains('tested'))return;
+  el.classList.add('tested');
+  const r=document.getElementById('tr'+i);
+  const t=tests[i];
+  r.className='ta-result '+t.result;
+  r.textContent=t.result==='allow'?'Permitted':t.result==='deny'?'Blocked':'Ask human';
+  const why=document.createElement('div');
+  why.className='ta-why';
+  why.textContent=t.why;
+  el.querySelector('.ta-cmd').after(why);
+}
+
+renderTests();
+</script>
+</body>
+</html>

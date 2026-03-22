@@ -1,0 +1,80 @@
+# Agentic AI Engineering Course — Base Sandbox Configuration
+# Applied to all environments unless overridden by a profile-specific config.
+# Override by creating a more restrictive config and merging with this base.
+
+version: "1.0"
+environment: base
+
+# ─── Permission Model ─────────────────────────────────────────────────────────
+# Uses Claude Code's settings.json allow/deny system.
+# These are translated into .claude/settings.json at environment setup time.
+permissions:
+  allow:
+    - "Read"                    # Allow reading any file (no path restriction)
+    - "Write(sandbox/**)"       # Allow writes only inside sandbox/ working dir
+    - "Bash(git status)"
+    - "Bash(git diff *)"
+    - "Bash(git log *)"
+    - "Bash(git add *)"
+    - "Bash(git commit *)"
+    - "Bash(cat *)"
+    - "Bash(ls *)"
+    - "Bash(echo *)"
+    - "Bash(pwd)"
+    - "Bash(which *)"
+
+  deny:
+    - "Bash(rm *)"              # No destructive file removal
+    - "Bash(rmdir *)"
+    - "Bash(curl *)"            # No external network calls
+    - "Bash(wget *)"
+    - "Bash(ssh *)"             # No SSH
+    - "Bash(scp *)"
+    - "Bash(nc *)"              # No netcat
+    - "Write(*.env)"            # Never write to .env files
+    - "Write(*.env.*)"
+    - "Write(**/.env)"
+    - "Write(**/secrets/**)"
+
+# ─── MCP Servers ──────────────────────────────────────────────────────────────
+# Base config has no MCP servers by default.
+# Profile-specific configs add domain-specific servers.
+mcp_servers: {}
+
+# ─── CLAUDE.md Context ────────────────────────────────────────────────────────
+# Injected as CLAUDE.md at sandbox initialization.
+claude_md: |
+  # Course Sandbox Environment
+
+  This is a sandboxed learning environment for the Agentic AI Engineering course.
+
+  ## Environment
+  - Working directory: sandbox/
+  - Writes are restricted to sandbox/ — do not attempt to write outside it
+  - External network access is disabled
+
+  ## What You're Building
+  See the current lab instructions for your task.
+
+  ## Conventions
+  - All experiments go in sandbox/experiments/
+  - Keep outputs organized by lab number
+
+# ─── Session Settings ─────────────────────────────────────────────────────────
+session:
+  max_turns: 50                 # Limit runaway sessions
+  timeout_minutes: 30           # Auto-close idle sessions
+  auto_approve_reads: true      # Don't prompt for read operations
+  auto_approve_writes: false    # Prompt before any write (safe default)
+
+# ─── Logging ──────────────────────────────────────────────────────────────────
+logging:
+  enabled: true
+  level: info                   # info | debug | warn
+  format: json
+  output: logs/session.jsonl    # Append-only session log
+  include:
+    - tool_calls
+    - tool_results
+    - session_id
+    - timestamp

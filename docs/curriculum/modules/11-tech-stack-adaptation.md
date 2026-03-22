@@ -32,7 +32,7 @@ Modules 02 through 10 taught generic patterns: CLAUDE.md structure, skills compo
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m11-overview-predict" data-xp="8">
 <span class="ix-title">Predict Before You Learn</span>
 <p class="ix-predict-prompt">Your agent has been producing code that compiles and passes tests on every run. But every single PR comes back from review with the same corrections: wrong data-fetching pattern, wrong validation library, wrong error-wrapping style. No errors -- just the wrong conventions, every time. What is missing from the agent's context, and what is the one-word category of fix you need to apply?</p>
-<textarea class="ix-predict-input" placeholder="Write your reasoning -- what is missing and why does it keep happening?"></textarea>
+<textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- what is missing and why does it keep happening?"></textarea>
 <details class="ix-predict-reveal">
 <summary>Reveal reference reasoning</summary>
 <p>The agent's training data knows how to write code, but it does not know <strong>how your team writes code</strong>. Compiling and passing tests is a low bar -- the agent clears it. Convention compliance is a higher bar that requires explicit context. The one-word fix is <strong>encoding</strong>: encoding your team's decisions into CLAUDE.md, skills, and prompts so the agent has access to them on every run. Technically correct code that violates team conventions is the signature failure of a generic, unadapted agentic setup.</p>
@@ -54,7 +54,7 @@ A well-constructed lab succeeds because the environment is designed to match the
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m11-adapt-predict" data-xp="8">
 <span class="ix-title">Predict Before You Learn</span>
 <p class="ix-predict-prompt">Your team adopted React Query for all data fetching six months ago. You start a new Claude Code session -- no mention of React Query anywhere in your prompt. The agent uses <code>useEffect</code> for data fetching on every component it generates. Why does this happen? And what is the one-word answer for what to do about it?</p>
-<textarea class="ix-predict-input" placeholder="Write your reasoning -- why useEffect, and what is the fix?"></textarea>
+<textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- why useEffect, and what is the fix?"></textarea>
 <details class="ix-predict-reveal">
 <summary>Reveal reference reasoning</summary>
 <p>The agent uses <code>useEffect</code> because that is what its training data shows for React data fetching -- it has seen millions of examples. Your team's six-month-old decision to switch to React Query exists nowhere in the agent's context. The agent is not wrong by any absolute standard; it is wrong for <strong>your</strong> codebase. The one-word fix is <strong>encode</strong>: encode the decision into CLAUDE.md so it is present from the first loop iteration of every session.</p>
@@ -146,7 +146,7 @@ A well-constructed lab succeeds because the environment is designed to match the
 <p>Use Context7 to pre-load current library documentation for version-sensitive frameworks before starting agentic sessions on those codebases.</p>
 </div>
 
-Context7 is an MCP server -- it connects to Claude Code using the same stdio or Streamable HTTP transport as any other MCP server (never SSE, which was deprecated on 2025-03-26). It fetches and indexes current documentation for software libraries, making that documentation available to the agent as a resource it can reference during a session. Unlike the model's training data, which is a fixed snapshot, Context7 fetches from the current state of official sources.
+Context7 is an MCP server -- it connects to Claude Code using the same stdio or Streamable HTTP transport as any other MCP server. For new remote deployments, use Streamable HTTP; HTTP+SSE is a deprecated legacy path from older protocol versions. It fetches and indexes current documentation for software libraries, making that documentation available to the agent as a resource it can reference during a session. Unlike the model's training data, which is a fixed snapshot, Context7 fetches from the current state of official sources.
 
 <p class="ix-instruct">Step through the three-step Context7 workflow to see how pre-loading works.</p>
 
@@ -260,7 +260,7 @@ available in them. Library ID: /vercel/next.js</code></pre>
 <p>Context7 is most valuable for libraries that meet one or more of these criteria: rapid major version evolution with breaking changes, a large API surface where deprecated methods look like valid alternatives, and recent major changes where the model has heavy training representation of the old approach but not the new one.</p>
 <p>The training data cutoff problem is asymmetric. A library that made a major breaking change six months ago will have years of training data showing the old patterns and only months showing the new ones. The model's prior for the old pattern is much stronger. Without explicit documentation in context, the model will often default to what it has seen more frequently -- which is the wrong version for your project.</p>
 <p>This is why exact version specification matters. "Use Next.js App Router" is ambiguous in a model that has seen both Next.js 12 with experimental App Router and Next.js 15 with stable App Router. "Use Next.js 15.x App Router with the stable <code>use cache</code> directive" is unambiguous. Context7 loaded documentation gives the model the precise vocabulary to match your version.</p>
-<p>Context7 uses stdio transport when running as a local MCP server and Streamable HTTP when accessed remotely. As with all remote MCP connections, SSE transport (deprecated 2025-03-26) must not be used.</p>
+<p>Context7 uses stdio transport when running as a local MCP server and Streamable HTTP when accessed remotely. HTTP+SSE is deprecated in current MCP specs and should be treated as legacy compatibility only.</p>
 </div>
 </details>
 
@@ -665,6 +665,52 @@ func handleError(w http.ResponseWriter, err error) {
 </div>
 </details>
 
+<p class="ix-instruct">Run a mid-module check before moving into deployment readiness.</p>
+
+<div class="ix-diagram" data-component="quiz" data-diagram-id="m11-adaptation-midpoint-check" data-xp="16">
+<span class="ix-title">Checkpoint Quiz: Stack Encoding and Pattern Adaptation</span>
+<div class="ix-quiz-question">
+<p class="ix-quiz-prompt"><strong>Q1.</strong> Why is “Use TypeScript” a weak CLAUDE.md rule compared to “Use TypeScript 5.x strict mode with no implicit any”?</p>
+<div class="ix-quiz-options">
+<button class="ix-quiz-option">Because shorter rules are always better</button>
+<button class="ix-quiz-option" data-correct="true">Because the second rule removes ambiguity and encodes enforceable constraints</button>
+<button class="ix-quiz-option">Because CLAUDE.md only supports versioned rules</button>
+<button class="ix-quiz-option">Because strict mode is required by Context7</button>
+</div>
+<p class="ix-quiz-explanation">Specificity is the value of CLAUDE.md. Version and constraint details reduce incorrect alternatives and produce more consistent first outputs.</p>
+</div>
+<div class="ix-quiz-question">
+<p class="ix-quiz-prompt"><strong>Q2.</strong> A generated FastAPI snippet uses <code>@validator</code> and <code>class Config</code>. Your stack is Pydantic v2. What is the best immediate fix?</p>
+<div class="ix-quiz-options">
+<button class="ix-quiz-option">Keep the code and patch it manually each time</button>
+<button class="ix-quiz-option">Add only a generic “follow latest docs” note</button>
+<button class="ix-quiz-option" data-correct="true">Add explicit CLAUDE.md prohibitions plus a v2 example in skill/Prompt Examples</button>
+<button class="ix-quiz-option">Disable Context7 because it can conflict with CLAUDE.md</button>
+</div>
+<p class="ix-quiz-explanation">You need both directional constraints (“never use v1 patterns”) and a concrete v2 example so the correct pattern becomes the default output path.</p>
+</div>
+<div class="ix-quiz-question">
+<p class="ix-quiz-prompt"><strong>Q3.</strong> Which item belongs in a reusable skill file rather than as a one-off prompt note?</p>
+<div class="ix-quiz-options">
+<button class="ix-quiz-option">“Please summarize this one PR”</button>
+<button class="ix-quiz-option">“Use markdown bullets in this answer”</button>
+<button class="ix-quiz-option" data-correct="true">A recurring Go error-wrapping convention used across many services</button>
+<button class="ix-quiz-option">“Use a friendly tone for this message”</button>
+</div>
+<p class="ix-quiz-explanation">Skills should encode repeatable, high-frequency patterns with clear reuse value, not one-time style instructions.</p>
+</div>
+<div class="ix-quiz-question">
+<p class="ix-quiz-prompt"><strong>Q4.</strong> What is the strongest signal that adaptation is incomplete after updating CLAUDE.md?</p>
+<div class="ix-quiz-options">
+<button class="ix-quiz-option">The agent replies more concisely</button>
+<button class="ix-quiz-option">The checklist has six categories filled in</button>
+<button class="ix-quiz-option" data-correct="true">Representative tasks still require repeated convention corrections in output</button>
+<button class="ix-quiz-option">Context7 loads documentation faster than before</button>
+</div>
+<p class="ix-quiz-explanation">Behavioral validation on representative tasks is the acceptance test. If repeated corrections remain, rules or examples are still under-specified.</p>
+</div>
+</div>
+
 ---
 
 ## 11.5 Deploying to a New Team or Stack
@@ -771,7 +817,7 @@ The checklist below covers the six categories that most commonly cause productio
 <div class="ix-checklist-section">
 <div class="ix-checklist-label">4. MCP Server Verification</div>
 <div class="ix-checklist-item">Each MCP server needed by this workflow is configured in settings.json</div>
-<div class="ix-checklist-item">MCP server transport verified: stdio for local servers, Streamable HTTP for remote servers. SSE transport is deprecated (2025-03-26) and must not be used.</div>
+<div class="ix-checklist-item">MCP server transport verified: stdio for local servers, Streamable HTTP for remote servers. If any legacy HTTP+SSE endpoint remains, track a migration plan and do not use it for new deployments.</div>
 <div class="ix-checklist-item">MCP server permissions are scoped to this workflow's requirements</div>
 <div class="ix-checklist-item">MCP server connections tested and verified before deployment</div>
 </div>

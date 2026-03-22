@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Three Eras of AI-Assisted Engineering</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:720px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:2rem}
+.era-nav{display:flex;gap:4px;margin-bottom:2rem;background:#18181c;border-radius:12px;padding:4px}
+.era-btn{flex:1;padding:14px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;text-align:center;transition:all .3s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden}
+.era-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.06),transparent);opacity:0;transition:opacity .3s;border-radius:10px}
+.era-btn:hover::before{opacity:1}
+.era-btn.active{background:#1e1e24}
+.era-btn.active::after{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:40px;height:2px;border-radius:1px}
+.era-btn[data-era="0"].active::after{background:#5ba4f5}
+.era-btn[data-era="1"].active::after{background:#a78bfa}
+.era-btn[data-era="2"].active::after{background:#f59e42}
+.era-num{font-size:11px;font-weight:500;color:#555;display:block;margin-bottom:2px;letter-spacing:1px;text-transform:uppercase}
+.era-label{font-size:15px;font-weight:600;color:#777;transition:color .3s}
+.era-btn.active .era-label{color:#e8e6e1}
+.era-btn.active .era-num{color:#999}
+
+.panel{display:none;animation:fadeUp .45s cubic-bezier(.22,1,.36,1)}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.loop-visual{display:flex;align-items:center;justify-content:center;gap:16px;margin:1.5rem 0 2rem;flex-wrap:wrap}
+.loop-node{padding:14px 24px;border-radius:12px;font-size:14px;font-weight:600;text-align:center;min-width:100px;position:relative;transition:all .4s}
+.loop-arrow{font-size:20px;color:#3a3a40;transition:color .3s}
+.loop-feedback{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:#f59e42;margin-left:8px}
+.loop-feedback svg{animation:spin 3s linear infinite}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+.char-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 1.5rem}
+.char-item{padding:14px 16px;border-radius:10px;background:#141418;border:1px solid #222228}
+.char-item strong{font-weight:500;color:#999;display:block;margin-bottom:3px;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.char-item span{font-size:14px;color:#c8c6c1}
+
+.cost-bar{margin:1rem 0;padding:14px 18px;border-radius:10px;display:flex;align-items:center;gap:12px;border:1px solid}
+.cost-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;animation:pulse-dot 2s ease infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.5}}
+.cost-text{font-size:13px;font-weight:500}
+
+.example-box{padding:16px 20px;border-radius:10px;background:#141418;border-left:3px solid;font-family:'JetBrains Mono',monospace;font-size:12px;color:#888;line-height:1.8;margin-top:1rem}
+.example-box code{color:#c8c6c1;font-family:inherit}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Three eras of AI-assisted engineering</h1>
+<div class="era-nav">
+  <div class="era-btn active" data-era="0" onclick="showEra(0)"><span class="era-num">Era 1</span><span class="era-label">Autocomplete</span></div>
+  <div class="era-btn" data-era="1" onclick="showEra(1)"><span class="era-num">Era 2</span><span class="era-label">Assistant</span></div>
+  <div class="era-btn" data-era="2" onclick="showEra(2)"><span class="era-num">Era 3</span><span class="era-label">Agent</span></div>
+</div>
+
+<div class="panel active" id="p0">
+  <div class="loop-visual">
+    <div class="loop-node" style="background:#112240;color:#5ba4f5;border:1px solid #1a3a6a">You type</div>
+    <span class="loop-arrow">&rarr;</span>
+    <div class="loop-node" style="background:#1c1535;color:#a78bfa;border:1px solid #2d2555">AI suggests</div>
+    <span class="loop-arrow">&rarr;</span>
+    <div class="loop-node" style="background:#0f2a1f;color:#4ade80;border:1px solid #1a4030">You decide</div>
+  </div>
+  <div class="char-grid">
+    <div class="char-item"><strong>Scope</strong><span>Single line / block</span></div>
+    <div class="char-item"><strong>Memory</strong><span>None between suggestions</span></div>
+    <div class="char-item"><strong>Agency</strong><span>Zero — pure prediction</span></div>
+    <div class="char-item"><strong>Feedback loop</strong><span>None beyond accept/reject</span></div>
+  </div>
+  <div class="cost-bar" style="background:#0f2a1f;border-color:#1a4030">
+    <div class="cost-dot" style="background:#4ade80"></div>
+    <span class="cost-text" style="color:#4ade80">Cost of error: Low — you discard and retype</span>
+  </div>
+  <div class="example-box" style="border-left-color:#1a3a6a">
+    You write <code>function parseUser(</code> → Copilot suggests the body → you accept or tab past it. No awareness of your project's auth patterns or test expectations.
+  </div>
+</div>
+
+<div class="panel" id="p1">
+  <div class="loop-visual">
+    <div class="loop-node" style="background:#112240;color:#5ba4f5;border:1px solid #1a3a6a">You prompt</div>
+    <span class="loop-arrow">&rarr;</span>
+    <div class="loop-node" style="background:#1c1535;color:#a78bfa;border:1px solid #2d2555">AI responds</div>
+    <span class="loop-arrow">&rarr;</span>
+    <div class="loop-node" style="background:#0f2a1f;color:#4ade80;border:1px solid #1a4030">You act</div>
+  </div>
+  <div class="char-grid">
+    <div class="char-item"><strong>Scope</strong><span>Full conversation context</span></div>
+    <div class="char-item"><strong>Memory</strong><span>Within session only</span></div>
+    <div class="char-item"><strong>Agency</strong><span>None — produces text, not actions</span></div>
+    <div class="char-item"><strong>Feedback loop</strong><span>Multi-turn, but you run everything</span></div>
+  </div>
+  <div class="cost-bar" style="background:#2a1f0f;border-color:#40301a">
+    <div class="cost-dot" style="background:#f59e42"></div>
+    <span class="cost-text" style="color:#f59e42">Cost of error: Medium — you waste time reading bad output</span>
+  </div>
+  <div class="example-box" style="border-left-color:#2d2555">
+    You describe a bug → ChatGPT suggests a fix as a code block → you copy it, paste into your editor, run it yourself, report back. <code>You are the agent.</code>
+  </div>
+</div>
+
+<div class="panel" id="p2">
+  <div class="loop-visual">
+    <div class="loop-node" style="background:#112240;color:#5ba4f5;border:1px solid #1a3a6a">You brief</div>
+    <span class="loop-arrow">&rarr;</span>
+    <div class="loop-node" style="background:#1c1535;color:#a78bfa;border:1px solid #2d2555">Agent works</div>
+    <span class="loop-arrow">&rarr;</span>
+    <div class="loop-node" style="background:#2a1a0a;color:#f59e42;border:1px solid #40280f">Observes</div>
+    <div class="loop-feedback">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e42" stroke-width="2"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+      <span>loops</span>
+    </div>
+    <span class="loop-arrow">&rarr;</span>
+    <div class="loop-node" style="background:#0f2a1f;color:#4ade80;border:1px solid #1a4030">You verify</div>
+  </div>
+  <div class="char-grid">
+    <div class="char-item"><strong>Scope</strong><span>Full codebase + tools</span></div>
+    <div class="char-item"><strong>Memory</strong><span>Session + CLAUDE.md persistence</span></div>
+    <div class="char-item"><strong>Agency</strong><span>Reads, writes, executes, adapts</span></div>
+    <div class="char-item"><strong>Feedback loop</strong><span>Closed loop — acts and observes</span></div>
+  </div>
+  <div class="cost-bar" style="background:#2a0f0f;border-color:#401a1a">
+    <div class="cost-dot" style="background:#f87171"></div>
+    <span class="cost-text" style="color:#f87171">Cost of error: Higher — agent modifies files & runs commands</span>
+  </div>
+  <div class="example-box" style="border-left-color:#f59e42">
+    You say <code>"refactor auth to JWT, keep tests passing"</code> → Claude Code reads files, plans, writes code, runs tests, sees failures, fixes them, iterates. You review the diff.
+  </div>
+</div>
+</div>
+
+<script>
+function showEra(i){
+  document.querySelectorAll('.era-btn').forEach((b,j)=>b.classList.toggle('active',j===i));
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));
+}
+</script>
+</body>
+</html>

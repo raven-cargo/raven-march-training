@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Looping vs Thoroughness</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.5rem}
+.side{border-radius:14px;border:1px solid #222228;background:#141418;overflow:hidden}
+.side-header{padding:12px 16px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;border-bottom:1px solid #1a1a1e}
+.side-header .dot{width:10px;height:10px;border-radius:50%}
+.side-body{padding:16px}
+
+.trace{font-family:'JetBrains Mono',monospace;font-size:10px;background:#0a0a0c;border:1px solid #1a1a1e;border-radius:8px;padding:12px 14px;line-height:1.8;overflow-x:auto;margin-bottom:12px}
+.t-tool{color:#f59e42}
+.t-think{color:#a78bfa;font-style:italic}
+.t-result{color:#555}
+.t-new{color:#4ade80}
+.t-repeat{color:#f87171}
+.t-note{font-size:10px;color:#333;font-style:italic}
+
+.verdict{padding:10px 14px;border-radius:8px;font-size:12px;line-height:1.5}
+.verdict.good{background:#0a1a14;border:1px solid #1a4030;color:#4ade80}
+.verdict.bad{background:#1a0a0a;border:1px solid #401a1a;color:#f87171}
+
+.divider{border:none;border-top:1px solid #1a1a1e;margin:1.5rem 0}
+
+.rule-title{font-size:13px;font-weight:600;color:#e8e6e1;margin-bottom:12px}
+.rules{display:flex;flex-direction:column;gap:8px}
+.rule{padding:14px 18px;border-radius:12px;border:1px solid #222228;background:#141418;display:flex;gap:14px;align-items:flex-start}
+.rule-num{font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;min-width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;background:#0a1525;color:#5ba4f5}
+.rule-text{font-size:13px;color:#aaa;line-height:1.55}
+.rule-text strong{color:#e8e6e1;font-weight:600}
+.rule-text code{font-family:'JetBrains Mono',monospace;font-size:11px;padding:1px 5px;border-radius:3px;background:#0a0a0c;color:#888}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Looping vs thoroughness</h1>
+<div class="objective">
+  <span class="goal">Key judgment call</span>
+  <span class="text">Both looping and thoroughness involve the agent reading multiple files. The difference determines whether you let it work or step in. This is one of the most common misjudgments engineers make when watching an agent.</span>
+</div>
+<div class="instruct">&#9654; Compare these two traces side-by-side. Same number of reads — very different behavior.</div>
+
+<div class="compare">
+  <div class="side">
+    <div class="side-header"><div class="dot" style="background:#4ade80"></div>Thoroughness</div>
+    <div class="side-body">
+      <div class="trace">
+<span class="t-tool">Read("src/auth/jwt.ts")</span>
+<span class="t-think">thinking: JWT module found. Uses HS256.</span>
+<span class="t-new">  → discovered: imports from ./config</span>
+
+<span class="t-tool">Read("src/auth/config.ts")</span> <span class="t-note">← new file</span>
+<span class="t-think">thinking: config exports JWT_SECRET and EXPIRY.</span>
+<span class="t-new">  → discovered: references userService</span>
+
+<span class="t-tool">Read("src/services/userService.ts")</span> <span class="t-note">← new file</span>
+<span class="t-think">thinking: userService uses jwt.verify in getUser.</span>
+<span class="t-new">  → discovered: test file exists</span>
+
+<span class="t-tool">Read("src/auth/jwt.test.ts")</span> <span class="t-note">← new file</span>
+<span class="t-think">thinking: tests cover sign/verify but not refresh.</span>
+<span class="t-think">Now I have the full picture. Planning changes...</span>
+      </div>
+      <div class="verdict good">Each read is a <strong>new file</strong> discovered from the previous one. Thinking covers <strong>new ground</strong> each time. The agent is building a coherent model. Let it work.</div>
+    </div>
+  </div>
+
+  <div class="side">
+    <div class="side-header"><div class="dot" style="background:#f87171"></div>Looping</div>
+    <div class="side-body">
+      <div class="trace">
+<span class="t-tool">Read("src/auth/jwt.ts")</span>
+<span class="t-think">thinking: could use approach A (RS256)...</span>
+<span class="t-repeat">  → doesn't resolve, considers approach B</span>
+
+<span class="t-tool">Read("src/auth/jwt.ts")</span> <span class="t-note">← same file</span>
+<span class="t-think">thinking: approach B would work, but what about</span>
+<span class="t-repeat">  backward compatibility? Maybe approach A...</span>
+
+<span class="t-tool">Read("src/auth/jwt.ts")</span> <span class="t-note">← same file again</span>
+<span class="t-think">thinking: if I use approach A, the config issue...</span>
+<span class="t-repeat">  → same reasoning, no new conclusion</span>
+
+<span class="t-tool">Read("src/auth/jwt.ts")</span> <span class="t-note">← same file again</span>
+<span class="t-think">thinking: not sure whether A or B. Perhaps...</span>
+      </div>
+      <div class="verdict bad">Same file read repeatedly. Thinking <strong>rehearses the same options</strong> without reaching a conclusion. No new information being gathered. The agent is stuck — <strong>intervene with a decision</strong>.</div>
+    </div>
+  </div>
+</div>
+
+<div class="rule-title">The diagnostic rules</div>
+<div class="rules">
+  <div class="rule"><div class="rule-num">1</div><div class="rule-text"><strong>Are the reads hitting new files?</strong> New files = thoroughness. Same file without intervening writes = likely loop.</div></div>
+  <div class="rule"><div class="rule-num">2</div><div class="rule-text"><strong>Is the thinking covering new ground?</strong> New observations, new files discovered, new constraints identified = thoroughness. Same options reconsidered = loop.</div></div>
+  <div class="rule"><div class="rule-num">3</div><div class="rule-text"><strong>Has there been a write between repeated reads?</strong> Re-reading after a write makes sense — the content changed. Re-reading without a write = the agent is looking for something it already found.</div></div>
+  <div class="rule"><div class="rule-num">4</div><div class="rule-text"><strong>Your intervention for a loop:</strong> Answer the question the agent is circling. "Use RS256, store refresh tokens in PostgreSQL, maintain backward compatibility for existing tokens." Specific decisions break loops.</div></div>
+</div>
+</div>
+</body>
+</html>

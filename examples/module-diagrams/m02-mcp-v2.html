@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCP Servers — Extending Agent Capability</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+
+.core-idea{padding:16px 20px;border-radius:12px;background:#141418;border:1px solid #222228;font-size:14px;color:#aaa;line-height:1.65;margin-bottom:1.5rem}
+.core-idea strong{color:#e8e6e1}
+
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:10px;padding-left:2px}
+
+.transport-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem}
+.transport{padding:18px 16px;border-radius:14px;border:1px solid #222228;background:#141418;cursor:pointer;transition:all .3s}
+.transport:hover{border-color:#333}
+.transport.active{transform:translateY(-2px)}
+.transport[data-tr="stdio"].active{border-color:#5ba4f5;background:#0a1525}
+.transport[data-tr="http"].active{border-color:#f59e42;background:#1a150a}
+.tr-name{font-size:15px;font-weight:700;margin-bottom:2px;color:#888;transition:color .3s}
+.transport.active .tr-name{color:#e8e6e1}
+.tr-type{font-size:11px;font-family:'JetBrains Mono',monospace;color:#444;margin-bottom:8px}
+.tr-desc{font-size:12px;color:#666;line-height:1.5}
+
+.tr-detail{animation:fadeUp .3s ease;margin-bottom:1.5rem}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.config-block{font-family:'JetBrains Mono',monospace;font-size:11px;background:#0a0a0c;border:1px solid #1a1a1e;border-radius:10px;padding:16px 18px;line-height:1.8;color:#888;overflow-x:auto}
+.config-block .key{color:#5ba4f5}
+.config-block .str{color:#4ade80}
+.config-block .var{color:#f59e42}
+.config-block .brace{color:#555}
+
+.divider{border:none;border-top:1px solid #1a1a1e;margin:1.5rem 0}
+
+.debug-label{font-size:13px;font-weight:600;color:#e8e6e1;margin-bottom:4px}
+.debug-instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px}
+.debug-steps{display:flex;flex-direction:column;gap:6px}
+.debug-step{padding:12px 16px;border-radius:10px;background:#141418;border:1px solid #1a1a1e;display:flex;gap:12px;align-items:flex-start}
+.ds-num{font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;min-width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;background:#0a1525;color:#5ba4f5}
+.ds-content{flex:1}
+.ds-text{font-size:13px;color:#aaa;line-height:1.4;margin-bottom:4px}
+.ds-cmd{font-size:11px;font-family:'JetBrains Mono',monospace;color:#666;background:#0a0a0c;padding:4px 8px;border-radius:4px;display:inline-block}
+
+.perm-note{margin-top:1.5rem;padding:14px 18px;border-radius:10px;background:#141418;border:1px solid #1a1a1e;font-size:13px;color:#888;line-height:1.6}
+.perm-note strong{color:#e8e6e1;font-weight:600}
+.perm-code{font-family:'JetBrains Mono',monospace;font-size:11px;color:#5ba4f5;background:#0a1525;padding:2px 6px;border-radius:4px}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>MCP servers — extending agent capability</h1>
+
+<div class="objective">
+  <span class="goal">Learning objective</span>
+  <span class="text">Understand MCP as the way to give Claude Code access to external tools (databases, APIs, issue trackers). Know the two transport types, how to configure them, and how to debug when they don't connect.</span>
+</div>
+
+<div class="core-idea">
+  <strong>Without MCP</strong>, Claude Code can only read files and run bash commands. <strong>With MCP</strong>, it can query databases, create issues in Linear, fetch Notion pages, search vector stores — any external tool exposed through the protocol. MCP tools work identically to built-in tools once connected.
+</div>
+
+<div class="instruct">&#9654; Click each transport type to see configuration examples and when to use them.</div>
+
+<div class="transport-grid">
+  <div class="transport active" data-tr="stdio" onclick="showTransport('stdio')">
+    <div class="tr-name">stdio (local)</div>
+    <div class="tr-type">Subprocess on your machine</div>
+    <div class="tr-desc">Claude Code starts it, talks via stdin/stdout, kills it when the session ends. Best for local dev.</div>
+  </div>
+  <div class="transport" data-tr="http" onclick="showTransport('http')">
+    <div class="tr-name">Streamable HTTP (remote)</div>
+    <div class="tr-type">External service over network</div>
+    <div class="tr-desc">Persists independently. Used for shared team servers, cloud APIs, SaaS integrations. Replaces older SSE transport.</div>
+  </div>
+</div>
+
+<div id="trDetail"></div>
+
+<hr class="divider">
+
+<div class="debug-label">When it doesn't connect</div>
+<div class="debug-instruct">&#9654; Walk through these steps in order — they cover the three most common failure points.</div>
+<div class="debug-steps">
+  <div class="debug-step"><div class="ds-num">1</div><div class="ds-content"><div class="ds-text">Test the command manually — does the server process start?</div><div class="ds-cmd">npx -y @modelcontextprotocol/server-postgres "postgresql://localhost/mydb"</div></div></div>
+  <div class="debug-step"><div class="ds-num">2</div><div class="ds-content"><div class="ds-text">Check environment variables — are credentials actually set?</div><div class="ds-cmd">echo $LINEAR_API_KEY</div></div></div>
+  <div class="debug-step"><div class="ds-num">3</div><div class="ds-content"><div class="ds-text">Start Claude Code and verify tools are available</div><div class="ds-cmd">claude → "What tools are available from the postgres MCP server?"</div></div></div>
+</div>
+
+<div class="perm-note">
+  <strong>MCP tools use the same permission model.</strong> Allow or deny with <span class="perm-code">mcp__{server}__{tool}</span> in settings.json. Example: allow <span class="perm-code">mcp__postgres__query</span> but deny <span class="perm-code">mcp__postgres__execute</span> for read-only access.
+</div>
+</div>
+
+<script>
+const transports={
+stdio:{config:`<span class="brace">{</span>
+  <span class="key">"mcpServers"</span>: <span class="brace">{</span>
+    <span class="key">"postgres"</span>: <span class="brace">{</span>
+      <span class="key">"command"</span>: <span class="str">"npx"</span>,
+      <span class="key">"args"</span>: <span class="brace">[</span><span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-postgres"</span>,
+             <span class="str">"postgresql://localhost/mydb"</span><span class="brace">]</span>,
+      <span class="key">"type"</span>: <span class="str">"stdio"</span>
+    <span class="brace">}</span>
+  <span class="brace">}</span>
+<span class="brace">}</span>`},
+http:{config:`<span class="brace">{</span>
+  <span class="key">"mcpServers"</span>: <span class="brace">{</span>
+    <span class="key">"linear"</span>: <span class="brace">{</span>
+      <span class="key">"url"</span>: <span class="str">"https://mcp.linear.app/mcp"</span>,
+      <span class="key">"type"</span>: <span class="str">"http"</span>,
+      <span class="key">"headers"</span>: <span class="brace">{</span>
+        <span class="key">"Authorization"</span>: <span class="str">"Bearer <span class="var">\${LINEAR_API_KEY}</span>"</span>
+      <span class="brace">}</span>
+    <span class="brace">}</span>
+  <span class="brace">}</span>
+<span class="brace">}</span>`}};
+
+function showTransport(t){
+  document.querySelectorAll('.transport').forEach(el=>el.classList.toggle('active',el.dataset.tr===t));
+  document.getElementById('trDetail').innerHTML='<div class="tr-detail"><div class="config-block">'+transports[t].config+'</div></div>';
+}
+showTransport('stdio');
+</script>
+</body>
+</html>

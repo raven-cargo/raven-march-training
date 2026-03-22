@@ -42,7 +42,7 @@ In Module 02 you configured `CLAUDE.md` as the agent's persistent project contex
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m07-persistence-predict" data-xp="8">
   <span class="ix-title">Predict Before You Learn</span>
   <p class="ix-predict-prompt">Imagine you use Claude Code to review code for security issues every week. Each Monday you start a fresh session. What problems do you expect from the stateless session model? How would the review quality differ between Week 1 and Week 10?</p>
-  <textarea class="ix-predict-input" placeholder="Write your reasoning -- what would you expect and why?"></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- what would you expect and why?"></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>
     <p>The stateless model creates three compounding problems. First, <strong>re-briefing cost</strong>: every Monday you must re-explain your severity taxonomy, format, and conventions -- or forget to, producing inconsistent output. Second, <strong>quality drift</strong>: Week 1 and Week 10 reviews will differ because your ad-hoc briefings vary each time. Third, <strong>lost institutional knowledge</strong>: when you move projects, all that hard-won review expertise leaves with you. A skill file encodes the expertise once so every session starts at the same quality floor -- no re-briefing, no drift, no knowledge loss.</p>
@@ -176,7 +176,7 @@ The TCEF pattern from Module 04 is not just for prompts you type in a session. I
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m07-skill-anatomy-predict" data-xp="8">
   <span class="ix-title">Predict Before You Learn</span>
   <p class="ix-predict-prompt">You know the TCEF framework (Task, Context, Examples, Format) from Module 04. If you were designing the internal structure of a skill file that Claude loads to perform a specific task, what sections would you include? Think about what information a specialist needs to execute a task perfectly on their first attempt.</p>
-  <textarea class="ix-predict-input" placeholder="Write your reasoning -- what sections would you include and why?"></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- what sections would you include and why?"></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>
     <p>A complete skill body uses a variation of TCEF with four sections. <strong>Role</strong> (who Claude is -- uniquely identifies the expertise domain). <strong>Procedure</strong> (numbered steps to execute the task -- specific enough that an expert could follow without clarifying questions). <strong>Example</strong> (one complete input/output demonstration -- silently communicates field names, data types, and style). <strong>Anti-patterns</strong> (explicit mistakes to avoid -- pre-emptive constraints on known failure modes). The YAML frontmatter wraps this body with metadata: <code>name</code>, <code>description</code>, <code>version</code>, and <code>triggers</code> (a LUXOR convention, not natively parsed by Claude Code).</p>
@@ -486,7 +486,7 @@ Skills encode expertise; commands make that expertise accessible. A slash comman
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m07-commands-predict" data-xp="8">
   <span class="ix-title">Predict Before You Learn</span>
   <p class="ix-predict-prompt">You have a skill file that performs security reviews. Currently, using it requires typing a multi-sentence prompt every time. If you could create a shortcut that team members discover via autocomplete and invoke with a single line, what would that shortcut need to contain?</p>
-  <textarea class="ix-predict-input" placeholder="Write your reasoning -- what would the shortcut need?"></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- what would the shortcut need?"></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>
     <p>A slash command is a markdown file in <code>.claude/commands/</code> that loads a skill, handles <code>$ARGUMENTS</code> (everything typed after the command name), and provides the invocation bridge. Commands make skills discoverable via <code>/</code> autocomplete -- team members type <code>/</code> and see all available commands listed. The command file contains: which skill to invoke, how to handle the arguments, and what to do when no arguments are provided.</p>
@@ -544,39 +544,39 @@ ask the user which files to review.</code></pre>
 <div class="ix-diagram" data-component="entry-list" data-diagram-id="m07-reserved-names">
   <span class="ix-title">Reserved Command Names -- Never Shadow These</span>
   <div class="ix-entry" data-badge="include">
-    <span class="ix-entry-label">security-review</span>
+    <span class="ix-entry-title">security-review</span>
     <span class="ix-entry-desc">Descriptive, unique -- no conflict with built-in commands</span>
   </div>
   <div class="ix-entry" data-badge="include">
-    <span class="ix-entry-label">ship-feature</span>
+    <span class="ix-entry-title">ship-feature</span>
     <span class="ix-entry-desc">Clearly describes a custom workflow</span>
   </div>
   <div class="ix-entry" data-badge="include">
-    <span class="ix-entry-label">project-config</span>
+    <span class="ix-entry-title">project-config</span>
     <span class="ix-entry-desc">Prefixed to avoid shadowing built-in <code>config</code></span>
   </div>
   <div class="ix-entry" data-badge="include">
-    <span class="ix-entry-label">plugin-builder</span>
+    <span class="ix-entry-title">plugin-builder</span>
     <span class="ix-entry-desc">Prefixed to avoid shadowing built-in <code>plugin</code></span>
   </div>
   <div class="ix-entry" data-badge="exclude">
-    <span class="ix-entry-label">plugin</span>
+    <span class="ix-entry-title">plugin</span>
     <span class="ix-entry-desc">Shadows the native plugin system -- breaks marketplace access</span>
   </div>
   <div class="ix-entry" data-badge="exclude">
-    <span class="ix-entry-label">help</span>
+    <span class="ix-entry-title">help</span>
     <span class="ix-entry-desc">Shadows built-in help command</span>
   </div>
   <div class="ix-entry" data-badge="exclude">
-    <span class="ix-entry-label">clear</span>
+    <span class="ix-entry-title">clear</span>
     <span class="ix-entry-desc">Shadows built-in clear screen</span>
   </div>
   <div class="ix-entry" data-badge="exclude">
-    <span class="ix-entry-label">config</span>
+    <span class="ix-entry-title">config</span>
     <span class="ix-entry-desc">Shadows built-in configuration command</span>
   </div>
   <div class="ix-entry" data-badge="exclude">
-    <span class="ix-entry-label">mcp</span>
+    <span class="ix-entry-title">mcp</span>
     <span class="ix-entry-desc">Shadows built-in MCP server management</span>
   </div>
 </div>

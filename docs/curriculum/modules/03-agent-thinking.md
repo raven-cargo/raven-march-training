@@ -21,6 +21,10 @@
 
 ## Overview
 
+<div class="ix-diagram" data-component="objective">
+  <p>Learn to read, interpret, and evaluate Claude Code agent output — understanding trace structures, tool call patterns, clarification signals, and intervention points.</p>
+</div>
+
 Claude Code's transparency lets you watch the agent reason, plan, and act in real time. This module teaches you to read that transparency productively -- scanning traces to catch wrong assumptions early and knowing when to intervene versus when to hold.
 
 <details class="ix-collapse">
@@ -30,14 +34,6 @@ The most significant operational advantage of Claude Code over previous AI tools
 Engineers who develop fluency with reasoning traces become significantly more effective at directing agents. They catch wrong assumptions early. They know when to let the agent work without interruption. They write better `CLAUDE.md` content because they can see exactly what context the agent lacked. And they can diagnose stuck or looping agents rather than having to restart from scratch.
 </div>
 </details>
-
-**Learning Objectives:**
-
-1. Read and interpret a Claude Code reasoning trace, identifying the function of each component
-2. Map each step in a tool call sequence to its Agentic Loop (PRAO) phase
-3. Recognize the common tool call patterns that signal different agent behaviors
-4. Distinguish situations requiring intervention from situations where the agent should be allowed to continue
-5. Understand what extended thinking provides, when it's valuable, and when it isn't
 
 ---
 
@@ -54,7 +50,7 @@ Instead of checking output and reverse-engineering whether the process was sound
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m03-transparency-predict" data-xp="8">
   <span class="ix-title">Predict Before Reveal</span>
   <p class="ix-predict-prompt">Before reviewing output layers, predict your highest-leverage intervention moment in an agent run: before tool calls, during tool calls, or after final summary. Explain why.</p>
-  <textarea class="ix-predict-input" placeholder="Write your prediction and rationale."></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your prediction and rationale."></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>
     <p>The highest-leverage intervention point is usually before major actions, when assumptions and plan quality are visible in the thinking layer and still cheap to redirect.</p>
@@ -68,22 +64,22 @@ Instead of checking output and reverse-engineering whether the process was sound
 <div class="ix-diagram" data-component="click-cards" data-diagram-id="agent-output-layers">
   <span class="ix-title">Reading agent output (detailed)</span>
 
-  <div class="ix-card" data-accent="#8b5cf6">
+  <div class="ix-card" data-accent="#8b5cf6" data-phase="reason">
     <i data-lucide="brain" class="ix-card-icon"></i>
     <span class="ix-card-label">Thinking Layer</span>
   </div>
 
-  <div class="ix-card" data-accent="#06b6d4">
+  <div class="ix-card" data-accent="#06b6d4" data-phase="act">
     <i data-lucide="sparkles" class="ix-card-icon"></i>
     <span class="ix-card-label">Extended Thinking</span>
   </div>
 
-  <div class="ix-card" data-accent="#6366f1">
+  <div class="ix-card" data-accent="#6366f1" data-phase="reason">
     <i data-lucide="wrench" class="ix-card-icon"></i>
     <span class="ix-card-label">Tool Call Layer</span>
   </div>
 
-  <div class="ix-card" data-accent="#10b981">
+  <div class="ix-card" data-accent="#10b981" data-phase="observe">
     <i data-lucide="message-square" class="ix-card-icon"></i>
     <span class="ix-card-label">Response Layer</span>
   </div>
@@ -541,27 +537,27 @@ A sequence of tool calls tells a story about what the agent is doing and why. Le
 <div class="ix-diagram" data-component="click-cards" data-diagram-id="tool-call-patterns">
   <span class="ix-title">Five tool call patterns</span>
 
-  <div class="ix-card" data-accent="#6366f1">
+  <div class="ix-card" data-accent="#6366f1" data-phase="reason">
     <i data-lucide="file-text" class="ix-card-icon"></i>
     <span class="ix-card-label">Single File</span>
   </div>
 
-  <div class="ix-card" data-accent="#8b5cf6">
+  <div class="ix-card" data-accent="#8b5cf6" data-phase="reason">
     <i data-lucide="files" class="ix-card-icon"></i>
     <span class="ix-card-label">Multi-File</span>
   </div>
 
-  <div class="ix-card" data-accent="#06b6d4">
+  <div class="ix-card" data-accent="#06b6d4" data-phase="act">
     <i data-lucide="search" class="ix-card-icon"></i>
     <span class="ix-card-label">Exploration</span>
   </div>
 
-  <div class="ix-card" data-accent="#10b981">
+  <div class="ix-card" data-accent="#10b981" data-phase="observe">
     <i data-lucide="check-circle" class="ix-card-icon"></i>
     <span class="ix-card-label">Act & Verify</span>
   </div>
 
-  <div class="ix-card" data-accent="#ef4444">
+  <div class="ix-card" data-accent="#ef4444" data-phase="error">
     <i data-lucide="alert-circle" class="ix-card-icon"></i>
     <span class="ix-card-label">Stuck</span>
   </div>
@@ -957,7 +953,7 @@ Clarifying questions from a well-calibrated agent are a feature, not a failure. 
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m03-clarification-predict" data-xp="10">
   <span class="ix-title">Predict First: Which Clarification Type Is This?</span>
   <p class="ix-predict-prompt">Prompt scenario: "I can store refresh tokens in PostgreSQL or Redis. Which should I use?" Predict the clarification type and the quality bar for your answer.</p>
-  <textarea class="ix-predict-input" placeholder="Type + what your answer should include."></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Type + what your answer should include."></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal</summary>
     <p>This is authority clarification. A strong answer picks one path, states why, and records it in CLAUDE.md if it will recur.</p>
@@ -1544,20 +1540,22 @@ database failure case.</pre>
 
 ## Best Practices Summary
 
-<div class="ix-diagram" data-component="callout" data-variant="key-concept">
-  <p><strong>Reading traces:</strong> Scan thinking blocks for the agent's task model and assumptions before it acts. Track tool call sequences at a high level. Pay attention to thinking blocks after test failures. Do not try to read every tool result -- focus on what is relevant to the decision you need to make.</p>
-</div>
+<p class="ix-instruct">Use the tabs to review the four operational practices before taking the final module check.</p>
 
-<div class="ix-diagram" data-component="callout" data-variant="key-concept">
-  <p><strong>Clarifying questions:</strong> Answer with specific, bounded decisions. Include reasoning when it affects downstream choices. Promote standing conventions to CLAUDE.md. Avoid vague answers -- "do whatever makes sense" is no better than no clarification at all.</p>
-</div>
-
-<div class="ix-diagram" data-component="callout" data-variant="key-concept">
-  <p><strong>Intervention decisions:</strong> Intervene when thinking reveals a wrong assumption before action, or when you see the loop pattern (same operations repeating without progress). Do not intervene just because the path is unexpected -- read the reasoning first. After two or three unproductive cycles, redirect.</p>
-</div>
-
-<div class="ix-diagram" data-component="callout" data-variant="key-concept">
-  <p><strong>Extended thinking:</strong> Valuable for multi-constraint architecture, complex debugging, and formal reasoning. Read rejected approaches in the trace -- they contain valuable context. Not necessary for simple edits, boilerplate, or single-file changes with clear requirements.</p>
+<div class="ix-diagram" data-component="tabbed-panel" data-diagram-id="m03-best-practices-tabs">
+  <span class="ix-title">Module 03 Operational Practices</span>
+  <div data-tab="Reading Traces">
+    <p>Scan thinking blocks for the agent's task model and assumptions before it acts. Track tool call sequences at a high level. Pay attention to thinking blocks after test failures. Do not try to read every tool result -- focus on what is relevant to the decision you need to make.</p>
+  </div>
+  <div data-tab="Clarifying Questions">
+    <p>Answer with specific, bounded decisions. Include reasoning when it affects downstream choices. Promote standing conventions to <code>CLAUDE.md</code>. Avoid vague answers -- "do whatever makes sense" is no better than no clarification at all.</p>
+  </div>
+  <div data-tab="Intervention Decisions">
+    <p>Intervene when thinking reveals a wrong assumption before action, or when you see the loop pattern (same operations repeating without progress). Do not intervene just because the path is unexpected -- read the reasoning first. After two or three unproductive cycles, redirect.</p>
+  </div>
+  <div data-tab="Extended Thinking">
+    <p>Extended thinking is valuable for multi-constraint architecture, complex debugging, and formal reasoning. Read rejected approaches in the trace -- they contain valuable context. It is not necessary for simple edits, boilerplate, or single-file changes with clear requirements.</p>
+  </div>
 </div>
 
 ---

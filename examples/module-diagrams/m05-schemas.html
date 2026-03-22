@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reading Tool Schemas</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+
+.schema-view{font-family:'JetBrains Mono',monospace;font-size:11px;background:#0a0a0c;border:1px solid #1a1a1e;border-radius:14px;padding:18px 20px;line-height:1.8;overflow-x:auto;margin-bottom:1.5rem;position:relative}
+.s-key{color:#5ba4f5}
+.s-str{color:#4ade80}
+.s-type{color:#a78bfa}
+.s-num{color:#f59e42}
+.s-brace{color:#555}
+.s-comment{color:#333}
+.s-highlight{cursor:pointer;border-radius:3px;padding:0 2px;transition:all .2s}
+.s-highlight:hover{background:#5ba4f520}
+.s-highlight.active{background:#5ba4f530;outline:1px solid #5ba4f540}
+
+.annotation{padding:14px 18px;border-radius:12px;border:1px solid #222228;background:#141418;min-height:80px;animation:fadeUp .3s ease;margin-bottom:1.5rem}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.ann-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#444;margin-bottom:4px}
+.ann-text{font-size:13px;color:#aaa;line-height:1.6}
+.ann-text strong{color:#e8e6e1}
+
+.divider{border:none;border-top:1px solid #1a1a1e;margin:1.5rem 0}
+
+.desc-compare{margin-bottom:1.5rem}
+.desc-title{font-size:13px;font-weight:600;color:#e8e6e1;margin-bottom:10px}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cbox{padding:14px 16px;border-radius:10px;font-size:12px;line-height:1.6}
+.cbox.bad{background:#1a0a0a;border:1px solid #401a1a;color:#888}
+.cbox.good{background:#0a1a14;border:1px solid #1a4030;color:#c8c6c1}
+.cbox-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.cbox-label.bad{color:#f87171}
+.cbox-label.good{color:#4ade80}
+
+.rules{display:flex;flex-direction:column;gap:6px}
+.rule{padding:12px 16px;border-radius:10px;background:#141418;border:1px solid #1a1a1e;display:flex;gap:12px;align-items:flex-start}
+.rule-num{font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;min-width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:#0a1525;color:#5ba4f5;flex-shrink:0;margin-top:1px}
+.rule-text{font-size:13px;color:#aaa;line-height:1.5}
+.rule-text strong{color:#e8e6e1}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Reading tool schemas</h1>
+<div class="objective">
+  <span class="goal">Schema literacy</span>
+  <span class="text">Tool schemas are the contract between an MCP server and any client. Claude reads them at connection time to decide when and how to invoke tools. Understanding the anatomy of a schema — especially the description field — is essential for writing and evaluating MCP servers.</span>
+</div>
+<div class="instruct">&#9654; Click any highlighted section in the schema below to see an annotation explaining its role.</div>
+
+<div class="schema-view">
+{
+  <span class="s-highlight" data-a="0" onclick="annotate(0)"><span class="s-key">"name"</span>: <span class="s-str">"search_issues"</span></span>,
+  <span class="s-highlight" data-a="1" onclick="annotate(1)"><span class="s-key">"description"</span>: <span class="s-str">"Search for issues matching criteria. Use when finding existing issues by keyword/status/assignee. Do NOT use to create issues (use create_issue) or get by ID (use get_issue). Returns array of matches with IDs, titles, statuses. Empty array if no matches."</span></span>,
+  <span class="s-key">"inputSchema"</span>: {
+    <span class="s-key">"type"</span>: <span class="s-str">"object"</span>,
+    <span class="s-key">"properties"</span>: {
+      <span class="s-highlight" data-a="2" onclick="annotate(2)"><span class="s-key">"query"</span>: {
+        <span class="s-key">"type"</span>: <span class="s-str">"string"</span>,
+        <span class="s-key">"description"</span>: <span class="s-str">"Full-text search. Matches titles and descriptions."</span>
+      }</span>,
+      <span class="s-highlight" data-a="3" onclick="annotate(3)"><span class="s-key">"status"</span>: {
+        <span class="s-key">"type"</span>: <span class="s-str">"string"</span>,
+        <span class="s-key">"enum"</span>: [<span class="s-str">"open"</span>, <span class="s-str">"in_progress"</span>, <span class="s-str">"closed"</span>, <span class="s-str">"all"</span>],
+        <span class="s-key">"default"</span>: <span class="s-str">"open"</span>
+      }</span>,
+      <span class="s-highlight" data-a="4" onclick="annotate(4)"><span class="s-key">"limit"</span>: {
+        <span class="s-key">"type"</span>: <span class="s-str">"integer"</span>,
+        <span class="s-key">"default"</span>: <span class="s-num">20</span>,
+        <span class="s-key">"minimum"</span>: <span class="s-num">1</span>,
+        <span class="s-key">"maximum"</span>: <span class="s-num">100</span>
+      }</span>
+    },
+    <span class="s-highlight" data-a="5" onclick="annotate(5)"><span class="s-key">"required"</span>: [<span class="s-str">"query"</span>]</span>
+  }
+}
+</div>
+
+<div class="annotation" id="ann">
+  <div class="ann-label">Click any highlighted section above</div>
+  <div class="ann-text">Each part of the schema communicates something specific to Claude about how to use this tool.</div>
+</div>
+
+<hr class="divider">
+
+<div class="desc-compare">
+  <div class="desc-title">Writing descriptions for Claude, not humans</div>
+  <div class="compare">
+    <div class="cbox bad"><div class="cbox-label bad">For humans (insufficient)</div>"Searches issues in the project tracker."</div>
+    <div class="cbox good"><div class="cbox-label good">For Claude (includes 3 required elements)</div>"Search for issues matching criteria. <strong style="color:#4ade80">Use when</strong> finding existing issues by keyword/status/assignee. <strong style="color:#4ade80">Do NOT use</strong> to create issues (use create_issue) or get by ID (use get_issue). <strong style="color:#4ade80">Returns</strong> array of matches. Empty array if no matches."</div>
+  </div>
+</div>
+
+<div class="rules">
+  <div class="rule"><div class="rule-num">1</div><div class="rule-text"><strong>The action:</strong> What the tool does in precise terms. Not "searches issues" — "searches for issues matching given criteria."</div></div>
+  <div class="rule"><div class="rule-num">2</div><div class="rule-text"><strong>When to use it:</strong> Conditions under which this tool is right, and when to use alternatives instead. This prevents Claude calling the wrong tool.</div></div>
+  <div class="rule"><div class="rule-num">3</div><div class="rule-text"><strong>What it returns:</strong> Structure and content of the output so Claude can use the result correctly in its next reasoning step.</div></div>
+</div>
+</div>
+
+<script>
+const annotations=[
+  {label:'Name',text:'<strong>Function identifier</strong> that Claude uses to call this tool. Should be a clear verb phrase — <code>search_issues</code>, <code>create_pr</code>, <code>run_query</code>. Claude matches task requirements to tool names during the Reason phase.'},
+  {label:'Description (most important field)',text:'The description is <strong>the most important part</strong> and consistently under-engineered. It must include three things: what the tool does, when to use it (and when NOT to), and what it returns. This description tells Claude to use <code>create_issue</code> for creation and <code>get_issue</code> for ID lookup — preventing wrong tool selection.'},
+  {label:'Required parameter with description',text:'<strong>query</strong> is the only required field. Its description tells Claude exactly what it matches against (titles and descriptions). Without this, Claude might guess it matches assignee names or IDs.'},
+  {label:'Enum constraint with default',text:'<strong>enum</strong> restricts status to exactly four valid values — prevents Claude generating invalid values like "pending" or "active." The <strong>default</strong> of "open" means Claude doesn\'t need to specify status for the most common case.'},
+  {label:'Numeric constraints',text:'<strong>minimum/maximum</strong> tells Claude the valid range. <strong>default: 20</strong> means Claude can omit this for reasonable result sizes. Together these prevent Claude requesting 10,000 results or 0 results.'},
+  {label:'Required array',text:'Only <strong>query</strong> is required — the tool can\'t function without something to search for. Status, assignee, and limit all have sensible defaults. Rule: mark required only when the tool literally cannot function without it.'},
+];
+
+function annotate(i){
+  document.querySelectorAll('.s-highlight').forEach(h=>h.classList.remove('active'));
+  document.querySelector('.s-highlight[data-a="'+i+'"]').classList.add('active');
+  const a=annotations[i];
+  document.getElementById('ann').innerHTML='<div class="ann-label">'+a.label+'</div><div class="ann-text">'+a.text+'</div>';
+}
+</script>
+</body>
+</html>

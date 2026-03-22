@@ -42,7 +42,7 @@ You used the TCEF pattern in Module 04 to write precise prompts. Meta-prompting 
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m08-meta-concept-predict" data-xp="8">
   <span class="ix-title">Predict Before You Learn</span>
   <p class="ix-predict-prompt">You have been writing TCEF prompts by hand. Imagine you need to create 10 different code review skill files for 10 different review dimensions (security, performance, accessibility, etc.). What approach could make this faster and more consistent than writing each one manually?</p>
-  <textarea class="ix-predict-input" placeholder="Write your reasoning -- what approach would you try and why?"></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- what approach would you try and why?"></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>
     <p>Meta-prompting -- using Claude to generate structured prompts given a specification. The meta-prompt is itself a TCEF prompt whose Task is "generate a TCEF prompt for [domain]." This works because LLMs are exceptionally capable at generating structured instructional text. One meta-prompt invocation can produce five complete skill files with consistent structure, where manual authoring would take hours and drift in format across authors.</p>
@@ -88,19 +88,19 @@ You used the TCEF pattern in Module 04 to write precise prompts. Meta-prompting 
 <div class="ix-diagram" data-component="entry-list" data-diagram-id="m08-meta-is-not">
   <span class="ix-title">What Meta-Prompting Is NOT</span>
   <div class="ix-entry" data-badge="exclude">
-    <span class="ix-entry-label">A substitute for domain expertise</span>
+    <span class="ix-entry-title">A substitute for domain expertise</span>
     <span class="ix-entry-desc">The human judgment layer is non-negotiable. Meta-prompted prompts in security, compliance, or safety domains require expert review before deployment.</span>
   </div>
   <div class="ix-entry" data-badge="exclude">
-    <span class="ix-entry-label">A guarantee of prompt quality</span>
+    <span class="ix-entry-title">A guarantee of prompt quality</span>
     <span class="ix-entry-desc">LLMs can generate plausible-sounding but ineffective prompts. Structural correctness does not equal domain accuracy.</span>
   </div>
   <div class="ix-entry" data-badge="exclude">
-    <span class="ix-entry-label">Autonomous prompt development</span>
+    <span class="ix-entry-title">Autonomous prompt development</span>
     <span class="ix-entry-desc">Generated prompts require testing and refinement. No meta-prompting workflow removes the need for human validation.</span>
   </div>
   <div class="ix-entry" data-badge="exclude">
-    <span class="ix-entry-label">A one-shot solution</span>
+    <span class="ix-entry-title">A one-shot solution</span>
     <span class="ix-entry-desc">Meta-prompted prompts need iteration like any prompt. The first draft is a starting point, not a finished product.</span>
   </div>
 </div>
@@ -186,7 +186,7 @@ The simplest application of meta-prompting is asking Claude to write a prompt fo
      data-speed="0.5">
   <span class="ix-title">Meta-Prompt Generating a Security Review Skill</span>
   <div class="ix-trace-row" data-type="prompt" data-delay="0">
-    <span class="ix-trace-content">> Generate a complete skill file for security code review of Node.js APIs. Cover OWASP Top 10, include severity taxonomy, one Critical example finding, three anti-patterns. YAML frontmatter with name, description, version, triggers.</span>
+    <span class="ix-trace-content">> Generate a complete skill file for security code review of Node.js APIs. Cover OWASP Top 10, include severity taxonomy, one Critical example finding, three anti-patterns. YAML frontmatter with name, description, version, plus optional LUXOR-specific triggers metadata.</span>
   </div>
   <div class="ix-trace-row" data-type="think" data-delay="3500">
     <span class="ix-trace-content">Generating skill file. Role: senior AppSec engineer specializing in Node.js. Mapping OWASP categories to Express/Fastify API patterns...</span>
@@ -203,7 +203,7 @@ The simplest application of meta-prompting is asking Claude to write a prompt fo
 </div>
 
 <div class="ix-diagram" data-component="callout" data-variant="tip">
-  <p><strong>The bootstrapping pattern</strong>: When entering a new domain where you lack deep expertise, use meta-prompting to generate a first batch of skill files. Use the best ones as examples in subsequent iterations. The library does not need to be complete before it is useful -- ten well-crafted skills beat forty shallow ones.</p>
+  <p><strong>The bootstrapping pattern</strong>: When entering a new domain where you lack deep expertise, use meta-prompting to generate a first batch of skill files. Use the best ones as examples in subsequent iterations. The library does not need to be complete before it is useful -- ten well-crafted skills beat forty shallow ones. If your organization uses <code>triggers</code>, treat it as project metadata (for example, LUXOR convention), not a native Claude Code runtime field.</p>
 </div>
 
 <details class="ix-collapse">
@@ -230,7 +230,7 @@ Prompt evaluation is, in many cases, more valuable than prompt generation. A wel
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m08-evaluation-predict" data-xp="8">
   <span class="ix-title">Predict Before You Learn</span>
   <p class="ix-predict-prompt">You have a skill file that your team has been using for three months. It works "well enough" but occasionally produces inconsistent output. Rather than rewriting it from scratch, what approach could you take to systematically identify what is wrong with it?</p>
-  <textarea class="ix-predict-input" placeholder="Write your reasoning -- what approach would you try and why?"></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- what approach would you try and why?"></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>
     <p>Prompt evaluation -- using Claude in adversarial mode to find failure modes. Two approaches work well: (1) open-ended failure mode finding, where you ask Claude "given this prompt, what will go wrong?" and receive specific issues with specific fixes, and (2) criteria-based evaluation, where you provide explicit quality criteria (role precision, procedure completeness, example quality, anti-pattern specificity, format specification) and receive a PASS/PARTIAL/FAIL scorecard with evidence for each criterion. The criteria-based approach is more systematic and produces more actionable output.</p>
@@ -306,6 +306,18 @@ Prompt evaluation is, in many cases, more valuable than prompt generation. A wel
 </div>
 
 The three applications from Section 8.1 combine into a single repeatable workflow. Each iteration narrows the quality gap until only human domain judgment remains.
+
+<p class="ix-instruct">Predict the most likely bottleneck before stepping through the loop.</p>
+
+<div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m08-loop-bottleneck-predict" data-xp="8">
+  <span class="ix-title">Predict: Where Does Iteration Stall?</span>
+  <p class="ix-predict-prompt">A team generated v1 and v2 prompts, but quality stopped improving. The evaluation output says: “better wording” and “more polished tone,” with no concrete failures. What should they do next?</p>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your next action and why..."></textarea>
+  <details class="ix-predict-reveal">
+    <summary>Reveal reference reasoning</summary>
+    <p>Stop looping and switch to real-case testing. If evaluation feedback becomes stylistic instead of identifying concrete failures, the loop has converged. Further meta-iteration yields diminishing returns. Move to representative task runs, compare outputs against expected behavior, and involve a domain reviewer for accuracy checks.</p>
+  </details>
+</div>
 
 <p class="ix-instruct">Step through the sequence to see each phase of the loop.</p>
 
@@ -383,6 +395,60 @@ The three applications from Section 8.1 combine into a single repeatable workflo
   <p><strong>Know when to stop iterating</strong>: Stop when evaluation returns all PASS, when a domain expert confirms accuracy, or when three successive improvements produce only stylistic suggestions. At that point, testing the prompt against real cases is more valuable than further meta-level iteration.</p>
 </div>
 
+<details class="ix-collapse">
+<summary>Deep Dive: Practical convergence rubric for teams</summary>
+<div class="ix-collapse-body">
+<p>Use this three-part rubric before declaring convergence: (1) <strong>Defect signal</strong> -- no unresolved FAIL items and no new high-impact regressions in the latest evaluation pass; (2) <strong>Stability signal</strong> -- two consecutive iterations produce only low-impact wording suggestions; (3) <strong>Transfer signal</strong> -- representative real tasks produce outputs consistent with expected structure and quality. If any signal fails, continue with a focused improvement pass instead of broad prompt rewrites.</p>
+<p>Most teams over-iterate because they chase style polish. Separate stylistic preference from functional defects. If the output contract is met and decision quality is stable across representative inputs, ship to controlled use and collect real feedback.</p>
+</div>
+</details>
+
+<p class="ix-instruct">Check your understanding of loop execution and convergence criteria.</p>
+
+<div class="ix-diagram" data-component="quiz" data-diagram-id="m08-loop-knowledge-check" data-xp="14">
+  <span class="ix-title">Knowledge Check: Generate-Evaluate-Improve Loop</span>
+  <div class="ix-quiz-question">
+    <p class="ix-quiz-prompt"><strong>Q1.</strong> Which condition most strongly indicates the loop has converged?</p>
+    <div class="ix-quiz-options">
+      <button class="ix-quiz-option">The output uses the same tone in every iteration</button>
+      <button class="ix-quiz-option" data-correct="true">Evaluations surface no substantive failures, only stylistic suggestions</button>
+      <button class="ix-quiz-option">The generated prompt exceeds 500 words</button>
+      <button class="ix-quiz-option">The model stops using tool calls</button>
+    </div>
+    <p class="ix-quiz-explanation">Convergence is about quality signal, not length or style. When evaluations stop finding actionable defects, further looping is low value compared to real-case testing.</p>
+  </div>
+  <div class="ix-quiz-question">
+    <p class="ix-quiz-prompt"><strong>Q2.</strong> In the loop, why is criteria-based evaluation usually preferred for team workflows?</p>
+    <div class="ix-quiz-options">
+      <button class="ix-quiz-option">It always produces fewer findings</button>
+      <button class="ix-quiz-option">It removes the need for domain experts</button>
+      <button class="ix-quiz-option" data-correct="true">It yields repeatable PASS/PARTIAL/FAIL evidence that teams can compare over time</button>
+      <button class="ix-quiz-option">It guarantees the first generated prompt is production-ready</button>
+    </div>
+    <p class="ix-quiz-explanation">Criteria-based scoring creates a stable rubric. Teams can track quality movement between versions instead of relying on subjective judgments.</p>
+  </div>
+  <div class="ix-quiz-question">
+    <p class="ix-quiz-prompt"><strong>Q3.</strong> A team fixes all PARTIAL items but leaves one FAIL item unresolved. Should they proceed to production?</p>
+    <div class="ix-quiz-options">
+      <button class="ix-quiz-option">Yes, because most criteria now pass</button>
+      <button class="ix-quiz-option" data-correct="true">No, FAIL items are blocking and must be resolved or explicitly accepted with risk review</button>
+      <button class="ix-quiz-option">Yes, if they add one more anti-pattern</button>
+      <button class="ix-quiz-option">No, unless the prompt is under 300 words</button>
+    </div>
+    <p class="ix-quiz-explanation">A FAIL is a known defect in behavior quality. Treat FAIL as a release gate issue, not a cosmetic enhancement.</p>
+  </div>
+  <div class="ix-quiz-question">
+    <p class="ix-quiz-prompt"><strong>Q4.</strong> After loop convergence, what is the highest-value next step?</p>
+    <div class="ix-quiz-options">
+      <button class="ix-quiz-option">Regenerate from scratch with a different tone</button>
+      <button class="ix-quiz-option">Increase model temperature for diversity</button>
+      <button class="ix-quiz-option" data-correct="true">Run representative real tasks and compare outputs to expected outcomes</button>
+      <button class="ix-quiz-option">Convert the prompt into three shorter prompts automatically</button>
+    </div>
+    <p class="ix-quiz-explanation">Real-task validation is where latent failures appear. Loop quality without execution evidence is incomplete for production use.</p>
+  </div>
+</div>
+
 ---
 
 ## 8.5 Limits of Meta-Prompting
@@ -392,6 +458,18 @@ The three applications from Section 8.1 combine into a single repeatable workflo
 </div>
 
 Meta-prompting provides genuine leverage in the scenarios above. It also has real limitations that engineering teams must understand to avoid misapplying it.
+
+<p class="ix-instruct">Predict the safer choice before opening the decision tree.</p>
+
+<div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m08-limits-predict" data-xp="8">
+  <span class="ix-title">Predict: Direct Prompt or Meta-Prompt?</span>
+  <p class="ix-predict-prompt">You need one high-stakes compliance summary for a board meeting tomorrow. The domain has strict legal terminology and your legal reviewer is available. Do you start with meta-prompting or direct prompting?</p>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="State your choice and risk rationale..."></textarea>
+  <details class="ix-predict-reveal">
+    <summary>Reveal reference reasoning</summary>
+    <p>Start with direct prompting plus legal reviewer validation. For single, high-stakes outputs with strict domain language, meta-prompting overhead and confabulation risk often outweigh leverage. Meta-prompting helps when you need a reusable family of prompts; this scenario needs one precise deliverable under tight risk constraints.</p>
+  </details>
+</div>
 
 <p class="ix-instruct">Click to expand each branch and determine whether meta-prompting or direct prompting is the better choice.</p>
 
@@ -494,6 +572,14 @@ Meta-prompting provides genuine leverage in the scenarios above. It also has rea
 <div class="ix-diagram" data-component="callout" data-variant="warning">
   <p><strong>Confabulation compounds at the meta level</strong>: A confabulated assertion in a regular prompt affects one task. A confabulated assertion in a meta-prompted skill file affects every task that skill is applied to. Always validate domain-specific claims in generated prompts against authoritative sources.</p>
 </div>
+
+<details class="ix-collapse">
+<summary>Deep Dive: Lightweight confabulation red-team checklist</summary>
+<div class="ix-collapse-body">
+<p>Run a fast red-team pass before adding generated prompts to production libraries: (1) challenge factual claims against one authoritative source per high-risk domain statement, (2) test one adversarial input that targets known failure modes, (3) verify examples for version correctness (API names, transport terms, deprecations), and (4) require explicit reviewer sign-off for security/compliance/safety domains.</p>
+<p>Document reviewer name and review date in the prompt header. This makes later maintenance and audits tractable when the stack evolves.</p>
+</div>
+</details>
 
 <p class="ix-instruct">Test your understanding of meta-prompting concepts and limits.</p>
 

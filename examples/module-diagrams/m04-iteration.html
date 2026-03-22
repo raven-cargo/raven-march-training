@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompt Iteration — Diagnostic Workflow</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+
+.loop-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1.5rem}
+.ls{padding:14px 10px;border-radius:12px;border:1px solid #222228;background:#141418;cursor:pointer;text-align:center;transition:all .35s cubic-bezier(.22,1,.36,1)}
+.ls:hover{border-color:#333;transform:translateY(-2px)}
+.ls.active{transform:translateY(-2px)}
+.ls[data-s="0"].active{border-color:#5ba4f5;background:#0a1525}
+.ls[data-s="1"].active{border-color:#f87171;background:#1a0a0a}
+.ls[data-s="2"].active{border-color:#a78bfa;background:#1c1535}
+.ls[data-s="3"].active{border-color:#4ade80;background:#0a1a14}
+.ls-num{font-size:10px;font-weight:600;color:#444;margin-bottom:2px;transition:color .3s}
+.ls.active .ls-num{color:#888}
+.ls-name{font-size:13px;font-weight:600;color:#666;transition:color .3s}
+.ls.active .ls-name{color:#e8e6e1}
+
+.panel{border-radius:14px;border:1px solid #222228;background:#141418;overflow:hidden;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.pn-body{padding:20px 24px}
+.pn-desc{font-size:14px;color:#aaa;line-height:1.65;margin-bottom:14px}
+.pn-desc strong{color:#e8e6e1}
+
+.diag-grid{display:flex;flex-direction:column;gap:6px}
+.diag-item{padding:12px 16px;border-radius:10px;background:#0a0a0c;border:1px solid #1a1a1e;display:grid;grid-template-columns:100px 1fr;gap:12px;align-items:flex-start}
+.diag-phase{font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.diag-text{font-size:12px;color:#aaa;line-height:1.5}
+
+.principle{padding:12px 16px;border-radius:10px;font-size:13px;line-height:1.6}
+.principle.info{background:#0a1525;border:1px solid #1a3a6a;color:#8ab8e8}
+.principle strong{color:#5ba4f5}
+
+.divider{border:none;border-top:1px solid #1a1a1e;margin:1.5rem 0}
+
+.table-title{font-size:13px;font-weight:600;color:#e8e6e1;margin-bottom:4px}
+.table-instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:10px}
+.diag-table{display:flex;flex-direction:column;gap:6px}
+.dt-row{padding:10px 14px;border-radius:8px;background:#141418;border:1px solid #1a1a1e;display:grid;grid-template-columns:1fr 100px 1fr;gap:10px;align-items:center;cursor:pointer;transition:all .25s}
+.dt-row:hover{border-color:#333;transform:translateX(3px)}
+.dt-row.revealed{cursor:default}
+.dt-symptom{font-size:12px;color:#aaa}
+.dt-phase{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;text-align:center;padding:3px 8px;border-radius:5px;transition:all .3s}
+.dt-phase.hidden{background:#1a1a1e;color:#333}
+.dt-phase.perceive{background:#0a1525;color:#5ba4f5;border:1px solid #1a3a6a}
+.dt-phase.reason{background:#1c1535;color:#a78bfa;border:1px solid #2d2555}
+.dt-phase.act{background:#1a150a;color:#f59e42;border:1px solid #40301a}
+.dt-fix{font-size:12px;color:#555;transition:color .3s}
+.dt-row.revealed .dt-fix{color:#aaa}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Prompt iteration as debugging</h1>
+<div class="objective">
+  <span class="goal">Systematic improvement</span>
+  <span class="text">Prompt iteration is diagnostic and hypothesis-driven, not guessing. The key discipline: make exactly one change per iteration, based on a specific diagnosis of which PRAO phase failed. This maintains attribution clarity.</span>
+</div>
+<div class="instruct">&#9654; Click each step of the four-step iteration loop to see what happens and why.</div>
+
+<div class="loop-steps">
+  <div class="ls active" data-s="0" onclick="showStep(0)"><div class="ls-num">Step 1</div><div class="ls-name">Run</div></div>
+  <div class="ls" data-s="1" onclick="showStep(1)"><div class="ls-num">Step 2</div><div class="ls-name">Diagnose</div></div>
+  <div class="ls" data-s="2" onclick="showStep(2)"><div class="ls-num">Step 3</div><div class="ls-name">Hypothesize</div></div>
+  <div class="ls" data-s="3" onclick="showStep(3)"><div class="ls-num">Step 4</div><div class="ls-name">Refine</div></div>
+</div>
+
+<div class="panel" id="panel"></div>
+
+<hr class="divider">
+
+<div class="table-title">Failure diagnosis reference</div>
+<div class="table-instruct">&#9654; Click each symptom to reveal which PRAO phase failed and the fix.</div>
+<div class="diag-table" id="table"></div>
+</div>
+
+<script>
+const steps=[
+{desc:'<strong>Execute the prompt</strong> and collect the complete output including intermediate reasoning. Don\'t just look at the final result — the thinking trace tells you where things went wrong.',
+ content:null},
+{desc:'<strong>Identify which PRAO phase failed.</strong> The failure mode tells you exactly what to fix — you don\'t have to guess.',
+ content:[
+  {phase:'Perceive',color:'#5ba4f5',text:'Claude didn\'t "see" what it needed. Missing or misleading input. Fix: add missing context.'},
+  {phase:'Reason',color:'#a78bfa',text:'Claude saw the right input but reasoned incorrectly. Task spec ambiguous or constraints underspecified. Fix: add precision.'},
+  {phase:'Act',color:'#f59e42',text:'Claude reasoned correctly but output was wrong format, scope, or mechanics. Fix: refine Format or scope.'},
+  {phase:'Observe',color:'#4ade80',text:'Less common in single-turn. Agent misinterpreted feedback in a multi-turn loop. Fix: clarify the feedback signal.'},
+ ]},
+{desc:'<strong>Form one specific, falsifiable hypothesis.</strong> "If I add a pattern context example of our error handling style, Claude will match it rather than using generic Express error handling." One hypothesis, one change — this maintains attribution clarity.',
+ content:null},
+{desc:'<strong>Apply the single change, re-run, return to Step 2.</strong> If the hypothesis was correct, the specific failure is fixed. If not, you\'ve learned something about the problem and can form a better hypothesis.',
+ content:null},
+];
+
+function showStep(i){
+  document.querySelectorAll('.ls').forEach((l,j)=>l.classList.toggle('active',j===i));
+  const s=steps[i];
+  let h='<div class="pn-body"><div class="pn-desc">'+s.desc+'</div>';
+  if(s.content){
+    h+='<div class="diag-grid">';
+    s.content.forEach(c=>{
+      h+='<div class="diag-item"><span class="diag-phase" style="color:'+c.color+'">'+c.phase+'</span><span class="diag-text">'+c.text+'</span></div>';
+    });
+    h+='</div>';
+  }
+  if(i===2){
+    h+='<div class="principle info" style="margin-top:14px"><strong>Why exactly one change:</strong> If you make 3 changes and output improves, you don\'t know which was responsible. A prompt that converged in 4 iterations with 1 change each is better understood than one that "worked" after 1 iteration with 5 simultaneous changes.</div>';
+  }
+  h+='</div>';
+  document.getElementById('panel').innerHTML=h;
+}
+
+const tableData=[
+  {symptom:'Generic library patterns instead of project conventions',phase:'perceive',phaseLabel:'Perceive',fix:'Add concrete codebase example as Pattern Context'},
+  {symptom:'Modifies files outside the intended scope',phase:'reason',phaseLabel:'Reason',fix:'Add explicit scope constraint listing excluded files'},
+  {symptom:'Format almost correct but field names wrong',phase:'act',phaseLabel:'Act',fix:'Add explicit schema with exact field names'},
+  {symptom:'Output is too broad / does more than asked',phase:'reason',phaseLabel:'Reason',fix:'Replace vague verb with precise operation'},
+  {symptom:'Missing edge case the example didn\'t cover',phase:'perceive',phaseLabel:'Perceive',fix:'Add example that includes the edge case'},
+  {symptom:'Shows plan then proceeds without waiting',phase:'act',phaseLabel:'Act',fix:'Rewrite approval constraint with explicit wait instruction'},
+];
+
+function renderTable(){
+  let h='';
+  tableData.forEach((d,i)=>{
+    h+='<div class="dt-row" id="tr'+i+'" onclick="revealRow('+i+')">';
+    h+='<span class="dt-symptom">'+d.symptom+'</span>';
+    h+='<span class="dt-phase hidden" id="tp'+i+'">?</span>';
+    h+='<span class="dt-fix" id="tf'+i+'">Click to diagnose</span>';
+    h+='</div>';
+  });
+  document.getElementById('table').innerHTML=h;
+}
+
+function revealRow(i){
+  const row=document.getElementById('tr'+i);
+  if(row.classList.contains('revealed'))return;
+  row.classList.add('revealed');
+  const phase=document.getElementById('tp'+i);
+  const fix=document.getElementById('tf'+i);
+  const d=tableData[i];
+  phase.className='dt-phase '+d.phase;
+  phase.textContent=d.phaseLabel;
+  fix.textContent=d.fix;
+}
+
+showStep(0);
+renderTable();
+</script>
+</body>
+</html>

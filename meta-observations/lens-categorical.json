@@ -1,0 +1,241 @@
+{
+  "lens": "categorical",
+  "analysis_date": "2026-03-16",
+  "analyst": "Category Theory Lens — Opus 4.6",
+  "source_files": [
+    "docs/curriculum/modules/01-paradigm-shift.md",
+    "docs/curriculum/modules/04-prompt-engineering-depth.md",
+    "docs/curriculum/modules/05-mcp-architecture.md",
+    "docs/curriculum/modules/07-skills-commands.md",
+    "docs/curriculum/modules/08-meta-prompting.md",
+    "docs/curriculum/modules/09-multi-agent-systems.md",
+    "docs/curriculum/modules/12-capstone-production.md",
+    "docs/curriculum/master-outline.md",
+    "meta-observations/07-SYNTHESIS-concept-architecture.md"
+  ],
+  "findings": [
+    {
+      "id": "CAT-001",
+      "severity": "critical",
+      "category": "functor",
+      "title": "Module-to-Lab functor is not faithful: six modules lack dedicated labs",
+      "description": "Define category Mod with objects M01..M12 and morphisms as prerequisite dependencies, and category Lab with objects L01..L09 and morphisms as prerequisite dependencies. The functor F: Mod -> Lab that maps each module to its corresponding lab is a partial functor: F(M06), F(M08), F(M10), F(M11) have no dedicated lab objects. M06 (MCP Building) maps to Lab 04 (MCP Explorer), which covers M05, not M06. M08 (Meta-Prompting) maps to Lab 06, which covers M07. This means F is not total. Among the 8 modules that do map, F fails to be faithful: the morphism M04->M05 (TCEF format element informs MCP tool schema design) has no corresponding morphism in Lab, since Lab 05 (prompt engineering) and Lab 04 (MCP) are independent exercises with no bridging exercise that preserves this dependency arrow. This is a structural failure: the lab category does not reflect the morphism structure of the module category.",
+      "affected_modules": ["M06", "M08", "M10", "M11"],
+      "categorical_notation": "F: Mod -> Lab is partial (dom(F) = {M01,M02,M03,M04,M05,M07,M09,M12}), not faithful (F fails to preserve M04->M05 morphism)",
+      "recommendation": "Extend Lab to include lab objects for M06, M08, M10, M11, or define explicit lab exercises within existing labs that practice these modules' concepts. Add a bridging exercise between Lab 05 and Lab 04 that connects TCEF format specification to MCP tool schema design, restoring faithfulness on that morphism."
+    },
+    {
+      "id": "CAT-002",
+      "severity": "high",
+      "category": "natural-transformation",
+      "title": "GCCF -> TCEF is a natural transformation only modulo a missing component",
+      "description": "Define functor GCCF: Task -> Prompt that maps tasks to prompts via (Goal, Context, Constraints, Format). Define functor TCEF: Task -> Prompt via (Task, Context, Examples, Format). The mapping eta: GCCF => TCEF is a candidate natural transformation with component maps: Goal |-> Task (precision refinement), Context |-> Context (identity + five injection strategies), Constraints |-> embedded in Task + Context (dissolution), Format |-> Format (schema strengthening), and a new component: nothing |-> Examples (creation ex nihilo). For eta to be a natural transformation, the naturality square must commute for every morphism f: A -> B in Task. That is: TCEF(f) . eta_A = eta_B . GCCF(f). The problem is the Examples component. Since GCCF has no Examples component, eta_A must manufacture examples from the task specification alone. But the quality of examples depends on domain knowledge not present in the GCCF representation, so the transformation is not natural — it requires an external oracle (domain expertise) to complete. This is precisely the 'bootstrapping problem' M08 identifies: meta-prompting can generate examples, but a human must validate them.",
+      "affected_modules": ["M04", "M08"],
+      "categorical_notation": "eta: GCCF => TCEF is not a natural transformation; the Examples component breaks naturality because eta_A requires domain knowledge external to the GCCF functor image",
+      "recommendation": "Acknowledge pedagogically that GCCF->TCEF is not a mechanical upgrade but requires an external enrichment step (domain expertise injection). This is already implicit in M04's treatment but never stated as a structural property. Making it explicit would help learners understand why 'just adding examples' is the hardest part of TCEF adoption."
+    },
+    {
+      "id": "CAT-003",
+      "severity": "high",
+      "category": "universal-property",
+      "title": "PRAO Loop has the universal property of an initial object in the category of agent reasoning models",
+      "description": "Define the category AgentModel whose objects are reasoning frameworks and whose morphisms are refinement maps (adding structure while preserving the core cycle). PRAO (Perceive, Reason, Act, Observe) is initial in this category: for every other reasoning model R used in the course (TCEF iteration loop, MCP PRAO integration, multi-agent orchestration cycle, meta-prompting generate-evaluate-improve loop, capstone five-phase design process), there exists a unique morphism PRAO -> R. The uniqueness comes from the fact that every model decomposes into exactly one PRAO cycle mapping: TCEF iteration's Run=Act, Diagnose=Observe+Reason, Hypothesize=Reason, Refine=Act maps uniquely to PRAO. MCP's Perceive(read schemas)->Reason(select tool)->Act(call tool)->Observe(read result) is the identity embedding. The previous synthesis document confirms this: PRAO has 40+ downstream dependencies and appears in 7/9 labs. This initial object property is genuine and well-exploited pedagogically.",
+      "affected_modules": ["M01", "M04", "M05", "M09", "M12"],
+      "categorical_notation": "PRAO is initial in AgentModel: forall R in Ob(AgentModel), exists! f: PRAO -> R",
+      "recommendation": "This is a strength. Explicitly label PRAO as the 'universal reasoning pattern' in M01, and show the unique morphism to each subsequent model when it appears (M04: iteration loop, M05: MCP integration, M09: orchestration). This would give learners the categorical intuition that every new model is 'PRAO with more structure.'"
+    },
+    {
+      "id": "CAT-004",
+      "severity": "high",
+      "category": "adjunction",
+      "title": "Theory-Practice adjunction exists but the unit is not injective at M06, M08, M11",
+      "description": "Define functor T: Concept -> Theory (the instruction functor, embedding concepts in module content) and P: Concept -> Practice (the lab functor, embedding concepts in exercises). The candidate adjunction T -| P would mean: for every concept c, there is a unit eta_c: c -> P(T(c)) — learning the theory then practicing it — and a counit epsilon_c: T(P(c)) -> c — extracting theoretical understanding from practice. The unit eta_c exists for most modules: learners read theory then practice in lab. But for M06 (MCP Building), M08 (Meta-Prompting), and M11 (Tech Stack Adaptation), the unit eta_c collapses: T(c) is well-defined (theory is taught) but P(T(c)) is empty or redirected to a different module's lab. The 23 orphaned concepts identified in the synthesis document are precisely the concepts where eta_c is degenerate. The adjunction fails to be a proper adjunction because the unit is not a natural transformation — it breaks at these three modules.",
+      "affected_modules": ["M06", "M08", "M11"],
+      "categorical_notation": "T -| P fails: eta: Id -> P.T is not natural; eta_{M06}, eta_{M08}, eta_{M11} are degenerate (P(T(c)) = empty for 23 concepts)",
+      "recommendation": "Restore the adjunction by adding practice components for the 23 orphaned concepts. Priority: M06 (7 orphans, all server-building concepts) and M08 (5 orphans, all meta-prompting application concepts). Even optional lab extensions would make eta non-degenerate."
+    },
+    {
+      "id": "CAT-005",
+      "severity": "high",
+      "category": "universal-property",
+      "title": "M12 Capstone is a cone but not a limit — the universal property fails",
+      "description": "Model the course as a diagram D: J -> Learn where J is the index category (module dependency graph) and Learn is the category of learner knowledge states. M12 claims to be the limit of this diagram — the universal integration point where all prior modules converge. For M12 to be a limit, it must satisfy: for any other knowledge state X with compatible projections to all modules, there exists a unique morphism X -> M12. The problem: M12 is a cone (it has projection morphisms to M01, M04, M05, M07, M09, M10 via its 'Integrated Pipeline View' and capstone design phases), but it is NOT a limit because the projections to M06 (MCP Building) and M08 (Meta-Prompting) are weak. M12 references MCP servers as given infrastructure but never requires building one. M12 references skills but never applies meta-prompting to generate them. A learner who mastered M12's capstone could have skipped M06 and M08 entirely with no loss of capstone capability. This means M12 does not factor uniquely through M06 and M08 — the universal property fails.",
+      "affected_modules": ["M12", "M06", "M08"],
+      "categorical_notation": "M12 is a cone over D but not lim(D): projection morphisms pi_{M06}: M12 -> M06 and pi_{M08}: M12 -> M08 are trivial (zero morphisms), so the universal factorization property fails",
+      "recommendation": "Strengthen M12's capstone requirements to include: (1) building or configuring at least one custom MCP server for the capstone pipeline, making pi_{M06} non-trivial; (2) using meta-prompting to generate at least one skill used in the capstone, making pi_{M08} non-trivial. This would restore M12 as a genuine limit of the course diagram."
+    },
+    {
+      "id": "CAT-006",
+      "severity": "medium",
+      "category": "composition",
+      "title": "The course has a partially ordered monoidal structure with strict sequential constraints on Day 1",
+      "description": "Define a monoidal category (Mod, tensor, I) where the tensor product M_i tensor M_j represents 'taking both modules together' and I is the identity module (pre-work knowledge state). Composition of modules is sequential learning: M_i ; M_j means 'learn M_i then M_j'. The question is whether tensor is commutative (order-independent). Analysis: Day 1 modules (M01, M02, M03) form a strict total order — M01 ; M02 ; M03 is the only valid sequence because M02 requires PRAO from M01, and M03 requires tool-call understanding from M02. These do NOT commute: M02 tensor M01 != M01 tensor M02. Day 2 modules (M04, M05, M06, M07, M08) have partial commutativity: M05 and M07 are independent (MCP architecture and Skills have no mutual dependency), so M05 tensor M07 = M07 tensor M05. But M04 must precede both M07 and M08 (TCEF is prerequisite). Day 3 modules (M09, M10, M11) have M09 and M10 partially independent (multi-agent and security have independent concepts, though security applies to multi-agent). M11 depends on both. The monoidal unit I is the pre-work state (Modules A and B).",
+      "affected_modules": ["M01", "M02", "M03", "M04", "M05", "M07", "M08"],
+      "categorical_notation": "Monoidal structure (Mod, tensor, Pre-work) is non-symmetric. Commuting pairs: {M05,M07}, {M05,M08}, {M09,M10}. Non-commuting chains: M01<M02<M03 (total order), M04<{M07,M08} (partial order)",
+      "recommendation": "Document the commuting pairs explicitly in the master outline. This has practical value: if a cohort is ahead/behind, the facilitator can reorder M05 and M07 safely, or M09 and M10 safely, but CANNOT reorder M01-M03 or move M08 before M04."
+    },
+    {
+      "id": "CAT-007",
+      "severity": "medium",
+      "category": "natural-transformation",
+      "title": "Skill composition patterns in M07 form a free monad over the Skill endofunctor",
+      "description": "Define endofunctor S: Workflow -> Workflow that maps a workflow to 'a workflow enhanced by one skill invocation'. M07 defines three composition patterns: Sequential (pipeline), Conditional (router), and Parallel (multi-expert). These correspond to: Sequential = S^n (iterated application of S), Conditional = coproduct of S-applications (S + S + ... selected by routing logic), Parallel = product of S-applications (S x S x ... merged by aggregation). The free monad Free(S) generated by S captures all possible skill compositions: return (no skill), bind (chain one skill then continue), choice (conditional), and parallel (tensor). The ship-feature example in M07 Section 7.5 explicitly demonstrates all three: parallel validation (S x S x S), conditional halt (coproduct), sequential commit (S ; S). This is a genuine algebraic structure. The monad laws hold: left identity (starting with return then binding = just running the skill), right identity (running a skill then returning = just the skill result), and associativity (chaining is associative by the pipeline pattern).",
+      "affected_modules": ["M07", "M09"],
+      "categorical_notation": "Free(S) is a free monad on Workflow; S: Workflow -> Workflow is the skill-application endofunctor. return = no-skill identity, bind = sequential composition, + = conditional routing, x = parallel execution",
+      "recommendation": "This is a strength that could be made explicit. The monad structure means skill compositions are arbitrarily nestable and algebraically well-behaved. Presenting the three patterns as 'the three generators of the free monad of skill composition' would give mathematically-inclined learners a precise mental model and justify why these three patterns are sufficient (they generate all compositions)."
+    },
+    {
+      "id": "CAT-008",
+      "severity": "medium",
+      "category": "adjunction",
+      "title": "Abstraction-Concretization adjunction in meta-prompting (M08)",
+      "description": "Define category Concrete with objects = specific prompts and morphisms = prompt refinements. Define category Abstract with objects = meta-prompts (prompt generators) and morphisms = meta-prompt refinements. The abstraction functor A: Concrete -> Abstract maps a specific prompt to the meta-prompt that could generate it (generalization). The concretization functor C: Abstract -> Concrete maps a meta-prompt to the specific prompt it generates (instantiation). The candidate adjunction A -| C means: giving a morphism from a concrete prompt p to C(m) (matching a meta-prompt's output) is the same as giving a morphism from A(p) to m (the generalized prompt generator refining to m). M08 Section 8.2-8.3 describes exactly this adjunction in operational terms: the generate-evaluate-improve loop is the zigzag of unit and counit. Generate = counit epsilon: C(A(p)) -> p (instantiate the abstraction of p, compare to p). Evaluate = unit eta: p -> C(A(p)) (compare p to what its generalization would produce). The loop converges when eta and epsilon compose to identity — when the meta-prompt generates exactly the prompt we want. M08's observation that 'convergence typically takes 2-3 iterations' is an empirical statement about the speed of this adjunction's fixpoint.",
+      "affected_modules": ["M08"],
+      "categorical_notation": "A -| C where A: Concrete -> Abstract, C: Abstract -> Concrete. The generate-evaluate-improve loop is the fixpoint iteration of (epsilon . C(eta)): C(m) -> C(m)",
+      "recommendation": "This adjunction is the deepest categorical structure in the course. For advanced learners, noting that meta-prompting convergence is adjunction fixpoint iteration would explain WHY it converges (adjunctions between well-behaved categories always have fixpoints) and WHY diminishing returns occur (each iteration gets closer to the fixpoint, with decreasing delta)."
+    },
+    {
+      "id": "CAT-009",
+      "severity": "medium",
+      "category": "missing-structure",
+      "title": "No explicit pullback structure at convergence points",
+      "description": "The synthesis document identifies five convergence points where multiple knowledge threads merge. In categorical terms, these are candidate pullbacks: M07 = M04 x_{M02} M02 (Skills pull back TCEF and CLAUDE.md over their shared concept of 'structured persistent instructions'). M09 = M01 x_{MCP} M05 x_{Skills} M07 (Multi-agent pulls back PRAO, MCP, and Skills). M12 = lim(all modules). However, the pullback universal property requires that the convergence point be the MOST GENERAL object with projections to both sources. The course never verifies this: it shows that M07 uses both TCEF and CLAUDE.md, but never argues that M07 is the most general module that integrates both. In principle, a different module could integrate TCEF and CLAUDE.md differently. This matters pedagogically: without the pullback property, learners don't understand that Skills are the CANONICAL integration of TCEF + CLAUDE.md, not just one possible integration.",
+      "affected_modules": ["M07", "M09", "M12"],
+      "categorical_notation": "Convergence points are cones but pullback universal property is unverified: no uniqueness argument for M07 = M04 x_{M02} M02",
+      "recommendation": "At each convergence point, briefly argue why this particular integration is canonical. For M07: Skills are the unique artifact type that combines TCEF body structure with CLAUDE.md persistence mechanism. For M09: Multi-agent orchestration is the unique pattern that requires all three of PRAO reasoning, MCP tool access, and skill-encoded expertise simultaneously. This transforms convergence points from 'happens to use both' into 'necessarily integrates both.'"
+    },
+    {
+      "id": "CAT-010",
+      "severity": "medium",
+      "category": "functor",
+      "title": "The Concept-to-Practice functor has a right adjoint (Practice-to-Concept) that is under-exploited",
+      "description": "The course is designed primarily as Theory->Practice (top-down). But the master outline's retrieval sprints (Day 2 morning, Day 3 morning) and the Day 1 retrospective reveal an implicit right adjoint: Practice->Concept, where practice experiences are mapped back to conceptual understanding. This right adjoint is the 'what did I learn from doing that?' reflection. The adjunction Concept -| Practice means: morphisms from concepts to practice (applying theory) correspond bijectively to morphisms from practice to concepts (extracting understanding). The course uses the left adjoint heavily (every module -> lab) but the right adjoint sparingly (only retrieval sprints and retrospectives). Labs 01-08 end with results but rarely with explicit conceptual extraction: 'what categorical principle did this exercise demonstrate?'",
+      "affected_modules": ["M01", "M04", "M07", "M12"],
+      "categorical_notation": "Concept -| Practice adjunction; counit (practice -> concepts) is under-exploited relative to unit (concepts -> practice)",
+      "recommendation": "Add a 'conceptual extraction' step to each lab: after completing the exercise, learners articulate which PRAO phase they exercised, which TCEF element was most critical, and what principle they would now encode in a skill. This activates the right adjoint and strengthens the bijection between theory application and understanding extraction."
+    },
+    {
+      "id": "CAT-011",
+      "severity": "low",
+      "category": "composition",
+      "title": "Inter-agent communication schemas (M09) form a category with strict composition",
+      "description": "M09 Section 9.4 defines structured JSON schemas for agent communication with mandatory fields (status, checked_scope, findings, error, metadata) and schema versioning. These schemas form a category CommSchema where objects are schema versions and morphisms are schema migrations (backward-compatible = minor version, breaking = major version). Composition of migrations is transitive: migrating v1.0->v1.1->v2.0 is the same as migrating v1.0->v2.0 directly. Identity is the trivial migration (same version). This category is well-defined and the course implicitly uses it, but never names it. The practical consequence: schema versioning discipline is categorical composition discipline. Breaking the composition law (non-transitive migrations) means version N+2 cannot be reached from version N via N+1, which is a deployment hazard.",
+      "affected_modules": ["M09"],
+      "categorical_notation": "CommSchema is a category; Ob = schema versions, Mor = migrations, composition = transitive migration, id = trivial migration",
+      "recommendation": "Minor pedagogical enhancement: note that schema versioning forms a category and that the composition law (transitive migrations) is what makes incremental upgrades safe. This connects M09's schema versioning advice to a deeper principle."
+    },
+    {
+      "id": "CAT-012",
+      "severity": "low",
+      "category": "universal-property",
+      "title": "TCEF has a weak terminal property among prompt patterns",
+      "description": "In the category PromptPattern whose objects are prompt structuring patterns (GCCF, TCEF, Chain-of-Thought, Constraint-First, Role-Persona, Output Scaffold from master outline 2.1.2) and whose morphisms are refinement/specialization maps, TCEF is a weak terminal object. Every other pattern has a morphism to TCEF: GCCF refines to TCEF (eta from CAT-002), Chain-of-Thought embeds as reasoning within TCEF's Task element, Constraint-First embeds as constraints within TCEF's Task+Context elements, Role-Persona embeds in skill body preamble, Output Scaffold embeds as TCEF's Format element. However, TCEF is only weakly terminal: these morphisms are not unique. Chain-of-Thought could embed in Context rather than Task; Constraint-First could embed in Format rather than Task. The morphisms exist but are not canonical, so TCEF is a weak terminal object (morphisms exist but are not unique).",
+      "affected_modules": ["M04"],
+      "categorical_notation": "TCEF is weakly terminal in PromptPattern: forall P, exists f: P -> TCEF, but f is not unique",
+      "recommendation": "Strengthen TCEF's terminal property by specifying canonical embeddings: Chain-of-Thought ALWAYS goes in Task (as 'think step by step before...' prefix), Constraint-First ALWAYS goes in Task (as exclusion clauses), Role-Persona ALWAYS goes in Context (as role preamble). This makes the morphisms unique and TCEF genuinely terminal."
+    },
+    {
+      "id": "CAT-013",
+      "severity": "critical",
+      "category": "missing-structure",
+      "title": "The GCCF forward-reference breaks the category's well-definedness",
+      "description": "In a well-formed category of knowledge states, every morphism f: A -> B requires that A is well-defined before f can be composed. M04 opens by contrasting GCCF with TCEF, but GCCF is never formally introduced in any prior module. This means the morphism GCCF -> TCEF in the knowledge lattice has a source object (GCCF) that is not in the learner's knowledge state at the time M04 is encountered. Categorically, this is an attempt to compose a morphism whose domain is not an object of the category — a type error. The synthesis document flags this as the single most critical conceptual issue. In categorical terms: the course diagram D: J -> Learn is not well-defined because the morphism at M04 references an object (GCCF knowledge) not in the image of D restricted to M01-M03.",
+      "affected_modules": ["M01", "M04"],
+      "categorical_notation": "D: J -> Learn is not a valid functor at M04: morphism GCCF->TCEF requires GCCF in Ob(Learn|_{M01-M03}), but GCCF not in image(D|_{M01-M03})",
+      "recommendation": "Introduce GCCF formally in M01 Section 1.2.2 (where effective task communication and 'Goal, Context, Constraints, Format' is already partially present) or as a formal definition at the opening of M04 before contrasting with TCEF. This makes D a valid functor by ensuring GCCF is in Ob(Learn) before the GCCF->TCEF morphism is invoked."
+    },
+    {
+      "id": "CAT-014",
+      "severity": "medium",
+      "category": "functor",
+      "title": "The Day-to-Theme functor reveals a Kan extension structure",
+      "description": "The master outline assigns each day a theme: Day 1 = 'Understanding' (paradigm), Day 2 = 'Architecture' (building), Day 3 = 'Production' (deploying). These themes form a three-object category Theme = {Understand, Build, Deploy} with the obvious total order. The day structure forms a functor Day: {1,2,3} -> Theme. Each module is indexed by both day and theme. The question: is the module assignment the left Kan extension of the theme assignment along the day embedding? That is, does each day's module set represent the 'best approximation' of that theme's content given the day's constraints (time, prerequisites)? Day 1's modules (M01-M03 + integration) are indeed the left Kan extension: they represent the maximum understanding-oriented content achievable on Day 1 given zero prerequisites. Day 2 (M04-M08) is the maximum architecture content achievable given Day 1's understanding. Day 3 (M09-M12) is the maximum production content given Days 1-2. This Kan extension perspective explains why M04 (Prompt Engineering) is on Day 2 rather than Day 1: it requires the PRAO and tool-call understanding from Day 1 modules as prerequisites, so the left Kan extension places it at Day 2 to satisfy the prerequisite constraint.",
+      "affected_modules": ["M01", "M04", "M09", "M12"],
+      "categorical_notation": "Module assignment is Lan_i(Theme) where i: {1,2,3} -> DaySlots is the day embedding, computed pointwise as Day(n) = colim of modules whose prerequisites are satisfied by Days 1..n-1",
+      "recommendation": "This structural observation validates the course scheduling. No change needed, but the Kan extension perspective could inform schedule adjustments for different course formats (e.g., a 5-day version would re-compute the Kan extension with more day slots, potentially splitting Day 2's heavy load)."
+    },
+    {
+      "id": "CAT-015",
+      "severity": "high",
+      "category": "missing-structure",
+      "title": "No Yoneda-style representability for the PRAO loop",
+      "description": "The Yoneda lemma states that an object is completely determined by its relationships to all other objects. For PRAO, this means: PRAO's role in the course should be fully determined by Hom(PRAO, X) for all modules X — the set of all ways PRAO maps into each module. The synthesis document shows PRAO maps into 7/9 labs and has 40+ downstream dependencies. But PRAO's relationship to M06 (MCP Building) and M08 (Meta-Prompting) is weak: PRAO does not appear in Lab 04's MCP exercises in a structured way, and meta-prompting's generate-evaluate-improve loop is described independently without explicit PRAO mapping. If PRAO were Yoneda-representable, knowing Hom(PRAO, M08) would tell us everything about how PRAO relates to meta-prompting. But M08 describes its iteration loop without referencing PRAO phases, which means Hom(PRAO, M08) is not made explicit even though it exists (generate=Act, evaluate=Observe, improve=Reason+Act). The representable functor Hom(PRAO, -) is defined on all modules but is not computed (made pedagogically explicit) at M06 and M08.",
+      "affected_modules": ["M06", "M08"],
+      "categorical_notation": "Hom(PRAO, -): Mod -> Set is a representable functor but Hom(PRAO, M06) and Hom(PRAO, M08) are not explicitly computed in the curriculum",
+      "recommendation": "Add explicit PRAO phase mappings in M06 (building MCP server: Perceive=read spec, Reason=design schema, Act=implement handler, Observe=test tool call) and M08 (generate=Act, evaluate=Observe+Reason, improve=Act, re-evaluate=Observe). This completes the representable functor and makes PRAO's universal role fully visible."
+    }
+  ],
+  "category_model": {
+    "objects": "12 modules M01-M12 as knowledge states, plus pre-work state I (Modules A,B) and capstone-complete state T",
+    "morphisms": "Learning transformations f: M_i -> M_j where M_i is prerequisite for M_j. Morphisms compose: if M_i -> M_j and M_j -> M_k, then M_i -> M_k (transitive prerequisite). Key morphisms: M01->M02 (PRAO enables Claude Code), M02->M05 (settings.json enables MCP config), M04->M07 (TCEF enables skill bodies), M04->M08 (TCEF enables meta-prompting), M01->M09 (PRAO enables multi-agent reasoning), M05->M09 (MCP enables multi-agent tool use), M07->M09 (skills enable agent specialization)",
+    "composition_law": "Learning composes associatively: (M01->M02->M05) = (M01->M05) via transitivity. Composition is NOT commutative: M01;M02 != M02;M01 (PRAO must precede Claude Code foundations). Composition is strictly sequential along the critical path M01->M02->M04->M07->M09->M12 but has parallel branches (M05 and M07 are independent given M04)",
+    "identity": "id_{M_i}: staying at current knowledge state. Concretely: re-reading a module without new understanding. The identity law id_{M_j} . f = f = f . id_{M_i} holds: adding a no-op review step before or after a learning transformation yields the same learning outcome",
+    "limits": {
+      "terminal_object": "M12 Capstone is the candidate terminal object (every module has a path to M12), but it fails to be genuinely terminal because projections to M06 and M08 are trivial (see CAT-005). If fixed, M12 would be terminal.",
+      "initial_object": "Pre-work state I is initial: there exists a unique morphism I -> M_i for each module (every module is reachable from pre-work via the prerequisite chain). PRAO (within M01) is initial in the sub-category of reasoning models (see CAT-003).",
+      "products": "Day-level products exist: Day1 = M01 x M02 x M03 (all three must be completed, in order, for Day 1 competency). These products have projection morphisms to each module.",
+      "equalizers": "The retrieval sprints (Day 2 morning, Day 3 morning) act as equalizers: they equalize the 'what learners actually retained' morphism with the 'what should have been retained' morphism, surfacing gaps.",
+      "pullbacks": "Five convergence points are candidate pullbacks (see CAT-009) but the universal property is unverified."
+    },
+    "colimits": {
+      "initial_object": "Pre-work I is also the colimit's starting point",
+      "coproducts": "Independent module pairs (M05+M07, M09+M10) form genuine coproducts: their knowledge contributions are disjoint and combine additively",
+      "pushouts": "M07 (Skills) is a pushout of M04 (TCEF) and M02 (CLAUDE.md) over the shared concept of 'structured instructions that persist across sessions'. M07 is the smallest module that integrates both TCEF structure and CLAUDE.md persistence.",
+      "coequalizers": "The capstone presentation + peer review acts as a coequalizer: different learners' design approaches are compared and normalized to a shared standard"
+    },
+    "adjunctions": [
+      {
+        "name": "Theory -| Practice",
+        "left": "Theory: Concept -> ModuleContent (embed concepts in instructional content)",
+        "right": "Practice: Concept -> LabExercise (embed concepts in hands-on exercises)",
+        "status": "Exists but unit is degenerate at M06, M08, M11 (see CAT-004)"
+      },
+      {
+        "name": "Abstraction -| Concretization",
+        "left": "Abstraction: SpecificPrompt -> MetaPrompt (generalize a prompt to its generator)",
+        "right": "Concretization: MetaPrompt -> SpecificPrompt (instantiate a meta-prompt)",
+        "status": "Well-defined in M08; the meta-prompting iteration loop is the fixpoint computation of this adjunction (see CAT-008)"
+      },
+      {
+        "name": "Decomposition -| Integration",
+        "left": "Decomposition: Task -> SubtaskSet (break task into independent subtasks)",
+        "right": "Integration: SubtaskSet -> Task (aggregate subtask results into unified output)",
+        "status": "Defined in M09; the decomposition worksheet (9.3) computes the left adjoint, the aggregation strategy computes the right adjoint. Well-formed when subtasks are independent; breaks when sequential dependencies exist."
+      },
+      {
+        "name": "Module -| Lab",
+        "left": "Module: LearningObjective -> InstructionalContent",
+        "right": "Lab: LearningObjective -> PracticeExercise",
+        "status": "Partial adjunction; fails at M06, M08, M10, M11 where no dedicated lab exists (see CAT-001)"
+      }
+    ],
+    "enrichment": "The course is enriched over the category of Bloom's taxonomy levels: each morphism f: M_i -> M_j carries a Bloom's level (Remember, Understand, Apply, Analyze, Evaluate, Create) indicating the cognitive operation required. The enrichment is monotonically non-decreasing along the critical path: M01 (Understand) -> M04 (Apply) -> M07 (Apply/Create) -> M09 (Analyze) -> M12 (Create).",
+    "functors_identified": [
+      "F_lab: Mod -> Lab (partial, not faithful — see CAT-001)",
+      "F_bloom: Mod -> Bloom (enrichment functor, well-defined)",
+      "F_day: Mod -> Day (module-to-day assignment, reflects Kan extension — see CAT-014)",
+      "F_PRAO: Mod -> AgentModel (PRAO embedding into each module's reasoning model, initial object property — see CAT-003)",
+      "F_concept_practice: Concept -> Practice (partial, degenerate at 23 orphaned concepts)",
+      "F_schema: CommSchema -> CommSchema (schema migration endofunctor — see CAT-011)"
+    ]
+  },
+  "scores": {
+    "functorial_consistency": 0.72,
+    "compositional_coherence": 0.85,
+    "universal_property_strength": 0.68,
+    "categorical_completeness": 0.74
+  },
+  "score_justifications": {
+    "functorial_consistency": "0.72 — The Module->Lab functor is partial (8/12 modules mapped) and not faithful (M04->M05 morphism not preserved). The Concept->Practice functor has 23 degenerate points. The PRAO embedding functor is excellent (initial object, 7/9 lab coverage). Deductions for the four unmapped modules and the non-faithful morphism.",
+    "compositional_coherence": "0.85 — The composition law holds across the critical path. Monoidal structure is well-defined with identified commuting pairs. The free monad structure of skill composition (CAT-007) is algebraically clean. Day-level composition via Kan extension is valid. Deductions for the GCCF forward-reference type error (CAT-013) and the non-commutative constraints that are documented implicitly but not explicitly.",
+    "universal_property_strength": "0.68 — PRAO has a genuine initial object property (strong). M12 is a cone but not a limit (significant gap). TCEF is only weakly terminal. Convergence points are cones without verified pullback property. The meta-prompting adjunction fixpoint is well-defined. Deductions for M12's failed limit property and the unverified pullback universality at convergence points.",
+    "categorical_completeness": "0.74 — The course admits a well-defined category structure with objects, morphisms, composition, and identity. Several adjunctions are identified and operationally sound. The enrichment over Bloom's taxonomy is monotonically valid. However, four modules lack lab objects (incompleteness in the Lab category), three forward/cross references are missing (incompleteness in the morphism set), and the GCCF undefined-object issue creates a type error in the functor. The course is categorically coherent in its core structure but incomplete at the periphery."
+  },
+  "meta_observations": {
+    "strongest_categorical_property": "PRAO as initial object in AgentModel. This is the single most powerful categorical structure in the course: a universal reasoning pattern from which every subsequent model is derived by unique refinement. The course exploits this correctly across 7/9 labs.",
+    "deepest_adjunction": "Abstraction -| Concretization in meta-prompting (M08). The generate-evaluate-improve loop is genuinely an adjunction fixpoint iteration, and M08's empirical observation of '2-3 iteration convergence' corresponds to the categorical prediction that adjunction fixpoints in well-behaved categories converge rapidly.",
+    "most_significant_gap": "M12's failure to be a genuine limit. A capstone that does not universally factor through ALL prior modules is a capstone that can be achieved by skipping material. This is the primary structural weakness: M06 and M08 are 'categorically optional' for the capstone, contradicting the course's stated goal of integrated mastery.",
+    "unexpected_structure": "The free monad structure of skill composition (CAT-007) was not anticipated from the course's surface presentation but is rigorously present. Sequential, conditional, and parallel composition are exactly the three generators needed for a free monad over the skill-application endofunctor, and the monad laws hold. This suggests the three composition patterns are not arbitrary choices but categorically necessary and sufficient.",
+    "relationship_to_synthesis_document": "The categorical analysis confirms and deepens the synthesis document's findings. The 23 orphaned concepts are exactly the degenerate points of the Theory-Practice adjunction unit. The GCCF forward-reference is a type error in the course diagram functor. The five convergence points are categorically identifiable as candidate pullbacks. The categorical lens provides formal justification for why these issues matter and what 'fixing' them means structurally."
+  }
+}

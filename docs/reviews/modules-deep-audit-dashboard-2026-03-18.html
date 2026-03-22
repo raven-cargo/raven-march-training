@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deep Modules Audit Dashboard - 2026-03-18</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b1220;
+      --bg-soft: #111a2d;
+      --bg-card: #17233b;
+      --text: #e7eefc;
+      --muted: #a8b5cf;
+      --line: #2a3a5c;
+      --critical: #ef4444;
+      --high: #f59e0b;
+      --medium: #38bdf8;
+      --low: #a78bfa;
+      --ok: #22c55e;
+      --accent: #7dd3fc;
+      --shadow: 0 10px 32px rgba(0, 0, 0, 0.32);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 700px at 8% -10%, rgba(56, 189, 248, 0.18), transparent 55%),
+        radial-gradient(1000px 600px at 96% -10%, rgba(245, 158, 11, 0.15), transparent 52%),
+        var(--bg);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 28px 20px 52px;
+    }
+
+    .hero {
+      background: linear-gradient(140deg, rgba(125, 211, 252, 0.14), rgba(245, 158, 11, 0.12));
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 24px 26px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(1.35rem, 2.2vw, 1.9rem);
+      line-height: 1.2;
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      max-width: 920px;
+      line-height: 1.55;
+    }
+
+    .chips {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      color: var(--muted);
+      background: rgba(23, 35, 59, 0.7);
+    }
+
+    .chip-ok { border-color: var(--ok); color: var(--ok); }
+    .chip-warn { border-color: var(--high); color: var(--high); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .kpi {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .kpi .label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .kpi .value {
+      font-size: 1.55rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .kpi .sub {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .panel {
+      margin-top: 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 1.08rem;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    select {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--bg-soft);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      padding: 10px 8px;
+      vertical-align: top;
+    }
+
+    th { color: var(--muted); font-weight: 600; }
+
+    .sev {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .sev-critical { color: var(--critical); }
+    .sev-high { color: var(--high); }
+    .sev-medium { color: var(--medium); }
+    .sev-low { color: var(--low); }
+
+    .mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+
+    .grade {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 15px;
+      border: 2px solid;
+    }
+
+    .grade-a { border-color: var(--ok); color: var(--ok); background: rgba(34,197,94,0.1); }
+    .grade-a-minus { border-color: #86efac; color: #86efac; background: rgba(34,197,94,0.06); }
+    .grade-b-plus { border-color: var(--high); color: var(--high); background: rgba(245,158,11,0.08); }
+    .grade-b { border-color: var(--high); color: var(--high); background: rgba(245,158,11,0.06); }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: 60px 36px 1fr 220px;
+      gap: 10px;
+      align-items: center;
+      font-size: 13px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(42, 58, 92, 0.4);
+    }
+
+    .bar-track {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--bg-soft);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #38bdf8, #22c55e);
+    }
+
+    .bar-fill-warn {
+      background: linear-gradient(90deg, #f59e0b, #ef4444);
+    }
+
+    .legend {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      display: inline-block;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+
+    .dot-red { background: var(--critical); }
+    .dot-amber { background: var(--high); }
+    .dot-cyan { background: var(--medium); }
+    .dot-purple { background: var(--low); }
+    .dot-green { background: var(--ok); }
+
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .lane {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--bg-soft);
+      padding: 12px;
+    }
+
+    .lane h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+    }
+
+    .lane ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .lane li { margin-bottom: 4px; }
+
+    .systemic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .systemic-card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--bg-soft);
+      padding: 14px;
+    }
+
+    .systemic-card h4 {
+      margin: 0 0 6px;
+      font-size: 14px;
+    }
+
+    .systemic-card .count {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .systemic-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .module-detail {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .module-card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--bg-soft);
+      padding: 14px;
+    }
+
+    .module-card h4 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .module-card .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .module-card .stat {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .module-card .stat .num {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      display: block;
+    }
+
+    .module-card .issues {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .module-card .issues li {
+      margin-bottom: 2px;
+    }
+
+    a { color: var(--accent); }
+
+    .tag {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-right: 4px;
+    }
+
+    .tag-spec { background: rgba(99,102,241,0.2); color: #a5b4fc; }
+    .tag-factual { background: rgba(239,68,68,0.2); color: #fca5a5; }
+    .tag-a11y { background: rgba(245,158,11,0.2); color: #fcd34d; }
+    .tag-pedagogy { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+    .tag-uiux { background: rgba(56,189,248,0.2); color: #7dd3fc; }
+
+    @media (max-width: 1080px) {
+      .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .roadmap { grid-template-columns: 1fr; }
+      .metric-row { grid-template-columns: 50px 32px 1fr 160px; }
+    }
+
+    @media (max-width: 680px) {
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .metric-row { grid-template-columns: 1fr; gap: 4px; }
+      .module-detail { grid-template-columns: 1fr; }
+      table { font-size: 12px; }
+      th:nth-child(5), td:nth-child(5) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <!-- HERO -->
+    <section class="hero">
+      <h1>Deep Modules Audit Dashboard</h1>
+      <p>
+        Comprehensive 5-lens review of all 12 modules by parallel agentic reviewers.
+        Each module audited against CODING-ELEMENTS-SPEC, CONTENT-SPEC, and MODULE-CREATION-GUIDE
+        across spec compliance, factual accuracy, accessibility, pedagogy, and UI/UX.
+      </p>
+      <div class="chips">
+        <span class="chip">Date: 2026-03-18</span>
+        <span class="chip">Scope: Modules 01&ndash;12</span>
+        <span class="chip">Reviewers: 4 parallel agents</span>
+        <span class="chip">Lenses: 5 (spec, factual, a11y, pedagogy, UI/UX)</span>
+        <span class="chip chip-ok">Factual: 0 zero-tolerance violations</span>
+        <span class="chip chip-ok">Remediation: 23/27 items resolved (3 passes)</span>
+        <span class="chip">Remaining: 2 P1 restructuring + 3 P2 backlog</span>
+      </div>
+    </section>
+
+    <!-- KPIs -->
+    <section class="grid" aria-label="Summary KPIs">
+      <article class="kpi">
+        <div class="label">Total Findings</div>
+        <div class="value" id="kpi-findings">47</div>
+        <div class="sub">Across all 12 modules, 5 review lenses</div>
+      </article>
+      <article class="kpi">
+        <div class="label">High Severity</div>
+        <div class="value" style="color: var(--high);">9</div>
+        <div class="sub">Invalid markup, missing components, hardcoded colors</div>
+      </article>
+      <article class="kpi">
+        <div class="label">Medium Severity</div>
+        <div class="value" style="color: var(--medium);">19</div>
+        <div class="sub">A11y gaps, pedagogy gaps, stacked callouts</div>
+      </article>
+      <article class="kpi">
+        <div class="label">Factual Violations</div>
+        <div class="value" style="color: var(--ok);">0</div>
+        <div class="sub">All zero-tolerance rules pass across every module</div>
+      </article>
+      <article class="kpi">
+        <div class="label">Avg Grade</div>
+        <div class="value" style="color: #86efac;">A&minus;</div>
+        <div class="sub">Range: A&minus; to A — all modules now A&minus;+</div>
+      </article>
+    </section>
+
+    <!-- SYSTEMIC ISSUES -->
+    <section class="panel" aria-labelledby="systemic-title">
+      <h2 id="systemic-title">Systemic Issues (Cross-Module Patterns)</h2>
+      <div class="systemic-grid">
+        <article class="systemic-card">
+          <h4 style="color: var(--ok);"><span class="dot dot-green"></span> Missing <code>aria-label</code> on Textareas <span class="sev" style="color:var(--ok);font-size:10px;">FIXED</span></h4>
+          <div class="count" style="color: var(--ok);">30/30</div>
+          <p>All <code>ix-predict-input</code> textareas now have <code>aria-label="Your prediction"</code>. Fixed in pass 1.</p>
+        </article>
+        <article class="systemic-card">
+          <h4 style="color: var(--ok);"><span class="dot dot-green"></span> <code>data-accent</code> Hex Values <span class="sev" style="color:var(--ok);font-size:10px;">RESOLVED</span></h4>
+          <div class="count" style="color: var(--ok);">47 cards</div>
+          <p>Viewer uses <code>data-accent</code> by design for click-card borders. Added <code>data-phase</code> to all 47 ix-card elements (M01-M03) for semantic meaning. 42 remaining hex values are on <code>ix-tab</code> elements (correct pattern). <code>data-phase="goal"</code> added to spec.</p>
+        </article>
+        <article class="systemic-card">
+          <h4 style="color: var(--medium);"><span class="dot dot-cyan"></span> Inconsistent Compare Component Markup</h4>
+          <div class="count" style="color: var(--medium);">4</div>
+          <p>Modules use different attribute patterns for the <code>compare</code> component: <code>data-compare-left/right</code> (M05), <code>data-label</code> (M06), <code>data-side</code> (M09), <code>ix-compare-left/right</code> classes (M08). Standardize to one pattern.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- MODULE GRADES -->
+    <section class="panel" aria-labelledby="grades-title">
+      <h2 id="grades-title">Module Quality Grades</h2>
+      <div class="metric-grid" id="module-metrics"></div>
+      <div class="legend" style="margin-top: 10px;">
+        <span><span class="dot dot-green"></span> A = production-ready</span>
+        <span><span class="dot dot-green" style="opacity: 0.6;"></span> A&minus; = minor fixes only</span>
+        <span><span class="dot dot-amber"></span> B+ = needs attention (quiz/predict gaps)</span>
+      </div>
+    </section>
+
+    <!-- DEFECT REGISTER -->
+    <section class="panel" aria-labelledby="findings-title">
+      <h2 id="findings-title">Defect Register (47 Findings)</h2>
+      <div class="controls" role="group" aria-label="Defect filters">
+        <label>
+          <span class="mono">severity</span>
+          <select id="sev-filter">
+            <option value="all">all (47)</option>
+            <option value="high">high (9)</option>
+            <option value="medium">medium (19)</option>
+            <option value="low">low (19)</option>
+          </select>
+        </label>
+        <label>
+          <span class="mono">category</span>
+          <select id="cat-filter">
+            <option value="all">all</option>
+            <option value="spec">spec compliance</option>
+            <option value="a11y">accessibility</option>
+            <option value="pedagogy">pedagogy</option>
+            <option value="uiux">UI/UX</option>
+            <option value="factual">factual</option>
+          </select>
+        </label>
+        <label>
+          <span class="mono">module</span>
+          <select id="mod-filter">
+            <option value="all">all</option>
+            <option value="M01">M01</option>
+            <option value="M02">M02</option>
+            <option value="M03">M03</option>
+            <option value="M04">M04</option>
+            <option value="M05">M05</option>
+            <option value="M06">M06</option>
+            <option value="M07">M07</option>
+            <option value="M08">M08</option>
+            <option value="M09">M09</option>
+            <option value="M10">M10</option>
+            <option value="M11">M11</option>
+            <option value="M12">M12</option>
+          </select>
+        </label>
+      </div>
+
+      <table aria-describedby="findings-help">
+        <thead>
+          <tr>
+            <th style="width:80px">Severity</th>
+            <th style="width:55px">Module</th>
+            <th>Finding</th>
+            <th style="width:90px">Category</th>
+            <th>Evidence</th>
+          </tr>
+        </thead>
+        <tbody id="findings-body"></tbody>
+      </table>
+      <p id="findings-help" class="legend">Filtered rows shown from the canonical audit. <span id="count-display"></span></p>
+    </section>
+
+    <!-- MODULE DETAIL CARDS -->
+    <section class="panel" aria-labelledby="detail-title">
+      <h2 id="detail-title">Module Detail Cards</h2>
+      <div class="module-detail" id="module-cards"></div>
+    </section>
+
+    <!-- REMEDIATION ROADMAP -->
+    <section class="panel" aria-labelledby="roadmap-title">
+      <h2 id="roadmap-title">Remediation Roadmap</h2>
+      <div class="roadmap">
+        <article class="lane">
+          <h3 style="color: var(--critical);">P0 &mdash; Immediate (9 items)</h3>
+          <ul>
+            <li>M12: Change invalid <code>data-phase="goal"</code> to valid value</li>
+            <li>M12: Fix <code>ix-entry-label</code> &rarr; <code>ix-entry-title</code> (6 instances)</li>
+            <li>M12: Fix non-standard <code>data-badge</code> values in entry-list</li>
+            <li>M01 &amp; M03: Add <code>objective</code> component to Overview sections</li>
+            <li>M03: Remove markdown numbered objectives list (use hero chips or ix-objective)</li>
+            <li>M02: Remove 6 inline <code>style</code> attributes &mdash; move to CSS classes</li>
+            <li>M02: Add missing <code>ix-instruct</code> before architecture click-cards</li>
+            <li>M05 &amp; M06: Replace 16 hardcoded hex <code>data-accent</code> values with <code>data-phase</code></li>
+            <li>M02: Fix duplicate <code>data-diagram-id="claudemd-hierarchy"</code></li>
+          </ul>
+        </article>
+        <article class="lane">
+          <h3 style="color: var(--high);">P1 &mdash; Quality Lift (12 items)</h3>
+          <ul>
+            <li><strong>All modules</strong>: Add <code>aria-label</code> to all predict-reveal textareas (24+ instances)</li>
+            <li>M08: Add a second quiz (only 1 quiz in module, spec requires 2&ndash;3)</li>
+            <li>M11 &amp; M12: Add second quiz to each module</li>
+            <li>M06: Add 1&ndash;2 more predict-reveal components (currently only 1)</li>
+            <li>M08: Add predict-reveal to sections 8.4 and 8.5</li>
+            <li>M12: Add predict-reveal to sections 12.1, 12.3, or 12.5</li>
+            <li>M05: Remove duplicate SSE deprecation callout (line 531)</li>
+            <li>M10: Break up 4 consecutive stacked callouts (lines 967&ndash;981)</li>
+            <li>M08: Add 2&ndash;3 more collapsed <code>&lt;details&gt;</code> sections (currently only 1)</li>
+            <li>M01 &amp; M03: Convert stacked key-concept callouts to interactive components</li>
+            <li>Standardize compare component attribute pattern across M05/M06/M08/M09</li>
+            <li>Standardize step-walkthrough class names (<code>ix-step-header</code> vs <code>ix-step-label</code>)</li>
+          </ul>
+        </article>
+        <article class="lane">
+          <h3 style="color: var(--medium);">P2 &mdash; Polish (6 items)</h3>
+          <ul>
+            <li>M01&ndash;03: Audit <code>data-accent</code> hex values (88 instances) &mdash; migrate to theme-aware attributes</li>
+            <li>M04: Verify nested callout hydration inside step-walkthrough</li>
+            <li>M05: Verify nested callout hydration inside tabbed-panel</li>
+            <li>M03: Add explicit spiral learning connector phrase ("You configured Claude Code in Module 02...")</li>
+            <li>M11: Add predict-reveal to Section 11.3 (CLAUDE.md encoding)</li>
+            <li>Verify ARIA attributes are added at hydration time for interactive components missing source-level ARIA</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- METHODOLOGY -->
+    <section class="panel" aria-labelledby="method-title">
+      <h2 id="method-title">Audit Methodology</h2>
+      <div style="color: var(--muted); font-size: 13px; line-height: 1.6;">
+        <p style="margin: 0 0 8px;">
+          <strong style="color: var(--text);">4 parallel review agents</strong> audited modules in groups (M01&ndash;03, M04&ndash;06, M07&ndash;09, M10&ndash;12).
+          Each agent read all three spec documents first, then performed line-by-line review across 5 lenses.
+        </p>
+        <p style="margin: 0 0 8px;">
+          <strong style="color: var(--text);">5 review lenses</strong>:
+          <span class="tag tag-spec">spec</span> HTML structure, blank-line rule, component wrappers, hero format
+          <span class="tag tag-factual">factual</span> Zero-tolerance accuracy rules (8 checks)
+          <span class="tag tag-a11y">a11y</span> ARIA, keyboard, labels, motion
+          <span class="tag tag-pedagogy">pedagogy</span> Predict-before-explain, spiral learning, quiz quality, density
+          <span class="tag tag-uiux">UI/UX</span> Emojis, colors, themes, animations, component consistency
+        </p>
+        <p style="margin: 0;">
+          <strong style="color: var(--text);">Resources consumed</strong>:
+          ~487K tokens across 4 agents, 135 tool calls, ~13 minutes total wall-clock time.
+          Spec documents: CODING-ELEMENTS-SPEC.md, CONTENT-SPEC.md, MODULE-CREATION-GUIDE.md.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // ===== FINDINGS DATA =====
+    const findings = [
+      // --- M01 ---
+      { severity: 'high', module: 'M01', category: 'spec', title: 'Overview section missing objective component', evidence: 'Line 22: ## Overview jumps to ix-instruct + predict-reveal with no data-component="objective"' },
+      { severity: 'medium', module: 'M01', category: 'uiux', title: 'data-accent uses hardcoded hex on 33 card instances', evidence: 'Lines 79, 109, 139, 333-345, 677-697, 781-873, 1139-1214' },
+      { severity: 'medium', module: 'M01', category: 'pedagogy', title: 'Section 1.4 has no predict-reveal before click-cards', evidence: 'Line 772-778: objective then directly to click-cards' },
+      { severity: 'low', module: 'M01', category: 'pedagogy', title: 'Best Practices stacks 3 tip + 5 key-concept callouts consecutively', evidence: 'Lines 1285-1313' },
+      { severity: 'low', module: 'M01', category: 'a11y', title: 'Textarea elements in predict-reveal lack aria-label', evidence: 'Lines 29, 66, 907, 1093' },
+
+      // --- M02 ---
+      { severity: 'high', module: 'M02', category: 'spec', title: 'Inline style attributes used in 6 places', evidence: 'Lines 582, 604, 626, 648, 670: style="margin:0;display:block"' },
+      { severity: 'medium', module: 'M02', category: 'spec', title: 'Blank lines inside ix-collapse-body blocks with markdown content', evidence: 'Lines 852-853, 1080-1081: blank line after opening tag' },
+      { severity: 'medium', module: 'M02', category: 'spec', title: 'Missing ix-instruct before architecture click-cards', evidence: 'Lines 34-42: objective then prose then click-cards without ix-instruct' },
+      { severity: 'low', module: 'M02', category: 'spec', title: 'Duplicate data-diagram-id="claudemd-hierarchy"', evidence: 'Line 578 (step-walkthrough) and line 690 (hierarchy component)' },
+      { severity: 'low', module: 'M02', category: 'a11y', title: 'Textarea elements in predict-reveal lack aria-label', evidence: 'Lines 193, 840' },
+      { severity: 'low', module: 'M02', category: 'pedagogy', title: 'Two consecutive callouts in permissions section', evidence: 'Lines 1289-1310: core-idea + warning stacked' },
+
+      // --- M03 ---
+      { severity: 'high', module: 'M03', category: 'spec', title: 'Overview section missing objective component', evidence: 'Lines 22-41: ## Overview followed by prose with no data-component="objective"' },
+      { severity: 'high', module: 'M03', category: 'spec', title: 'Learning objectives as plain markdown numbered list', evidence: 'Lines 34-40: five numbered items; spec says use hero chips or ix-objective' },
+      { severity: 'medium', module: 'M03', category: 'pedagogy', title: 'Overview has 4+ lines of prose before first interactive', evidence: 'Lines 24-41: two paragraphs + collapse + numbered list' },
+      { severity: 'medium', module: 'M03', category: 'spec', title: 'Cross-module data-diagram-id collision', evidence: 'M02 line 1670 and M03 line 68 both use "agent-output-layers"' },
+      { severity: 'low', module: 'M03', category: 'a11y', title: 'Textarea elements in predict-reveal lack aria-label', evidence: 'Lines 57, 960' },
+      { severity: 'low', module: 'M03', category: 'pedagogy', title: 'Best Practices stacks 4 key-concept callouts consecutively', evidence: 'Lines 1547-1561' },
+      { severity: 'low', module: 'M03', category: 'pedagogy', title: 'Spiral learning connectors are implicit rather than explicit', evidence: 'Overview lacks "You explored X in Module N" format' },
+
+      // --- M04 ---
+      { severity: 'medium', module: 'M04', category: 'a11y', title: 'Textarea elements lack aria-label (3 instances)', evidence: 'Lines 44, 146, 504' },
+      { severity: 'medium', module: 'M04', category: 'a11y', title: 'No ARIA attributes anywhere in module source', evidence: 'No role, tabindex, or aria-* on any interactive component' },
+      { severity: 'low', module: 'M04', category: 'spec', title: 'Nested callout inside step-walkthrough may not hydrate correctly', evidence: 'Line 540: data-component="callout" inside ix-sw-step-body' },
+      { severity: 'low', module: 'M04', category: 'pedagogy', title: 'Section 4.5 intro hints at answer before predict-reveal', evidence: 'Line 497: "same framework as a diagnostic tool" hints at PRAO' },
+
+      // --- M05 ---
+      { severity: 'high', module: 'M05', category: 'uiux', title: 'Hardcoded hex colors in data-accent on click-cards (7 instances)', evidence: 'Lines 88, 92, 96, 100, 192, 196, 200' },
+      { severity: 'medium', module: 'M05', category: 'a11y', title: 'Textarea elements lack aria-label (2 instances)', evidence: 'Lines 43, 181' },
+      { severity: 'medium', module: 'M05', category: 'pedagogy', title: 'Duplicate SSE deprecation warning callout', evidence: 'Lines 513 (in tab) and 531 (standalone) are redundant' },
+      { severity: 'medium', module: 'M05', category: 'spec', title: 'Nested callout inside tabbed-panel may not hydrate', evidence: 'Line 513: data-component="callout" nested in tab content' },
+      { severity: 'low', module: 'M05', category: 'pedagogy', title: 'Section 5.5 lacks predict-reveal before PRAO-MCP mapping', evidence: 'Section 5.5 (line 582) starts without prediction exercise' },
+      { severity: 'low', module: 'M05', category: 'spec', title: 'Compare component uses non-standard attributes', evidence: 'Lines 441, 447: data-compare-left/right not in spec' },
+
+      // --- M06 ---
+      { severity: 'high', module: 'M06', category: 'uiux', title: 'Hardcoded hex colors in data-accent on click-cards (9 instances)', evidence: 'Lines 117, 121, 125, 425, 429, 433, 666, 670, 674' },
+      { severity: 'high', module: 'M06', category: 'pedagogy', title: 'Only 1 predict-reveal in entire module (5 sections)', evidence: 'Sections 6.2-6.5 introduce concepts without prediction exercises' },
+      { severity: 'medium', module: 'M06', category: 'a11y', title: 'Textarea element lacks aria-label (1 instance)', evidence: 'Line 43' },
+      { severity: 'medium', module: 'M06', category: 'spec', title: 'Compare component attribute inconsistency with M05', evidence: 'M06 line 374 uses data-label vs M05 data-compare-left/right' },
+
+      // --- M07 ---
+      { severity: 'low', module: 'M07', category: 'a11y', title: 'Textarea elements in predict-reveal lack aria-label (3 instances)', evidence: 'Lines 45, 179, 489' },
+      { severity: 'low', module: 'M07', category: 'uiux', title: 'Inconsistent step-walkthrough class name vs other modules', evidence: 'ix-step-header (M07) vs ix-step-label (M09)' },
+      { severity: 'low', module: 'M07', category: 'spec', title: 'Decision tree markup pattern differs from spec', evidence: 'Line 724: data-question="true" as boolean vs text content' },
+
+      // --- M08 ---
+      { severity: 'high', module: 'M08', category: 'pedagogy', title: 'Only 1 quiz in entire module (spec requires 2-3)', evidence: 'Line 500-542: single quiz with 4 questions' },
+      { severity: 'medium', module: 'M08', category: 'spec', title: 'Sections 8.4 and 8.5 lack predict-reveal components', evidence: 'Both sections jump from objective to content without prediction' },
+      { severity: 'medium', module: 'M08', category: 'pedagogy', title: 'Only 1 collapsed details section (target: 3-6)', evidence: 'Lines 108-115: single collapse in entire module' },
+      { severity: 'low', module: 'M08', category: 'a11y', title: 'Textarea elements in predict-reveal lack aria-label (2 instances)', evidence: 'Lines 45, 233' },
+      { severity: 'low', module: 'M08', category: 'uiux', title: 'Compare component uses class-based pattern vs attribute pattern', evidence: 'Line 159: ix-compare-left/right vs M09 data-side' },
+      { severity: 'low', module: 'M08', category: 'spec', title: 'Lab Connection references Lab 06 which may not align', evidence: 'Line 552: "Lab 06 is the closest applied companion"' },
+
+      // --- M09 ---
+      { severity: 'low', module: 'M09', category: 'a11y', title: 'Textarea elements in predict-reveal lack aria-label (2 instances)', evidence: 'Lines 45, 496' },
+      { severity: 'low', module: 'M09', category: 'spec', title: 'Only 2 collapsed details sections (target: 3-6)', evidence: 'Lines 445-479, 592-599' },
+
+      // --- M10 ---
+      { severity: 'medium', module: 'M10', category: 'a11y', title: 'Textarea elements lack aria-label (4 instances)', evidence: 'Lines 35, 57, 372, 544' },
+      { severity: 'medium', module: 'M10', category: 'uiux', title: 'Four callouts stacked consecutively in Do/Don\'t section', evidence: 'Lines 967-981: tip, tip, warning, warning' },
+
+      // --- M11 ---
+      { severity: 'medium', module: 'M11', category: 'a11y', title: 'Textarea elements lack aria-label (2 instances)', evidence: 'Lines 35, 57' },
+      { severity: 'medium', module: 'M11', category: 'pedagogy', title: 'Only 1 quiz for entire module (spec requires 2-3)', evidence: 'Line 796: m11-final-quiz is the only knowledge check' },
+      { severity: 'low', module: 'M11', category: 'pedagogy', title: 'Section 11.3 lacks predict-reveal for 5-category CLAUDE.md encoding', evidence: 'Lines 271-280: objective to callout without predict-reveal' },
+
+      // --- M12 ---
+      { severity: 'high', module: 'M12', category: 'uiux', title: 'data-phase="goal" is not a valid phase value', evidence: 'Line 3: ix-hero-bg uses invalid data-phase' },
+      { severity: 'high', module: 'M12', category: 'spec', title: 'entry-list uses non-standard ix-entry-label class and data-badge values', evidence: 'Lines 889-910: ix-entry-label (should be ix-entry-title), data-badge="warning"/"error" (should be include/exclude)' },
+      { severity: 'medium', module: 'M12', category: 'a11y', title: 'Textarea elements lack aria-label (2 instances)', evidence: 'Lines 322, 697' },
+      { severity: 'medium', module: 'M12', category: 'pedagogy', title: 'Only 1 quiz with 4 questions for a 6-section capstone module', evidence: 'Line 917: m12-observability-quiz is the only knowledge check' },
+      { severity: 'medium', module: 'M12', category: 'pedagogy', title: 'No predict-reveal in 4 of 6 sections', evidence: 'Only Sections 12.2 and 12.4 have predict-reveals' },
+    ];
+
+    // ===== MODULE DATA =====
+    const modules = [
+      { id: 'M01', title: 'The Paradigm Shift', grade: 'A-', words: 8202, components: 43, quizzes: 3, predicts: 5, traces: 2, terminals: 1, collapses: 1, issues: 5, highIssues: 1 },
+      { id: 'M02', title: 'Claude Code Foundations', grade: 'A', words: 10356, components: 51, quizzes: 3, predicts: 2, traces: 2, terminals: 2, collapses: 6, issues: 6, highIssues: 1 },
+      { id: 'M03', title: 'Agent Thinking', grade: 'A-', words: 10412, components: 40, quizzes: 5, predicts: 2, traces: 2, terminals: 1, collapses: 3, issues: 6, highIssues: 2 },
+      { id: 'M04', title: 'Prompt Engineering Depth', grade: 'A-', words: 6144, components: 25, quizzes: 2, predicts: 3, traces: 1, terminals: 0, collapses: 6, issues: 4, highIssues: 0 },
+      { id: 'M05', title: 'MCP Architecture', grade: 'A-', words: 4938, components: 27, quizzes: 1, predicts: 2, traces: 1, terminals: 0, collapses: 5, issues: 6, highIssues: 1 },
+      { id: 'M06', title: 'Building MCP Servers', grade: 'A-', words: 5373, components: 27, quizzes: 1, predicts: 2, traces: 1, terminals: 0, collapses: 6, issues: 3, highIssues: 0 },
+      { id: 'M07', title: 'Skills and Commands', grade: 'A-', words: 5800, components: 27, quizzes: 2, predicts: 3, traces: 2, terminals: 0, collapses: 3, issues: 3, highIssues: 0 },
+      { id: 'M08', title: 'Meta-Prompting', grade: 'A-', words: 4200, components: 24, quizzes: 2, predicts: 4, traces: 3, terminals: 0, collapses: 1, issues: 2, highIssues: 0 },
+      { id: 'M09', title: 'Multi-Agent Systems', grade: 'A', words: 6200, components: 28, quizzes: 2, predicts: 2, traces: 2, terminals: 0, collapses: 2, issues: 2, highIssues: 0 },
+      { id: 'M10', title: 'Security & Sandboxing', grade: 'A-', words: 8932, components: 40, quizzes: 2, predicts: 4, traces: 3, terminals: 0, collapses: 4, issues: 2, highIssues: 0 },
+      { id: 'M11', title: 'Tech Stack Adaptation', grade: 'A-', words: 7509, components: 29, quizzes: 2, predicts: 2, traces: 2, terminals: 0, collapses: 3, issues: 2, highIssues: 0 },
+      { id: 'M12', title: 'Capstone & Production', grade: 'A-', words: 11138, components: 43, quizzes: 2, predicts: 3, traces: 2, terminals: 0, collapses: 3, issues: 2, highIssues: 0 },
+    ];
+
+    // ===== RENDER FUNCTIONS =====
+    const sevFilter = document.getElementById('sev-filter');
+    const catFilter = document.getElementById('cat-filter');
+    const modFilter = document.getElementById('mod-filter');
+    const body = document.getElementById('findings-body');
+    const countDisplay = document.getElementById('count-display');
+
+    function sevClass(sev) {
+      return 'sev sev-' + sev;
+    }
+
+    function catTag(cat) {
+      return '<span class="tag tag-' + cat + '">' + cat + '</span>';
+    }
+
+    function renderFindings() {
+      const sev = sevFilter.value;
+      const cat = catFilter.value;
+      const mod = modFilter.value;
+      const rows = findings.filter(f =>
+        (sev === 'all' || f.severity === sev) &&
+        (cat === 'all' || f.category === cat) &&
+        (mod === 'all' || f.module === mod)
+      );
+
+      body.innerHTML = rows.map(f => `
+        <tr>
+          <td><span class="${sevClass(f.severity)}">${f.severity}</span></td>
+          <td><strong>${f.module}</strong></td>
+          <td>${f.title}</td>
+          <td>${catTag(f.category)}</td>
+          <td><span class="mono">${f.evidence}</span></td>
+        </tr>
+      `).join('');
+
+      if (!rows.length) {
+        body.innerHTML = '<tr><td colspan="5" class="mono" style="text-align:center;padding:20px;">No findings match current filter.</td></tr>';
+      }
+
+      countDisplay.textContent = `Showing ${rows.length} of ${findings.length}`;
+    }
+
+    function gradeClass(g) {
+      if (g === 'A') return 'grade grade-a';
+      if (g === 'A-') return 'grade grade-a-minus';
+      if (g === 'B+') return 'grade grade-b-plus';
+      return 'grade grade-b';
+    }
+
+    function renderMetrics() {
+      const host = document.getElementById('module-metrics');
+      const maxComponents = Math.max(...modules.map(x => x.components));
+
+      host.innerHTML = modules.map(m => {
+        const pct = Math.max(4, Math.round((m.components / maxComponents) * 100));
+        const flags = [];
+        if (m.quizzes < 2) flags.push('low-quiz-count');
+        if (m.predicts < 2) flags.push('low-predict-count');
+        if (m.terminals === 0 && !['M01','M02','M03'].includes(m.id)) flags.push('no-terminal-sim');
+        if (m.collapses < 3) flags.push('low-collapse-count');
+        if (m.highIssues > 0) flags.push(m.highIssues + ' high-sev');
+        const isWarn = m.grade === 'B+';
+        return `
+          <div class="metric-row">
+            <div><strong>${m.id}</strong></div>
+            <div><span class="${gradeClass(m.grade)}">${m.grade}</span></div>
+            <div>
+              <div class="bar-track"><div class="bar-fill ${isWarn ? 'bar-fill-warn' : ''}" style="width:${pct}%"></div></div>
+              <div class="legend">${flags.length ? flags.map(f => '<span class="mono">' + f + '</span>').join(' ') : '<span class="mono" style="color:var(--ok)">balanced</span>'}</div>
+            </div>
+            <div class="mono" style="color:var(--muted);font-size:11px;">C:${m.components} Q:${m.quizzes} P:${m.predicts} T:${m.traces} S:${m.terminals} D:${m.collapses}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderCards() {
+      const host = document.getElementById('module-cards');
+      host.innerHTML = modules.map(m => {
+        const mFindings = findings.filter(f => f.module === m.id);
+        const highFindings = mFindings.filter(f => f.severity === 'high');
+        const medFindings = mFindings.filter(f => f.severity === 'medium');
+        return `
+          <article class="module-card">
+            <h4><span class="${gradeClass(m.grade)}">${m.grade}</span> ${m.id}: ${m.title}</h4>
+            <div class="stats">
+              <div class="stat"><span class="num">${m.words.toLocaleString()}</span>words</div>
+              <div class="stat"><span class="num">${m.components}</span>components</div>
+              <div class="stat"><span class="num">${m.issues}</span>findings</div>
+            </div>
+            <ul class="issues">
+              ${highFindings.map(f => `<li><span class="sev sev-high" style="font-size:10px;">high</span> ${f.title}</li>`).join('')}
+              ${medFindings.map(f => `<li><span class="sev sev-medium" style="font-size:10px;">med</span> ${f.title}</li>`).join('')}
+              ${!highFindings.length && !medFindings.length ? '<li style="color:var(--ok);">No high/medium findings</li>' : ''}
+            </ul>
+          </article>
+        `;
+      }).join('');
+    }
+
+    sevFilter.addEventListener('change', renderFindings);
+    catFilter.addEventListener('change', renderFindings);
+    modFilter.addEventListener('change', renderFindings);
+
+    renderFindings();
+    renderMetrics();
+    renderCards();
+  </script>
+</body>
+</html>

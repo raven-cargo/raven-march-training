@@ -3033,6 +3033,8 @@
   <div id="error">
     <h2>⚠ Module not found</h2>
     <p id="error-msg">Could not load the requested module.</p>
+    <p id="error-hint" style="margin-top:10px;color:var(--text-muted);font-size:13px;"></p>
+    <button id="retry-load" type="button" class="ix-walk-btn" style="margin-top:10px;">Retry module load</button>
     <p style="margin-top:12px;"><a href="/" style="color:var(--primary);">← Back to dashboard</a></p>
   </div>
   <div class="markdown-body" id="content" style="display:none;"></div>
@@ -3445,6 +3447,12 @@
   function initDecisionTree(el) {
     var nodes = el.querySelectorAll('.ix-tree-node');
     nodes.forEach(function (node) {
+      var nodeChildren = node.nextElementSibling;
+      if (nodeChildren && nodeChildren.classList.contains('ix-tree-children')) {
+        node.setAttribute('role', 'button');
+        node.setAttribute('tabindex', '0');
+        node.setAttribute('aria-expanded', nodeChildren.classList.contains('open') ? 'true' : 'false');
+      }
       node.addEventListener('click', function (e) {
         e.stopPropagation();
         // Find the sibling .ix-tree-children
@@ -3453,6 +3461,7 @@
 
         var isOpen = children.classList.contains('open');
         children.classList.toggle('open');
+        node.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
 
         // Rotate chevron icon
         var chevron = node.querySelector('[data-lucide="chevron-right"], [data-lucide="chevron-down"]');
@@ -3476,6 +3485,12 @@
             svg.style.transition = 'transform 0.2s ease';
           }
         }
+      });
+
+      node.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();
+        node.click();
       });
     });
   }
@@ -4090,6 +4105,12 @@
     shell.appendChild(reveal);
 
     var baseId = el.dataset.diagramId || ensureId(el);
+    var inputId = input.id || (baseId + '-predict-input');
+    input.id = inputId;
+    if (!prompt.id) prompt.id = baseId + '-predict-prompt';
+    if (!input.getAttribute('aria-label') && !input.getAttribute('aria-labelledby')) {
+      input.setAttribute('aria-labelledby', prompt.id);
+    }
     var predictionKey = slug + '-predict-' + baseId;
     var xp = parseInt(el.dataset.xp, 10);
     if (isNaN(xp)) xp = 10;
@@ -4379,13 +4400,30 @@
     var levels = Array.from(el.querySelectorAll('.ix-h-level'));
     levels.forEach(function (level, idx) {
       if (!level.dataset.level) level.dataset.level = idx;
+      level.setAttribute('role', 'button');
+      level.setAttribute('tabindex', '0');
+      level.setAttribute('aria-pressed', 'false');
     });
+    function activateLevel(level) {
+      levels.forEach(function (l) {
+        l.classList.remove('active');
+        l.setAttribute('aria-pressed', 'false');
+      });
+      level.classList.add('active');
+      level.setAttribute('aria-pressed', 'true');
+    }
     // Click to highlight
     el.addEventListener('click', function (e) {
       var level = e.target.closest('.ix-h-level');
       if (!level) return;
-      levels.forEach(function (l) { l.classList.remove('active'); });
-      level.classList.add('active');
+      activateLevel(level);
+    });
+    el.addEventListener('keydown', function (e) {
+      var level = e.target.closest('.ix-h-level');
+      if (!level) return;
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      activateLevel(level);
     });
   }
 
@@ -4696,6 +4734,9 @@
 
     items.forEach(function (item) {
       item.classList.add('ix-rq-item');
+      item.setAttribute('role', 'button');
+      item.setAttribute('tabindex', '0');
+      item.setAttribute('aria-expanded', item.classList.contains('revealed') ? 'true' : 'false');
       var answerType = item.dataset.answer || 'interactive';
       var label = item.dataset.label || answerType;
 
@@ -4725,15 +4766,23 @@
         item.appendChild(badge);
       }
 
-      // Click handler
-      item.addEventListener('click', function () {
+      function revealItem() {
         if (item.classList.contains('revealed')) return;
         item.classList.add('revealed');
+        item.setAttribute('aria-expanded', 'true');
         var badge = item.querySelector('.ix-rq-answer');
         if (badge) {
           badge.className = 'ix-rq-answer ' + badge.dataset.type;
           badge.textContent = badge.dataset.label;
         }
+      }
+
+      // Click handler
+      item.addEventListener('click', revealItem);
+      item.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();
+        revealItem();
       });
     });
   }
@@ -5223,21 +5272,33 @@
     '11': '11-tech-stack-adaptation',
     '12': '12-capstone-production'
   };
+  const SPECIAL_ROUTE_SLUGS = {
+    '/challenges': 'CHALLENGE-MISSIONS',
+    '/challenge': 'CHALLENGE-MISSIONS'
+  };
+  const SPECIAL_SLUG_TITLES = {
+    'CHALLENGE-MISSIONS': 'Challenge Missions'
+  };
+  const MODULE_CONTENT_PATHS = {
+    'CHALLENGE-MISSIONS': '/docs/curriculum/CHALLENGE-MISSIONS.md'
+  };
 
   /* ── Resolve slug ── */
-  const pathMatch = window.location.pathname.match(/\/module\/(\d{1,2})/);
+  const normalizedPath = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
+  const pathMatch = normalizedPath.match(/\/module\/(\d{1,2})/);
   const pathKey = pathMatch ? pathMatch[1].padStart(2, '0') : null;
   const slugFromPath = pathKey ? MODULE_SLUGS[pathKey] : null;
+  const slugFromSpecialPath = SPECIAL_ROUTE_SLUGS[normalizedPath] || null;
   const params = new URLSearchParams(window.location.search);
   const rawParamSlug = params.get('m');
-  const slug = slugFromPath || (rawParamSlug ? rawParamSlug.replace(/\.md$/i, '') : null);
+  const slug = slugFromPath || slugFromSpecialPath || (rawParamSlug ? rawParamSlug.replace(/\.md$/i, '') : null);
 
   if (!slug) {
-    showError('No module specified. Use /module/01 or ?m=01-paradigm-shift');
+    showError('No module specified. Use /module/01, /challenges, or ?m=01-paradigm-shift');
     return;
   }
 
-  const title = slug.replace(/^\d+-/, '').replace(/-/g, ' ')
+  const title = SPECIAL_SLUG_TITLES[slug] || slug.replace(/^\d+-/, '').replace(/-/g, ' ')
     .replace(/\b\w/g, c => c.toUpperCase());
   document.getElementById('nav-title').textContent = 'Module · ' + title;
   document.title = title + ' — Agentic AI Engineering';
@@ -5404,13 +5465,15 @@
     codeBlocks.forEach(function (code) {
       var pre = code.parentElement;
       if (!pre) return;
+      var source = code.textContent || '';
 
       var wrapper = document.createElement('div');
       wrapper.className = 'mermaid-wrapper';
 
       var div = document.createElement('div');
       div.className = 'mermaid';
-      div.textContent = code.textContent;
+      div.textContent = source;
+      div.dataset.mermaidSource = source;
 
       wrapper.appendChild(div);
       pre.replaceWith(wrapper);
@@ -5422,6 +5485,35 @@
         console.warn('[Mermaid] Render error:', err);
       });
     }
+  }
+
+  function rerenderMermaid(contentEl) {
+    if (!window.mermaid || !contentEl) return;
+    var mermaidDivs = Array.from(contentEl.querySelectorAll('.mermaid'));
+    if (!mermaidDivs.length) return;
+
+    var rerenderNodes = [];
+    mermaidDivs.forEach(function (div) {
+      var source = div.dataset.mermaidSource;
+      if (!source) return;
+      div.removeAttribute('data-processed');
+      div.innerHTML = '';
+      div.textContent = source;
+      rerenderNodes.push(div);
+    });
+
+    if (!rerenderNodes.length) return;
+
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: 'loose',
+      theme: 'base',
+      themeVariables: mermaidThemeVars(resolvedThemeForMermaid())
+    });
+
+    mermaid.run({ nodes: rerenderNodes }).catch(function (err) {
+      console.warn('[Mermaid] Re-render error:', err);
+    });
   }
 
   /* ── Copy code helper ── */
@@ -5845,12 +5937,30 @@
     document.getElementById('loading').style.display = 'none';
     document.getElementById('error').style.display = 'block';
     document.getElementById('error-msg').textContent = msg;
+    var hintEl = document.getElementById('error-hint');
+    if (!hintEl) return;
+    if (/HTTP 404/.test(String(msg))) {
+      hintEl.textContent = 'The module route resolved, but the content file was not found. Verify the module slug and deployment contents.';
+    } else if (/HTTP 5\\d\\d/.test(String(msg))) {
+      hintEl.textContent = 'The server returned an internal error. Retry once, then check deployment logs if it persists.';
+    } else if (/Failed to fetch|NetworkError|timeout/i.test(String(msg))) {
+      hintEl.textContent = 'This is often transient (network/CDN/cache). Retry the load, then hard-refresh if needed.';
+    } else {
+      hintEl.textContent = 'If this persists, hard-refresh and confirm the module markdown endpoint is reachable.';
+    }
+  }
+
+  var retryBtn = document.getElementById('retry-load');
+  if (retryBtn) {
+    retryBtn.addEventListener('click', function () {
+      window.location.reload();
+    });
   }
 
   loadXp();
 
   /* ── Fetch & render ── */
-  const url = '/docs/curriculum/modules/' + slug + '.md';
+  const url = MODULE_CONTENT_PATHS[slug] || ('/docs/curriculum/modules/' + slug + '.md');
   fetch(url)
     .then(function (res) {
       if (!res.ok) throw new Error('HTTP ' + res.status + ': ' + url);
@@ -5909,8 +6019,9 @@
 
   // Mermaid theme variables are bound at init; refresh on theme switch for accurate contrast.
   window.addEventListener('luxor-theme-change', function () {
-    if (document.querySelector('.mermaid-wrapper')) {
-      window.location.reload();
+    var contentEl = document.getElementById('content');
+    if (contentEl && contentEl.querySelector('.mermaid-wrapper')) {
+      rerenderMermaid(contentEl);
     }
   });
 

@@ -42,7 +42,7 @@ In Module 07 you composed skills into pipelines within a single agent session. M
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m09-multi-agent-predict" data-xp="8">
   <span class="ix-title">Predict Before You Learn</span>
   <p class="ix-predict-prompt">You have a code review pipeline that checks security, performance, documentation, and test coverage. Currently, a single agent runs all four checks sequentially, taking about 4 minutes total. A colleague suggests using four agents in parallel. Before you agree, what costs and risks should you consider? Under what conditions would you say "no, keep it single-agent"?</p>
-  <textarea class="ix-predict-input" placeholder="Write your reasoning -- what costs and risks would you expect and why?"></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- what costs and risks would you expect and why?"></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>
     <p>Multi-agent adds <strong>coordination overhead</strong> (15-20 seconds for orchestration on a 30-second task), <strong>aggregation complexity</strong> (4 result sets to merge with potential conflicts and deduplication), and <strong>debugging difficulty</strong> (4 logs instead of 1, with errors potentially originating in any sub-agent or the aggregation step). It is justified only when subtasks are genuinely independent, the aggregation strategy is clear, and the net time benefit exceeds coordination cost. Many tasks that <em>seem</em> to need multi-agent only need better prompting of a single agent.</p>
@@ -493,7 +493,7 @@ In Module 05 you learned that output contracts make agent output reliable for do
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m09-communication-predict" data-xp="8">
   <span class="ix-title">Predict Before You Learn</span>
   <p class="ix-predict-prompt">Two sub-agents have completed their security and performance reviews. One returns a detailed paragraph describing its findings. The other returns structured JSON with severity levels and file paths. The orchestrator needs to merge their results into a unified report. Which output will be easier to aggregate, and what specific problems will the prose output cause?</p>
-  <textarea class="ix-predict-input" placeholder="Write your reasoning -- which format will the orchestrator prefer and why?"></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- which format will the orchestrator prefer and why?"></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>
     <p>Structured JSON eliminates parsing ambiguity entirely. The orchestrator can programmatically extract findings, count by severity, and merge without interpretation. Prose requires natural language comprehension at every aggregation step, introduces instability (different runs may extract different information from the same text), and makes deduplication across agents nearly impossible. When Agent A says "some potential issues with token validation" and Agent B reports <code>{"file":"src/auth/token.ts","line":47,"severity":"high"}</code>, the orchestrator cannot reliably determine whether these refer to the same issue or different ones.</p>

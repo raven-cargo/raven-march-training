@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Setup — 30-Minute Target</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+
+.progress-bar{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;padding:12px 18px;border-radius:10px;background:#141418;border:1px solid #1a1a1e}
+.pb-track{flex:1;height:6px;border-radius:3px;background:#1a1a1e;overflow:hidden}
+.pb-fill{height:100%;border-radius:3px;background:#4ade80;transition:width .5s cubic-bezier(.22,1,.36,1);width:0%}
+.pb-label{font-size:13px;font-weight:600;font-family:'JetBrains Mono',monospace;color:#4ade80;min-width:36px;text-align:right;transition:color .3s}
+
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+
+.steps{display:flex;flex-direction:column;gap:8px;position:relative;padding-left:28px}
+.steps::before{content:'';position:absolute;left:11px;top:16px;bottom:16px;width:2px;background:#1a1a1e;border-radius:1px}
+
+.step{position:relative;cursor:pointer;transition:all .25s}
+.step::before{content:'';position:absolute;left:-21px;top:16px;width:14px;height:14px;border-radius:50%;border:2px solid #333;background:#1a1a1e;transition:all .35s;z-index:1}
+.step.done::before{background:#4ade80;border-color:#4ade80;box-shadow:0 0 8px rgba(74,222,128,.25)}
+.step-card{padding:14px 18px;border-radius:12px;border:1px solid #222228;background:#141418;transition:all .3s}
+.step:hover .step-card{border-color:#333}
+.step.done .step-card{border-color:#1a4030}
+.step.active .step-card{border-color:#1a3a6a;background:#0a1525}
+
+.step-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+.step-name{font-size:14px;font-weight:600;color:#888;transition:color .3s}
+.step.done .step-name{color:#4ade80}
+.step.active .step-name{color:#e8e6e1}
+.step-time{font-size:11px;font-family:'JetBrains Mono',monospace;color:#333;transition:color .3s}
+.step.active .step-time{color:#555}
+.step-desc{font-size:12px;color:#555;line-height:1.5;transition:color .3s}
+.step.active .step-desc{color:#888}
+
+.step-detail{display:none;margin-top:10px;padding-top:10px;border-top:1px solid #1a1a1e;animation:fadeIn .3s ease}
+.step.active .step-detail{display:block}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.sd-items{display:flex;flex-direction:column;gap:6px}
+.sd-item{font-size:12px;color:#aaa;display:flex;gap:8px;align-items:flex-start;line-height:1.5}
+.sd-check{min-width:16px;color:#333;font-size:12px;cursor:pointer;transition:color .2s;text-align:center}
+.sd-check.checked{color:#4ade80}
+.sd-text{flex:1}
+.sd-text code{font-family:'JetBrains Mono',monospace;font-size:11px;padding:1px 5px;border-radius:3px;background:#0a0a0c;color:#888}
+
+.verify-block{margin-top:10px;padding:10px 14px;border-radius:8px;background:#0a0a0c;border:1px solid #1a1a1e;font-family:'JetBrains Mono',monospace;font-size:11px;color:#666;line-height:1.8}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Project setup from scratch</h1>
+<div class="objective">
+  <span class="goal">Target: 30 minutes</span>
+  <span class="text">A senior engineer should be able to configure a new project for Claude Code — writing the CLAUDE.md, setting permissions, connecting MCP, and verifying — in under 30 minutes. This checklist walks through the process.</span>
+</div>
+
+<div class="progress-bar">
+  <div class="pb-track"><div class="pb-fill" id="pbFill"></div></div>
+  <div class="pb-label" id="pbLabel">0 / 4</div>
+</div>
+
+<div class="instruct">&#9654; Click each step to expand it. Check off sub-tasks as you complete them to track your progress.</div>
+
+<div class="steps" id="steps"></div>
+</div>
+
+<script>
+const steps=[
+{name:'Write CLAUDE.md',time:'~10 min',desc:'Create the project briefing with architecture, conventions, constraints, and decisions.',
+ items:[
+   'Add <code>## Architecture</code> — what the system does, how it\'s structured, key directories',
+   'Add <code>## Conventions</code> — validation library, export style, error handling pattern',
+   'Add <code>## Key files</code> — schema, routes, config files the agent will need',
+   'Add <code>## Constraints</code> — files never to modify, actions requiring approval',
+   'Add <code>## Decided</code> — settled architectural choices (ORM, test framework, auth approach)',
+ ],
+ verify:'cat CLAUDE.md  # Review: is every entry decidable? Could an agent act on it?'},
+{name:'Configure settings.json',time:'~8 min',desc:'Set up permissions so the agent can work within safe boundaries.',
+ items:[
+   'Create <code>.claude/settings.json</code> in the project root',
+   'Add <code>"allow"</code> list — Read, Write(src/**), Write(tests/**), Bash(npm test), Bash(git status)',
+   'Add <code>"deny"</code> list — Bash(rm *), Bash(sudo *), Bash(git push *), Write(.env*)',
+   'Review: does the allow list match only what this project needs?',
+ ],
+ verify:'cat .claude/settings.json  # Validate JSON syntax'},
+{name:'Connect MCP servers',time:'~8 min',desc:'Add any external tools the agent needs — database, issue tracker, etc.',
+ items:[
+   'Add <code>"mcpServers"</code> block to settings.json with server configs',
+   'For stdio servers: verify the command runs manually in your terminal',
+   'For HTTP servers: verify the URL with <code>curl</code> and check API key env vars',
+   'Set environment variables for any credentials (<code>export VAR=value</code>)',
+ ],
+ verify:'npx -y @modelcontextprotocol/server-postgres "postgresql://localhost/mydb"\n# Should start without errors'},
+{name:'Verify the configuration',time:'~4 min',desc:'Start Claude Code and confirm everything works end-to-end.',
+ items:[
+   'Run <code>claude</code> and ask: "What do you know about this project?"',
+   'Verify CLAUDE.md content is reflected in the response',
+   'Ask: "What MCP tools are available?" — confirm servers connected',
+   'Run a simple task that exercises permissions (e.g., "run the test suite")',
+ ],
+ verify:'claude\n> What do you know about this project?\n> What MCP tools are available?'},
+];
+
+let activeStep=-1;
+let checks=steps.map(s=>new Array(s.items.length).fill(false));
+
+function render(){
+  let h='';
+  steps.forEach((s,i)=>{
+    const done=checks[i].every(Boolean);
+    const cls='step'+(done?' done':'')+(i===activeStep?' active':'');
+    h+='<div class="'+cls+'" onclick="toggle('+i+')">';
+    h+='<div class="step-card">';
+    h+='<div class="step-header"><span class="step-name">'+(done?'&#10003; ':'')+s.name+'</span><span class="step-time">'+s.time+'</span></div>';
+    h+='<div class="step-desc">'+s.desc+'</div>';
+    h+='<div class="step-detail"><div class="sd-items">';
+    s.items.forEach((item,j)=>{
+      const ck=checks[i][j];
+      h+='<div class="sd-item"><span class="sd-check'+(ck?' checked':'')+'" onclick="event.stopPropagation();check('+i+','+j+')">'+(ck?'&#10003;':'&#9675;')+'</span><span class="sd-text">'+item+'</span></div>';
+    });
+    h+='</div>';
+    h+='<div class="verify-block">'+s.verify+'</div>';
+    h+='</div></div></div>';
+  });
+  document.getElementById('steps').innerHTML=h;
+  updateProgress();
+}
+
+function toggle(i){activeStep=activeStep===i?-1:i;render()}
+function check(i,j){checks[i][j]=!checks[i][j];render()}
+
+function updateProgress(){
+  const done=checks.filter(c=>c.every(Boolean)).length;
+  document.getElementById('pbFill').style.width=(done/steps.length*100)+'%';
+  document.getElementById('pbLabel').textContent=done+' / '+steps.length;
+  document.getElementById('pbLabel').style.color=done===steps.length?'#4ade80':'#888';
+}
+
+render();
+</script>
+</body>
+</html>

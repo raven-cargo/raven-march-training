@@ -1,0 +1,95 @@
+# Agentic AI Engineering Course — Instructor Demo Configuration
+# Used for live demonstrations during facilitated sessions.
+# Broader permissions than student config — instructor demonstrates real workflows.
+# WARNING: Do not use in student environments.
+
+version: "1.0"
+environment: demo
+extends: base
+
+# ─── Permission Model (broader for demonstrations) ───────────────────────────
+permissions:
+  allow:
+    - "Read"
+    - "Write(demo/**)"                # Demo working directory
+    - "Write(src/**)"                 # Demo source files
+    - "Write(tests/**)"               # Demo test files
+    - "Bash(git *)"                   # Full git access for live demos
+    - "Bash(node *)"
+    - "Bash(python3 *)"
+    - "Bash(npm *)"                   # Full npm for real package workflows
+    - "Bash(pip *)"
+    - "Bash(cat *)"
+    - "Bash(ls *)"
+    - "Bash(find *)"
+    - "Bash(grep *)"
+    - "Bash(echo *)"
+    - "Bash(pwd)"
+    - "Bash(which *)"
+    - "Bash(curl https://api.anthropic.com/*)"   # Allow Anthropic API calls only
+
+  deny:
+    - "Bash(rm -rf *)"               # Allow rm but block -rf (too destructive)
+    - "Bash(curl http://*)"          # HTTPS only — no plain HTTP
+    - "Bash(wget *)"                 # Use curl, not wget
+    - "Bash(ssh *)"
+    - "Write(*.env)"                 # Never write .env even in demo
+    - "Write(**/secrets/**)"
+
+# ─── MCP Servers for Demos ────────────────────────────────────────────────────
+# Instructor connects to real demo MCP servers for live walkthroughs.
+mcp_servers:
+  course-demo:
+    command: node
+    args: ["./sandbox/mcp-servers/course-demo-server.js"]
+    env:
+      DEMO_MODE: "true"
+  linear-demo:
+    command: node
+    args: ["./sandbox/mcp-servers/linear-demo-server.js"]
+    env:
+      LINEAR_API_KEY: "${LINEAR_DEMO_API_KEY}"
+  # Instructor adds org-specific servers here during course setup
+
+# ─── CLAUDE.md Context ────────────────────────────────────────────────────────
+claude_md: |
+  # Instructor Demo Environment — Agentic AI Engineering Course
+
+  ## Context
+  This is a live demonstration environment. Treat it as a real project.
+  Show realistic tool calls, real PRAO loop execution, real outputs.
+
+  ## Demo Project
+  Language: TypeScript/Node.js
+  Framework: Express 4.x
+  Testing: Jest
+  Key patterns: async/await throughout, Result<T,E> for error handling
+
+  ## What to Demonstrate
+  Follow the facilitator guide for the current session.
+  Emphasize: reading tool calls, thinking traces, the PRAO loop in action.
+
+  ## Important
+  This is observed by learners. Make mistakes intentionally when the curriculum
+  calls for it — realistic failure recovery is part of the lesson.
+
+# ─── Session Settings ─────────────────────────────────────────────────────────
+session:
+  max_turns: 100                # Longer limit for extended demos
+  timeout_minutes: 60
+  auto_approve_reads: true
+  auto_approve_writes: true     # Auto-approve for smooth demo flow
+                                # Instructor narrates what's happening
+
+# ─── Logging ──────────────────────────────────────────────────────────────────
+logging:
+  enabled: true
+  level: debug                  # Debug level for demo — students see everything
+  format: json
+  output: logs/demo-session.jsonl
+  include:
+    - tool_calls
+    - tool_results
+    - thinking_traces           # Show reasoning in demo logs
+    - session_id
+    - timestamp

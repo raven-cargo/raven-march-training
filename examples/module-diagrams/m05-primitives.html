@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Three MCP Primitives</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+
+.prims{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:.5rem}
+.prim{padding:18px 14px;border-radius:14px;border:1px solid #222228;background:#141418;cursor:pointer;text-align:center;transition:all .35s cubic-bezier(.22,1,.36,1)}
+.prim:hover{border-color:#333;transform:translateY(-2px)}
+.prim.active{transform:translateY(-2px)}
+.prim[data-p="0"].active{border-color:#f59e42;background:#1a150a}
+.prim[data-p="1"].active{border-color:#5ba4f5;background:#0a1525}
+.prim[data-p="2"].active{border-color:#a78bfa;background:#1c1535}
+.prim-short{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#444;margin-bottom:4px;transition:color .3s}
+.prim[data-p="0"].active .prim-short{color:#f59e42}
+.prim[data-p="1"].active .prim-short{color:#5ba4f5}
+.prim[data-p="2"].active .prim-short{color:#a78bfa}
+.prim-name{font-size:18px;font-weight:700;color:#555;transition:color .3s}
+.prim.active .prim-name{color:#e8e6e1}
+.prim-meta{font-size:11px;color:#333;margin-top:4px;transition:color .3s}
+.prim.active .prim-meta{color:#666}
+
+.panel{border-radius:14px;border:1px solid #222228;background:#141418;overflow:hidden;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.pn-body{padding:20px 24px}
+.pn-desc{font-size:14px;color:#aaa;line-height:1.65;margin-bottom:14px}
+
+.ex-grid{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.ex-item{padding:10px 14px;border-radius:8px;background:#0a0a0c;border:1px solid #1a1a1e;display:flex;gap:10px;align-items:center}
+.ex-name{font-family:'JetBrains Mono',monospace;font-size:11px;color:#c8c6c1;min-width:140px}
+.ex-desc{font-size:12px;color:#666}
+
+.use-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.use-item{padding:12px 14px;border-radius:10px;background:#0a0a0c;border:1px solid #1a1a1e}
+.use-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#444;margin-bottom:3px}
+.use-text{font-size:12px;color:#aaa;line-height:1.5}
+
+.divider{border:none;border-top:1px solid #1a1a1e;margin:1.5rem 0}
+
+.test-title{font-size:13px;font-weight:600;color:#e8e6e1;margin-bottom:4px}
+.test-instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px}
+.test-items{display:flex;flex-direction:column;gap:6px}
+.test-item{padding:12px 16px;border-radius:10px;border:1px solid #222228;background:#141418;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all .25s;gap:12px}
+.test-item:hover{border-color:#333;transform:translateX(3px)}
+.test-item.revealed{cursor:default}
+.ti-desc{font-size:13px;color:#aaa;flex:1;line-height:1.4}
+.ti-answer{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:3px 10px;border-radius:5px;min-width:80px;text-align:center;transition:all .3s}
+.ti-answer.hidden{background:#1a1a1e;color:#333}
+.ti-answer.tool{background:#1a150a;color:#f59e42;border:1px solid #40301a}
+.ti-answer.resource{background:#0a1525;color:#5ba4f5;border:1px solid #1a3a6a}
+.ti-answer.prompt{background:#1c1535;color:#a78bfa;border:1px solid #2d2555}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>The three MCP primitives</h1>
+<div class="objective">
+  <span class="goal">Architecture</span>
+  <span class="text">Every MCP server exposes capabilities through exactly three primitives: Tools (verbs — actions with side effects), Resources (nouns — addressable data), and Prompts (templates — reusable instruction patterns). Knowing which to use determines your server's design.</span>
+</div>
+<div class="instruct">&#9654; Click each primitive to see what it does, real examples, and when to use it.</div>
+
+<div class="prims">
+  <div class="prim active" data-p="0" onclick="showPrim(0)"><div class="prim-short">Verbs</div><div class="prim-name">Tools</div><div class="prim-meta">Actions with side effects</div></div>
+  <div class="prim" data-p="1" onclick="showPrim(1)"><div class="prim-short">Nouns</div><div class="prim-name">Resources</div><div class="prim-meta">Addressable data objects</div></div>
+  <div class="prim" data-p="2" onclick="showPrim(2)"><div class="prim-short">Templates</div><div class="prim-name">Prompts</div><div class="prim-meta">Reusable instructions</div></div>
+</div>
+
+<div class="panel" id="panel"></div>
+
+<hr class="divider">
+
+<div class="test-title">Categorization test</div>
+<div class="test-instruct">&#9654; Click each capability to reveal whether it should be a Tool, Resource, or Prompt.</div>
+<div class="test-items" id="tests"></div>
+</div>
+
+<script>
+const prims=[
+{desc:'Callable functions with typed parameters. Calling a tool = taking an action. Tools have <strong>side effects</strong> and return results. The agent uses them as its action vocabulary during the Act phase of PRAO.',
+ examples:[
+  {name:'search_issues',desc:'Search the issue tracker by keyword/status'},
+  {name:'create_pr',desc:'Create a pull request on GitHub'},
+  {name:'run_query',desc:'Execute a SQL query against the database'},
+  {name:'send_message',desc:'Post a message to a Slack channel'},
+ ],
+ uses:[
+  {l:'Use for',t:'Any operation that mutates state, queries external systems in real time, or has inputs that vary at call time'},
+  {l:'Exposes',t:'name (identifier), description (for Claude), inputSchema (JSON Schema for parameters)'},
+  {l:'Key distinction',t:'Tools DO things. Resources ARE things. If it has side effects or calls an external system → Tool.'},
+  {l:'Common mistake',t:'Exposing read-only data as a Tool. If data is static and URI-addressable, it should be a Resource.'},
+ ]},
+{desc:'Data objects identified by URIs. Resources are <strong>passive</strong> — the client reads them, doesn\'t invoke them. No side effects. Claude uses resources as context that informs reasoning, not actions it takes.',
+ examples:[
+  {name:'db://users/schema',desc:'Schema of the users table'},
+  {name:'file://project/README.md',desc:'File contents'},
+  {name:'git://repo/main/diff',desc:'Diff against main branch'},
+  {name:'config://app/settings',desc:'Application configuration'},
+ ],
+ uses:[
+  {l:'Use for',t:'Static or slowly changing reference data — schemas, API specs, config. Data the agent reads but doesn\'t modify.'},
+  {l:'Exposes',t:'URI (scheme://authority/path), name, description, MIME type'},
+  {l:'Key distinction',t:'Resources can be cached and prefetched. Tools cannot. If the data rarely changes → Resource.'},
+  {l:'Common mistake',t:'Making everything a Tool. Resources get better caching, prefetching, and are presented as context rather than actions.'},
+ ]},
+{desc:'Parameterized instruction templates exposed for client use. Prompts accept arguments and produce structured message sequences. They do <strong>NOT execute actions</strong> — they return instruction text.',
+ examples:[
+  {name:'code_review',desc:'Takes language + code, returns review prompt'},
+  {name:'incident_report',desc:'Takes severity + description, returns template'},
+  {name:'sql_query_helper',desc:'Takes schema + NL query, returns SQL prompt'},
+ ],
+ uses:[
+  {l:'Use for',t:'Domain-specific task templates, prompts requiring server-side data, standardizing team interactions with a capability'},
+  {l:'Exposes',t:'name, description, arguments (with descriptions), returns structured message sequences'},
+  {l:'Key distinction',t:'The value is in the parameterized template itself, not in executing it. Templates, not executors.'},
+  {l:'Common mistake',t:'Confusing Prompts with Tools. Prompts return text for the client to use — they don\'t take actions.'},
+ ]},
+];
+
+function showPrim(i){
+  document.querySelectorAll('.prim').forEach((p,j)=>p.classList.toggle('active',j===i));
+  const d=prims[i];
+  let h='<div class="pn-body"><div class="pn-desc">'+d.desc+'</div>';
+  h+='<div class="ex-grid">';
+  d.examples.forEach(e=>{h+='<div class="ex-item"><span class="ex-name">'+e.name+'</span><span class="ex-desc">'+e.desc+'</span></div>'});
+  h+='</div><div class="use-grid">';
+  d.uses.forEach(u=>{h+='<div class="use-item"><div class="use-label">'+u.l+'</div><div class="use-text">'+u.t+'</div></div>'});
+  h+='</div></div>';
+  document.getElementById('panel').innerHTML=h;
+}
+
+const tests=[
+  {desc:'Query the PostgreSQL database for active users',answer:'tool',label:'Tool',why:'Real-time query with varying inputs and external system call'},
+  {desc:'The database schema showing all tables and relationships',answer:'resource',label:'Resource',why:'Static reference data, URI-addressable, cacheable'},
+  {desc:'A code review template that takes language and code as input',answer:'prompt',label:'Prompt',why:'Value is in the parameterized template, not in executing it'},
+  {desc:'Create a new issue in the Linear project tracker',answer:'tool',label:'Tool',why:'Mutates state in an external system'},
+  {desc:'The project\'s API specification (OpenAPI document)',answer:'resource',label:'Resource',why:'Static reference data the agent reads but doesn\'t modify'},
+  {desc:'Post a deployment notification to Slack',answer:'tool',label:'Tool',why:'Side effect — sends a message to an external service'},
+  {desc:'An incident report template that takes severity and description',answer:'prompt',label:'Prompt',why:'Returns structured text for the client to use'},
+];
+
+function renderTests(){
+  let h='';
+  tests.forEach((t,i)=>{
+    h+='<div class="test-item" id="ti'+i+'" onclick="reveal('+i+')">';
+    h+='<span class="ti-desc">'+t.desc+'</span>';
+    h+='<span class="ti-answer hidden" id="ta'+i+'">?</span>';
+    h+='</div>';
+  });
+  document.getElementById('tests').innerHTML=h;
+}
+
+function reveal(i){
+  const el=document.getElementById('ti'+i);
+  if(el.classList.contains('revealed'))return;
+  el.classList.add('revealed');
+  const ans=document.getElementById('ta'+i);
+  const t=tests[i];
+  ans.className='ti-answer '+t.answer;
+  ans.textContent=t.label;
+}
+
+showPrim(0);
+renderTests();
+</script>
+</body>
+</html>

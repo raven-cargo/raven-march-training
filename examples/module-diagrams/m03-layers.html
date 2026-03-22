@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Three Layers of a Reasoning Trace</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+
+.layers{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:.5rem}
+.layer{padding:16px 14px;border-radius:14px;border:1px solid #222228;background:#141418;cursor:pointer;transition:all .35s cubic-bezier(.22,1,.36,1)}
+.layer:hover{border-color:#333;transform:translateY(-2px)}
+.layer.active{transform:translateY(-2px)}
+.layer[data-l="0"].active{border-color:#a78bfa;background:#1c1535}
+.layer[data-l="1"].active{border-color:#f59e42;background:#1a150a}
+.layer[data-l="2"].active{border-color:#5ba4f5;background:#0a1525}
+.l-name{font-size:15px;font-weight:700;color:#666;margin-bottom:2px;transition:color .3s}
+.layer.active .l-name{color:#e8e6e1}
+.l-role{font-size:11px;color:#444;transition:color .3s}
+.layer.active .l-role{color:#888}
+
+.panel{border-radius:14px;border:1px solid #222228;background:#141418;overflow:hidden;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.pn-body{padding:20px 24px}
+
+.trace{font-family:'JetBrains Mono',monospace;font-size:11px;background:#0a0a0c;border:1px solid #1a1a1e;border-radius:10px;padding:14px 16px;line-height:1.9;overflow-x:auto;margin-bottom:14px}
+.t-think{color:#a78bfa;font-style:italic}
+.t-tool{color:#f59e42}
+.t-result{color:#555}
+.t-response{color:#5ba4f5}
+.t-highlight{background:#a78bfa15;border-left:2px solid #a78bfa;padding-left:8px;margin-left:-10px}
+.t-highlight-tool{background:#f59e4215;border-left:2px solid #f59e42;padding-left:8px;margin-left:-10px}
+.t-highlight-resp{background:#5ba4f515;border-left:2px solid #5ba4f5;padding-left:8px;margin-left:-10px}
+
+.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.insight{padding:12px 14px;border-radius:10px;background:#0a0a0c;border:1px solid #1a1a1e}
+.ins-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#444;margin-bottom:3px}
+.ins-text{font-size:12px;color:#aaa;line-height:1.5}
+
+.divider{border:none;border-top:1px solid #1a1a1e;margin:1.5rem 0}
+
+.why-section{padding:16px 20px;border-radius:12px;background:#141418;border:1px solid #222228}
+.why-title{font-size:13px;font-weight:600;color:#e8e6e1;margin-bottom:10px}
+.why-items{display:flex;flex-direction:column;gap:8px}
+.why-item{display:flex;gap:12px;align-items:flex-start}
+.why-icon{min-width:18px;text-align:center;font-size:12px;margin-top:2px}
+.why-text{font-size:13px;color:#aaa;line-height:1.55}
+.why-text strong{color:#e8e6e1;font-weight:600}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Three layers of a reasoning trace</h1>
+<div class="objective">
+  <span class="goal">Core skill</span>
+  <span class="text">Every agent output has three layers: thinking (the plan), tool calls (the actions), and response (the summary). Learning to read each layer separately — and knowing which to trust — is the foundation of productive agent collaboration.</span>
+</div>
+<div class="instruct">&#9654; Click each layer to see what it looks like in a real trace, what to watch for, and why it matters.</div>
+
+<div class="layers">
+  <div class="layer active" data-l="0" onclick="show(0)"><div class="l-name">Thinking</div><div class="l-role">The plan &amp; assumptions</div></div>
+  <div class="layer" data-l="1" onclick="show(1)"><div class="l-name">Tool calls</div><div class="l-role">Actions &amp; results</div></div>
+  <div class="layer" data-l="2" onclick="show(2)"><div class="l-name">Response</div><div class="l-role">Summary &amp; synthesis</div></div>
+</div>
+
+<div class="panel" id="panel"></div>
+
+<hr class="divider">
+
+<div class="why-section">
+  <div class="why-title">Why transparency changes the game</div>
+  <div class="why-items">
+    <div class="why-item"><span class="why-icon" style="color:#a78bfa">1</span><div class="why-text"><strong>You see assumptions before they become code.</strong> The thinking layer reveals what the agent believes about your system — and you can correct wrong beliefs before they produce wrong changes.</div></div>
+    <div class="why-item"><span class="why-icon" style="color:#f59e42">2</span><div class="why-text"><strong>The approval pattern works because plans are legible.</strong> Asking "show me your plan first" is useful precisely because you can read the reasoning, not just the conclusion.</div></div>
+    <div class="why-item"><span class="why-icon" style="color:#5ba4f5">3</span><div class="why-text"><strong>You're accountable for what you approve.</strong> When reasoning is transparent, watching a clearly wrong plan proceed without intervening is an active choice.</div></div>
+  </div>
+</div>
+</div>
+
+<script>
+const data=[
+{trace:`<div class="t-highlight"><span class="t-think">thinking: I need to understand the current auth architecture</span>
+<span class="t-think">before making changes. Let me check for: auth middleware,</span>
+<span class="t-think">JWT generation/validation, login/logout handlers.</span></div>
+<span class="t-result">  ...</span>
+<div class="t-highlight"><span class="t-think">thinking: Current implementation: single JWT with 7-day expiry</span>
+<span class="t-think">in src/auth/jwt.ts. No refresh token infrastructure.</span>
+<span class="t-think">To implement refresh tokens I need to:</span>
+<span class="t-think">  1. Add refresh token storage (database table)</span>
+<span class="t-think">  2. Short-lived access tokens (15m) + refresh tokens (7d)</span>
+<span class="t-think">  3. Add refresh endpoint</span>
+<span class="t-think">  4. Maintain backward compat for existing long-lived tokens</span>
+<span class="t-think">Uncertainty: refresh token storage. PostgreSQL available,</span>
+<span class="t-think">no Redis. I'll use database unless constrained.</span></div>`,
+ insights:[
+  {l:'What to watch for',t:'Assumptions, the plan, and uncertainty markers. This agent explicitly calls out what it doesn\'t know — that\'s calibrated behavior.'},
+  {l:'Best intervention point',t:'Right here. If the plan is wrong (e.g., you want Redis, not Postgres), correct it now — before any files are changed.'},
+  {l:'Key signal',t:'The agent identifies an ambiguity (storage location) and makes a reasoned default. You can agree or redirect.'},
+  {l:'Red flag',t:'Plans with no uncertainty markers on complex tasks. Overconfident reasoning usually means blind spots.'},
+ ]},
+{trace:`<div class="t-highlight-tool"><span class="t-tool">Read("src/auth/jwt.ts")</span>
+<span class="t-result">→ 47 lines, JWT sign/verify with 7-day expiry</span></div>
+<div class="t-highlight-tool"><span class="t-tool">Read("src/middleware/authenticate.ts")</span>
+<span class="t-result">→ 23 lines, express middleware checking req.headers.authorization</span></div>
+<div class="t-highlight-tool"><span class="t-tool">Read("src/config/production.ts")</span>
+<span class="t-result">→ JWT_EXPIRY = '7d' as constant</span></div>
+<span class="t-think">thinking: CLAUDE.md says "never modify config/production.ts"</span>
+<span class="t-think">I'll need a different mechanism for expiry...</span>
+<div class="t-highlight-tool"><span class="t-tool">Write("src/auth/jwt.ts", ...)</span>
+<span class="t-tool">Write("src/auth/refreshToken.ts", ...)</span>  <span class="t-result">— new file</span>
+<span class="t-tool">Write("src/middleware/authenticate.ts", ...)</span></div>`,
+ insights:[
+  {l:'What to watch for',t:'The sequence of reads before writes — is the agent building a complete picture? And constraint discovery: it found the CLAUDE.md rule before violating it.'},
+  {l:'Pattern check',t:'Read×N → Think → Write×N = correct multi-file approach. Agent gathered all info before making changes.'},
+  {l:'Key signal',t:'Agent discovering a constraint mid-task and adapting. This is the PRAO loop working as designed.'},
+  {l:'Red flag',t:'Writes to files not mentioned in the task scope, or tool calls that repeat the same reads without new writes.'},
+ ]},
+{trace:`<div class="t-highlight-resp"><span class="t-response">I've implemented refresh token authentication:</span>
+<span class="t-response"></span>
+<span class="t-response">Changes:</span>
+<span class="t-response">• src/auth/jwt.ts — access tokens now 15m expiry</span>
+<span class="t-response">• src/auth/refreshToken.ts — new, handles refresh token</span>
+<span class="t-response">  generation, storage (PostgreSQL), and validation</span>
+<span class="t-response">• src/middleware/authenticate.ts — updated to handle</span>
+<span class="t-response">  short-lived access tokens</span>
+<span class="t-response">• Existing 7-day tokens remain valid (backward compat)</span>
+<span class="t-response"></span>
+<span class="t-response">Note: used PostgreSQL for refresh token storage since</span>
+<span class="t-response">no Redis is configured. Created migration file.</span></div>`,
+ insights:[
+  {l:'What to watch for',t:'Does the summary match the actual tool calls above? The response should be consistent with what you saw happen.'},
+  {l:'Your next step',t:'Review the diff (git diff), run tests yourself, verify backward compatibility actually works. Don\'t trust the summary alone.'},
+  {l:'Key signal',t:'The agent surfaced its storage decision in the response. Good — you can evaluate it without re-reading the thinking trace.'},
+  {l:'Red flag',t:'Summary claims "all tests pass" but you didn\'t see a Bash("npm test") in the tool calls. Verify independently.'},
+ ]},
+];
+
+function show(i){
+  document.querySelectorAll('.layer').forEach((l,j)=>l.classList.toggle('active',j===i));
+  const d=data[i];
+  let h='<div class="pn-body"><div class="trace">'+d.trace+'</div><div class="insight-grid">';
+  d.insights.forEach(ins=>{h+='<div class="insight"><div class="ins-label">'+ins.l+'</div><div class="ins-text">'+ins.t+'</div></div>'});
+  h+='</div></div>';
+  document.getElementById('panel').innerHTML=h;
+}
+show(0);
+</script>
+</body>
+</html>

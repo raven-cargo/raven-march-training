@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Permission Pattern Syntax</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+
+.section-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#444;margin-bottom:10px;margin-top:1.5rem}
+.section-label:first-of-type{margin-top:0}
+
+.pattern-grid{display:flex;flex-direction:column;gap:6px}
+.pattern{padding:12px 16px;border-radius:10px;border:1px solid #1a1a1e;background:#141418;display:grid;grid-template-columns:200px 1fr auto;gap:12px;align-items:center;cursor:pointer;transition:all .25s}
+.pattern:hover{border-color:#333;transform:translateX(3px)}
+.pattern.revealed{cursor:default}
+.pat-syntax{font-family:'JetBrains Mono',monospace;font-size:12px;color:#c8c6c1}
+.pat-meaning{font-size:12px;color:#888;line-height:1.4}
+.pat-scope{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:3px 10px;border-radius:5px;transition:all .3s;white-space:nowrap}
+.pat-scope.broad{background:#1a0a0a;color:#f87171;border:1px solid #401a1a}
+.pat-scope.scoped{background:#0a1a14;color:#4ade80;border:1px solid #1a4030}
+.pat-scope.exact{background:#0a1525;color:#5ba4f5;border:1px solid #1a3a6a}
+.pat-scope.hidden{background:#1a1a1e;color:#333}
+
+.pat-example{font-size:11px;color:#555;margin-top:6px;line-height:1.5;display:none;grid-column:1/-1}
+.pattern.revealed .pat-example{display:block}
+
+.divider{border:none;border-top:1px solid #1a1a1e;margin:1.5rem 0}
+
+.recipe{padding:16px 20px;border-radius:12px;border:1px solid #222228;background:#141418;margin-top:1rem}
+.recipe-title{font-size:13px;font-weight:600;color:#e8e6e1;margin-bottom:10px}
+.recipe-code{font-family:'JetBrains Mono',monospace;font-size:11px;background:#0a0a0c;border:1px solid #1a1a1e;border-radius:8px;padding:14px 16px;line-height:2;color:#888;overflow-x:auto}
+.recipe-code .key{color:#5ba4f5}
+.recipe-code .allow{color:#4ade80}
+.recipe-code .deny{color:#f87171}
+.recipe-code .brace{color:#555}
+.recipe-code .comment{color:#333}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Permission pattern syntax</h1>
+<div class="objective">
+  <span class="goal">Quick reference</span>
+  <span class="text">Permissions use a simple pattern language: Tool name + optional scope in parentheses. Master the three levels — broad, path-scoped, and exact — and you can configure any project in minutes.</span>
+</div>
+<div class="instruct">&#9654; Click any pattern to see its scope level and what it actually matches.</div>
+
+<div class="section-label">File permissions</div>
+<div class="pattern-grid" id="files"></div>
+
+<div class="section-label">Bash permissions</div>
+<div class="pattern-grid" id="bash"></div>
+
+<div class="section-label">MCP permissions</div>
+<div class="pattern-grid" id="mcp"></div>
+
+<hr class="divider">
+
+<div class="recipe">
+  <div class="recipe-title">Starter recipe — typical TypeScript project</div>
+  <div class="recipe-code">
+<span class="brace">{</span> <span class="key">"permissions"</span>: <span class="brace">{</span>
+  <span class="key">"allow"</span>: <span class="brace">[</span>
+    <span class="allow">"Read"</span>,                    <span class="comment">// broad: read anything</span>
+    <span class="allow">"Write(src/**)"</span>,           <span class="comment">// scoped: source only</span>
+    <span class="allow">"Write(tests/**)"</span>,         <span class="comment">// scoped: test files</span>
+    <span class="allow">"Bash(npm test)"</span>,          <span class="comment">// exact: one command</span>
+    <span class="allow">"Bash(npm run build)"</span>,     <span class="comment">// exact: one command</span>
+    <span class="allow">"Bash(npx tsc *)"</span>,         <span class="comment">// scoped: tsc variants</span>
+    <span class="allow">"Bash(git status)"</span>,        <span class="comment">// exact: read-only git</span>
+    <span class="allow">"Bash(git diff *)"</span>         <span class="comment">// scoped: diff variants</span>
+  <span class="brace">]</span>,
+  <span class="key">"deny"</span>: <span class="brace">[</span>
+    <span class="deny">"Bash(rm *)"</span>,              <span class="comment">// block all deletions</span>
+    <span class="deny">"Bash(sudo *)"</span>,            <span class="comment">// block escalation</span>
+    <span class="deny">"Bash(git push *)"</span>,        <span class="comment">// block push</span>
+    <span class="deny">"Write(.env*)"</span>,            <span class="comment">// protect secrets</span>
+    <span class="deny">"Write(config/prod*)"</span>      <span class="comment">// protect prod config</span>
+  <span class="brace">]</span>
+<span class="brace">} }</span>
+  </div>
+</div>
+</div>
+
+<script>
+const patterns={
+files:[
+  {syntax:'Read',meaning:'Read any file in the project',scope:'broad',example:'Matches Read("src/auth.ts"), Read("config/db.ts"), Read("package.json") — everything.'},
+  {syntax:'Write',meaning:'Write any file anywhere',scope:'broad',example:'Matches all writes. Use cautiously — prefer scoped patterns below.'},
+  {syntax:'Write(src/**)',meaning:'Write only within src/ tree',scope:'scoped',example:'Matches Write("src/auth.ts"), Write("src/utils/helpers.ts"). Does NOT match Write("config/db.ts").'},
+  {syntax:'Write(*.test.ts)',meaning:'Write only test files',scope:'scoped',example:'Matches Write("auth.test.ts"), Write("utils.test.ts"). Does NOT match Write("auth.ts").'},
+  {syntax:'Write(.env*)',meaning:'Write .env files (typically in deny)',scope:'scoped',example:'Matches Write(".env"), Write(".env.local"), Write(".env.production"). Protect your secrets.'},
+],
+bash:[
+  {syntax:'Bash',meaning:'Run any shell command',scope:'broad',example:'Matches everything — npm, git, rm, curl, sudo. Almost never what you want in the allow list.'},
+  {syntax:'Bash(npm test)',meaning:'This exact npm command only',scope:'exact',example:'Matches only "npm test". Does NOT match "npm install" or "npm run build".'},
+  {syntax:'Bash(npm *)',meaning:'Any npm command',scope:'scoped',example:'Matches "npm test", "npm install lodash", "npm run build". Use when you trust all npm operations.'},
+  {syntax:'Bash(git status)',meaning:'This exact git command only',scope:'exact',example:'Read-only git. Does NOT match "git push", "git commit", or "git checkout".'},
+  {syntax:'Bash(git *)',meaning:'Any git command',scope:'scoped',example:'Matches "git status", "git diff", AND "git push", "git reset --hard". More permissive than you might want.'},
+  {syntax:'Bash(rm *)',meaning:'Any rm command (typically in deny)',scope:'scoped',example:'Matches "rm file.ts", "rm -rf node_modules". Put this in deny to prevent accidental deletions.'},
+],
+mcp:[
+  {syntax:'mcp__postgres__query',meaning:'Allow this specific MCP tool',scope:'exact',example:'Allows read-only queries. Use alongside denying mcp__postgres__execute for safe database access.'},
+  {syntax:'mcp__linear__create_issue',meaning:'Allow creating Linear issues',scope:'exact',example:'Granular control over what the agent can do with external services.'},
+]};
+
+function renderGroup(id,items){
+  let h='';
+  items.forEach((p,i)=>{
+    h+='<div class="pattern" data-g="'+id+'" data-i="'+i+'" onclick="reveal(\''+id+'\','+i+')">';
+    h+='<span class="pat-syntax">'+p.syntax+'</span>';
+    h+='<span class="pat-meaning">'+p.meaning+'</span>';
+    h+='<span class="pat-scope hidden">?</span>';
+    h+='<div class="pat-example">'+p.example+'</div>';
+    h+='</div>';
+  });
+  document.getElementById(id).innerHTML=h;
+}
+
+function reveal(g,i){
+  const el=document.querySelector('.pattern[data-g="'+g+'"][data-i="'+i+'"]');
+  if(el.classList.contains('revealed'))return;
+  el.classList.add('revealed');
+  const scope=el.querySelector('.pat-scope');
+  const p=patterns[g][i];
+  scope.className='pat-scope '+p.scope;
+  scope.textContent=p.scope==='broad'?'Broad':p.scope==='scoped'?'Scoped':'Exact';
+}
+
+renderGroup('files',patterns.files);
+renderGroup('bash',patterns.bash);
+renderGroup('mcp',patterns.mcp);
+</script>
+</body>
+</html>

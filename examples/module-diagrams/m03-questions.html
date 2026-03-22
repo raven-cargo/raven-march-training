@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clarifying Questions — A Feature, Not a Bug</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:760px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+
+.framing{padding:14px 18px;border-radius:12px;background:#141418;border:1px solid #222228;font-size:13px;color:#aaa;line-height:1.65;margin-bottom:1.5rem}
+.framing strong{color:#e8e6e1}
+
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+
+.types{display:flex;gap:4px;margin-bottom:.5rem;background:#18181c;border-radius:12px;padding:4px}
+.type-tab{flex:1;padding:12px 10px;border:none;border-radius:10px;background:transparent;cursor:pointer;text-align:center;transition:all .3s;font-size:13px;font-weight:600;color:#555;font-family:'DM Sans',sans-serif}
+.type-tab.active{background:#1e1e24;color:#e8e6e1}
+
+.panel{display:none;animation:fadeUp .35s cubic-bezier(.22,1,.36,1)}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.example-q{font-family:'JetBrains Mono',monospace;font-size:12px;color:#a78bfa;background:#0a0a0c;border:1px solid #1a1a1e;border-radius:10px;padding:14px 16px;line-height:1.7;margin-bottom:14px;font-style:italic}
+
+.answer-section{margin-bottom:12px}
+.ans-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.ans-label.good{color:#4ade80}
+.ans-label.bad{color:#f87171}
+
+.answer{padding:12px 16px;border-radius:10px;font-size:13px;line-height:1.6;margin-bottom:6px}
+.answer.good{background:#0a1a14;border:1px solid #1a4030;color:#c8c6c1}
+.answer.bad{background:#1a0a0a;border:1px solid #401a1a;color:#888;text-decoration:line-through;text-decoration-color:#f8717140}
+.ans-why{font-size:11px;color:#555;margin-top:4px;font-style:italic}
+
+.record-note{padding:12px 16px;border-radius:10px;background:#0a1525;border:1px solid #1a3a6a;font-size:12px;color:#8ab8e8;line-height:1.5;margin-top:12px}
+.record-note strong{color:#5ba4f5}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Clarifying questions</h1>
+<div class="objective">
+  <span class="goal">Mindset shift</span>
+  <span class="text">A clarifying question means the agent encountered genuine ambiguity and is asking instead of guessing. This is calibrated behavior — the alternative is silent wrong assumptions. Learn to recognize the three types and answer them productively.</span>
+</div>
+
+<div class="framing"><strong>Agents that don't ask questions</strong> either have excellent context (ideal) or make silent assumptions (dangerous). Silent assumptions produce confident wrong code. A clarifying question is a feature, not a failure.</div>
+
+<div class="instruct">&#9654; Switch between the three types to see example questions, good vs. bad answers, and whether to record the decision.</div>
+
+<div class="types">
+  <div class="type-tab active" onclick="show(0)">Scope</div>
+  <div class="type-tab" onclick="show(1)">Authority</div>
+  <div class="type-tab" onclick="show(2)">Context</div>
+</div>
+
+<div class="panel active" id="p0">
+  <div class="example-q">"Should I also update the logout endpoint to invalidate refresh tokens, or is that a separate task?"</div>
+  <div class="answer-section">
+    <div class="ans-label good">Productive answer</div>
+    <div class="answer good">"Include logout — invalidate the refresh token in the database when the user logs out. That's part of this task."
+      <div class="ans-why">Specific scope decision. The agent can now proceed without ambiguity.</div>
+    </div>
+  </div>
+  <div class="answer-section">
+    <div class="ans-label bad">Unproductive answer</div>
+    <div class="answer bad">"Do what makes sense."
+      <div class="ans-why">Forces the agent to guess at scope. It may include logout (adding scope) or skip it (missing critical work).</div>
+    </div>
+  </div>
+  <div class="record-note"><strong>Record to CLAUDE.md?</strong> No — this is a one-off scope decision for this task. If you find yourself repeatedly answering scope questions about what "auth refactor" includes, then yes.</div>
+</div>
+
+<div class="panel" id="p1">
+  <div class="example-q">"Store refresh tokens in PostgreSQL (new table, persistent, queryable) or in-memory store (simpler, faster, but not persistent across restarts)?"</div>
+  <div class="answer-section">
+    <div class="ans-label good">Productive answer</div>
+    <div class="answer good">"Use PostgreSQL — we don't have Redis in production, and refresh tokens need to survive restarts. Create a new refresh_tokens table."
+      <div class="ans-why">Specific decision with reasoning. "Production doesn't have Redis" affects downstream decisions the agent will make.</div>
+    </div>
+  </div>
+  <div class="answer-section">
+    <div class="ans-label bad">Unproductive answer</div>
+    <div class="answer bad">"Whatever you think is best."
+      <div class="ans-why">This is an architectural decision the agent correctly escalated. "Whatever you think" delegates authority for a choice that affects production infrastructure.</div>
+    </div>
+  </div>
+  <div class="record-note"><strong>Record to CLAUDE.md?</strong> Yes — this is a standing architectural decision. Add under Decided: "Refresh tokens stored in PostgreSQL (refresh_tokens table). No Redis in production." This prevents re-asking in future sessions.</div>
+</div>
+
+<div class="panel" id="p2">
+  <div class="example-q">"Should new refresh token tests use the existing JWT mock (fast, isolated) or test with real JWT sign/verify operations (slower, but catches encoding issues)?"</div>
+  <div class="answer-section">
+    <div class="ans-label good">Productive answer</div>
+    <div class="answer good">"Use real JWT operations for the refresh token tests — we've had encoding bugs before. Keep the existing tests with mocks as they are."
+      <div class="ans-why">Specific approach with reasoning. The agent now knows the testing philosophy for this specific area.</div>
+    </div>
+  </div>
+  <div class="answer-section">
+    <div class="ans-label bad">Unproductive answer</div>
+    <div class="answer bad">"Follow the existing test patterns."
+      <div class="ans-why">The agent is asking precisely because existing patterns don't clearly apply to this new case. Pointing back to ambiguous source doesn't resolve it.</div>
+    </div>
+  </div>
+  <div class="record-note"><strong>Record to CLAUDE.md?</strong> Yes, if it's a standing convention — add under Conventions: "Auth tests use real JWT operations, not mocks. Other tests can use mocks." If one-off, leave in conversation.</div>
+</div>
+</div>
+
+<script>
+function show(i){
+  document.querySelectorAll('.type-tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));
+}
+</script>
+</body>
+</html>

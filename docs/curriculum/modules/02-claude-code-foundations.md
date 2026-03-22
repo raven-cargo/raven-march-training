@@ -37,42 +37,42 @@ You explored the agentic coding paradigm in Module 01 and learned the shared cha
 
 The click-cards below let you explore the runtime architecture at your own pace. You do not need to memorize this -- it is a reference map for where each concept you learn in this module sits in the system.
 
-<p class="ix-instruct">Click each card to explore the role of each architectural component.</p>
+<p class="ix-instruct">Click each component to explore the Claude Code architecture.</p>
 
 <div class="ix-diagram" data-component="click-cards" data-diagram-id="architecture-overview">
   <span class="ix-title">Claude Code architecture</span>
 
-  <div class="ix-card" data-accent="#10b981">
+  <div class="ix-card" data-accent="#10b981" data-phase="observe">
     <i data-lucide="terminal" class="ix-card-icon"></i>
     <span class="ix-card-label">claude CLI</span>
   </div>
 
-  <div class="ix-card" data-accent="#6366f1">
+  <div class="ix-card" data-accent="#6366f1" data-phase="reason">
     <i data-lucide="repeat" class="ix-card-icon"></i>
     <span class="ix-card-label">REPL Loop</span>
   </div>
 
-  <div class="ix-card" data-accent="#06b6d4">
+  <div class="ix-card" data-accent="#06b6d4" data-phase="act">
     <i data-lucide="cloud" class="ix-card-icon"></i>
     <span class="ix-card-label">Claude API</span>
   </div>
 
-  <div class="ix-card" data-accent="#94a3b8">
+  <div class="ix-card" data-accent="#94a3b8" data-phase="observe">
     <i data-lucide="file-text" class="ix-card-icon"></i>
     <span class="ix-card-label">Files</span>
   </div>
 
-  <div class="ix-card" data-accent="#94a3b8">
+  <div class="ix-card" data-accent="#94a3b8" data-phase="observe">
     <i data-lucide="square-terminal" class="ix-card-icon"></i>
     <span class="ix-card-label">Bash</span>
   </div>
 
-  <div class="ix-card" data-accent="#94a3b8">
+  <div class="ix-card" data-accent="#94a3b8" data-phase="observe">
     <i data-lucide="globe" class="ix-card-icon"></i>
     <span class="ix-card-label">Web</span>
   </div>
 
-  <div class="ix-card" data-accent="#94a3b8">
+  <div class="ix-card" data-accent="#94a3b8" data-phase="observe">
     <i data-lucide="plug" class="ix-card-icon"></i>
     <span class="ix-card-label">MCP Servers</span>
   </div>
@@ -188,21 +188,21 @@ The click-cards below let you explore the runtime architecture at your own pace.
   <p>Choose the right invocation mode for any task. Interactive mode keeps you in the loop; non-interactive mode produces pipeable output for automation. Knowing which to reach for saves real time.</p>
 </div>
 
-<p class=”ix-instruct”>Write your prediction, then reveal the reference reasoning.</p>
+<p class="ix-instruct">Write your prediction, then reveal the reference reasoning.</p>
 
-<div class=”ix-diagram” data-component=”predict-reveal” data-diagram-id=”m02-mode-predict” data-xp=”8”>
-  <span class=”ix-title”>Predict Before You Learn</span>
-  <p class=”ix-predict-prompt”>Before we explore the two modes, think about this: what do you think would be different about running an AI agent interactively versus giving it a task to complete on its own? Consider the scenarios “nightly changelog generation in CI” and “first-time debugging of a flaky auth test.” How would you split them, and why?</p>
-  <textarea class=”ix-predict-input” placeholder=”Write your reasoning -- what differences would you expect between interactive and autonomous execution?”></textarea>
-  <details class=”ix-predict-reveal”>
+<div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m02-mode-predict" data-xp="8">
+  <span class="ix-title">Predict Before You Learn</span>
+  <p class="ix-predict-prompt">Before we explore the two modes, think about this: what do you think would be different about running an AI agent interactively versus giving it a task to complete on its own? Consider the scenarios "nightly changelog generation in CI" and "first-time debugging of a flaky auth test." How would you split them, and why?</p>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- what differences would you expect between interactive and autonomous execution?"></textarea>
+  <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>
     <p>Claude Code has two invocation modes that differ in context accumulation, human interaction, and system integration. Nightly changelog generation is usually non-interactive (<code>claude -p</code>) because the task is repeatable and pipeline-friendly. First-time flaky test debugging is usually interactive (<code>claude</code>) because discovery and mid-task redirection are likely.</p>
   </details>
 </div>
 
-<details class=”ix-collapse”>
+<details class="ix-collapse">
 <summary>Deep Dive: Interactive vs. non-interactive mode details</summary>
-<div class=”ix-collapse-body”>
+<div class="ix-collapse-body">
 
 ### Interactive Mode: `claude`
 
@@ -400,31 +400,31 @@ echo "$REVIEW" | mail -s "Security Review" team@example.com
 
 <div class="ix-diagram" data-component="click-cards" data-diagram-id="session-vs-persistent">
   <span class="ix-title">Session context vs. persistent context</span>
-  <div class="ix-card" data-accent="#f59e0b">
+  <div class="ix-card" data-accent="#f59e0b" data-phase="perceive">
     <i data-lucide="hard-drive" class="ix-card-icon"></i>
     <span class="ix-card-label">CLAUDE.md</span>
   </div>
-  <div class="ix-card" data-accent="#f59e0b">
+  <div class="ix-card" data-accent="#f59e0b" data-phase="perceive">
     <i data-lucide="settings" class="ix-card-icon"></i>
     <span class="ix-card-label">settings.json</span>
   </div>
-  <div class="ix-card" data-accent="#f59e0b">
+  <div class="ix-card" data-accent="#f59e0b" data-phase="perceive">
     <i data-lucide="file-text" class="ix-card-icon"></i>
     <span class="ix-card-label">Files on disk</span>
   </div>
-  <div class="ix-card" data-accent="#f59e0b">
+  <div class="ix-card" data-accent="#f59e0b" data-phase="perceive">
     <i data-lucide="plug" class="ix-card-icon"></i>
     <span class="ix-card-label">MCP config</span>
   </div>
-  <div class="ix-card" data-accent="#475569">
+  <div class="ix-card" data-accent="#475569" data-phase="neutral">
     <i data-lucide="message-square" class="ix-card-icon"></i>
     <span class="ix-card-label">Conversation</span>
   </div>
-  <div class="ix-card" data-accent="#475569">
+  <div class="ix-card" data-accent="#475569" data-phase="neutral">
     <i data-lucide="brain" class="ix-card-icon"></i>
     <span class="ix-card-label">Reasoning</span>
   </div>
-  <div class="ix-card" data-accent="#475569">
+  <div class="ix-card" data-accent="#475569" data-phase="neutral">
     <i data-lucide="mic" class="ix-card-icon"></i>
     <span class="ix-card-label">Verbal decisions</span>
   </div>
@@ -575,11 +575,11 @@ echo "$REVIEW" | mail -s "Security Review" team@example.com
 
 <p class="ix-instruct">Use arrows to step through the four layers of the CLAUDE.md hierarchy.</p>
 
-<div class="ix-diagram" data-component="step-walkthrough" data-diagram-id="claudemd-hierarchy">
+<div class="ix-diagram" data-component="step-walkthrough" data-diagram-id="claudemd-hierarchy-walkthrough">
   <span class="ix-title">CLAUDE.md hierarchy -- broad to specific</span>
 
   <div class="ix-walk-step">
-    <div class="ix-detail-panel" style="margin:0;display:block">
+    <div class="ix-detail-panel">
       <div class="ix-detail-header" data-phase="neutral">
         <i data-lucide="globe"></i>
         Layer 1: Global
@@ -601,7 +601,7 @@ echo "$REVIEW" | mail -s "Security Review" team@example.com
   </div>
 
   <div class="ix-walk-step">
-    <div class="ix-detail-panel" style="margin:0;display:block">
+    <div class="ix-detail-panel">
       <div class="ix-detail-header" data-phase="perceive">
         <i data-lucide="folder"></i>
         Layer 2: Project
@@ -623,7 +623,7 @@ echo "$REVIEW" | mail -s "Security Review" team@example.com
   </div>
 
   <div class="ix-walk-step">
-    <div class="ix-detail-panel" style="margin:0;display:block">
+    <div class="ix-detail-panel">
       <div class="ix-detail-header" data-phase="goal">
         <i data-lucide="user"></i>
         Layer 3: Project (Alt Path)
@@ -645,7 +645,7 @@ echo "$REVIEW" | mail -s "Security Review" team@example.com
   </div>
 
   <div class="ix-walk-step">
-    <div class="ix-detail-panel" style="margin:0;display:block">
+    <div class="ix-detail-panel">
       <div class="ix-detail-header" data-phase="observe">
         <i data-lucide="folder-tree"></i>
         Layer 4: Subdirectory
@@ -667,7 +667,7 @@ echo "$REVIEW" | mail -s "Security Review" team@example.com
   </div>
 
   <div class="ix-walk-step">
-    <div class="ix-detail-panel" style="margin:0;display:block">
+    <div class="ix-detail-panel">
       <div class="ix-detail-header" data-phase="observe">
         <i data-lucide="layers"></i>
         Result: Merged Context
@@ -701,8 +701,8 @@ echo "$REVIEW" | mail -s "Security Review" team@example.com
   </div>
   <div class="ix-h-level" data-level="2">
     <div class="ix-h-path">./.claude/CLAUDE.md</div>
-    <div class="ix-h-scope">Local project -- personal overrides</div>
-    <div class="ix-h-desc">Machine-local or personal overrides that shouldn't be team policy. Typically gitignored. Example: "I prefer verbose output" or custom MCP server paths.</div>
+    <div class="ix-h-scope">Project alternative path -- team-shared</div>
+    <div class="ix-h-desc">Equivalent project-level location used by teams that standardize instructions under <code>.claude/</code>. Treat this as shared project context, not personal overrides.</div>
   </div>
   <div class="ix-h-level" data-level="3">
     <div class="ix-h-path">./subdir/CLAUDE.md</div>
@@ -712,7 +712,11 @@ echo "$REVIEW" | mail -s "Security Review" team@example.com
 </div>
 
 <div class="ix-diagram" data-component="callout" data-variant="tip">
-  <p><strong>Layers stack.</strong> More specific context augments or overrides broader context when they conflict. The agent sees the merged result of all applicable layers -- global defaults + project rules + local overrides + subdirectory specifics.</p>
+  <p><strong>Layers stack.</strong> More specific context augments or overrides broader context when they conflict. The agent sees the merged result of all applicable layers -- user defaults + project rules (root or <code>.claude/CLAUDE.md</code>) + subdirectory specifics.</p>
+</div>
+
+<div class="ix-diagram" data-component="callout" data-variant="key-concept">
+  <p><strong>Enterprise environments may add one more layer:</strong> a managed policy <code>CLAUDE.md</code> configured by IT/DevOps. This sits above user/project files and provides organization-wide guidance.</p>
 </div>
 
 <p class="ix-instruct">Test your understanding of CLAUDE.md scope hygiene.</p>
@@ -836,7 +840,7 @@ echo "$REVIEW" | mail -s "Security Review" team@example.com
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m02-claudemd-predict" data-xp="10">
   <span class="ix-title">Predict First: Will This Instruction Survive Sessions?</span>
   <p class="ix-predict-prompt">Write one instruction you currently repeat in prompts. Predict whether it belongs in CLAUDE.md or in task-level prompts only, and explain why.</p>
-  <textarea class="ix-predict-input" placeholder="Instruction + where it belongs + why."></textarea>
+  <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Instruction + where it belongs + why."></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal rubric</summary>
     <p>If it is recurring, project-level, and decision-shaping, put it in CLAUDE.md. If it is one-off and task-specific, keep it in the conversation.</p>
@@ -948,15 +952,15 @@ When the agent wants to take an action that is not in your allow list and not in
 
 <div class="ix-diagram" data-component="click-cards" data-diagram-id="m02-approval-options">
   <span class="ix-title">The three approval options</span>
-  <div class="ix-card" data-accent="#10b981">
+  <div class="ix-card" data-accent="#10b981" data-phase="observe">
     <i data-lucide="check" class="ix-card-icon"></i>
     <span class="ix-card-label">Yes, allow once</span>
   </div>
-  <div class="ix-card" data-accent="#06b6d4">
+  <div class="ix-card" data-accent="#06b6d4" data-phase="act">
     <i data-lucide="check-check" class="ix-card-icon"></i>
     <span class="ix-card-label">Yes, allow for this session</span>
   </div>
-  <div class="ix-card" data-accent="#6366f1">
+  <div class="ix-card" data-accent="#6366f1" data-phase="reason">
     <i data-lucide="file-plus" class="ix-card-icon"></i>
     <span class="ix-card-label">Write a rule</span>
   </div>
@@ -1285,7 +1289,7 @@ Recommendation: start scoped, then expand only when repeated approvals are legit
 <div class="ix-diagram" data-component="callout" data-variant="core-idea">
 <span class="ix-callout-label">Reference Config</span>
 <div class="ix-callout-body">
-<pre style="margin:0;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.6;color:var(--muted)"><code>{
+<pre><code>{
   "permissions": {
     "allow": ["Read", "Write(src/**)", "Write(tests/**)", "Bash(npm test)"],
     "deny": ["Bash(rm *)", "Bash(git push *)", "Write(config/prod*)", "Write(.env*)"]
@@ -1666,17 +1670,17 @@ This gives you fine-grained control over which MCP capabilities the agent can us
 <div class="ix-diagram" data-component="click-cards" data-diagram-id="agent-output-layers">
   <span class="ix-title">Agent output layers</span>
 
-  <div class="ix-card" data-accent="#6366f1">
+  <div class="ix-card" data-accent="#6366f1" data-phase="reason">
     <i data-lucide="brain" class="ix-card-icon"></i>
     <span class="ix-card-label">Layer 1: Thinking</span>
   </div>
 
-  <div class="ix-card" data-accent="#06b6d4">
+  <div class="ix-card" data-accent="#06b6d4" data-phase="act">
     <i data-lucide="wrench" class="ix-card-icon"></i>
     <span class="ix-card-label">Layer 2: Tool Calls</span>
   </div>
 
-  <div class="ix-card" data-accent="#10b981">
+  <div class="ix-card" data-accent="#10b981" data-phase="observe">
     <i data-lucide="message-square" class="ix-card-icon"></i>
     <span class="ix-card-label">Layer 3: Response</span>
   </div>
@@ -1931,5 +1935,6 @@ In Lab 02, you'll configure a project from scratch: writing a `CLAUDE.md` for a 
 - [Notebook Workspace (all companion media)](https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c)
 
 ---
+[Previous Module → Module 01](/module/01)
 
 [Next Module → Module 03: Agent Thinking](/module/03)
