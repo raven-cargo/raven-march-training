@@ -196,7 +196,7 @@ These missions cover the skill of moving through an unfamiliar codebase under ag
 
 ---
 
-### Mission 2.1: Codebase Archaeology — Understand Before Touching (★★★)
+### Mission 2.1: Codebase Archaeology - Understand Before Touching (★★★)
 
 **Time**: ~4–6 hours · **Prerequisites**: Module 03 (Agent Thinking), Lab 03 · Requires: a mid-sized open-source repo (5,000+ lines)
 
@@ -290,7 +290,7 @@ Link the PR back to the issue. Update the issue status to "In Review" / "Done" a
 
 ---
 
-### Mission 2.3: PR Review Workflow — Agent as Reviewer (★★★★)
+### Mission 2.3: PR Review Workflow - Agent as Reviewer (★★★★)
 
 **Time**: ~3–4 hours · **Prerequisites**: Module 09 (Multi-Agent), Mission 1.3 recommended · Requires: an open PR with 200+ changed lines
 
