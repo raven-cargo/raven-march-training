@@ -25,7 +25,7 @@
   <p>Determine when tasks warrant multi-agent decomposition, design orchestrator/sub-agent architectures, specify structured inter-agent communication, and handle the three primary failure modes.</p>
 </div>
 
-Everything from Modules 01-08 assumed a single agent: one session, one context, one Agentic Loop (PRAO) chain. In Module 07 you composed skills into multi-step workflows within a single agent. Now you will learn when to break that single-agent boundary -- and, critically, when NOT to. Understanding the difference is the core skill this module develops. For sub-agent mechanics, see the [Claude Code Sub-agents docs](https://docs.anthropic.com/en/docs/claude-code/sub-agents).
+Everything from Modules 01-08 assumed a single agent: one session, one context, one Agentic Loop (PRAO) chain. In Module 07 you composed skills into multi-step workflows within a single agent, and in Module 08 you learned how to generate and evaluate the specialist artifacts those workflows depend on. Now you will learn when to break that single-agent boundary -- and, critically, when NOT to. Understanding the difference is the core skill this module develops. For sub-agent mechanics, see the [Claude Code Sub-agents docs](https://docs.anthropic.com/en/docs/claude-code/sub-agents).
 
 ---
 
@@ -35,7 +35,7 @@ Everything from Modules 01-08 assumed a single agent: one session, one context, 
   <p>Apply a four-question decision framework to determine whether a task warrants multi-agent decomposition or is better served by a single well-prompted agent.</p>
 </div>
 
-In Module 07 you composed skills into pipelines within a single agent session. Multi-agent extends this idea across session boundaries -- but at a real cost in complexity, debugging difficulty, and coordination overhead.
+In Module 07 you composed skills into pipelines within a single agent session. In Module 08 you learned how to generate, evaluate, and stabilize those specialist skills and rubrics. Multi-agent extends that idea across session boundaries -- but at a real cost in complexity, debugging difficulty, and coordination overhead.
 
 <p class="ix-instruct">Write your prediction, then reveal the reference reasoning.</p>
 
@@ -262,6 +262,24 @@ With the decision framework from 9.1 confirming that multi-agent is warranted, t
 
 <div class="ix-diagram" data-component="callout" data-variant="warning">
   <p><strong>Design aggregation before agents</strong>: Engineers who design the fan-out carefully and then hand-wave the fan-in almost always discover that aggregation is where the system breaks in production.</p>
+</div>
+
+<p class="ix-instruct">Switch between tabs to compare where the same orchestration pattern lives once you move from interactive use to production systems.</p>
+
+<div class="ix-diagram" data-component="tabbed-panel" data-diagram-id="m09-runtime-surfaces">
+  <span class="ix-title">Three Runtime Surfaces for the Same Pattern</span>
+  <div data-tab="Claude Code Session">
+    <p><strong>Interactive orchestration inside Claude Code.</strong> The operator is present, the working directory is live, and the orchestration happens through tools like <code>Agent</code>, <code>Task</code>, MCP connections, skills, and <code>CLAUDE.md</code>.</p>
+    <p><strong>Best for</strong>: live engineering work, debugging, prompt design, and proving the decomposition before building automation around it.</p>
+  </div>
+  <div data-tab="Agent SDK / API">
+    <p><strong>Programmatic orchestration inside your application.</strong> The same pattern now lives in code: your service owns the queue, retries, fan-out width, output validation, and budget enforcement. Claude becomes one component in a larger runtime rather than the entire runtime.</p>
+    <p><strong>Best for</strong>: webhook-triggered pipelines, cron jobs, ticket triage, and any workflow that must run without an operator at the keyboard.</p>
+  </div>
+  <div data-tab="Hybrid Rollout">
+    <p><strong>Prototype interactively, operationalize programmatically.</strong> Use Claude Code to discover the right decomposition, specialist prompts, and aggregation contracts. When the pattern is stable, move the orchestration into the Agent SDK or Messages API and keep Claude Code for debugging and incident response.</p>
+    <p><strong>Design rule</strong>: if you cannot explain the pattern clearly in Claude Code first, you are not ready to automate it behind a webhook or queue.</p>
+  </div>
 </div>
 
 ---
@@ -784,7 +802,10 @@ Every multi-agent system fails eventually. The difference between a robust syste
 
 - [Claude Code Sub-agents](https://docs.anthropic.com/en/docs/claude-code/sub-agents)
 - [Claude Code Overview](https://docs.anthropic.com/en/docs/claude-code/overview)
+- [Claude Code Agent SDK Overview](https://docs.anthropic.com/en/docs/claude-code/sdk)
+- [Anthropic API Overview](https://docs.anthropic.com/en/api/overview)
 - [Anthropic: Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents)
+- [Standalone Diagram: Orchestrator Runtime Patterns](/examples/module-diagrams/m09-orchestrator-patterns.html)
 
 ---
 

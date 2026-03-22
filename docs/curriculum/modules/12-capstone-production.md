@@ -25,7 +25,7 @@
   <p>Design and specify a complete agentic pipeline for an organizational problem, applying all course concepts in a single integrated design.</p>
 </div>
 
-You have built a complete mental model across eleven modules. The Agentic Loop (PRAO) from Module 01. Claude Code foundations from Module 02. Trace reading from Module 03. TCEF prompting from Module 04. Output contracts from Module 05. Tool orchestration from Module 06. The skills system from Module 07. MCP server configuration from Module 08. Multi-agent patterns from Module 09. Security and approval gates from Module 10. Stack adaptation from Module 11. This module is where those pieces integrate into a single, production-ready pipeline design -- not another lesson, but an arrival.
+You have built a complete mental model across eleven modules. The Agentic Loop (PRAO) from Module 01. Claude Code foundations from Module 02. Trace reading from Module 03. TCEF prompting from Module 04. MCP architecture and primitives from Module 05. Building MCP servers with schema discipline from Module 06. The skills system from Module 07. Meta-prompting from Module 08. Multi-agent patterns from Module 09. Security and approval gates from Module 10. Stack adaptation from Module 11. This module is where those pieces integrate into a single, production-ready pipeline design -- not another lesson, but an arrival.
 
 <p class="ix-instruct">Click each component to see its role in a production pipeline and the prior module that built its foundation.</p>
 
@@ -76,7 +76,7 @@ You have built a complete mental model across eleven modules. The Agentic Loop (
 <div class="ix-sec-label">Production Example</div>
 <div class="ix-sec-text">Read changed files via <code>Read()</code>, fetch team docs via a Context7 MCP server, check PR description.</div>
 </div>
-<p class="ix-note"><strong>Foundations</strong>: Module 06 (tool orchestration) + Module 08 (MCP server configuration for Streamable HTTP transport).</p>
+<p class="ix-note"><strong>Foundations</strong>: Module 02 (context discipline), Module 05 (MCP architecture), Module 06 (MCP server implementation), and Module 11 (Context7 grounding for stack-specific docs).</p>
 </div>
 </div>
 <div class="ix-detail-panel">
@@ -116,9 +116,9 @@ You have built a complete mental model across eleven modules. The Agentic Loop (
 </div>
 <div class="ix-section">
 <div class="ix-sec-label">Production Example</div>
-<div class="ix-sec-text">Post a structured PR review comment via GitHub MCP tool, using the output schema from Module 05 as the integration contract.</div>
+<div class="ix-sec-text">Post a structured PR review comment via GitHub MCP tool, using the Format contract from Module 04 and the MCP schema discipline from Module 05 as the integration contract.</div>
 </div>
-<p class="ix-note"><strong>Foundation</strong>: Module 05 -- output contracts and structured output as an API.</p>
+<p class="ix-note"><strong>Foundations</strong>: Module 04 (Format as contract) + Module 05 (MCP schemas and structured results).</p>
 </div>
 </div>
 </div>
@@ -558,6 +558,8 @@ The deployment checklist extends the stack adaptation checklist from Module 11 w
 <li>Session logs can be retrieved by session ID within 5 minutes of session completing</li>
 <li>Error rate alerting configured and tested (verify a test error triggers the alert)</li>
 <li>Timeout rate alerting configured</li>
+<li>Per-session token budget documented and tested on representative high-context runs</li>
+<li>Fan-out concurrency cap and rate-limit backoff policy tested before launch</li>
 <li>Cost spike alerting configured (alert if daily cost exceeds 150% of 7-day rolling average)</li>
 <li>Incident response playbook documented and reviewed by the on-call team</li>
 <li>On-call team knows how to access session logs and what they contain</li>
@@ -683,10 +685,38 @@ The deployment checklist extends the stack adaptation checklist from Module 11 w
 
 ---
 
-## 12.4 Observability and Incident Response
+## 12.4 Cost Control, Observability, and Incident Response
 
 <div class="ix-diagram" data-component="objective">
-  <p>Configure structured logging, set alert thresholds, and execute the five-minute incident response playbook for a production agentic system.</p>
+  <p>Set token budgets, configure structured logging, define alert thresholds, and execute the five-minute incident response playbook for a production agentic system.</p>
+</div>
+
+<p>Production reliability is not only about correctness. A pipeline that returns good answers while blowing through its token budget, saturating rate limits, or spawning too many parallel agents is still failing in production. Cost control belongs in the architecture, not in a finance spreadsheet after launch.</p>
+
+<p class="ix-instruct">Switch between tabs to see the four controls that keep production usage predictable.</p>
+
+<div class="ix-diagram" data-component="tabbed-panel" data-diagram-id="m12-cost-controls">
+<span class="ix-title">Cost and Context Budget Controls</span>
+<div data-tab="Estimate Before Run">
+<p><strong>Define the normal run before you ship.</strong> Estimate input tokens, expected output tokens, and any fan-out multiplier. For interactive Claude Code work, track representative sessions with the session cost view. For programmatic pipelines, use token counting or dry runs before enabling the trigger.</p>
+<p><strong>Ship with three numbers</strong>: per-session ceiling, daily pipeline budget, and monthly team budget. If none of those numbers exist, the system is not production-ready yet.</p>
+</div>
+<div data-tab="Reduce Context Load">
+<p><strong>Most cost overruns start as context mistakes.</strong> Read only the files needed for the current phase, summarize before handing off to the next phase, and keep stable reference material in skills, resources, or external docs instead of re-inlining it every run.</p>
+<p><strong>Warning sign</strong>: if each new feature request makes every session materially longer, your context strategy is decaying faster than your prompt quality is improving.</p>
+</div>
+<div data-tab="Rate Limits">
+<p><strong>Budget for throughput, not just price.</strong> Provider rate limits, MCP server limits, and downstream API limits can all turn a healthy pipeline into a retry storm. Cap fan-out width, queue long-running jobs, and use bounded retries with jitter instead of open-ended retry loops.</p>
+<p><strong>Design question</strong>: what happens when a parallel review pipeline wants to launch four specialists, but the current rate limit only supports two? Your answer should be a queue or graceful degradation policy, not wishful thinking.</p>
+</div>
+<div data-tab="Circuit Breakers">
+<p><strong>Every production agent needs a stop condition.</strong> Abort or degrade when any one of these trips: per-session token ceiling exceeded, daily cost spikes above threshold, retry count crosses the recovery limit, or queue backlog shows the trigger is firing faster than the system can drain it.</p>
+<p><strong>Typical degradation path</strong>: switch from parallel fan-out to a single-agent chain, reduce optional context gathering, and require human approval before resuming full throughput.</p>
+</div>
+</div>
+
+<div class="ix-diagram" data-component="callout" data-variant="tip">
+  <p><strong>Budget before you scale</strong>: Cost surprises usually come from one of four causes: over-reading context, over-fanning out agents, retry storms, or a trigger firing more often than expected. Instrument all four before launch.</p>
 </div>
 
 <p class="ix-instruct">Write your prediction, then reveal the reference reasoning.</p>
@@ -1204,6 +1234,15 @@ supersedes: go-error-handling@1.x
 
 ---
 
+## Further Reading
+
+- [Claude Code Cost Management](https://docs.anthropic.com/en/docs/claude-code/costs)
+- [Anthropic Token Counting](https://docs.anthropic.com/en/docs/build-with-claude/token-counting)
+- [Claude Code Agent SDK Overview](https://docs.anthropic.com/en/docs/claude-code/sdk)
+- [Standalone Diagram: Production Observability Companion](/examples/module-diagrams/m12-production-observability.html)
+
+---
+
 ## 12.6 Course Completion
 
 <div class="ix-diagram" data-component="objective">
@@ -1224,10 +1263,10 @@ supersedes: go-error-handling@1.x
 <label class="ix-checklist-item"><input type="checkbox"><span><strong>M02:</strong> I can write a <code>settings.json</code> with correct allow/deny permissions using the format <code>{"permissions": {"allow": [...], "deny": [...]}}</code> and a working CLAUDE.md that is read at session start</span></label>
 <label class="ix-checklist-item"><input type="checkbox"><span><strong>M03:</strong> I can read an agent trace and identify healthy loops, stuck loops, and the correct intervention signal -- and I know when to hold vs intervene</span></label>
 <label class="ix-checklist-item"><input type="checkbox"><span><strong>M04:</strong> I can write a TCEF prompt with precision verbs in the Task, grounding Context from CLAUDE.md and skills, concrete domain-specific Examples, and a constrained machine-readable Format</span></label>
-<label class="ix-checklist-item"><input type="checkbox"><span><strong>M05:</strong> I understand MCP architecture -- exactly three primitives (Tools, Resources, Prompts) -- and I can write output contracts as integration points for downstream systems</span></label>
-<label class="ix-checklist-item"><input type="checkbox"><span><strong>M06:</strong> I can select the right tool for each operation (Bash vs Read vs Write vs Edit vs Glob vs Grep) and write prompts that guide disciplined tool use without over-permissioning</span></label>
+<label class="ix-checklist-item"><input type="checkbox"><span><strong>M05:</strong> I understand MCP architecture -- exactly three primitives (Tools, Resources, Prompts), transport choices, and capability discovery at session start</span></label>
+<label class="ix-checklist-item"><input type="checkbox"><span><strong>M06:</strong> I can design and implement MCP servers with correct primitive selection, tool schemas Claude can use reliably, and structured <code>isError</code> handling for recoverable failures</span></label>
 <label class="ix-checklist-item"><input type="checkbox"><span><strong>M07:</strong> I can create skill files, load them in CLAUDE.md, build a reusable skill library, and distinguish LUXOR conventions (like <code>triggers</code>) from native Claude Code features</span></label>
-<label class="ix-checklist-item"><input type="checkbox"><span><strong>M08:</strong> I can configure MCP servers using stdio (local) and Streamable HTTP (remote) and identify when legacy HTTP+SSE configurations require migration planning</span></label>
+<label class="ix-checklist-item"><input type="checkbox"><span><strong>M08:</strong> I can use meta-prompting to generate, evaluate, and improve prompts, and I know when direct prompting is the safer or faster choice</span></label>
 <label class="ix-checklist-item"><input type="checkbox"><span><strong>M09:</strong> I can apply the four-question decision framework to choose between single-agent and multi-agent architectures, and I default to single-agent until I can justify multi-agent with clear evidence</span></label>
 <label class="ix-checklist-item"><input type="checkbox"><span><strong>M10:</strong> I can configure permission boundaries with the principle of least privilege, manage secrets correctly (environment variables only, never in CLAUDE.md), and design approval gates for irreversible actions</span></label>
 <label class="ix-checklist-item"><input type="checkbox"><span><strong>M11:</strong> I can adapt any agentic system to a specific tech stack using Context7 for documentation pre-loading and a stack-specific CLAUDE.md encoding team conventions</span></label>
@@ -1256,11 +1295,11 @@ supersedes: go-error-handling@1.x
 </div>
 <div class="ix-reveal-item">
 <div class="ix-reveal-label">Tools, Resources, Prompts (THREE primitives -- not four)</div>
-<div class="ix-reveal-answer" data-phase="act">Module 05 (first introduced as output contracts and MCP primitives) + Module 08 (deep dive into MCP server configuration)</div>
+<div class="ix-reveal-answer" data-phase="act">Module 05 -- MCP architecture introduces the three primitives, and Module 06 turns them into concrete server implementations</div>
 </div>
 <div class="ix-reveal-item">
 <div class="ix-reveal-label"><code>isError</code> pattern in MCP tool responses</div>
-<div class="ix-reveal-answer" data-phase="observe">Module 06 -- tool orchestration discipline, including how MCP tools signal errors vs success in their response structure</div>
+<div class="ix-reveal-answer" data-phase="observe">Module 06 -- building MCP servers, including how recoverable tool failures return <code>isError: true</code> instead of crashing the server</div>
 </div>
 <div class="ix-reveal-item">
 <div class="ix-reveal-label"><code>triggers</code> is a LUXOR convention, not native Claude Code</div>

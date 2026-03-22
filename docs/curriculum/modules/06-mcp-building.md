@@ -902,6 +902,7 @@ if (!apiKey) {
 - [MCP Server Examples](https://github.com/modelcontextprotocol/servers)
 - [Zod Schema Validation](https://zod.dev)
 - [Claude Code MCP Configuration Reference](https://docs.anthropic.com/en/docs/claude-code/mcp)
+- [Standalone Diagram: MCP Server Design Boundaries](/examples/module-diagrams/m06-server-boundaries.html)
 
 ---
 

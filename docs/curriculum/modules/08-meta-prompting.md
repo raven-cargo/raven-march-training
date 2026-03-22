@@ -395,6 +395,46 @@ The three applications from Section 8.1 combine into a single repeatable workflo
   <p><strong>Know when to stop iterating</strong>: Stop when evaluation returns all PASS, when a domain expert confirms accuracy, or when three successive improvements produce only stylistic suggestions. At that point, testing the prompt against real cases is more valuable than further meta-level iteration.</p>
 </div>
 
+<p class="ix-instruct">Step through the handoff to see how Module 08 outputs become Module 09 building blocks.</p>
+
+<div class="ix-diagram" data-component="step-walkthrough" data-diagram-id="m08-to-m09-bridge">
+  <span class="ix-title">From Meta-Prompt to Multi-Agent Specialist</span>
+  <div class="ix-step" data-step="1">
+    <span class="ix-step-label">Generate the specialist artifact</span>
+    <div class="ix-step-body">
+      <p>Use a meta-prompt to generate a first-draft skill file, review rubric, or structured output contract for one specialist role -- security reviewer, documentation auditor, dependency checker, or another bounded responsibility.</p>
+    </div>
+  </div>
+  <div class="ix-step" data-step="2">
+    <span class="ix-step-label">Evaluate against a stable rubric</span>
+    <div class="ix-step-body">
+      <p>Run criteria-based evaluation until the artifact has no blocking FAIL items. The goal is not stylistic polish; it is a specialist artifact another engineer could trust as a repeatable briefing.</p>
+    </div>
+  </div>
+  <div class="ix-step" data-step="3">
+    <span class="ix-step-label">Freeze the interface</span>
+    <div class="ix-step-body">
+      <p>Lock down the input expectations and output shape. In multi-agent systems, this becomes the contract the orchestrator relies on when it dispatches work and aggregates results.</p>
+    </div>
+  </div>
+  <div class="ix-step" data-step="4">
+    <span class="ix-step-label">Assign the artifact to a role</span>
+    <div class="ix-step-body">
+      <p>Module 09 does not start from a blank specialist. It starts from the reusable artifacts created here: a skill file loaded into a sub-agent, an evaluation rubric used by a reviewer, or a structured schema used by the orchestrator.</p>
+    </div>
+  </div>
+  <div class="ix-step" data-step="5">
+    <span class="ix-step-label">Pilot the orchestration</span>
+    <div class="ix-step-body">
+      <p>Run a small fan-out with one orchestrator and two or three specialists. If the aggregation breaks, the problem is usually not “multi-agent magic” -- it is an interface that was never made explicit during the meta-prompting phase.</p>
+    </div>
+  </div>
+</div>
+
+<div class="ix-diagram" data-component="callout" data-variant="core-idea">
+  <p><strong>Module 08 feeds Module 09 directly</strong>: The highest-value output of meta-prompting is a reusable specialist artifact with a stable interface. Once a prompt, skill, or rubric is reliable enough to survive evaluation, it becomes a sub-agent role, routing target, or aggregation contract in a multi-agent system.</p>
+</div>
+
 <details class="ix-collapse">
 <summary>Deep Dive: Practical convergence rubric for teams</summary>
 <div class="ix-collapse-body">
@@ -635,7 +675,7 @@ Meta-prompting provides genuine leverage in the scenarios above. It also has rea
 
 ## Lab Connection
 
-**Lab 06** is the closest applied companion. You will build skills and commands where meta-prompting can be used to bootstrap first drafts, then refine them with explicit evaluation criteria before reuse.
+**Lab 06** is the closest applied companion. You will build skills and commands where meta-prompting can be used to bootstrap first drafts, then refine them with explicit evaluation criteria before reuse. The reusable artifacts you create here -- skills, rubrics, and output formats -- are the exact kind of building blocks Module 09 turns into specialist roles inside an orchestrated system.
 
 ---
 
@@ -644,6 +684,7 @@ Meta-prompting provides genuine leverage in the scenarios above. It also has rea
 - [Anthropic Prompt Engineering Techniques](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview)
 - [Meta-Prompting: Enhancing Language Models with Task-Agnostic Scaffolding](https://arxiv.org/abs/2401.12954)
 - [Automatic Prompt Engineer (APE)](https://arxiv.org/abs/2211.01910)
+- [Standalone Diagram: Generate-Evaluate-Improve Loop](/examples/module-diagrams/m08-meta-loop.html)
 
 ---
 

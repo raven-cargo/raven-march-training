@@ -915,5 +915,11 @@ Participants choose one of the five tech stacks covered in Section 11.3 and comp
 
 ---
 
+## Further Reading
+
+- [Standalone Diagram: Stack Adaptation Decision Map](/examples/module-diagrams/m11-stack-adaptation.html)
+
+---
+
 [Previous Module -> Module 10](/module/10)
 [Next Module -> Module 12](/module/12)

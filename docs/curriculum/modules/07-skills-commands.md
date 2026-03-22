@@ -828,6 +828,7 @@ In Module 06 you orchestrated individual tools. Now you orchestrate entire skill
 - [Claude Code Slash Commands Reference](https://docs.anthropic.com/en/docs/claude-code/slash-commands)
 - [Claude Code Memory and Skills](https://docs.anthropic.com/en/docs/claude-code/memory)
 - [Claude Code Settings and Project Configuration](https://docs.anthropic.com/en/docs/claude-code/settings)
+- [Standalone Diagram: Skill Composition Patterns](/examples/module-diagrams/m07-skill-composition.html)
 
 ---
 
