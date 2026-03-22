@@ -1058,6 +1058,554 @@ tr.clickable { cursor: pointer; }
   </div>
 </div>
 
+<!-- Section 9: Labs Analysis -->
+<div id="labs" class="section">
+  <div class="section-title">Labs Deep Analysis <span class="badge" style="background:var(--success);color:#000">9 labs</span> <span class="badge" style="background:var(--bg3);color:var(--text2)">19,645 lines</span></div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:24px;">
+    <div class="kpi-card"><div class="kpi-value" style="color:var(--text);font-size:28px;">19,645</div><div class="kpi-label">Total Lines</div></div>
+    <div class="kpi-card"><div class="kpi-value" style="color:var(--accent);font-size:28px;">94</div><div class="kpi-label">Textareas</div></div>
+    <div class="kpi-card"><div class="kpi-value" style="color:var(--info);font-size:28px;">305</div><div class="kpi-label">Buttons</div></div>
+    <div class="kpi-card"><div class="kpi-value" style="color:var(--success);font-size:28px;">331</div><div class="kpi-label">aria-labels</div></div>
+    <div class="kpi-card"><div class="kpi-value" style="color:var(--high);font-size:28px;">252</div><div class="kpi-label">Code Blocks</div></div>
+    <div class="kpi-card"><div class="kpi-value" style="color:var(--medium);font-size:28px;">307</div><div class="kpi-label">JS Functions</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="labs-scorecard">Quality Scorecard</button>
+    <button class="tab-btn" data-tab="labs-gamification">Gamification</button>
+    <button class="tab-btn" data-tab="labs-alignment">Module Alignment</button>
+    <button class="tab-btn" data-tab="labs-gaps">Lab Gaps</button>
+  </div>
+
+  <!-- Quality Scorecard -->
+  <div id="labs-scorecard" class="tab-content active">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Lab Quality Scorecard (6 Dimensions)</div><span class="sev sev-low">Avg 8.4/10</span></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Lab</th><th>Lines</th><th>Gamification</th><th>Accessibility</th><th>Responsiveness</th><th>Content Accuracy</th><th>Module Alignment</th><th>Overall</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>01</td><td>2,030</td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:50%;background:var(--high)"></div></div><span class="health-bar-value" style="color:var(--high)">5.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:70%;background:var(--medium)"></div></div><span class="health-bar-value" style="color:var(--medium)">7.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:80%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">8.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:100%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">10</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:90%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">9.0</span></div></td>
+            <td><strong style="color:var(--low)">8.0</strong></td>
+          </tr>
+          <tr>
+            <td>02</td><td>1,976</td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:90%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">9.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:90%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">9.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:80%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">8.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:100%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">10</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:85%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">8.5</span></div></td>
+            <td><strong style="color:var(--success)">9.0</strong></td>
+          </tr>
+          <tr>
+            <td>03</td><td>2,106</td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:90%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">9.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:80%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">8.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:80%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">8.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:100%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">10</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:95%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">9.5</span></div></td>
+            <td><strong style="color:var(--success)">9.0</strong></td>
+          </tr>
+          <tr>
+            <td>04</td><td>2,514</td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:95%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">9.5</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:80%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">8.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:90%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">9.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:100%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">10</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:80%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">8.0</span></div></td>
+            <td><strong style="color:var(--success)">9.0</strong></td>
+          </tr>
+          <tr>
+            <td>05</td><td>2,827</td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:90%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">9.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:90%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">9.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:90%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">9.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:100%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">10</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:90%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">9.0</span></div></td>
+            <td><strong style="color:var(--success)">9.5</strong></td>
+          </tr>
+          <tr>
+            <td>06</td><td>1,999</td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:85%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">8.5</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:50%;background:var(--high)"></div></div><span class="health-bar-value" style="color:var(--high)">5.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:40%;background:var(--critical)"></div></div><span class="health-bar-value" style="color:var(--critical)">4.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:100%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">10</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:75%;background:var(--medium)"></div></div><span class="health-bar-value" style="color:var(--medium)">7.5</span></div></td>
+            <td><strong style="color:var(--medium)">7.0</strong></td>
+          </tr>
+          <tr>
+            <td>07</td><td>2,109</td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:90%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">9.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:70%;background:var(--medium)"></div></div><span class="health-bar-value" style="color:var(--medium)">7.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:40%;background:var(--critical)"></div></div><span class="health-bar-value" style="color:var(--critical)">4.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:100%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">10</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:90%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">9.0</span></div></td>
+            <td><strong style="color:var(--medium)">7.5</strong></td>
+          </tr>
+          <tr>
+            <td>08</td><td>2,003</td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:85%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">8.5</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:50%;background:var(--high)"></div></div><span class="health-bar-value" style="color:var(--high)">5.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:60%;background:var(--high)"></div></div><span class="health-bar-value" style="color:var(--high)">6.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:100%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">10</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:85%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">8.5</span></div></td>
+            <td><strong style="color:var(--low)">8.0</strong></td>
+          </tr>
+          <tr>
+            <td>09</td><td>2,081</td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:70%;background:var(--medium)"></div></div><span class="health-bar-value" style="color:var(--medium)">7.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:80%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">8.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:80%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">8.0</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:100%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">10</span></div></td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:80%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">8.0</span></div></td>
+            <td><strong style="color:var(--low)">8.5</strong></td>
+          </tr>
+          <tr style="background:var(--bg3);font-weight:600;">
+            <td>Avg</td><td>2,183</td>
+            <td><span style="color:var(--success)">8.2</span></td>
+            <td><span style="color:var(--medium)">7.3</span></td>
+            <td><span style="color:var(--medium)">7.1</span></td>
+            <td><span style="color:var(--success)">10.0</span></td>
+            <td><span style="color:var(--success)">8.6</span></td>
+            <td><strong style="color:var(--success)">8.4</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card" style="margin-top:16px;border-left:3px solid var(--success)">
+      <div class="card-title" style="color:var(--success)">Content accuracy is perfect across all 9 labs (10/10)</div>
+      <p style="color:var(--text2);margin-top:8px">No banned flags, no deprecated API patterns presented as current, correct SSE deprecation messaging, correct 3-primitive MCP count. Responsiveness is the weakest dimension (7.1/10 avg), driven by Labs 06 and 07 having zero mobile breakpoints.</p>
+    </div>
+  </div>
+
+  <!-- Gamification Comparison -->
+  <div id="labs-gamification" class="tab-content">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Gamification Depth Comparison</div></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Lab</th><th>XP System</th><th>Streak</th><th>Milestones</th><th>Predictions</th><th>Connect-Forward</th><th>Lock/Unlock</th><th>Depth</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>01</td><td>Basic (no LAB_KEY)</td><td>None</td><td>None</td><td>Yes (7)</td><td>None</td><td>None</td><td><span class="sev sev-medium">Shallow</span></td></tr>
+          <tr><td>02</td><td>Full LAB_KEY</td><td>Yes (3/5/7)</td><td>Yes (13)</td><td>Yes (12)</td><td>Yes (5)</td><td>Yes</td><td><span class="sev sev-low">Deep</span></td></tr>
+          <tr><td>03</td><td>Full LAB_KEY</td><td>Yes (3/5/7)</td><td>Yes (13)</td><td>Yes (7)</td><td>Yes (3)</td><td>Yes</td><td><span class="sev sev-low">Deep</span></td></tr>
+          <tr><td>04</td><td>Full STORAGE_KEYS</td><td>Yes</td><td>Yes (14)</td><td>Yes (15)</td><td>None</td><td>Yes (29 ops)</td><td><span class="sev sev-info">Deep+</span></td></tr>
+          <tr><td>05</td><td>Full STATE obj</td><td>Yes</td><td>Yes (25)</td><td>Yes (22)</td><td>None</td><td>Yes</td><td><span class="sev sev-info">Deep+</span></td></tr>
+          <tr><td>06</td><td>Full LAB_KEY</td><td>Yes</td><td>Yes (13)</td><td>Yes (12)</td><td>Yes (8)</td><td>Yes</td><td><span class="sev sev-low">Deep</span></td></tr>
+          <tr><td>07</td><td>Full LAB_KEY</td><td>Yes</td><td>Yes (13)</td><td>Yes (5)</td><td>Yes (4)</td><td>Yes (30 ops)</td><td><span class="sev sev-low">Deep</span></td></tr>
+          <tr><td>08</td><td>Full LAB_KEY</td><td>Yes</td><td>Yes (13)</td><td>Yes (9)</td><td>Yes (5)</td><td>Yes</td><td><span class="sev sev-low">Deep</span></td></tr>
+          <tr><td>09</td><td>Full LAB_KEY</td><td>Minimal (5)</td><td>Yes (13)</td><td>None</td><td>Yes (8)</td><td>Yes</td><td><span class="sev sev-medium">Different</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card" style="margin-top:16px;border-left:3px solid var(--high)">
+      <div class="card-title" style="color:var(--high)">Lab 01 is the gamification anomaly</div>
+      <p style="color:var(--text2);margin-top:8px">No streak system, no milestone toasts, no connect-forward nudges, no LAB_KEY-based localStorage. XP tracking is absent -- quiz shows a score ring (0-4 correct) rather than XP accumulation. This is the original v1 architecture.</p>
+    </div>
+  </div>
+
+  <!-- Module Alignment -->
+  <div id="labs-alignment" class="tab-content">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Lab-to-Module Alignment Scores</div></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Lab</th><th>Day</th><th>Module(s)</th><th>Alignment</th><th>Covered Concepts</th><th>Missing Concepts</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>01</td><td>1</td><td>M01</td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:90%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">9.0</span></div></td>
+            <td>Paradigm shift, PRAO loop, agentic trace, 5 CLI commands</td><td style="color:var(--text3)">M01.5 (when NOT to use agentic AI)</td></tr>
+          <tr><td>02</td><td>1</td><td>M02</td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:85%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">8.5</span></div></td>
+            <td>GCCF, CLAUDE.md, settings.json, trace reading, threading</td><td style="color:var(--text3)">Two modes (headless vs interactive) underemphasized</td></tr>
+          <tr><td>03</td><td>1</td><td>M03</td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:95%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">9.5</span></div></td>
+            <td>Chain-of-thought, tool call sequences, extended thinking</td><td style="color:var(--success)">Excellent coverage</td></tr>
+          <tr><td>04</td><td>2</td><td>M05 + partial M06</td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:80%;background:var(--low)"></div></div><span class="health-bar-value" style="color:var(--low)">8.0</span></div></td>
+            <td>Three primitives, transport config, schema reading</td><td style="color:var(--high)">M06 (SDK, writing servers, error handling)</td></tr>
+          <tr><td>05</td><td>2</td><td>M04</td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:90%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">9.0</span></div></td>
+            <td>TCEF, context injection, prompt iteration</td><td style="color:var(--text3)">M04.1 (GCCF limitations deep-dive)</td></tr>
+          <tr><td>06</td><td>2</td><td>M07 + partial M08</td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:75%;background:var(--medium)"></div></div><span class="health-bar-value" style="color:var(--medium)">7.5</span></div></td>
+            <td>Skill anatomy, YAML, triggers, slash commands</td><td style="color:var(--high)">M08 (meta-prompting, chaining, recursive prompts)</td></tr>
+          <tr><td>07</td><td>3</td><td>M09</td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:90%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">9.0</span></div></td>
+            <td>Why multi-agent, task decomposition, orchestrator patterns</td><td style="color:var(--text3)">M09.4 (inter-agent communication detailed)</td></tr>
+          <tr><td>08</td><td>3</td><td>M10</td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:85%;background:var(--success)"></div></div><span class="health-bar-value" style="color:var(--success)">8.5</span></div></td>
+            <td>Permission scoping, secrets, cost optimization, observability</td><td style="color:var(--text3)">M10.4 (prompt injection), M10.5 (approval gates)</td></tr>
+          <tr><td>09</td><td>3</td><td>M12 + partial M11</td>
+            <td><div class="health-bar"><div class="health-bar-track"><div class="health-bar-fill" style="width:80%;background:var(--low)"></div></div><span class="health-bar-value" style="color:var(--low)">8.0</span></div></td>
+            <td>Pipeline design, prompt+skill synthesis, safety, peer review</td><td style="color:var(--high)">M12.4 (observability/incident), M11 (stack adaptation)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card" style="margin-top:16px;border-left:3px solid var(--high)">
+      <div class="card-title" style="color:var(--high)">3 Modules With No Dedicated Lab</div>
+      <p style="color:var(--text2);margin-top:8px"><strong>M06</strong> (MCP Building) -- Lab 04 covers reading schemas, but students never write a server. <strong>M08</strong> (Meta-Prompting) -- Lab 06 touches skill composition but meta-prompting as a discipline is absent. <strong>M11</strong> (Tech Stack Adaptation) -- partially intentional as a cross-cutting concern.</p>
+    </div>
+  </div>
+
+  <!-- Lab Gaps -->
+  <div id="labs-gaps" class="tab-content">
+    <div class="gap-item">
+      <div class="gap-priority gap-must">HIGH</div>
+      <div class="gap-body">
+        <div class="gap-title">Lab 01 XP System Missing</div>
+        <div class="gap-desc">Only lab with no XP accumulation, no streak, no milestone. Learners returning to the course dashboard will see 0 XP for their Day 1 opening lab. Needs upgrade to LAB_KEY-based XP pattern.</div>
+      </div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-priority gap-must">HIGH</div>
+      <div class="gap-body">
+        <div class="gap-title">Labs 06, 07 -- Zero Media Queries</div>
+        <div class="gap-desc">On viewports &lt; 768px, multi-column grids (73 code blocks in Lab 06, 63 buttons in Lab 07) will overflow or compress unreadably. No responsive rules defined for either lab.</div>
+      </div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-priority gap-should">MEDIUM</div>
+      <div class="gap-body">
+        <div class="gap-title">lab-framework/ Unused by All 9 Labs</div>
+        <div class="gap-desc">core.css (668 lines) and core.js (655 lines) exist but no lab includes them. All labs inline all CSS/JS. Bug fixes require touching all 9 files independently. build.js exists to solve this but is not in use.</div>
+      </div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-priority gap-should">MEDIUM</div>
+      <div class="gap-body">
+        <div class="gap-title">connect-forward Missing from Labs 01, 04, 05</div>
+        <div class="gap-desc">No explicit "next lab" nudge at completion. Lab 01 lacks it entirely. Labs 04 and 05 have no connect-forward panel despite being mid-sequence.</div>
+      </div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-priority gap-should">MEDIUM</div>
+      <div class="gap-body">
+        <div class="gap-title">Lab 09 -- Zero Prediction Challenges</div>
+        <div class="gap-desc">The only lab with no prediction challenges. Breaks the "predict before you learn" pedagogical pattern established across Labs 01-08.</div>
+      </div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-priority gap-should">MEDIUM</div>
+      <div class="gap-body">
+        <div class="gap-title">Lab 05 Monolithic localStorage</div>
+        <div class="gap-desc">Single JSON.stringify(STATE) key means any corruption clears all 5-section progress at once. Other labs use granular keys for resilience.</div>
+      </div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-priority gap-should">MEDIUM</div>
+      <div class="gap-body">
+        <div class="gap-title">Module 06 (MCP Building) Has No Lab</div>
+        <div class="gap-desc">TypeScript SDK, writing tool schemas, error handling -- all without hands-on practice. Lab 04 covers architecture and reading schemas, but learners never write a server.</div>
+      </div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-priority gap-should">MEDIUM</div>
+      <div class="gap-body">
+        <div class="gap-title">Module 08 (Meta-Prompting) Has No Lab</div>
+        <div class="gap-desc">Meta-prompting as a discipline (prompt chaining, self-modifying prompts, recursive prompt structures) is absent from hands-on labs.</div>
+      </div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-priority gap-nice">LOW</div>
+      <div class="gap-body">
+        <div class="gap-title">Module 11 (Tech Stack Adaptation) Has No Lab</div>
+        <div class="gap-desc">Partially intentional as a cross-cutting concern, but students miss hands-on practice with Context7 and stack-specific CLAUDE.md configuration.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 10: Challenges Analysis -->
+<div id="challenges" class="section">
+  <div class="section-title">Challenge Missions Analysis <span class="badge" style="background:var(--accent);color:#000">8 missions</span> <span class="badge" style="background:var(--bg3);color:var(--text2)">3 tracks</span></div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:24px;">
+    <div class="kpi-card"><div class="kpi-value" style="color:var(--accent);font-size:28px;">8</div><div class="kpi-label">Missions</div></div>
+    <div class="kpi-card"><div class="kpi-value" style="color:var(--info);font-size:28px;">3</div><div class="kpi-label">Tracks</div></div>
+    <div class="kpi-card"><div class="kpi-value" style="color:var(--success);font-size:28px;">8</div><div class="kpi-label">CEs Done</div></div>
+    <div class="kpi-card"><div class="kpi-value" style="color:var(--high);font-size:28px;">29</div><div class="kpi-label">CEs Planned</div></div>
+    <div class="kpi-card"><div class="kpi-value" style="color:var(--critical);font-size:28px;">22%</div><div class="kpi-label">CE Coverage</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="ch-missions">Mission Assessment</button>
+    <button class="tab-btn" data-tab="ch-ce-status">CE Implementation</button>
+    <button class="tab-btn" data-tab="ch-bloom">Bloom's Taxonomy</button>
+    <button class="tab-btn" data-tab="ch-gaps">Challenge Gaps</button>
+    <button class="tab-btn" data-tab="ch-opportunities">Integration Opportunities</button>
+  </div>
+
+  <!-- Mission Assessment -->
+  <div id="ch-missions" class="tab-content active">
+    <div class="card">
+      <div class="card-header"><div class="card-title">8 Standalone Challenge Missions</div><span class="sev sev-info">3 Tracks</span></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Mission</th><th>Title</th><th>Track</th><th>Difficulty</th><th>Time Est.</th><th>Objectives</th><th>Criteria</th><th>Prerequisites</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1.1</td><td>Author Two Skills From Scratch</td><td><span class="sev sev-info">Track 1</span></td>
+            <td>&#9733;&#9733;&#9733;</td><td style="color:var(--high)">Missing</td>
+            <td><span class="sev sev-low">Clear</span></td><td><span class="sev sev-low">4 criteria</span></td><td><span class="sev sev-medium">Partial</span></td>
+          </tr>
+          <tr>
+            <td>1.2</td><td>Build a Slash Command</td><td><span class="sev sev-info">Track 1</span></td>
+            <td>&#9733;&#9733;&#9733;</td><td style="color:var(--high)">Missing</td>
+            <td><span class="sev sev-low">Clear</span></td><td><span class="sev sev-low">4 criteria</span></td><td><span class="sev sev-critical">Missing</span></td>
+          </tr>
+          <tr>
+            <td>1.3</td><td>Configure a Specialized Subagent</td><td><span class="sev sev-info">Track 1</span></td>
+            <td>&#9733;&#9733;&#9733;&#9733;</td><td style="color:var(--high)">Missing</td>
+            <td><span class="sev sev-low">Clear</span></td><td><span class="sev sev-low">4 criteria</span></td><td><span class="sev sev-critical">Missing</span></td>
+          </tr>
+          <tr>
+            <td>2.1</td><td>Codebase Archaeology</td><td><span class="sev sev-medium">Track 2</span></td>
+            <td>&#9733;&#9733;&#9733;</td><td style="color:var(--high)">Missing</td>
+            <td><span class="sev sev-low">Excellent</span></td><td><span class="sev sev-low">4 criteria</span></td><td><span class="sev sev-critical">Missing</span></td>
+          </tr>
+          <tr>
+            <td>2.2</td><td>Issue-to-PR Pipeline</td><td><span class="sev sev-medium">Track 2</span></td>
+            <td>&#9733;&#9733;&#9733;&#9733;</td><td style="color:var(--high)">Missing</td>
+            <td><span class="sev sev-low">Excellent</span></td><td><span class="sev sev-low">5 criteria</span></td><td><span class="sev sev-medium">Partial</span></td>
+          </tr>
+          <tr>
+            <td>2.3</td><td>PR Review Workflow</td><td><span class="sev sev-medium">Track 2</span></td>
+            <td>&#9733;&#9733;&#9733;&#9733;</td><td style="color:var(--high)">Missing</td>
+            <td><span class="sev sev-low">Clear</span></td><td><span class="sev sev-low">4 criteria</span></td><td><span class="sev sev-critical">Missing</span></td>
+          </tr>
+          <tr>
+            <td>3.1</td><td>Developer Productivity Toolkit</td><td><span class="sev sev-high">Track 3</span></td>
+            <td>&#9733;&#9733;&#9733;&#9733;</td><td style="color:var(--high)">Missing</td>
+            <td><span class="sev sev-low">Clear</span></td><td><span class="sev sev-low">4 criteria</span></td><td><span class="sev sev-critical">Missing</span></td>
+          </tr>
+          <tr>
+            <td>3.2</td><td>Issue-to-Merge End-to-End Automation</td><td><span class="sev sev-high">Track 3</span></td>
+            <td>&#9733;&#9733;&#9733;&#9733;&#9733;</td><td style="color:var(--success)">8-12 hrs</td>
+            <td><span class="sev sev-low">Excellent</span></td><td><span class="sev sev-low">5 criteria</span></td><td><span class="sev sev-medium">Implicit</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card" style="margin-top:16px;border-left:3px solid var(--high)">
+      <div class="card-title" style="color:var(--high)">7 of 8 missions have no time estimate</div>
+      <p style="color:var(--text2);margin-top:8px">Only Mission 3.2 explicitly states "8-12 hours." Students planning their study time cannot gauge commitment. Suggested estimates range from 2-3 hours (Mission 1.2) to 8-12 hours (Mission 3.2).</p>
+    </div>
+  </div>
+
+  <!-- CE Implementation Status -->
+  <div id="ch-ce-status" class="tab-content">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Challenge Exercise Implementation Status</div><span class="sev sev-high">8/37 (22%)</span></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>CE ID</th><th>Lab</th><th>Title</th><th>XP</th><th>Validation Type</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>CE-03-D</td><td>Lab 03</td><td>Issue Navigation Exercise</td><td>+30</td><td>Textarea + model reveal</td><td><span class="sev sev-low">Done</span></td></tr>
+          <tr><td>CE-04-B</td><td>Lab 04</td><td>Tool Schema Design</td><td>+30</td><td>JSON auto-validation</td><td><span class="sev sev-low">Done</span></td></tr>
+          <tr><td>CE-06-C</td><td>Lab 06</td><td>Author a Skill YAML</td><td>+30</td><td>5-criteria YAML linter</td><td><span class="sev sev-low">Done</span></td></tr>
+          <tr><td>CE-06-D</td><td>Lab 06</td><td>Build /pr-ready Command</td><td>+30</td><td>Structured form</td><td><span class="sev sev-low">Done</span></td></tr>
+          <tr><td>CE-07-B</td><td>Lab 07</td><td>Subagent System Prompt</td><td>+30</td><td>Character count (200+ min)</td><td><span class="sev sev-low">Done</span></td></tr>
+          <tr><td>CE-08-A</td><td>Lab 08</td><td>Permission Models</td><td>+30</td><td>JSON validated</td><td><span class="sev sev-low">Done</span></td></tr>
+          <tr><td>CE-09-A</td><td>Lab 09</td><td>Capstone Skill YAML</td><td>+40</td><td>6-criteria parse check</td><td><span class="sev sev-low">Done</span></td></tr>
+          <tr><td>CE-09-C</td><td>Lab 09</td><td>Issue Tracker Integration</td><td>+40</td><td>4-question form</td><td><span class="sev sev-low">Done</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <div class="card-title" style="color:var(--critical)">Labs With Zero Challenge Implementation</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:12px;">
+        <div class="card" style="border-color:var(--critical)">
+          <div class="card-title">Lab 01 -- Paradigm Shift</div>
+          <p style="color:var(--text2);font-size:13px;">0 of 3 planned CEs implemented</p>
+        </div>
+        <div class="card" style="border-color:var(--critical)">
+          <div class="card-title">Lab 02 -- First Agent</div>
+          <p style="color:var(--text2);font-size:13px;">0 of 3 planned CEs implemented</p>
+        </div>
+        <div class="card" style="border-color:var(--critical)">
+          <div class="card-title">Lab 05 -- Prompt Engineering</div>
+          <p style="color:var(--text2);font-size:13px;">0 of 4 planned CEs implemented. Worst gap: core build exercises CE-05-C and CE-05-D missing (Priority: Critical)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bloom's Taxonomy -->
+  <div id="ch-bloom" class="tab-content">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Bloom's Taxonomy Mapping</div><span class="sev sev-info">L3-L6</span></div>
+      <p style="color:var(--text2);margin-top:8px">All 8 missions operate at L3-L6 (Apply through Create). Lower levels (L1 Remember, L2 Understand) are covered by module content and lab exercises.</p>
+    </div>
+    <div class="table-wrap" style="margin-top:16px;">
+      <table>
+        <thead>
+          <tr><th>Mission</th><th>Primary Level</th><th>Secondary Level</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1.1 Author Two Skills</td><td><span class="sev sev-info">Create (L6)</span></td><td>Evaluate (L5)</td><td>Testing 3 times = evaluating own work</td></tr>
+          <tr><td>1.2 Slash Command</td><td><span class="sev sev-info">Create (L6)</span></td><td>Analyze (L4)</td><td>Data flow between steps requires analysis</td></tr>
+          <tr><td>1.3 Subagent Config</td><td><span class="sev sev-info">Create (L6)</span></td><td>Evaluate (L5)</td><td>Edge case testing = evaluation</td></tr>
+          <tr><td>2.1 Codebase Archaeology</td><td><span class="sev sev-medium">Analyze (L4)</span></td><td>Create (L6)</td><td>Root cause analysis + fix = both</td></tr>
+          <tr><td>2.2 Issue-to-PR Pipeline</td><td><span class="sev sev-low">Apply (L3)</span></td><td>Create (L6)</td><td>Workflow application + PR creation</td></tr>
+          <tr><td>2.3 PR Review Workflow</td><td><span class="sev sev-high">Evaluate (L5)</span></td><td>Analyze (L4)</td><td>Comparative evaluation with human reviews</td></tr>
+          <tr><td>3.1 Productivity Toolkit</td><td><span class="sev sev-info">Create (L6)</span></td><td>Evaluate (L5)</td><td>Systems design requires integration</td></tr>
+          <tr><td>3.2 End-to-End Automation</td><td><span class="sev sev-info">Create (L6)</span></td><td>Evaluate (L5)</td><td>Retrospective is pure evaluation</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">Track Progression</div>
+      <div style="font-family:monospace;font-size:13px;color:var(--text2);line-height:2;margin-top:12px;">
+        <div><span style="color:var(--info)">Track 1:</span> Skill (1.1) <span style="color:var(--accent)">--&gt;</span> Command (1.2) <span style="color:var(--accent)">--&gt;</span> Subagent (1.3) <span style="color:var(--text3)">// each adds a new abstraction layer</span></div>
+        <div><span style="color:var(--medium)">Track 2:</span> Exploration (2.1) <span style="color:var(--accent)">--&gt;</span> Integration (2.2) <span style="color:var(--accent)">--&gt;</span> Evaluation (2.3) <span style="color:var(--text3)">// each adds stakeholders</span></div>
+        <div><span style="color:var(--high)">Track 3:</span> System (3.1) <span style="color:var(--accent)">--&gt;</span> Full Pipeline (3.2) <span style="color:var(--text3)">// scope expansion</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Challenge Gaps -->
+  <div id="ch-gaps" class="tab-content">
+    <div class="gap-item">
+      <div class="gap-priority gap-must">CRITICAL</div>
+      <div class="gap-body">
+        <div class="gap-title">Gap 1 -- Naming Collision</div>
+        <div class="gap-desc">User brief names missions "1.A, 1.B, 2.A, 2.B, 2.C, 3.A, 3.B, 3.C" while the document uses "1.1, 1.2, 1.3, 2.1, 2.2, 2.3, 3.1, 3.2". These labels do not map cleanly. Before any UI work references mission IDs, this naming must be reconciled.</div>
+      </div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-priority gap-must">HIGH</div>
+      <div class="gap-body">
+        <div class="gap-title">Gap 2 -- Missing Time Estimates</div>
+        <div class="gap-desc">7 of 8 missions have no time estimate. Only Mission 3.2 states "8-12 hours." Suggested estimates: 1.1 (3-4h), 1.2 (2-3h), 1.3 (4-5h), 2.1 (4-6h), 2.2 (5-7h), 2.3 (3-4h), 3.1 (5-7h).</div>
+      </div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-priority gap-must">HIGH</div>
+      <div class="gap-body">
+        <div class="gap-title">Gap 3 -- Missing Prerequisites in Mission Bodies</div>
+        <div class="gap-desc">Each mission references "After completing core labs" globally, but the Mission Map at the bottom is the only place that cross-references specific modules. Prerequisites should be surfaced in each mission body.</div>
+      </div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-priority gap-must">HIGH</div>
+      <div class="gap-body">
+        <div class="gap-title">Gap 4 -- Labs 01, 02, 05 Have Zero Implemented CEs</div>
+        <div class="gap-desc">Three of nine labs have no interactive challenge exercises. Lab 05 (Prompt Engineering) is the worst gap -- 4 planned CEs including core build exercises CE-05-C and CE-05-D marked Priority: Critical.</div>
+      </div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-priority gap-should">MEDIUM</div>
+      <div class="gap-body">
+        <div class="gap-title">Gap 5 -- No Dedicated Challenge UI</div>
+        <div class="gap-desc">The /challenges route renders raw markdown in a general-purpose viewer. Students cannot see all 8 missions at a glance with difficulty badges, track completion, or CE-to-mission links.</div>
+      </div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-priority gap-should">MEDIUM</div>
+      <div class="gap-body">
+        <div class="gap-title">Gap 6 -- No XP Integration for Standalone Missions</div>
+        <div class="gap-desc">Standalone missions award XP only for reading them in module-viewer (section scrolling), not for completing them. Suggested: Track 1 = 100 XP/mission, Track 2 = 150 XP, Track 3.1 = 200 XP, Track 3.2 = 300 XP.</div>
+      </div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-priority gap-should">MEDIUM</div>
+      <div class="gap-body">
+        <div class="gap-title">Gap 7 -- Skill YAML Convention Ambiguity</div>
+        <div class="gap-desc">Missions 1.1 and 1.3 teach a YAML format with trigger_phrases, behavior, constraints. The course CLAUDE.md notes triggers is a LUXOR convention, not native Claude Code. Missions don't clarify these fields are instructional conventions.</div>
+      </div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-priority gap-nice">LOW</div>
+      <div class="gap-body">
+        <div class="gap-title">Gap 8 -- No Cold-Start Guidance for Track 2</div>
+        <div class="gap-desc">Mission 2.1 requires "a real open-source codebase you've never worked in before" and Mission 2.2 requires a repo with "good first issue." Students unfamiliar with open-source navigation will spend significant time on setup.</div>
+      </div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-priority gap-nice">LOW</div>
+      <div class="gap-body">
+        <div class="gap-title">Gap 9 -- No Portfolio Mechanism</div>
+        <div class="gap-desc">Mission deliverables (YAML files, PR descriptions, pipelines, retrospectives) are high-quality portfolio artifacts. No mechanism for students to preserve, share, or submit them beyond their local filesystem.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Integration Opportunities -->
+  <div id="ch-opportunities" class="tab-content">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>#</th><th>Opportunity</th><th>Value</th><th>Effort</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td><td>Dedicated Challenge Dashboard</td><td><span class="sev sev-low">High</span></td><td>~6 hours</td>
+            <td>HTML page with all 8 missions, difficulty stars, time estimates, track badges, per-mission completion state, visual prerequisite graph</td>
+          </tr>
+          <tr>
+            <td>2</td><td>XP Integration for Mission Completion</td><td><span class="sev sev-low">High</span></td><td>~2 hours</td>
+            <td>Self-reported completion button; XP amounts: Track 1 = 100, Track 2 = 150, Track 3.1 = 200, Track 3.2 = 300</td>
+          </tr>
+          <tr>
+            <td>3</td><td>CE-to-Mission Linkage in Lab UI</td><td><span class="sev sev-low">High</span></td><td>~3 hours</td>
+            <td>Each implemented CE visually links to its corresponding standalone mission with "Ready for more?" prompt</td>
+          </tr>
+          <tr>
+            <td>4</td><td>Phase 2 CE Implementation</td><td><span class="sev sev-low">High</span></td><td>~29 hours</td>
+            <td>13 Phase 2 CEs. Priority: CE-05-C (Prompt Iteration Chain), CE-02-B (Production CLAUDE.md), CE-04-A (Broken Config Debugger)</td>
+          </tr>
+          <tr>
+            <td>5</td><td>Mission Prerequisites in UI</td><td><span class="sev sev-medium">Medium</span></td><td>~2 hours</td>
+            <td>Add "Prerequisites" box to each mission with lab completion checks and MCP setup requirements</td>
+          </tr>
+          <tr>
+            <td>6</td><td>Gamification: Mission Badges</td><td><span class="sev sev-info">Low</span></td><td>~4 hours</td>
+            <td>Track 1 = "Skill Author", Track 2 = "Codebase Navigator", Track 3 = "Pipeline Engineer", All 8 = "Agentic AI Engineer"</td>
+          </tr>
+          <tr>
+            <td>7</td><td>Portfolio Export</td><td><span class="sev sev-medium">Medium</span></td><td>~6 hours</td>
+            <td>"Build my portfolio page" button that aggregates CE completions and mission completions into shareable HTML/markdown</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="card-title">Assessment Quality Strengths</div>
+      <ul style="margin-top:8px;">
+        <li><strong>No rubric theater</strong> -- the evaluation framework ("Weak vs. Strong answer") honestly distinguishes strong work</li>
+        <li><strong>"If it doesn't run, it doesn't count"</strong> -- hard requirement for working artifacts over write-ups</li>
+        <li><strong>Retrospective in Mission 3.2</strong> -- 4 meta-cognitive questions (what surprised you, where did it need judgment, etc.)</li>
+        <li><strong>"The hard part" callouts</strong> -- each mission identifies the non-obvious difficulty (rare and valuable course design)</li>
+        <li><strong>Error behavior requirement</strong> -- explicitly requiring "what happens if a step fails" teaches production thinking</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
 <script>
 // Navigation
 document.querySelectorAll('.nav-btn').forEach(btn => {
