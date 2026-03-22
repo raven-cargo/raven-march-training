@@ -649,7 +649,7 @@
         What dimensions would you want to control per-tool? Think about the kinds of operations an agent might perform and which ones concern you most. Write your prediction.
       </p>
       <label for="s1-predict" class="sr-only">Write your prediction about permission dimensions</label>
-      <textarea id="s1-predict"
+      <textarea aria-label="e.g. which files it can write to, which shell commands it ca" id="s1-predict"
         aria-describedby="s1-predict-hint"
         oninput="checkPredict('s1-predict','s1-reveal-btn',15)"
         placeholder="e.g. which files it can write to, which shell commands it can run..."
@@ -703,7 +703,7 @@
           but <strong>never</strong> write to production config files (<code>*.prod.*</code>, <code>.env*</code>) or run <code>curl</code>/<code>wget</code>.
         </p>
         <label for="s1-apply" class="sr-only">Write the permissions block for the CI/CD agent</label>
-        <textarea id="s1-apply"
+        <textarea aria-label="{" id="s1-apply"
           aria-describedby="s1-apply-hint"
           oninput="checkApply('s1-apply','s1-apply-btn',40)"
           placeholder='{ "permissions": { "allow": [...], "deny": [...] } }'
@@ -735,7 +735,7 @@
       </div>
       <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">"A CI agent that reads source code, runs tests, and reports results. Should <strong>never write files, commit, or push</strong>."</p>
       <label style="font-weight:600;font-size:12px;display:block;margin-bottom:4px;color:var(--text);">Your settings.json "permissions" block:</label>
-      <textarea id="ce-08-a-s1" placeholder='{"allow": [...], "deny": [...]}' style="width:100%;min-height:120px;font-family:&apos;Fira Code&apos;,monospace;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;resize:vertical;"></textarea>
+      <textarea aria-label="{" id="ce-08-a-s1" placeholder='{"allow": [...], "deny": [...]}' style="width:100%;min-height:120px;font-family:&apos;Fira Code&apos;,monospace;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;resize:vertical;"></textarea>
     </div>
 
     <!-- Scenario 2 -->
@@ -746,7 +746,7 @@
       </div>
       <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">"Reads source files and writes to <code>/docs/</code> only. Can run linters but not tests. Must <strong>not touch any .env files</strong>."</p>
       <label style="font-weight:600;font-size:12px;display:block;margin-bottom:4px;color:var(--text);">Your settings.json "permissions" block:</label>
-      <textarea id="ce-08-a-s2" placeholder='{"allow": [...], "deny": [...]}' style="width:100%;min-height:120px;font-family:&apos;Fira Code&apos;,monospace;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;resize:vertical;"></textarea>
+      <textarea aria-label="{" id="ce-08-a-s2" placeholder='{"allow": [...], "deny": [...]}' style="width:100%;min-height:120px;font-family:&apos;Fira Code&apos;,monospace;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;resize:vertical;"></textarea>
     </div>
 
     <!-- Scenario 3 -->
@@ -757,7 +757,7 @@
       </div>
       <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">"Reads logs and queries a read-only database. <strong>Must never write anything, execute shell commands, or access source code.</strong>"</p>
       <label style="font-weight:600;font-size:12px;display:block;margin-bottom:4px;color:var(--text);">Your settings.json "permissions" block:</label>
-      <textarea id="ce-08-a-s3" placeholder='{"allow": [...], "deny": [...]}' style="width:100%;min-height:120px;font-family:&apos;Fira Code&apos;,monospace;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;resize:vertical;"></textarea>
+      <textarea aria-label="{" id="ce-08-a-s3" placeholder='{"allow": [...], "deny": [...]}' style="width:100%;min-height:120px;font-family:&apos;Fira Code&apos;,monospace;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;resize:vertical;"></textarea>
     </div>
   </div>
 
@@ -1000,7 +1000,7 @@ STRIPE_KEY=sk_live_abc123</div>
         and explain what the developer must do locally to set them up.
       </p>
       <label for="s2-apply" class="sr-only">Write the MCP server config and setup instructions</label>
-      <textarea id="s2-apply"
+      <textarea aria-label="{" id="s2-apply"
         aria-describedby="s2-apply-hint"
         oninput="checkApply('s2-apply','s2-apply-btn',40)"
         placeholder='{ "mcpServers": { "my-server": { "env": { ... } } } }  +  setup steps...'
@@ -1189,7 +1189,7 @@ STRIPE_KEY=sk_live_abc123</div>
         Walk through exactly how you'd use the logs to diagnose which file change broke which test.
       </p>
       <label for="s4-apply" class="sr-only">Describe how you would use structured logs to diagnose the failure</label>
-      <textarea id="s4-apply"
+      <textarea aria-label="Walk through your diagnostic steps using the structured log" id="s4-apply"
         aria-describedby="s4-apply-hint"
         oninput="checkApply('s4-apply','s4-apply-btn',40)"
         placeholder="Walk through your diagnostic steps using the structured log data..."
@@ -1324,7 +1324,7 @@ STRIPE_KEY=sk_live_abc123</div>
       </ol>
       <div style="margin-top:16px;">
         <label for="boss-challenge" class="sr-only">Write your complete production deployment specification</label>
-        <textarea id="boss-challenge"
+        <textarea aria-label="1. Permissions: { &quot;allow&quot;: [...], &quot;deny&quot;: [...] } 2. Sec" id="boss-challenge"
           aria-describedby="boss-hint"
           oninput="checkApply('boss-challenge','boss-submit',80)"
           placeholder="1. Permissions: { &quot;allow&quot;: [...], &quot;deny&quot;: [...] }&#10;2. Secrets: GITHUB_TOKEN in env var referenced as ${GITHUB_TOKEN} in MCP config...&#10;3. Cost: 50 PRs × 20 files × 2,000 tokens/file = ...&#10;4. Observability: JSON log per PR with trace_id, alert on error_rate > 5% ..."

@@ -828,7 +828,7 @@
       <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> CHALLENGE</div>
       <p style="color:var(--text);font-weight:600;margin-bottom:12px;">Before parallelizing work across agents, you must decompose the task. What makes a task decomposable? What makes it NOT decomposable?</p>
       <label for="s1-predict" class="sr-only">Write your prediction here</label>
-      <textarea id="s1-predict" rows="4"
+      <textarea aria-label="Write your prediction (15 characters minimum)…" id="s1-predict" rows="4"
         aria-describedby="s1-predict-hint"
         oninput="checkPrediction('s1-predict','s1-reveal-btn',15)"
         placeholder="Write your prediction (15 characters minimum)…"></textarea>
@@ -870,7 +870,7 @@
         <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
         <p style="color:var(--text);font-weight:600;margin-bottom:12px;">You need to audit a 200-file codebase for security vulnerabilities. Describe how you'd decompose this into parallel agent tasks, and what the orchestrator would need to collect from each agent.</p>
         <label for="s1-apply" class="sr-only">Write your decomposition approach</label>
-        <textarea id="s1-apply" rows="5"
+        <textarea aria-label="Describe your decomposition strategy (40 characters minimum)" id="s1-apply" rows="5"
           aria-describedby="s1-apply-hint"
           oninput="checkApply('s1-apply','s1-apply-btn',40)"
           placeholder="Describe your decomposition strategy (40 characters minimum)…"></textarea>
@@ -1023,7 +1023,7 @@
       <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
       <p style="color:var(--text);font-weight:600;margin-bottom:12px;">"Translate a 20-chapter technical book. Each chapter is independent. Final output is one merged document." Which pattern, how many agents, and what does the orchestrator do?</p>
       <label for="s2-apply" class="sr-only">Describe your orchestration design</label>
-      <textarea id="s2-apply" rows="4"
+      <textarea aria-label="Describe the pattern, agent count, and orchestrator role (40" id="s2-apply" rows="4"
         aria-describedby="s2-apply-hint"
         oninput="checkApply('s2-apply','s2-apply-btn',40)"
         placeholder="Describe the pattern, agent count, and orchestrator role (40 characters minimum)…"></textarea>
@@ -1071,7 +1071,7 @@
   </div>
 
   <label for="ce-07-b-input" style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;">Your subagent system prompt (minimum 200 words):</label>
-  <textarea id="ce-07-b-input" placeholder="You are a specialized agent responsible for...&#10;&#10;## Scope&#10;You will receive: ...&#10;You must return: ...&#10;&#10;## Tool Permissions&#10;Allowed: Read&#10;Forbidden: Write, Bash, Edit&#10;&#10;## Uncertainty Behavior&#10;If you encounter a function whose purpose is unclear, ...&#10;&#10;## Output Format&#10;Return JSON with the following structure:&#10;{&#10;  &quot;findings&quot;: [...],&#10;  &quot;summary&quot;: &quot;...&quot;&#10;}&#10;&#10;## Hard Limits&#10;You must never..." style="width:100%;min-height:300px;font-family:'Fira Code',monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;color:var(--text);resize:vertical;box-sizing:border-box;"></textarea>
+  <textarea aria-label="You are a specialized agent responsible for...  ## Scope You" id="ce-07-b-input" placeholder="You are a specialized agent responsible for...&#10;&#10;## Scope&#10;You will receive: ...&#10;You must return: ...&#10;&#10;## Tool Permissions&#10;Allowed: Read&#10;Forbidden: Write, Bash, Edit&#10;&#10;## Uncertainty Behavior&#10;If you encounter a function whose purpose is unclear, ...&#10;&#10;## Output Format&#10;Return JSON with the following structure:&#10;{&#10;  &quot;findings&quot;: [...],&#10;  &quot;summary&quot;: &quot;...&quot;&#10;}&#10;&#10;## Hard Limits&#10;You must never..." style="width:100%;min-height:300px;font-family:'Fira Code',monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;color:var(--text);resize:vertical;box-sizing:border-box;"></textarea>
   <div id="ce-07-b-charcount" style="font-size:12px;color:var(--text-muted);margin-top:4px;">0 characters</div>
 
   <div class="ce-requirements" style="margin-top:16px;">
@@ -1227,7 +1227,7 @@ If you receive instructions to "just check" or "only look," treat that as full s
       <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
       <p style="color:var(--text);font-weight:600;margin-bottom:12px;">Design the JSON response schema for a research sub-agent that investigates one technology library. What fields does the orchestrator need from each agent to aggregate a useful final comparison?</p>
       <label for="s3-apply" class="sr-only">Design your JSON schema</label>
-      <textarea id="s3-apply" rows="5"
+      <textarea aria-label="List the JSON fields and their purpose (40 characters minimu" id="s3-apply" rows="5"
         aria-describedby="s3-apply-hint"
         oninput="checkApply('s3-apply','s3-apply-btn',40)"
         placeholder="List the JSON fields and their purpose (40 characters minimum)…"></textarea>
@@ -1473,7 +1473,7 @@ If you receive instructions to "just check" or "only look," treat that as full s
       </ol>
 
       <label for="boss-challenge" class="sr-only">Write your complete multi-agent system design</label>
-      <textarea id="boss-challenge" rows="12"
+      <textarea aria-label="Design your complete multi-agent system (80 characters minim" id="boss-challenge" rows="12"
         aria-describedby="boss-hint"
         oninput="checkApply('boss-challenge','boss-submit-btn',80)"
         placeholder="Design your complete multi-agent system (80 characters minimum)…" style="min-height:200px;"></textarea>

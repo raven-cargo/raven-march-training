@@ -628,7 +628,7 @@
       <h3 style="margin-bottom:12px;">Your prediction</h3>
       <p style="margin-bottom:16px;font-size:14px;">Before seeing the GCCF pattern, write what you think a "complete" prompt needs to contain. What information must be in a prompt to give Claude Code everything it needs?</p>
       <label class="sr-only" for="s1-predict">Write your prediction about complete prompts</label>
-      <textarea id="s1-predict"
+      <textarea aria-label="A complete prompt needs" id="s1-predict"
         aria-describedby="s1-predict-hint"
         oninput="checkMinChars('s1-predict','s1-reveal-btn',15,'s1-predict-hint'); saveReflection('s1-predict', this.value);"
         placeholder="A complete prompt needs..."></textarea>
@@ -686,7 +686,7 @@
           <strong>Scenario:</strong> You need Claude Code to add comprehensive JSDoc comments to a Python Flask API file at <code style="font-family:monospace;font-size:12px;color:var(--warning);">api/routes.py</code>. The project uses Google-style docstrings. You don't want Claude to change any business logic or rename anything.
         </div>
         <label class="sr-only" for="s1-apply-text">Write your GCCF prompt for the Flask API scenario</label>
-        <textarea id="s1-apply-text"
+        <textarea aria-label="Write your GCCF prompt here. Include Goal, Context, Constrai" id="s1-apply-text"
           aria-describedby="s1-apply-hint"
           oninput="checkMinChars('s1-apply-text','s1-apply-btn',40,'s1-apply-hint'); saveReflection('s1-apply-text', this.value);"
           placeholder="Write your GCCF prompt here. Include Goal, Context, Constraints, and Format..."></textarea>
@@ -737,7 +737,7 @@
         <code style="font-family:monospace;font-size:13px;color:var(--warning);background:rgba(0,0,0,0.3);padding:6px 10px;border-radius:4px;display:inline-block;">I'll start by reading the current state of api/routes.py</code><br><br>
         What PRAO phase is this?</p>
       <label class="sr-only" for="s2-predict">Identify the PRAO phase of this output line</label>
-      <textarea id="s2-predict"
+      <textarea aria-label="This is the __ phase because" id="s2-predict"
         aria-describedby="s2-predict-hint"
         oninput="checkMinChars('s2-predict','s2-run-btn',15,'s2-predict-hint'); saveReflection('s2-predict', this.value);"
         placeholder="This is the __ phase because..."></textarea>
@@ -765,7 +765,7 @@
         <h3 style="margin-bottom:12px;">Map the trace to PRAO phases</h3>
         <p style="margin-bottom:16px;font-size:14px;">Map each of the 5 trace steps to its PRAO phase (P / R / A / O). Explain your reasoning for at least two of them.</p>
         <label class="sr-only" for="s2-apply-text">Map trace steps to PRAO phases</label>
-        <textarea id="s2-apply-text"
+        <textarea aria-label="Step 1 (THINK) → P because... Step 2 (TOOL CALL) → A because" id="s2-apply-text"
           aria-describedby="s2-apply-hint"
           oninput="checkMinChars('s2-apply-text','s2-apply-btn',40,'s2-apply-hint'); saveReflection('s2-apply-text', this.value);"
           placeholder="Step 1 (THINK) → P because...&#10;Step 2 (TOOL CALL) → A because..."></textarea>
@@ -941,7 +941,7 @@
           Rewrite this as a proper GCCF prompt that prevents this confusion entirely.
         </div>
         <label class="sr-only" for="s3-apply-text">Rewrite the broken prompt as a GCCF prompt</label>
-        <textarea id="s3-apply-text"
+        <textarea aria-label="In config/production.json," id="s3-apply-text"
           aria-describedby="s3-apply-hint"
           oninput="checkMinChars('s3-apply-text','s3-apply-btn',40,'s3-apply-hint'); saveReflection('s3-apply-text', this.value);"
           placeholder="In config/production.json, ..."></textarea>
@@ -1070,7 +1070,7 @@
           Write a CLAUDE.md entry that captures what this agent needs to know every session.
         </div>
         <label class="sr-only" for="s4-apply-text">Write a CLAUDE.md entry for this project</label>
-        <textarea id="s4-apply-text"
+        <textarea aria-label="## Project Context This is a Python FastAPI backend...  ## C" id="s4-apply-text"
           aria-describedby="s4-apply-hint"
           oninput="checkMinChars('s4-apply-text','s4-apply-btn',40,'s4-apply-hint'); saveReflection('s4-apply-text', this.value);"
           placeholder="## Project Context&#10;This is a Python FastAPI backend...&#10;&#10;## Conventions&#10;- All endpoints return ApiResponse[T]..."></textarea>
@@ -1196,7 +1196,7 @@
         <li>How you'd <strong style="color:var(--text);">verify the output</strong> is correct before the demo</li>
       </ol>
       <label class="sr-only" for="boss-challenge">Write your complete interaction plan for the Capstone Challenge</label>
-      <textarea id="boss-challenge"
+      <textarea aria-label="1. GCCF prompt: In src/api/routes.py, wrap all async endpoin" id="boss-challenge"
         aria-describedby="boss-hint"
         oninput="checkMinChars('boss-challenge','boss-submit-btn',80,'boss-hint'); saveReflection('boss-challenge', this.value);"
         placeholder="1. GCCF prompt: In src/api/routes.py, wrap all async endpoint functions...&#10;&#10;2. CLAUDE.md entry: ## Error Handling Convention...&#10;&#10;3. Expected error: Permission denied → ...&#10;&#10;4. Verification: claude -p 'List all functions in src/api/routes.py that still lack try/except...'"

@@ -642,7 +642,7 @@ Breaking changes: Add `BREAKING CHANGE:` footer.</div>
       <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> CHALLENGE — Predict First</div>
       <p style="margin-bottom:14px;">The YAML frontmatter has a <code>triggers</code> field. What do you think it controls, and how might Claude use it?</p>
       <label for="s1-predict" class="sr-only">Write your prediction about the triggers field</label>
-      <textarea id="s1-predict" placeholder="Write your prediction here — minimum 15 characters to unlock the reveal..."
+      <textarea aria-label="Write your prediction here — minimum 15 characters to unlock" id="s1-predict" placeholder="Write your prediction here — minimum 15 characters to unlock the reveal..."
         oninput="checkPrediction('s1-predict','s1-reveal-btn',15)" aria-describedby="s1-predict-hint"></textarea>
       <div id="s1-predict-hint" class="char-hint" aria-live="polite">15 characters to activate reveal</div>
       <div style="margin-top:14px;">
@@ -712,7 +712,7 @@ Breaking changes: Add `BREAKING CHANGE:` footer.</div>
         <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
         <p style="margin-bottom:14px;">Write the complete YAML frontmatter for a skill called <code>api-documenter</code> that writes OpenAPI documentation from code. Include all four fields. Triggers should reference phrases about documenting endpoints or API specs.</p>
         <label for="s1-apply" class="sr-only">Write the YAML frontmatter for api-documenter skill</label>
-        <textarea id="s1-apply" placeholder="---&#10;name: api-documenter&#10;description: ...&#10;triggers:&#10;  - ...&#10;version: ..." style="min-height:160px;font-family:'Fira Code',monospace;font-size:13px;"
+        <textarea aria-label="--- name: api-documenter description: ... triggers:   -" id="s1-apply" placeholder="---&#10;name: api-documenter&#10;description: ...&#10;triggers:&#10;  - ...&#10;version: ..." style="min-height:160px;font-family:'Fira Code',monospace;font-size:13px;"
           oninput="checkApply('s1-apply','s1-apply-btn',40)" aria-describedby="s1-apply-hint"></textarea>
         <div id="s1-apply-hint" class="char-hint" aria-live="polite">40 characters to complete this section</div>
         <div style="margin-top:14px;">
@@ -830,7 +830,7 @@ Output format:
       <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
       <p style="margin-bottom:14px;">Write the body (not frontmatter) of a skill called <code>pr-reviewer</code>. It should review pull requests for: correctness, test coverage, and API breaking changes. Include a role statement, numbered procedure, and at least one anti-pattern.</p>
       <label for="s2-apply" class="sr-only">Write the skill body for pr-reviewer</label>
-      <textarea id="s2-apply" placeholder="# PR Reviewer&#10;&#10;You are a ...&#10;&#10;Procedure:&#10;1. ..." style="min-height:200px;"
+      <textarea aria-label="# PR Reviewer  You are a ...  Procedure: 1." id="s2-apply" placeholder="# PR Reviewer&#10;&#10;You are a ...&#10;&#10;Procedure:&#10;1. ..." style="min-height:200px;"
         oninput="checkApply('s2-apply','s2-apply-btn',40)" aria-describedby="s2-apply-hint"></textarea>
       <div id="s2-apply-hint" class="char-hint" aria-live="polite">40 characters to complete this section</div>
       <div style="margin-top:14px;">
@@ -892,7 +892,7 @@ constraints: |
       </div>
 
       <label for="ce-06-c-input" style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;">Your standup-writer skill YAML:</label>
-      <textarea id="ce-06-c-input" placeholder="---&#10;name: standup-writer&#10;description: ...&#10;triggers:&#10;  - ...&#10;behavior: |&#10;  ...&#10;output_format: |&#10;  ...&#10;constraints: |&#10;  ..." style="width:100%;min-height:280px;font-family:'Fira Code',monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;color:var(--text);resize:vertical;box-sizing:border-box;"></textarea>
+      <textarea aria-label="--- name: standup-writer description: ... triggers:   -" id="ce-06-c-input" placeholder="---&#10;name: standup-writer&#10;description: ...&#10;triggers:&#10;  - ...&#10;behavior: |&#10;  ...&#10;output_format: |&#10;  ...&#10;constraints: |&#10;  ..." style="width:100%;min-height:280px;font-family:'Fira Code',monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;color:var(--text);resize:vertical;box-sizing:border-box;"></textarea>
 
       <div class="ce-requirements" style="margin-top:16px;margin-bottom:0;">
         <strong style="font-size:13px;">Success criteria (self-check after reveal):</strong>
@@ -983,7 +983,7 @@ constraints: |
       <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> CHALLENGE — Predict First</div>
       <p style="margin-bottom:14px;">Slash commands trigger skills from the Claude Code interface. How do you think a slash command file differs from a skill file?</p>
       <label for="s3-predict" class="sr-only">Predict how command files differ from skill files</label>
-      <textarea id="s3-predict" placeholder="Write your prediction — minimum 15 characters..."
+      <textarea aria-label="Write your prediction — minimum 15 characters" id="s3-predict" placeholder="Write your prediction — minimum 15 characters..."
         oninput="checkPrediction('s3-predict','s3-reveal-btn',15)" aria-describedby="s3-predict-hint"></textarea>
       <div id="s3-predict-hint" class="char-hint" aria-live="polite">15 characters to activate reveal</div>
       <div style="margin-top:14px;">
@@ -1078,7 +1078,7 @@ Then apply the review to the current git branch's changes.
         <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
         <p style="margin-bottom:14px;">Write the command file content for <code>/commit</code> that invokes the <code>git-commit-writer</code> skill and stages all changes before writing the message. Also note — in your response — whether <code>commit</code> is a safe command name and why or why not.</p>
         <label for="s3-apply" class="sr-only">Write the commit command file content</label>
-        <textarea id="s3-apply" placeholder="# Commit&#10;&#10;Use the Skill tool to invoke ...&#10;&#10;Note on command name safety: ..." style="min-height:160px;"
+        <textarea aria-label="# Commit  Use the Skill tool to invoke ...  Note on command" id="s3-apply" placeholder="# Commit&#10;&#10;Use the Skill tool to invoke ...&#10;&#10;Note on command name safety: ..." style="min-height:160px;"
           oninput="checkApply('s3-apply','s3-apply-btn',40)" aria-describedby="s3-apply-hint"></textarea>
         <div id="s3-apply-hint" class="char-hint" aria-live="polite">40 characters to complete this section</div>
         <div style="margin-top:14px;">
@@ -1100,19 +1100,19 @@ Then apply the review to the current git branch's changes.
           <div style="margin-top:12px;display:grid;gap:12px;">
             <div>
               <label style="font-weight:600;display:block;margin-bottom:4px;color:var(--text);">1. Arguments specification — does /pr-ready take arguments? What are they?</label>
-              <textarea id="ce-06-d-args" placeholder="e.g. Optional: --base &lt;branch&gt; to compare against a branch other than main. No required arguments." style="width:100%;min-height:60px;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--text);box-sizing:border-box;"></textarea>
+              <textarea aria-label="e.g. Optional: --base <branch> to compare against a branch o" id="ce-06-d-args" placeholder="e.g. Optional: --base &lt;branch&gt; to compare against a branch other than main. No required arguments." style="width:100%;min-height:60px;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--text);box-sizing:border-box;"></textarea>
             </div>
             <div>
               <label style="font-weight:600;display:block;margin-bottom:4px;color:var(--text);">2. Step-by-step behavior — what does each step do and what does it pass to the next?</label>
-              <textarea id="ce-06-d-steps" placeholder="Step 1: Run git diff main...HEAD ...&#10;Step 2: For each changed .ts/.js file in src/, check if a corresponding .test.ts exists ...&#10;Step 3: Read CLAUDE.md if it exists ...&#10;Step 4: Generate the readiness report ..." style="width:100%;min-height:120px;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--text);box-sizing:border-box;"></textarea>
+              <textarea aria-label="Step 1: Run git diff main...HEAD ... Step 2: For each change" id="ce-06-d-steps" placeholder="Step 1: Run git diff main...HEAD ...&#10;Step 2: For each changed .ts/.js file in src/, check if a corresponding .test.ts exists ...&#10;Step 3: Read CLAUDE.md if it exists ...&#10;Step 4: Generate the readiness report ..." style="width:100%;min-height:120px;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--text);box-sizing:border-box;"></textarea>
             </div>
             <div>
               <label style="font-weight:600;display:block;margin-bottom:4px;color:var(--text);">3. Output format — what does the readiness report look like?</label>
-              <textarea id="ce-06-d-output" placeholder="## PR Readiness Report&#10;**Branch**: feature/...&#10;**Changed Files**: N files&#10;**Test Coverage**: ...&#10;**CLAUDE.md Constraints**: ...&#10;**Recommendation**: GO / NOT READY" style="width:100%;min-height:100px;font-size:12px;font-family:'Fira Code',monospace;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--text);box-sizing:border-box;"></textarea>
+              <textarea aria-label="## PR Readiness Report **Branch**: feature/... **Changed Fil" id="ce-06-d-output" placeholder="## PR Readiness Report&#10;**Branch**: feature/...&#10;**Changed Files**: N files&#10;**Test Coverage**: ...&#10;**CLAUDE.md Constraints**: ...&#10;**Recommendation**: GO / NOT READY" style="width:100%;min-height:100px;font-size:12px;font-family:'Fira Code',monospace;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--text);box-sizing:border-box;"></textarea>
             </div>
             <div>
               <label style="font-weight:600;display:block;margin-bottom:4px;color:var(--text);">4. Edge case — what happens if CLAUDE.md doesn't exist?</label>
-              <textarea id="ce-06-d-edge" placeholder="If CLAUDE.md is not found, ..." style="width:100%;min-height:60px;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--text);box-sizing:border-box;"></textarea>
+              <textarea aria-label="If CLAUDE.md is not found," id="ce-06-d-edge" placeholder="If CLAUDE.md is not found, ..." style="width:100%;min-height:60px;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--text);box-sizing:border-box;"></textarea>
             </div>
           </div>
         </div>
@@ -1260,7 +1260,7 @@ else: invoke `fix-suggester` with findings as context</div>
       <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
       <p style="margin-bottom:14px;">Design a composed skill called <code>onboard-repo</code> that a new team member runs to understand a codebase. List the 3 sub-skills it would invoke in sequence and describe what output each produces that feeds the next.</p>
       <label for="s4-apply" class="sr-only">Design the onboard-repo composed skill</label>
-      <textarea id="s4-apply" placeholder="onboard-repo composition:&#10;1. Sub-skill: ... → Output: ...&#10;2. Sub-skill: ... → Output: ...&#10;3. Sub-skill: ... → Output: ..." style="min-height:160px;"
+      <textarea aria-label="onboard-repo composition: 1. Sub-skill: ... → Output: ... 2." id="s4-apply" placeholder="onboard-repo composition:&#10;1. Sub-skill: ... → Output: ...&#10;2. Sub-skill: ... → Output: ...&#10;3. Sub-skill: ... → Output: ..." style="min-height:160px;"
         oninput="checkApply('s4-apply','s4-apply-btn',40)" aria-describedby="s4-apply-hint"></textarea>
       <div id="s4-apply-hint" class="char-hint" aria-live="polite">40 characters to complete this section</div>
       <div style="margin-top:14px;">
@@ -1368,7 +1368,7 @@ else: invoke `fix-suggester` with findings as context</div>
       </ol>
       <div style="margin-top:20px;">
         <label for="boss-challenge" class="sr-only">Write your Capstone Challenge response</label>
-        <textarea id="boss-challenge" placeholder="1. Skills:&#10;   - api-documenter: ...&#10;   - test-writer: ...&#10;   - migration-generator: ...&#10;   - code-reviewer: ...&#10;&#10;2. Complete skill file:&#10;---&#10;name: ...&#10;---&#10;# ...&#10;&#10;3. /ship command file:&#10;# Ship&#10;...&#10;&#10;4. Anti-pattern: ..." style="min-height:360px;"
+        <textarea aria-label="1. Skills:    - api-documenter: ...    - test-writer:" id="boss-challenge" placeholder="1. Skills:&#10;   - api-documenter: ...&#10;   - test-writer: ...&#10;   - migration-generator: ...&#10;   - code-reviewer: ...&#10;&#10;2. Complete skill file:&#10;---&#10;name: ...&#10;---&#10;# ...&#10;&#10;3. /ship command file:&#10;# Ship&#10;...&#10;&#10;4. Anti-pattern: ..." style="min-height:360px;"
           oninput="checkApply('boss-challenge','boss-submit-btn',80)" aria-describedby="boss-hint"></textarea>
         <div id="boss-hint" class="char-hint" aria-live="polite">80 characters minimum to submit</div>
         <div style="margin-top:14px;">

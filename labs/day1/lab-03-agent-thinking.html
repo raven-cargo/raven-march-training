@@ -697,7 +697,7 @@
         <span class="thought-line">"The user wants to refactor the authentication module. Let me first understand what the current structure looks like before deciding on an approach..."</span>
       </div>
       <label for="s1-predict" class="field-label">What will the agent do <em>next</em>? Write your prediction.</label>
-      <textarea id="s1-predict" rows="4" placeholder="I think the agent will..." oninput="checkPrediction('s1-predict','s1-reveal-btn',15)" aria-describedby="s1-predict-hint"></textarea>
+      <textarea aria-label="I think the agent will" id="s1-predict" rows="4" placeholder="I think the agent will..." oninput="checkPrediction('s1-predict','s1-reveal-btn',15)" aria-describedby="s1-predict-hint"></textarea>
       <div id="s1-predict-hint" class="char-hint">15 characters to activate reveal</div>
       <div style="margin-top:14px;">
         <button class="btn btn-primary" id="s1-reveal-btn" disabled onclick="revealS1Trace()" aria-label="Reveal full chain-of-thought trace">
@@ -726,7 +726,7 @@
       <div class="challenge-card mb-16">
         <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
         <label for="s1-apply" class="field-label">What did the agent's reasoning accomplish that a direct action would have missed? What constraint did it discover mid-thought?</label>
-        <textarea id="s1-apply" rows="5" placeholder="The reasoning accomplished..." oninput="checkApply('s1-apply','s1-apply-btn',40,'s1-insight')" aria-describedby="s1-apply-hint"></textarea>
+        <textarea aria-label="The reasoning accomplished" id="s1-apply" rows="5" placeholder="The reasoning accomplished..." oninput="checkApply('s1-apply','s1-apply-btn',40,'s1-insight')" aria-describedby="s1-apply-hint"></textarea>
         <div id="s1-apply-hint" class="char-hint">40 characters to submit</div>
         <div style="margin-top:14px;">
           <button class="btn btn-primary" id="s1-apply-btn" disabled onclick="submitApply('s1-apply','s1-apply-btn',40,'s1-insight','s1-kc')" aria-label="Submit apply response">
@@ -854,7 +854,7 @@
         → <span class="fn">Write</span>(<span class="string">'src/api/users.ts'</span>)
       </div>
       <label for="s2-predict" class="field-label">What is the agent building toward? What pattern from above does this match?</label>
-      <textarea id="s2-predict" rows="4" placeholder="The agent is..." oninput="checkPrediction('s2-predict','s2-reveal-btn',15)" aria-describedby="s2-predict-hint"></textarea>
+      <textarea aria-label="The agent is" id="s2-predict" rows="4" placeholder="The agent is..." oninput="checkPrediction('s2-predict','s2-reveal-btn',15)" aria-describedby="s2-predict-hint"></textarea>
       <div id="s2-predict-hint" class="char-hint">15 characters to activate reveal</div>
       <div style="margin-top:14px;">
         <button class="btn btn-primary" id="s2-reveal-btn" disabled onclick="revealS2()" aria-label="Reveal explanation">
@@ -874,7 +874,7 @@
       <div class="challenge-card mb-16">
         <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
         <label for="s2-apply" class="field-label">You see Bash → Bash → Bash → Bash in a trace with no Write calls afterward. What would you do next, and what's your diagnosis?</label>
-        <textarea id="s2-apply" rows="5" placeholder="My diagnosis is..." oninput="checkApply('s2-apply','s2-apply-btn',40,'','')" aria-describedby="s2-apply-hint"></textarea>
+        <textarea aria-label="My diagnosis is" id="s2-apply" rows="5" placeholder="My diagnosis is..." oninput="checkApply('s2-apply','s2-apply-btn',40,'','')" aria-describedby="s2-apply-hint"></textarea>
         <div id="s2-apply-hint" class="char-hint">40 characters to submit</div>
         <div style="margin-top:14px;">
           <button class="btn btn-primary" id="s2-apply-btn" disabled onclick="submitApplyNoInsight('s2-apply','s2-apply-btn',40,'s2-kc')" aria-label="Submit apply response">
@@ -1098,7 +1098,7 @@
     <div class="challenge-card mb-16">
       <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
       <label for="s4-apply" class="field-label">What does this thinking trace reveal about how the agent handled an ambiguity in the word 'migrate'? What would have happened without extended thinking?</label>
-      <textarea id="s4-apply" rows="5" placeholder="The trace reveals..." oninput="checkApply('s4-apply','s4-apply-btn',40,'s4-insight','s4-kc-wrapper')" aria-describedby="s4-apply-hint"></textarea>
+      <textarea aria-label="The trace reveals" id="s4-apply" rows="5" placeholder="The trace reveals..." oninput="checkApply('s4-apply','s4-apply-btn',40,'s4-insight','s4-kc-wrapper')" aria-describedby="s4-apply-hint"></textarea>
       <div id="s4-apply-hint" class="char-hint">40 characters to submit</div>
       <div style="margin-top:14px;">
         <button class="btn btn-primary" id="s4-apply-btn" disabled onclick="submitApply('s4-apply','s4-apply-btn',40,'s4-insight','s4-kc-wrapper')" aria-label="Submit apply response">
@@ -1251,31 +1251,31 @@ router.post('/login', async (req, res) =&gt; {
         <div>
           <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">1. First 3 tool calls — what should Claude Code do first?</label>
           <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Write exact tool calls: which tool, which arguments, in which order. Don't start with "read everything" — be surgical.</p>
-          <textarea id="ce-03-d-q1" placeholder="Tool call 1: Bash('git show a3f2d8c --stat') — see exactly what files changed in the breaking commit&#10;Tool call 2: Read('src/api/routes/auth.ts') — read the auth route that's failing&#10;Tool call 3: Read('src/models/user.ts') — read the user model that was refactored" style="width:100%;min-height:120px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+          <textarea aria-label="Tool call 1: Bash(" id="ce-03-d-q1" placeholder="Tool call 1: Bash('git show a3f2d8c --stat') — see exactly what files changed in the breaking commit&#10;Tool call 2: Read('src/api/routes/auth.ts') — read the auth route that's failing&#10;Tool call 3: Read('src/models/user.ts') — read the user model that was refactored" style="width:100%;min-height:120px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
         </div>
 
         <div>
           <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">2. PRAO annotation — label each of your 3 tool calls</label>
           <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">For each tool call, identify its PRAO phase and explain why it belongs there.</p>
-          <textarea id="ce-03-d-q2" placeholder="Tool call 1: P (Plan) — deciding what information we need before acting&#10;Tool call 2: O (Observe/Act) — reading the file IS the action that gives us observation data&#10;Tool call 3: O (Observe) — gathering more context to inform the plan" style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+          <textarea aria-label="Tool call 1: P (Plan) — deciding what information we need be" id="ce-03-d-q2" placeholder="Tool call 1: P (Plan) — deciding what information we need before acting&#10;Tool call 2: O (Observe/Act) — reading the file IS the action that gives us observation data&#10;Tool call 3: O (Observe) — gathering more context to inform the plan" style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
         </div>
 
         <div>
           <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">3. Hypothesize the root cause</label>
           <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Based on the issue description: "Refactor user model to add profile fields" caused 500 on login. What's the most likely root cause?</p>
-          <textarea id="ce-03-d-q3" placeholder="Most likely: the user model schema changed (added non-nullable profile fields) but the database migration wasn't applied or the Prisma client wasn't regenerated. When auth.ts tries to query users, Prisma's generated types don't match the actual DB schema, causing a runtime error..." style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+          <textarea aria-label="Most likely: the user model schema changed (added non-nullab" id="ce-03-d-q3" placeholder="Most likely: the user model schema changed (added non-nullable profile fields) but the database migration wasn't applied or the Prisma client wasn't regenerated. When auth.ts tries to query users, Prisma's generated types don't match the actual DB schema, causing a runtime error..." style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
         </div>
 
         <div>
           <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">4. Write the fix prompt</label>
           <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Write the GCCF-structured prompt you'd give Claude Code to implement the fix.</p>
-          <textarea id="ce-03-d-q4" placeholder="Goal: Fix the 500 error on POST /api/auth/login caused by the user model refactor in commit a3f2d8c.&#10;Context: The refactor added profile fields to the user model. The error is likely a Prisma schema mismatch.&#10;Constraints: Do not change the auth route logic. Only fix the data layer issue. Run the existing auth tests after fixing.&#10;Format: Show me the exact files changed and explain why each change is needed before applying it." style="width:100%;min-height:120px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+          <textarea aria-label="Goal: Fix the 500 error on POST /api/auth/login caused by th" id="ce-03-d-q4" placeholder="Goal: Fix the 500 error on POST /api/auth/login caused by the user model refactor in commit a3f2d8c.&#10;Context: The refactor added profile fields to the user model. The error is likely a Prisma schema mismatch.&#10;Constraints: Do not change the auth route logic. Only fix the data layer issue. Run the existing auth tests after fixing.&#10;Format: Show me the exact files changed and explain why each change is needed before applying it." style="width:100%;min-height:120px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
         </div>
 
         <div>
           <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">5. Write the PR description Claude Code should generate</label>
           <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">After Claude fixes the bug, what should the PR description say? Include: what changed, why, how to verify.</p>
-          <textarea id="ce-03-d-q5" placeholder="## Fix: Resolve 500 on /api/auth/login after user model refactor&#10;&#10;**Problem**: Login returning 500 after commit a3f2d8c which added profile fields to User model...&#10;**Root cause**: ...&#10;**Fix**: ...&#10;**Testing**: ...&#10;**Closes #1247**" style="width:100%;min-height:120px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+          <textarea aria-label="## Fix: Resolve 500 on /api/auth/login after user model refa" id="ce-03-d-q5" placeholder="## Fix: Resolve 500 on /api/auth/login after user model refactor&#10;&#10;**Problem**: Login returning 500 after commit a3f2d8c which added profile fields to User model...&#10;**Root cause**: ...&#10;**Fix**: ...&#10;**Testing**: ...&#10;**Closes #1247**" style="width:100%;min-height:120px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
         </div>
       </div>
 
@@ -1407,7 +1407,7 @@ router.post('/login', async (req, res) =&gt; {
         <li>What CLAUDE.md entry would document this API's auth rules for future sessions?</li>
       </ol>
       <label for="boss-challenge" class="field-label">Your diagnosis and intervention:</label>
-      <textarea id="boss-challenge" rows="10" placeholder="1. Uncertainty became visible when..." oninput="checkApply('boss-challenge','boss-submit-btn',80,'',''); saveBoss()" aria-describedby="boss-hint"></textarea>
+      <textarea aria-label="1. Uncertainty became visible when" id="boss-challenge" rows="10" placeholder="1. Uncertainty became visible when..." oninput="checkApply('boss-challenge','boss-submit-btn',80,'',''); saveBoss()" aria-describedby="boss-hint"></textarea>
       <div id="boss-hint" class="char-hint">80 characters to submit</div>
       <div style="margin-top:14px;">
         <button class="btn btn-amber" id="boss-submit-btn" disabled onclick="submitBoss()" aria-label="Submit boss challenge">

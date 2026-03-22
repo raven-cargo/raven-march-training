@@ -600,7 +600,7 @@
       <div class="card-badge challenge-badge">Apply — Problem Statement</div>
       <p style="margin-bottom:16px;font-size:14px;">Write your problem statement. Be specific: what triggers the pipeline? What does success look like? Who benefits?</p>
       <label for="apply-s0" class="sr-only">Your problem statement</label>
-      <textarea id="apply-s0" rows="5" minlength="60"
+      <textarea aria-label="Example: When a developer opens a pull request on our GitHub" id="apply-s0" rows="5" minlength="60"
         placeholder="Example: When a developer opens a pull request on our GitHub monorepo, the pipeline triggers automatically. Success means the PR author receives a structured comment within 90 seconds that lists any new security vulnerabilities, the delta in test coverage, and any style violations introduced by the change. Our team of 8 engineers currently spends 45 minutes per day manually doing this review..."
         oninput="handleApplyInput('apply-s0', 60, 's0-complete-btn')"
         aria-describedby="apply-s0-hint"></textarea>
@@ -687,7 +687,7 @@
       <div class="card-badge challenge-badge">Apply — Architecture Design</div>
       <p style="margin-bottom:16px;font-size:14px;">Map your problem to all five pipeline components. Be specific about each — not "reads relevant files" but "reads the changed files from git diff and the test results from CI logs."</p>
       <label for="apply-s1" class="sr-only">Your pipeline architecture design</label>
-      <textarea id="apply-s1" rows="10" minlength="80"
+      <textarea aria-label="Trigger: GitHub webhook fires when a PR is opened or updated" id="apply-s1" rows="10" minlength="80"
         placeholder="Trigger: GitHub webhook fires when a PR is opened or updated against the main branch.&#10;Context gathering: Agent reads (1) git diff --name-only HEAD~1 to get changed files, (2) the last 20 lines of the test runner output from the CI artifact, (3) the security scan JSON from our Snyk integration.&#10;Decision logic: Agent classifies each changed file by risk level, produces a coverage delta calculation, and lists any new security findings with severity.&#10;Action scope: Agent may post a PR comment automatically. It may NOT approve or merge the PR. It may NOT modify any source files.&#10;Output delivery: Structured markdown comment posted to the GitHub PR thread within 90 seconds of trigger."
         oninput="handleApplyInput('apply-s1', 80, 's1-complete-btn')"
         aria-describedby="apply-s1-hint"></textarea>
@@ -780,7 +780,7 @@
       <div class="card-badge challenge-badge">Apply — TCEF Prompt + Skill Definition</div>
       <p style="margin-bottom:16px;font-size:14px;">Write TWO artifacts: (1) the TCEF prompt for your pipeline's main reasoning step, and (2) the YAML frontmatter for the skill that wraps this prompt.</p>
       <label for="apply-s2" class="sr-only">Your TCEF prompt and skill definition</label>
-      <textarea id="apply-s2" rows="18" minlength="80"
+      <textarea aria-label="TCEF PROMPT --- T (Task): Analyze the following pull request" id="apply-s2" rows="18" minlength="80"
         placeholder="TCEF PROMPT&#10;---&#10;T (Task): Analyze the following pull request diff and CI output. Produce a structured code review report identifying: (a) any new security vulnerabilities classified by severity, (b) the test coverage delta as a percentage, (c) any style violations introduced.&#10;&#10;C (Context): You will receive: the output of `git diff --name-only HEAD~1`, the raw CI test runner output (last 100 lines), and the Snyk security scan JSON. The codebase is TypeScript. Our coverage threshold is 80%.&#10;&#10;E (Example): ## Code Review Report&#10;**Security**: 1 HIGH — SQL injection risk in `/src/api/users.ts` line 42. Unsanitized input passed directly to query string.&#10;**Coverage**: -2.3% (was 84.1%, now 81.8%) — still above threshold.&#10;**Style**: 2 violations — missing return type annotations in `getUserById` and `createSession`.&#10;&#10;F (Format): Respond with a markdown document using exactly these three sections: ## Security Findings, ## Coverage Delta, ## Style Violations. Each finding on its own line with file path and line number.&#10;&#10;---&#10;SKILL FRONTMATTER&#10;---&#10;name: pr-review-analyst&#10;description: Analyzes pull request diffs and CI output to produce structured code review reports with security, coverage, and style findings.&#10;triggers:&#10;  - github_pr_opened&#10;  - github_pr_synchronize&#10;tools: [read_file, bash]"
         oninput="handleApplyInput('apply-s2', 80, 's2-complete-btn')"
         aria-describedby="apply-s2-hint"></textarea>
@@ -863,7 +863,7 @@ examples: |
       </div>
 
       <label for="ce-09-a-input" style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;">Your skill YAML:</label>
-      <textarea id="ce-09-a-input" placeholder="---&#10;name: your-skill-name&#10;description: |&#10;  [3+ sentences explaining what this skill does, when to use it, and what it produces]&#10;triggers:&#10;  - [phrase 1]&#10;  - [phrase 2]&#10;  - [phrase 3]&#10;behavior: |&#10;  [Step-by-step instructions. At least 100 words. Must include at least one explicit constraint - what NOT to do.]&#10;output_format: |&#10;  [Exact structure of what this skill outputs - not just 'markdown' but the actual format]&#10;examples: |&#10;  Input: [example trigger]&#10;  Output: [example output]" style="width:100%;min-height:320px;font-family:'Fira Code',monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;color:var(--text);resize:vertical;box-sizing:border-box;"></textarea>
+      <textarea aria-label="--- name: your-skill-name description: |   [3+ sentences exp" id="ce-09-a-input" placeholder="---&#10;name: your-skill-name&#10;description: |&#10;  [3+ sentences explaining what this skill does, when to use it, and what it produces]&#10;triggers:&#10;  - [phrase 1]&#10;  - [phrase 2]&#10;  - [phrase 3]&#10;behavior: |&#10;  [Step-by-step instructions. At least 100 words. Must include at least one explicit constraint - what NOT to do.]&#10;output_format: |&#10;  [Exact structure of what this skill outputs - not just 'markdown' but the actual format]&#10;examples: |&#10;  Input: [example trigger]&#10;  Output: [example output]" style="width:100%;min-height:320px;font-family:'Fira Code',monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;color:var(--text);resize:vertical;box-sizing:border-box;"></textarea>
 
       <div id="ce-09-a-feedback" style="display:none;margin-top:12px;padding:14px;border-radius:8px;font-size:13px;"></div>
 
@@ -970,7 +970,7 @@ examples: |
       <div class="card-badge challenge-badge">Apply — Production Safety Design</div>
       <p style="margin-bottom:16px;font-size:14px;">Write your production safety design covering all three gates:</p>
       <label for="apply-s3" class="sr-only">Your production safety design</label>
-      <textarea id="apply-s3" rows="14" minlength="60"
+      <textarea aria-label="PERMISSION SCOPE (settings.json) {   &quot;permissions&quot;: {" id="apply-s3" rows="14" minlength="60"
         placeholder="PERMISSION SCOPE (settings.json)&#10;{&#10;  &quot;permissions&quot;: {&#10;    &quot;allow&quot;: [&#10;      &quot;Bash(git diff:*)&quot;,&#10;      &quot;Read(src/**)&quot;,&#10;      &quot;WebFetch(api.github.com)&quot;&#10;    ],&#10;    &quot;deny&quot;: [&#10;      &quot;Write(*)&quot;,&#10;      &quot;Bash(git push:*)&quot;,&#10;      &quot;Bash(rm:*)&quot;&#10;    ]&#10;  }&#10;}&#10;&#10;HUMAN APPROVAL GATE&#10;Posting the final PR comment requires human approval because: once posted, the comment is visible to all PR participants and could block a merge. A malformed report could create confusion or block urgent fixes.&#10;&#10;FAILURE BEHAVIOR&#10;If the agent fails to produce valid output within 30s, the pipeline posts a fallback comment: 'Automated review unavailable — please review manually.' It also sends an alert to #engineering-alerts Slack channel with the error trace."
         oninput="handleApplyInput('apply-s3', 60, 's3-complete-btn')"
         aria-describedby="apply-s3-hint"></textarea>
@@ -996,25 +996,25 @@ examples: |
         <div>
           <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">1. Which events in your pipeline create or update tracker items?</label>
           <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Be specific: "when the orchestrator dispatches a subtask" not "when something starts"</p>
-          <textarea id="ce-09-c-q1" placeholder="e.g.&#10;- Task dispatched → Create issue titled '[Task ID]: [description]' with status 'In Progress'&#10;- Subagent completes successfully → Update issue status to 'Done', add completion comment&#10;- Subagent fails → Update issue status to 'Blocked', add error log as comment" style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+          <textarea aria-label="e.g. - Task dispatched → Create issue titled" id="ce-09-c-q1" placeholder="e.g.&#10;- Task dispatched → Create issue titled '[Task ID]: [description]' with status 'In Progress'&#10;- Subagent completes successfully → Update issue status to 'Done', add completion comment&#10;- Subagent fails → Update issue status to 'Blocked', add error log as comment" style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
         </div>
 
         <div>
           <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">2. What information is written to each tracker item?</label>
           <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">List the exact fields: title, description, labels, assignee, metadata you'd include</p>
-          <textarea id="ce-09-c-q2" placeholder="e.g. Each issue includes:&#10;- Title: [Pipeline name] — [Task description]&#10;- Description: Input received, files affected, estimated token cost&#10;- Labels: pipeline-task, [day/phase]&#10;- Metadata: task_id, parent_pipeline_id, started_at" style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+          <textarea aria-label="e.g. Each issue includes: - Title: [Pipeline name] — [Task d" id="ce-09-c-q2" placeholder="e.g. Each issue includes:&#10;- Title: [Pipeline name] — [Task description]&#10;- Description: Input received, files affected, estimated token cost&#10;- Labels: pipeline-task, [day/phase]&#10;- Metadata: task_id, parent_pipeline_id, started_at" style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
         </div>
 
         <div>
           <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">3. Which events require human acknowledgment before the pipeline continues?</label>
           <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">What are the human checkpoints? When does the pipeline pause and wait?</p>
-          <textarea id="ce-09-c-q3" placeholder="e.g. Human review required before:&#10;- Any file deletion (irreversible operation)&#10;- Pushing to main branch&#10;- Sending external communications (emails, webhooks)&#10;Pipeline posts a 'Waiting for approval' comment and polls every 5 minutes" style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+          <textarea aria-label="e.g. Human review required before: - Any file deletion (irre" id="ce-09-c-q3" placeholder="e.g. Human review required before:&#10;- Any file deletion (irreversible operation)&#10;- Pushing to main branch&#10;- Sending external communications (emails, webhooks)&#10;Pipeline posts a 'Waiting for approval' comment and polls every 5 minutes" style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
         </div>
 
         <div>
           <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">4. How does the pipeline handle a tracker item that gets no response in 24 hours?</label>
           <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">No-response handling: escalate? skip? cancel? retry?</p>
-          <textarea id="ce-09-c-q4" placeholder="e.g. If no human response within 24 hours:&#10;1. Post a reminder comment with context&#10;2. After 48 hours: escalate by mentioning @team-lead in the issue&#10;3. After 72 hours: mark task as 'Timed Out', archive to low-priority queue, continue pipeline without this task" style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+          <textarea aria-label="e.g. If no human response within 24 hours: 1. Post a reminde" id="ce-09-c-q4" placeholder="e.g. If no human response within 24 hours:&#10;1. Post a reminder comment with context&#10;2. After 48 hours: escalate by mentioning @team-lead in the issue&#10;3. After 72 hours: mark task as 'Timed Out', archive to low-priority queue, continue pipeline without this task" style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
         </div>
       </div>
 
@@ -1180,7 +1180,7 @@ examples: |
       <div class="card-badge challenge-badge">Apply — Improvement Identification</div>
       <p style="margin-bottom:16px;font-size:14px;">Based on your self-review, identify your lowest-scoring dimension and write one specific improvement you'd make before building this pipeline.</p>
       <label for="apply-s4" class="sr-only">Your improvement identification</label>
-      <textarea id="apply-s4" rows="4" minlength="40"
+      <textarea aria-label="My lowest-scoring dimension was Communication (Developing)." id="apply-s4" rows="4" minlength="40"
         placeholder="My lowest-scoring dimension was Communication (Developing). Before building, I would add a 'Decision Log' section to my design document explaining why I chose a single-agent architecture over multi-agent, and what specifically triggers the human approval gate and who receives the notification."
         oninput="handleApplyInput('apply-s4', 40, 's4-complete-btn')"
         aria-describedby="apply-s4-hint"></textarea>
