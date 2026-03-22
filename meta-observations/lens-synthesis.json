@@ -64,18 +64,18 @@
       ]
     },
     "production": {
-      "score": 80,
+      "score": 87,
       "findings": [
         "Module 10 security coverage is strong: scope creep, secret exposure, prompt injection all addressed with concrete settings.json examples",
         "Permission configurations for three deployment contexts (dev, read-only, CI) are production-realistic",
         "Module 06 error handling covers isError flag pattern and timeout strategies",
         "Module 12 pipeline archetypes (simple chain, fan-out, conditional router) map to real production patterns",
-        "Missing: No coverage of token cost management, rate limiting, or context window budgeting"
+        "M12 now covers token budgeting, concurrency caps, rate limiting, and circuit-breaker style cost control"
       ],
       "top_issues": [
-        { "id": "PROD-01", "severity": "critical", "module": "all", "description": "No module covers token economics: cost per API call, context window limits, strategies for staying within budget. Senior engineers will ask about this.", "recommendation": "Add a section in M02 or M12 covering token costs, context budgeting, and cost monitoring" },
+        { "id": "PROD-01", "severity": "medium", "module": "12", "description": "Cost controls now exist in M12, but the course still lacks a worked budget dashboard example with concrete telemetry screenshots or sample metrics", "recommendation": "Add one end-to-end production cost and observability example showing budgets, burn rate, and alert thresholds" },
         { "id": "PROD-02", "severity": "high", "module": "12", "description": "Observability section mentions structured logging but does not cover OpenTelemetry integration, tracing correlation IDs, or cost dashboards", "recommendation": "Expand observability guidance with concrete tool recommendations" },
-        { "id": "PROD-03", "severity": "medium", "module": "10", "description": "Prompt injection defenses are conceptual (trust hierarchy) without concrete code-level mitigations (input sanitization, output validation)", "recommendation": "Add concrete code examples for prompt injection defense patterns" }
+        { "id": "PROD-03", "severity": "low", "module": "10", "description": "M10 now includes code-level mitigation patterns, but additional scenario-driven exercises would make the defenses easier to operationalize under pressure", "recommendation": "Add one or two interactive injection-defense scenarios to the security lab or module exercises" }
       ]
     },
     "editor": {
@@ -89,36 +89,36 @@
       ],
       "top_issues": [
         { "id": "EDIT-01", "severity": "medium", "module": "04", "description": "Module 04 title says 'Prompt Engineering Depth' but the module refers to both GCCF and TCEF frameworks — the transition from GCCF to TCEF could be clearer", "recommendation": "Add explicit framing: 'GCCF is the baseline you already know; TCEF is the upgrade this module teaches'" },
-        { "id": "EDIT-02", "severity": "low", "module": "12", "description": "Module 12 overview paragraph has a minor factual mapping error: says 'Output contracts from Module 05' but M05 is MCP Architecture, not output contracts specifically", "recommendation": "Fix to 'MCP architecture and primitives from Module 05'" },
+        { "id": "EDIT-02", "severity": "low", "module": "12", "description": "Module 12 overview mapping is now corrected; preserve that wording if the overview is revised again so the editor pass does not reintroduce the old mismatch", "recommendation": "Keep the corrected M12 overview wording aligned with the module focus map during future edits" },
         { "id": "EDIT-03", "severity": "low", "module": "01-12", "description": "Some modules use 'Agentic AI Engineering — 3-Day Intensive Course' and others use 'Agentic AI Engineering -- 3-Day Intensive Course' (em-dash vs double-dash inconsistency in subtitle)", "recommendation": "Standardize to one dash convention throughout" }
       ]
     },
     "ux": {
-      "score": 78,
+      "score": 84,
       "findings": [
         "Component variety is excellent: 12+ distinct interactive component types used across the course",
         "Hero sections with chip tags provide immediate module topic scannability",
         "Click-cards and tabbed-panels enable self-paced exploration without forced linear reading",
         "Agent-trace components with annotations are uniquely effective for teaching trace reading (M03)",
-        "Module diagrams exist for M02-M05 but not M06-M12 — visual support drops sharply"
+        "Standalone HTML diagrams now cover all 12 modules, restoring visual support in the back half of the course"
       ],
       "top_issues": [
-        { "id": "UX-01", "severity": "high", "module": "06-12", "description": "Zero standalone HTML diagrams exist for Modules 06-12. The examples/module-diagrams/ directory only covers M02-M05.", "recommendation": "Create diagrams for M06-M12 to maintain consistent visual learning support" },
+        { "id": "UX-01", "severity": "low", "module": "06-12", "description": "Baseline diagram coverage is now restored for Modules 06-12, but each later module currently has only one standalone visual companion", "recommendation": "Add second-wave visuals only where a module still has a dense concept cluster that would benefit from another interactive diagram" },
         { "id": "UX-02", "severity": "medium", "module": "04", "description": "Module 04 has the fewest interactive elements per word (11 elements / 6144 words = 1.8/1000w) vs M02 (24/10356 = 2.3/1000w)", "recommendation": "Add more interactive components, especially agent-trace examples showing TCEF in action" },
         { "id": "UX-03", "severity": "medium", "module": "08", "description": "Module 08 (Meta-Prompting) lacks a terminal-sim or hands-on code block exercise — students have no chance to try meta-prompting", "recommendation": "Add an interactive meta-prompt builder exercise" }
       ]
     },
     "categorical": {
-      "score": 75,
+      "score": 81,
       "findings": [
         "The PRAO loop acts as a natural endofunctor: P->R->A->O->P, providing compositional structure for every module",
         "Modules compose sequentially: M_n outputs (concepts, skills) become M_{n+1} inputs, forming a chain category",
         "The TCEF framework is a clear functor from the category of tasks to the category of prompts",
         "Natural transformation from theory to practice is visible: each concept has a corresponding interactive exercise",
-        "Module 12 acts as a colimit — the universal cone over all prior module objects"
+        "The M08->M09 bridge is now explicit: evaluated specialist artifacts become orchestrator inputs rather than isolated prompt outputs"
       ],
       "top_issues": [
-        { "id": "CAT-01", "severity": "medium", "module": "08-09", "description": "The composition M08->M09 is weakest: meta-prompting (M08) does not feed directly into multi-agent systems (M09). The functorial mapping breaks.", "recommendation": "Add a bridge section showing how meta-prompting generates skill files used by multi-agent orchestrators" },
+        { "id": "CAT-01", "severity": "low", "module": "08-09", "description": "The bridge between M08 and M09 is now explicit, but it would be stronger with one full end-to-end lab that takes a generated artifact into orchestration", "recommendation": "Add one worked example or lab exercise that carries a specialist artifact from meta-prompting into a multi-agent run" },
         { "id": "CAT-02", "severity": "medium", "module": "all", "description": "No explicit monoidal structure for combining skills. Skills are introduced (M07) but skill composition/combination operators are not formalized.", "recommendation": "Add skill composition patterns (sequential, parallel, conditional) to M07 or M09" },
         { "id": "CAT-03", "severity": "low", "module": "all", "description": "The concept prerequisite graph has a single orphaned concept: 'Context7' introduced in M11 with no prior mention in M02 or M05 where MCP servers are covered", "recommendation": "Add a brief Context7 mention in M05 when discussing MCP server examples" }
       ]
