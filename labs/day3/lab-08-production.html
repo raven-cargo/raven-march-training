@@ -485,6 +485,50 @@
     .icon-sm { width:14px; height:14px; vertical-align:-2px; }
     .badge-label .icon, .badge-label .icon-lg { margin-right:4px; }
     .quiz-feedback .icon { margin-right:3px; }
+
+    /* ─── Responsive: Tablet ───────────────────────────────── */
+    @media (max-width: 768px) {
+      body { padding: 0; }
+      .section-block { padding: 20px 16px; }
+      h2 { font-size: 20px; }
+      nav { padding: 8px 16px; flex-wrap: wrap; gap: 8px; }
+      .nav-brand { font-size: 12px; }
+      .code-block { font-size: 12px; padding: 14px 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .log-block { font-size: 11px; padding: 14px 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      code { font-size: 11px; }
+      .card, .info-card, .challenge-card, .check-card,
+      .callback-card, .insight-card, .build-challenge { padding: 16px; }
+      .objectives-card { padding: 18px 16px; }
+      textarea { min-height: 100px; font-size: 14px; }
+      .pillar-grid { grid-template-columns: 1fr; }
+      .rubric { grid-template-columns: 1fr; gap: 8px; }
+      .antipattern-bad, .antipattern-good { font-size: 12px; padding: 12px 14px; }
+      .audit-item { padding: 14px 16px; }
+      .audit-btns { flex-wrap: wrap; }
+      .xp-display { font-size: 12px; }
+      .milestone-display { font-size: 10px; padding: 3px 8px; }
+      .data-table { font-size: 12px; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .level-buttons { gap: 6px; }
+      .level-btn { padding: 6px 10px; font-size: 11px; }
+    }
+
+    /* ─── Responsive: Mobile ───────────────────────────────── */
+    @media (max-width: 480px) {
+      .section-block { padding: 16px 12px; }
+      h2 { font-size: 18px; }
+      nav { padding: 6px 12px; }
+      .card, .info-card, .challenge-card, .check-card,
+      .callback-card, .insight-card, .build-challenge { padding: 12px; }
+      .code-block { font-size: 11px; padding: 12px; }
+      .log-block { font-size: 10px; padding: 12px; }
+      .objectives-card { max-width: 100%; padding: 14px 12px; }
+      .pillar-card { padding: 14px; }
+      .pillar-num { font-size: 22px; }
+      .calc-result { padding: 14px 16px; }
+      .calc-result .result-line { font-size: 12px; }
+      .answer-option { padding: 10px 14px; font-size: 13px; }
+      .streak-display, .milestone-display { display: none !important; }
+    }
   </style>
 </head>
 <body>
