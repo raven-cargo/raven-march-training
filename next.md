@@ -1,6 +1,6 @@
 # Agentic AI Engineering Course — Next Steps
 
-**Last updated**: 2026-03-19 (Session 10 continued — Fix Pass 3)
+**Last updated**: 2026-03-22
 **Project root**: `/Users/manu/Documents/LUXOR/PROJECTS/agentic-ai-course/`
 **Live site**: https://agentic-ai-course-hazel.vercel.app/
 **Progress reference**: `progress.md` (same directory)
@@ -13,11 +13,12 @@
 
 ```
 P0  Module quality remediation — 9/9 DONE ✅
-P1  Module quality lift — 10/12 DONE (2 restructuring items deferred)
+P1  Module quality lift — 12/12 DONE ✅ (quizzes + predict-reveals added)
 P2  Cross-module consistency — 4/7 DONE (3 backlog: compare markup, step class names, diagram-id collision)
-P3  Deploy to Vercel + re-audit ← CURRENT
-P4  Resume async bridge curriculum (paused during audit)
-P5  Lab config extraction (future infrastructure)
+P3  Content restructuring — 0/2 (callout conversion M01/M03, details sections M08)
+P4  Challenge Missions UI integration ← CURRENT
+P5  Dashboard stats accuracy ← IN PROGRESS
+P6  Lab config extraction (future infrastructure)
 ```
 
 ---
@@ -302,12 +303,12 @@ Session 10 — Module Quality Remediation (2026-03-18):
 
 10. [x] ALL modules: Add `aria-label="Your prediction"` to predict-reveal textareas (24+ instances)
 11. [x] M05+M06: Replace hardcoded hex `data-accent` with `data-phase` (16 instances)
-12. [ ] M08: Add second quiz after Section 8.2 or 8.3 ← content creation needed
-13. [ ] M11: Add mid-module quiz after Section 11.3 ← content creation needed
-14. [ ] M12: Add second quiz after Section 12.3 ← content creation needed
-15. [ ] M06: Add predict-reveal before Section 6.3 or 6.4 ← content creation needed
-16. [ ] M08: Add predict-reveal to Sections 8.4 and 8.5 ← content creation needed
-17. [ ] M12: Add predict-reveal to Section 12.1 or 12.5 ← content creation needed
+12. [x] M08: Add second quiz after Section 8.2 or 8.3 ← content creation needed
+13. [x] M11: Add mid-module quiz after Section 11.3 ← content creation needed
+14. [x] M12: Add second quiz after Section 12.3 ← content creation needed
+15. [x] M06: Add predict-reveal before Section 6.3 or 6.4 ← content creation needed
+16. [x] M08: Add predict-reveal to Sections 8.4 and 8.5 ← content creation needed
+17. [x] M12: Add predict-reveal to Section 12.1 or 12.5 ← content creation needed
 18. [x] M05: Remove duplicate SSE callout at line 531
 19. [x] M10: Break up 4 stacked callouts at lines 967-981
 20. [ ] M01+M03: Convert stacked callouts to interactive components ← content restructuring

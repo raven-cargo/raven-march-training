@@ -282,12 +282,12 @@
 
   <!-- Stat bar -->
   <div class="stat-bar">
-    <div class="stat"><div class="stat-val green">17,440</div><div class="stat-lbl">Lab lines (HTML)</div></div>
-    <div class="stat"><div class="stat-val blue">~50k</div><div class="stat-lbl">Module words</div></div>
+    <div class="stat"><div class="stat-val green">19,645</div><div class="stat-lbl">Lab lines (HTML)</div></div>
+    <div class="stat"><div class="stat-val blue">~90k</div><div class="stat-lbl">Module words</div></div>
     <div class="stat"><div class="stat-val cyan">9</div><div class="stat-lbl">Labs complete</div></div>
     <div class="stat"><div class="stat-val cyan">12</div><div class="stat-lbl">Modules complete</div></div>
-    <div class="stat"><div class="stat-val orange">~220</div><div class="stat-lbl">Total XP per learner</div></div>
-    <div class="stat"><div class="stat-val green">64.6%</div><div class="stat-lbl">Code reduction (framework)</div></div>
+    <div class="stat"><div class="stat-val orange">8</div><div class="stat-lbl">Challenge missions</div></div>
+    <div class="stat"><div class="stat-val green">3</div><div class="stat-lbl">Difficulty tracks</div></div>
   </div>
 
   <!-- Validation -->
@@ -313,7 +313,7 @@
         <div class="card-num lab">01</div>
         <div class="card-body">
           <div class="card-name">The Paradigm Shift</div>
-          <div class="card-meta">1,987 lines · PRAO Loop · Old World vs New World</div>
+          <div class="card-meta">2,030 lines · PRAO Loop · Old World vs New World</div>
         </div>
         <span class="pill done">✓ Done</span>
         <span class="card-arrow">→</span>
@@ -322,7 +322,7 @@
         <div class="card-num lab">02</div>
         <div class="card-body">
           <div class="card-name">First Agent Conversation</div>
-          <div class="card-meta">1,937 lines · GCCF Pattern · Prompt structure</div>
+          <div class="card-meta">1,976 lines · GCCF Pattern · Prompt structure</div>
         </div>
         <span class="pill done">✓ Done</span>
         <span class="card-arrow">→</span>
@@ -331,7 +331,7 @@
         <div class="card-num lab">03</div>
         <div class="card-body">
           <div class="card-name">Agent Thinking with OpenCode</div>
-          <div class="card-meta">1,822 lines · PRAO trace · OpenCode reasoning annotation</div>
+          <div class="card-meta">2,106 lines · PRAO trace · OpenCode reasoning annotation</div>
         </div>
         <span class="pill done">✓ Done</span>
         <span class="card-arrow">→</span>
@@ -350,7 +350,7 @@
         <div class="card-num lab">04</div>
         <div class="card-body">
           <div class="card-name">MCP Server Explorer</div>
-          <div class="card-meta">2,181 lines · Tools / Resources / Prompts primitives</div>
+          <div class="card-meta">2,514 lines · Tools / Resources / Prompts primitives</div>
         </div>
         <span class="pill done">✓ Done</span>
         <span class="card-arrow">→</span>
@@ -359,7 +359,7 @@
         <div class="card-num lab">05</div>
         <div class="card-body">
           <div class="card-name">Prompt Engineering Workshop</div>
-          <div class="card-meta">2,679 lines · TCEF Pattern · Ranking matrix</div>
+          <div class="card-meta">2,827 lines · TCEF Pattern · Ranking matrix</div>
         </div>
         <span class="pill done">✓ Done</span>
         <span class="card-arrow">→</span>
@@ -368,7 +368,7 @@
         <div class="card-num lab">06</div>
         <div class="card-body">
           <div class="card-name">Skills &amp; Commands Builder</div>
-          <div class="card-meta">1,632 lines · Skill anatomy · Builder interface</div>
+          <div class="card-meta">1,999 lines · Skill anatomy · Builder interface</div>
         </div>
         <span class="pill done">✓ Done</span>
         <span class="card-arrow">→</span>
@@ -387,7 +387,7 @@
         <div class="card-num lab">07</div>
         <div class="card-body">
           <div class="card-name">Multi-Agent Orchestrator</div>
-          <div class="card-meta">1,798 lines · Orchestrator pattern · Agent dispatch</div>
+          <div class="card-meta">2,109 lines · Orchestrator pattern · Agent dispatch</div>
         </div>
         <span class="pill done">✓ Done</span>
         <span class="card-arrow">→</span>
@@ -396,7 +396,7 @@
         <div class="card-num lab">08</div>
         <div class="card-body">
           <div class="card-name">Production Patterns</div>
-          <div class="card-meta">1,684 lines · Triage simulation · Permission gates</div>
+          <div class="card-meta">2,003 lines · Triage simulation · Permission gates</div>
         </div>
         <span class="pill done">✓ Done</span>
         <span class="card-arrow">→</span>
@@ -405,7 +405,7 @@
         <div class="card-num lab">09</div>
         <div class="card-body">
           <div class="card-name">Capstone Build</div>
-          <div class="card-meta">1,720 lines · Full system design · Boss challenge</div>
+          <div class="card-meta">2,081 lines · Full system design · Boss challenge</div>
         </div>
         <span class="pill done">✓ Done</span>
         <span class="card-arrow">→</span>
@@ -726,41 +726,124 @@
     <svg class="icon" data-lucide="external-link" aria-hidden="true"></svg> Open NotebookLM notebook to access flashcards &amp; all materials
   </a>
 
-  <!-- Challenge Exercises & Missions -->
-  <div class="section-title">Challenge Exercises &amp; Missions</div>
+  <!-- Challenge Missions -->
+  <div class="section-title">Challenge Missions</div>
+  <p style="font-size:14px;color:var(--muted);margin:-8px 0 20px;max-width:680px;">
+    Open-ended engineering challenges with clear success criteria. These aren't guided tutorials — they require you to
+    produce working artifacts on real codebases. <a href="/challenges" style="color:var(--primary);">View full mission briefings →</a>
+  </p>
+
+  <!-- Track 1 -->
   <div class="day-group">
     <div class="day-header">
-      <span class="day-badge" style="background:rgba(139,92,246,0.15);color:#a78bfa;">Missions</span>
-      <span class="day-title">Open-ended engineering challenges — build real things</span>
+      <span class="day-badge" style="background:rgba(139,92,246,0.15);color:#a78bfa;">Track 1</span>
+      <span class="day-title">Skills, Commands &amp; Agents</span>
     </div>
     <div class="cards">
-      <a class="card" href="/challenges">
-        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;letter-spacing:0.05em;">DOC</div>
+      <a class="card" href="/challenges#mission-11-author-two-skills-from-scratch-">
+        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;">1.1</div>
         <div class="card-body">
-          <div class="card-name">Challenge Missions</div>
-          <div class="card-meta">8 missions · Difficulty ★★☆ to ★★★★★ · Real codebase work · Linear &amp; GitHub MCP</div>
+          <div class="card-name">Author Two Skills From Scratch</div>
+          <div class="card-meta">★★★ · ~3h · Write code-focused + workflow-focused skill YAMLs · M07</div>
         </div>
-        <span class="pill done" style="background:rgba(139,92,246,0.15);color:#a78bfa;border-color:rgba(139,92,246,0.3);">8 missions</span>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/challenges#mission-12-build-a-slash-command-that-orchestrates-multiple-steps-">
+        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;">1.2</div>
+        <div class="card-body">
+          <div class="card-name">Build a Multi-Step Slash Command</div>
+          <div class="card-meta">★★★ · ~3h · /ship, /onboard, or /incident — 3+ chained steps · M07</div>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/challenges#mission-13-configure-a-specialized-subagent-">
+        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;">1.3</div>
+        <div class="card-body">
+          <div class="card-name">Configure a Specialized Subagent</div>
+          <div class="card-meta">★★★★ · ~4h · Security reviewer, doc writer, or test generator · M09</div>
+        </div>
         <span class="card-arrow">→</span>
       </a>
     </div>
   </div>
-  <div class="day-group" style="margin-top:0;">
+
+  <!-- Track 2 -->
+  <div class="day-group">
     <div class="day-header">
-      <span class="day-badge" style="background:rgba(139,92,246,0.15);color:#a78bfa;">Exercises</span>
+      <span class="day-badge" style="background:rgba(6,182,212,0.15);color:var(--accent);">Track 2</span>
+      <span class="day-title">Codebase Navigation &amp; Issue Resolution</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="/challenges#mission-21-codebase-archaeology--understand-before-touching-">
+        <div class="card-num" style="background:rgba(6,182,212,0.12);color:var(--accent);font-size:11px;">2.1</div>
+        <div class="card-body">
+          <div class="card-name">Codebase Archaeology</div>
+          <div class="card-meta">★★★ · ~3h · Navigate unfamiliar codebase · Bug hunt + fix · M03</div>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/challenges#mission-22-issue-to-pr-pipeline-using-linear-or-github-mcp-">
+        <div class="card-num" style="background:rgba(6,182,212,0.12);color:var(--accent);font-size:11px;">2.2</div>
+        <div class="card-body">
+          <div class="card-name">Issue-to-PR Pipeline</div>
+          <div class="card-meta">★★★★ · ~5h · Linear/GitHub MCP · 6-step workflow · M05/M06</div>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/challenges#mission-23-pr-review-workflow--agent-as-reviewer-">
+        <div class="card-num" style="background:rgba(6,182,212,0.12);color:var(--accent);font-size:11px;">2.3</div>
+        <div class="card-body">
+          <div class="card-name">PR Review Workflow</div>
+          <div class="card-meta">★★★★ · ~4h · 5-category structured review agent · M09</div>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Track 3 -->
+  <div class="day-group">
+    <div class="day-header">
+      <span class="day-badge" style="background:rgba(239,68,68,0.15);color:#f87171;">Track 3</span>
+      <span class="day-title">Production-Grade Systems</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="/challenges#mission-31-build-a-developer-productivity-toolkit-">
+        <div class="card-num" style="background:rgba(239,68,68,0.12);color:#f87171;font-size:11px;">3.1</div>
+        <div class="card-body">
+          <div class="card-name">Developer Productivity Toolkit</div>
+          <div class="card-meta">★★★★ · ~6h · Skill + command + subagent as a system · M07/M09</div>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
+      <a class="card" href="/challenges#mission-32-issue-to-merge-end-to-end-automation-">
+        <div class="card-num" style="background:rgba(239,68,68,0.12);color:#f87171;font-size:11px;">3.2</div>
+        <div class="card-body">
+          <div class="card-name">Issue-to-Merge Automation</div>
+          <div class="card-meta">★★★★★ · ~10h · Full pipeline · Human checkpoints · Production-grade · All modules</div>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Lab Challenge Exercises -->
+  <div class="day-group" style="margin-top:8px;">
+    <div class="day-header">
+      <span class="day-badge" style="background:rgba(245,158,11,0.15);color:var(--warning);">Exercises</span>
       <span class="day-title">Build challenges baked into labs — non-gating, +XP</span>
     </div>
     <div class="cards">
       <a class="card" href="/lab/03#ce-03-d">
-        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;">CE</div>
+        <div class="card-num" style="background:rgba(245,158,11,0.12);color:var(--warning);font-size:11px;">CE</div>
         <div class="card-body">
           <div class="card-name">CE-03-D · Issue Navigation</div>
-          <div class="card-meta">Lab 03 · Debug auth 500 error · Tool calls + PRAO + GCCF fix prompt · +30 XP</div>
+          <div class="card-meta">Lab 03 · Debug auth 500 error · PRAO + GCCF fix prompt · +30 XP</div>
         </div>
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/lab/04#ce-04-b">
-        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;">CE</div>
+        <div class="card-num" style="background:rgba(245,158,11,0.12);color:var(--warning);font-size:11px;">CE</div>
         <div class="card-body">
           <div class="card-name">CE-04-B · Tool Schema Design</div>
           <div class="card-meta">Lab 04 · Write production MCP tool JSON schema · Auto-validated · +30 XP</div>
@@ -768,7 +851,7 @@
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/lab/06#ce-06-c">
-        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;">CE</div>
+        <div class="card-num" style="background:rgba(245,158,11,0.12);color:var(--warning);font-size:11px;">CE</div>
         <div class="card-body">
           <div class="card-name">CE-06-C · Author a Skill YAML</div>
           <div class="card-meta">Lab 06 · Write standup-writer skill from scratch · 6-field validation · +30 XP</div>
@@ -776,7 +859,7 @@
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/lab/06#ce-06-d">
-        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;">CE</div>
+        <div class="card-num" style="background:rgba(245,158,11,0.12);color:var(--warning);font-size:11px;">CE</div>
         <div class="card-body">
           <div class="card-name">CE-06-D · Build /pr-ready Command</div>
           <div class="card-meta">Lab 06 · Design slash command with 4 sections · Data flow required · +30 XP</div>
@@ -784,34 +867,34 @@
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/lab/07#ce-07-b">
-        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;">CE</div>
+        <div class="card-num" style="background:rgba(245,158,11,0.12);color:var(--warning);font-size:11px;">CE</div>
         <div class="card-body">
           <div class="card-name">CE-07-B · Subagent System Prompt</div>
-          <div class="card-meta">Lab 07 · Write 200+ word system prompt · 6-section spec · 200-word min · +30 XP</div>
+          <div class="card-meta">Lab 07 · Write 200+ word system prompt · 6-section spec · +30 XP</div>
         </div>
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/lab/08#ce-08-a">
-        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;">CE</div>
+        <div class="card-num" style="background:rgba(245,158,11,0.12);color:var(--warning);font-size:11px;">CE</div>
         <div class="card-body">
           <div class="card-name">CE-08-A · Permission Models</div>
-          <div class="card-meta">Lab 08 · Write settings.json for 3 production scenarios · JSON validated · +30 XP</div>
+          <div class="card-meta">Lab 08 · Write settings.json for 3 scenarios · JSON validated · +30 XP</div>
         </div>
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/lab/09#ce-09-a">
-        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;">CE</div>
+        <div class="card-num" style="background:rgba(245,158,11,0.12);color:var(--warning);font-size:11px;">CE</div>
         <div class="card-body">
           <div class="card-name">CE-09-A · Capstone Skill YAML</div>
-          <div class="card-meta">Lab 09 · Write complete skill YAML for your pipeline · 6-field auto-validation · +40 XP</div>
+          <div class="card-meta">Lab 09 · Write complete skill YAML for pipeline · 6-field validation · +40 XP</div>
         </div>
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/lab/09#ce-09-c">
-        <div class="card-num" style="background:rgba(139,92,246,0.15);color:#a78bfa;font-size:11px;">CE</div>
+        <div class="card-num" style="background:rgba(245,158,11,0.12);color:var(--warning);font-size:11px;">CE</div>
         <div class="card-body">
           <div class="card-name">CE-09-C · Issue Tracker Integration</div>
-          <div class="card-meta">Lab 09 · Specify Linear/GitHub pipeline integration · 4 design questions · +40 XP</div>
+          <div class="card-meta">Lab 09 · Linear/GitHub pipeline integration · 4 design questions · +40 XP</div>
         </div>
         <span class="card-arrow">→</span>
       </a>

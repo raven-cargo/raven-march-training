@@ -28,6 +28,8 @@ These missions cover the authoring side: writing the YAML that defines skills an
 
 ### Mission 1.1: Author Two Skills From Scratch (★★★)
 
+**Time**: ~3–4 hours · **Prerequisites**: Module 07 (Skills & Commands), Lab 06
+
 **The core question**: What makes a skill activatable, reusable, and trustworthy enough to run unsupervised?
 
 **Context**: A skill is a YAML file that gives Claude structured instructions for a specific category of task. Good skills are narrow, opinionated, and self-contained. Bad skills are vague catch-alls that conflict with other context. Writing your first skill from scratch — where the activation trigger, the behavior, and the output format are all your choices — surfaces exactly this tension.
@@ -71,6 +73,8 @@ constraints:
   - hard limits on scope
 ```
 
+> **Note on skill YAML**: The YAML fields above (`trigger_phrases`, `behavior`, `constraints`) are authoring conventions you define for yourself and your team. Claude Code does not parse these fields at runtime — it reads the entire skill file as natural language instructions. The structure makes your skills consistent and machine-readable, but activation depends on Claude recognizing the context, not on a runtime trigger mechanism.
+
 **Testing requirement**: For each skill, run it three times on different real inputs. Document whether the output matches the expected format and quality. If it doesn't, revise the skill YAML until it does.
 
 **The hard part**: Trigger phrases must be specific enough to activate intentionally but broad enough to catch real usage. Behavior instructions must be specific enough that two different runs produce structurally similar output. Most first drafts fail one of these.
@@ -84,6 +88,8 @@ constraints:
 ---
 
 ### Mission 1.2: Build a Slash Command That Orchestrates Multiple Steps (★★★)
+
+**Time**: ~2–3 hours · **Prerequisites**: Module 07 (Skills & Commands), Lab 06
 
 **The core question**: What's the difference between a slash command that runs a task and a slash command that coordinates a workflow?
 
@@ -129,6 +135,8 @@ constraints:
 
 ### Mission 1.3: Configure a Specialized Subagent (★★★★)
 
+**Time**: ~4–5 hours · **Prerequisites**: Module 09 (Multi-Agent Systems), Lab 07
+
 **The core question**: When does a task warrant a subagent, and what configuration makes a subagent trustworthy for unsupervised work?
 
 **Context**: A subagent is a Claude agent launched with a specific system prompt, tool set, and scope. Unlike an interactive session, a subagent runs to completion without human intervention. This means its configuration must be conservative enough that bad decisions don't cause irreversible damage — but scoped enough that it can complete real work.
@@ -164,6 +172,8 @@ subagent:
     (missing context, ambiguous code, permission error, etc.)
 ```
 
+> **How to launch a subagent**: In Claude Code, subagents are launched using the Task tool (or Agent tool). You pass your system prompt as part of the task description. The `allowed_tools` and `denied_tools` in your configuration document serve as your design specification — you enforce them through the system prompt instructions, not through a runtime permission system.
+
 **Testing requirement**: Launch the subagent on a real codebase (yours or a public repo). Evaluate:
 - Did it stay within scope?
 - Did it produce output in the specified format?
@@ -187,6 +197,8 @@ These missions cover the skill of moving through an unfamiliar codebase under ag
 ---
 
 ### Mission 2.1: Codebase Archaeology — Understand Before Touching (★★★)
+
+**Time**: ~4–6 hours · **Prerequisites**: Module 03 (Agent Thinking), Lab 03 · Requires: a mid-sized open-source repo (5,000+ lines)
 
 **The core question**: How do you use Claude Code as a navigator in an unfamiliar codebase before writing a single line?
 
@@ -230,6 +242,8 @@ Implement the fix with Claude Code. Then:
 ---
 
 ### Mission 2.2: Issue-to-PR Pipeline Using Linear or GitHub MCP (★★★★)
+
+**Time**: ~5–7 hours · **Prerequisites**: Modules 05–06 (MCP), Lab 04 · Requires: GitHub or Linear MCP server configured
 
 **The core question**: Can you build a workflow where Claude Code reads a real issue, works on a real codebase, and produces a real PR — with every step tracked in the issue tracker?
 
@@ -277,6 +291,8 @@ Link the PR back to the issue. Update the issue status to "In Review" / "Done" a
 ---
 
 ### Mission 2.3: PR Review Workflow — Agent as Reviewer (★★★★)
+
+**Time**: ~3–4 hours · **Prerequisites**: Module 09 (Multi-Agent), Mission 1.3 recommended · Requires: an open PR with 200+ changed lines
 
 **The core question**: What does a genuinely useful automated PR review look like, and what must it never pretend to do?
 
@@ -330,6 +346,8 @@ These are the hardest missions. They require building something complete enough 
 ---
 
 ### Mission 3.1: Build a Developer Productivity Toolkit (★★★★)
+
+**Time**: ~5–7 hours · **Prerequisites**: Track 1 missions (1.1, 1.2, 1.3) completed, Modules 07 + 09
 
 **The core question**: Can you build a cohesive set of skills, commands, and a subagent that work together as a system — not just a collection of independent tools?
 
