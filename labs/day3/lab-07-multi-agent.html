@@ -566,6 +566,117 @@
     .icon-sm { width:14px; height:14px; vertical-align:-2px; }
     .badge-label .icon, .badge-label .icon-lg { margin-right:4px; }
     .quiz-feedback .icon { margin-right:3px; }
+
+    /* ─── Responsive: Tablet (≤768px) ──────────────────────────── */
+    @media (max-width: 768px) {
+      /* Nav */
+      nav { padding: 12px 16px; }
+      .nav-brand { font-size: 12px; gap: 8px; }
+
+      /* Hero & section padding */
+      .section-block { padding: 40px 0; }
+
+      /* Grid layouts → single column */
+      .card-grid { grid-template-columns: 1fr; }
+      .motivation-grid { grid-template-columns: 1fr; }
+      .rubric { grid-template-columns: 1fr; }
+
+      /* Code blocks */
+      .code-block { font-size: 12px; padding: 16px; }
+
+      /* Orchestrator diagram */
+      .orch-diagram { padding: 20px 14px; font-size: 12px; }
+      .orch-row { gap: 10px; }
+      .orch-node { padding: 8px 14px; font-size: 12px; }
+
+      /* Cards */
+      .card { padding: 20px; }
+      .objectives-card { padding: 20px; }
+      .info-card, .challenge-card, .check-card, .callback-card, .insight-card { padding: 18px; }
+
+      /* Build challenge */
+      .build-challenge { padding: 20px; }
+
+      /* Orchestration builder */
+      .orch-builder { padding: 18px; }
+      .builder-choice { padding: 8px 14px; font-size: 12px; }
+
+      /* Triage scenarios */
+      .triage-scenario { padding: 16px 18px; }
+
+      /* Data table horizontal scroll */
+      .data-table { display: block; overflow-x: auto; }
+
+      /* Milestone display strip */
+      .milestone-display { font-size: 10px; padding: 3px 8px; }
+
+      /* Textarea */
+      textarea { min-height: 90px; }
+
+      /* Schema display */
+      .schema-display { font-size: 12px; padding: 16px; }
+    }
+
+    /* ─── Responsive: Mobile (≤480px) ──────────────────────────── */
+    @media (max-width: 480px) {
+      /* Nav stacks milestone below */
+      nav { padding: 10px 12px; flex-wrap: wrap; gap: 8px; }
+      .nav-brand span:not(.nav-badge) { display: none; }
+
+      /* Reduce hero/section inline padding via container */
+      .section-block { padding: 28px 0; }
+
+      /* Even smaller code */
+      .code-block { font-size: 11px; padding: 12px; line-height: 1.6; }
+
+      /* Cards tighter */
+      .card { padding: 16px; }
+      .objectives-card { padding: 16px; }
+      .info-card, .challenge-card, .check-card, .callback-card, .insight-card { padding: 14px; }
+      .build-challenge { padding: 16px; }
+
+      /* Buttons full width */
+      .btn { width: 100%; justify-content: center; }
+
+      /* Answer options */
+      .answer-option { padding: 12px 14px; font-size: 13px; }
+
+      /* Builder choices stack */
+      .builder-row { gap: 8px; }
+      .builder-choice { width: 100%; text-align: center; }
+
+      /* Orchestrator diagram */
+      .orch-diagram { padding: 14px 10px; font-size: 11px; }
+      .orch-node { padding: 6px 10px; font-size: 11px; }
+
+      /* Triage options */
+      .triage-opt { padding: 10px 12px; font-size: 12px; }
+
+      /* Textarea smaller min-height */
+      textarea { min-height: 80px; font-size: 13px; }
+
+      /* Milestone & XP */
+      .milestone-display { font-size: 9px; padding: 2px 6px; }
+      .xp-display { font-size: 11px; }
+
+      /* Typography adjustments */
+      h2 { font-size: 20px; }
+      h3 { font-size: 16px; }
+
+      /* Pattern cards */
+      .pattern-header { padding: 14px 16px; }
+      .pattern-body { padding: 0 16px 16px; }
+      .pattern-title { font-size: 14px; }
+
+      /* Decompose examples */
+      .decompose-example { padding: 14px 16px; }
+
+      /* Rubric */
+      .rubric-level { padding: 12px; }
+
+      /* Schema */
+      .schema-display { font-size: 11px; padding: 12px; }
+    }
   </style>
 </head>
 <body>

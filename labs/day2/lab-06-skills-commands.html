@@ -480,6 +480,44 @@
     .icon-sm { width:14px; height:14px; vertical-align:-2px; }
     .badge-label .icon, .badge-label .icon-lg { margin-right:4px; }
     .quiz-feedback .icon { margin-right:3px; }
+
+    /* ── Responsive ──────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      body { padding: 0; }
+      .section-block { padding: 20px 16px; margin: 12px 8px; }
+      h2 { font-size: 20px; }
+      nav { padding: 8px 16px; flex-wrap: wrap; gap: 8px; }
+      .nav-brand { font-size: 12px; }
+      .code-block { font-size: 12px; padding: 14px 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      code { font-size: 11px; }
+      .rubric { grid-template-columns: 1fr; gap: 8px; }
+      .grade-selector { gap: 6px; }
+      .card, .info-card, .challenge-card, .check-card,
+      .callback-card, .insight-card, .warning-card,
+      .build-challenge { padding: 16px; }
+      .objectives-card { padding: 18px 16px; }
+      textarea { min-height: 120px; font-size: 14px; }
+      .flow-step { gap: 10px; padding: 12px; }
+      .xp-display { font-size: 12px; }
+      .milestone-display { font-size: 10px; padding: 3px 8px; }
+      .data-table { font-size: 12px; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .data-table th, .data-table td { padding: 8px 10px; }
+      .grader-snippet { padding: 14px; }
+    }
+
+    @media (max-width: 480px) {
+      .section-block { padding: 16px 12px; margin: 8px 4px; }
+      h2 { font-size: 18px; }
+      nav { padding: 6px 12px; }
+      .card, .info-card, .challenge-card, .check-card,
+      .callback-card, .insight-card, .warning-card,
+      .build-challenge { padding: 12px; }
+      .code-block { font-size: 11px; padding: 12px; }
+      .flow-step { flex-direction: column; gap: 8px; }
+      .flow-step-num { width: 28px; height: 28px; font-size: 12px; }
+      .objectives-card { max-width: 100%; padding: 14px 12px; }
+      .streak-display, .milestone-display { display: none !important; }
+    }
   </style>
 </head>
 <body>

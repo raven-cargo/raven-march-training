@@ -391,6 +391,8 @@ These are the hardest missions. They require building something complete enough 
 
 ### Mission 3.2: Issue-to-Merge End-to-End Automation (★★★★★)
 
+**Time**: 8–12 hours · **Prerequisites**: All Track 1 + Track 2 missions recommended, all 12 modules, all 9 labs
+
 **This is the hardest mission.** It requires every track of the course working together.
 
 **The brief**: Build a complete, production-grade automation that takes an issue from "open" to "merged PR" with appropriate human checkpoints. Not a demo — something you could actually run on a real codebase.
