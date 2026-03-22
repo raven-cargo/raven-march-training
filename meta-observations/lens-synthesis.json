@@ -1,21 +1,21 @@
 {
-  "timestamp": "2026-03-18T12:00:00Z",
-  "overall_health": 82,
-  "total_issues": 34,
-  "critical_issues": 2,
+  "timestamp": "2026-03-20T18:00:00Z",
+  "overall_health": 88,
+  "total_issues": 26,
+  "critical_issues": 0,
   "modules": {
     "01": { "words": 8202, "interactive_elements": 20, "concept_density": 12, "cross_refs": 8, "health": 88, "diagram_count": 4 },
     "02": { "words": 10356, "interactive_elements": 24, "concept_density": 15, "cross_refs": 8, "health": 92, "diagram_count": 7 },
     "03": { "words": 10412, "interactive_elements": 23, "concept_density": 11, "cross_refs": 9, "health": 90, "diagram_count": 4 },
     "04": { "words": 6144, "interactive_elements": 11, "concept_density": 10, "cross_refs": 10, "health": 75, "diagram_count": 5 },
     "05": { "words": 4938, "interactive_elements": 12, "concept_density": 9, "cross_refs": 8, "health": 80, "diagram_count": 4 },
-    "06": { "words": 5373, "interactive_elements": 11, "concept_density": 10, "cross_refs": 8, "health": 78, "diagram_count": 0 },
-    "07": { "words": 5209, "interactive_elements": 13, "concept_density": 8, "cross_refs": 11, "health": 79, "diagram_count": 0 },
-    "08": { "words": 4267, "interactive_elements": 10, "concept_density": 7, "cross_refs": 5, "health": 73, "diagram_count": 0 },
-    "09": { "words": 5757, "interactive_elements": 12, "concept_density": 10, "cross_refs": 6, "health": 80, "diagram_count": 0 },
-    "10": { "words": 8932, "interactive_elements": 16, "concept_density": 12, "cross_refs": 6, "health": 85, "diagram_count": 0 },
-    "11": { "words": 7509, "interactive_elements": 10, "concept_density": 9, "cross_refs": 7, "health": 82, "diagram_count": 0 },
-    "12": { "words": 11138, "interactive_elements": 15, "concept_density": 14, "cross_refs": 45, "health": 84, "diagram_count": 0 }
+    "06": { "words": 4566, "interactive_elements": 27, "concept_density": 10, "cross_refs": 8, "health": 81, "diagram_count": 1 },
+    "07": { "words": 4233, "interactive_elements": 27, "concept_density": 8, "cross_refs": 13, "health": 82, "diagram_count": 1 },
+    "08": { "words": 4472, "interactive_elements": 32, "concept_density": 7, "cross_refs": 13, "health": 80, "diagram_count": 1 },
+    "09": { "words": 5062, "interactive_elements": 28, "concept_density": 10, "cross_refs": 9, "health": 84, "diagram_count": 1 },
+    "10": { "words": 8004, "interactive_elements": 42, "concept_density": 12, "cross_refs": 6, "health": 88, "diagram_count": 1 },
+    "11": { "words": 6993, "interactive_elements": 29, "concept_density": 9, "cross_refs": 7, "health": 84, "diagram_count": 1 },
+    "12": { "words": 10581, "interactive_elements": 45, "concept_density": 14, "cross_refs": 45, "health": 89, "diagram_count": 1 }
   },
   "lenses": {
     "architect": {
@@ -24,7 +24,7 @@
         "Strong spiral structure: M01 PRAO -> M03 Trace Reading -> M04 TCEF -> M07 Skills -> M12 Capstone forms a coherent learning arc",
         "Modules 04-09 show a content depth cliff (6144-5757 words vs 8202-10412 for M01-M03), suggesting incomplete build-out",
         "Module 12 capstone effectively synthesizes all prior modules with explicit back-references (45 cross-refs)",
-        "Missing: No module explicitly covers Claude SDK/API integration (programmatic multi-agent), though M09 covers conceptual patterns",
+        "M09 now introduces runtime surfaces that connect Claude Code orchestration to SDK/API deployment paths, reducing the CLI-only framing gap",
         "The PRAO framework provides excellent structural backbone across all modules"
       ],
       "top_issues": [
@@ -44,7 +44,7 @@
       ],
       "top_issues": [
         { "id": "PED-01", "severity": "high", "module": "04-09", "description": "Interactive element density drops significantly in M04-M09 (avg 11.5 elements vs 22.3 for M01-M03). Students may disengage.", "recommendation": "Add more agent-trace, terminal-sim, and intervention components to maintain engagement" },
-        { "id": "PED-02", "severity": "medium", "module": "08", "description": "Module 08 has only 1 quiz with limited question count — insufficient formative assessment for meta-prompting concepts", "recommendation": "Add at least 2 more quiz checkpoints and a hands-on meta-prompt evaluation exercise" },
+        { "id": "PED-02", "severity": "medium", "module": "08", "description": "Module 08 now has stronger quiz coverage, but practice remains light without a terminal-sim or guided builder exercise", "recommendation": "Add a hands-on meta-prompt builder or terminal-sim to deepen practice" },
         { "id": "PED-03", "severity": "medium", "module": "12", "description": "Capstone module is content-heavy (11,138 words) but may overwhelm on Day 3 of intensive. No pacing guidance.", "recommendation": "Add explicit time estimates per section and consider splitting into design + execution phases" }
       ]
     },
@@ -58,7 +58,7 @@
         "CLAUDE.md correctly described as read-at-session-start, not a command (M02, M07, M12)"
       ],
       "top_issues": [
-        { "id": "ACC-01", "severity": "critical", "module": "12", "description": "Module 12 refers to 'Output contracts from Module 05' and 'Tool orchestration from Module 06' — but M05 covers MCP Architecture and M06 covers Building MCP Servers. The mental mapping is slightly misleading.", "recommendation": "Verify each back-reference in M12 precisely matches the module's actual content focus" },
+        { "id": "ACC-01", "severity": "low", "module": "12", "description": "Module 12 back-reference precision was corrected in the implementation refresh; the remaining risk is future drift if module summaries change without an audit pass.", "recommendation": "Keep the M12 cross-reference audit in the review checklist for future curriculum edits" },
         { "id": "ACC-02", "severity": "medium", "module": "02", "description": "M02 references four tool categories (Files, Bash, Web, MCP) — Web tools (WebSearch, WebFetch) may not be available in all Claude Code configurations", "recommendation": "Add a note that Web tools availability depends on the Claude Code plan/configuration" },
         { "id": "ACC-03", "severity": "low", "module": "06", "description": "MCP TypeScript SDK import paths use .js extensions (e.g., server/mcp.js) which is correct for ESM but may confuse TypeScript newcomers", "recommendation": "Add a brief note explaining ESM .js extension convention in TypeScript" }
       ]

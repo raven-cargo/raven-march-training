@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orchestrator Runtime Patterns</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:860px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.tab{padding:14px 12px;border-radius:12px;border:1px solid #222228;background:#141418;cursor:pointer;transition:all .3s cubic-bezier(.22,1,.36,1)}
+.tab:hover{border-color:#333;transform:translateY(-2px)}
+.tab.active{transform:translateY(-2px)}
+.tab[data-i="0"].active{border-color:#4ade80;background:#0a1a14}
+.tab[data-i="1"].active{border-color:#5ba4f5;background:#0a1525}
+.tab[data-i="2"].active{border-color:#f59e42;background:#1a150a}
+.tab[data-i="3"].active{border-color:#a78bfa;background:#1c1535}
+.tab-title{font-size:14px;font-weight:700;color:#e8e6e1;margin-bottom:4px}
+.tab-meta{font-size:12px;color:#888;line-height:1.5}
+.panel{border-radius:14px;border:1px solid #222228;background:#141418;overflow:hidden;animation:fadeUp .3s ease;margin-bottom:18px}
+.panel-body{padding:20px 24px}
+.panel-copy{font-size:14px;color:#aaa;line-height:1.65;margin-bottom:14px}
+.diagram{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.node{padding:12px 14px;border-radius:10px;background:#0a0a0c;border:1px solid #1a1a1e}
+.node-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#555;margin-bottom:4px}
+.node-text{font-size:12px;color:#aaa;line-height:1.55}
+.runtime{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.surface{padding:12px 14px;border-radius:10px;background:#101017;border:1px solid #25253a}
+.surface-name{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#c8c6c1;margin-bottom:4px}
+.surface-text{font-size:12px;color:#888;line-height:1.55}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media (max-width:760px){.tabs,.diagram,.runtime{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){body{padding:1rem}.tabs,.diagram,.runtime{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Orchestrator runtime patterns</h1>
+<div class="objective">
+  <span class="goal">Multi-agent design</span>
+  <span class="text">The pattern is only half the design. You also need to know where it runs: interactively inside Claude Code, programmatically in your service, or in a hybrid rollout that moves from one to the other.</span>
+</div>
+<div class="instruct">&#9654; Click each orchestration pattern to see the control flow, the hardest engineering problem, and how the same pattern maps across runtime surfaces.</div>
+
+<div class="tabs">
+  <div class="tab active" data-i="0" onclick="show(0)"><div class="tab-title">Fan-Out</div><div class="tab-meta">Parallel specialists, one aggregator.</div></div>
+  <div class="tab" data-i="1" onclick="show(1)"><div class="tab-title">Pipeline</div><div class="tab-meta">Sequential stages with explicit contracts.</div></div>
+  <div class="tab" data-i="2" onclick="show(2)"><div class="tab-title">Router</div><div class="tab-meta">Classifier sends work to specialists.</div></div>
+  <div class="tab" data-i="3" onclick="show(3)"><div class="tab-title">Hybrid</div><div class="tab-meta">Patterns nested under one outer flow.</div></div>
+</div>
+
+<div class="panel" id="panel"></div>
+</div>
+
+<script>
+const patterns=[
+  {
+    copy:'Use fan-out when subtasks are independent, there is no shared mutable state, and you can describe the merge rule before you launch a single sub-agent.',
+    diagram:[
+      ['Decompose','Split one request into bounded specialist tasks with a shared output schema.'],
+      ['Dispatch','Run specialists in parallel with explicit concurrency caps and deadlines.'],
+      ['Aggregate','Validate, dedupe, and sort outputs into one coherent result.']
+    ],
+    runtime:[
+      ['Claude Code session','Prototype the decomposition with Agent calls and verify whether the aggregation contract is even sane.'],
+      ['Agent SDK / API','Own the queue, retries, rate limits, and structured merge logic in code.'],
+      ['Hybrid rollout','Discover the specialist prompts interactively, then move only the stable parts into automation.']
+    ]
+  },
+  {
+    copy:'Use a pipeline when each stage transforms the artifact in sequence and later stages truly need the complete prior output. The contracts between stages behave like public APIs.',
+    diagram:[
+      ['Stage contract','Specify exact output fields and allowed failure states at every boundary.'],
+      ['Transformation','Each agent performs one clear transformation rather than partial overlap.'],
+      ['Recovery','If Stage 2 fails, decide whether to retry, roll back, or return a partial artifact.']
+    ],
+    runtime:[
+      ['Claude Code session','Useful for proving the sequence and observing where one giant prompt already does the job.'],
+      ['Agent SDK / API','Best when triggered by queues, webhooks, or scheduled jobs with explicit stage ownership.'],
+      ['Hybrid rollout','Keep manual debugging in Claude Code while production traffic runs through the programmatic pipeline.']
+    ]
+  },
+  {
+    copy:'Use routing when the input classes are genuinely different. The classifier itself is now a system component, so you need validation that the selected branch made sense.',
+    diagram:[
+      ['Classify','Infer task type, stack, or severity from the input using explicit routing criteria.'],
+      ['Route','Send work to the correct specialist only after the branch labels are stable.'],
+      ['Verify','Check downstream output against the chosen route so misroutes do not hide behind plausible text.']
+    ],
+    runtime:[
+      ['Claude Code session','Great for testing whether your categories are real or whether one more general skill is enough.'],
+      ['Agent SDK / API','Useful when external systems produce mixed request types that must be triaged automatically.'],
+      ['Hybrid rollout','Train and debug the routing prompts interactively before locking them into automated services.']
+    ]
+  },
+  {
+    copy:'Hybrid patterns combine fan-out, pipelines, and routing at different levels. They are sometimes necessary, but each extra layer multiplies failure analysis, cost control, and observability work.',
+    diagram:[
+      ['Outer shape','Keep one dominant pattern visible so future maintainers can still draw the system quickly.'],
+      ['Nested branch','Only nest when a clear subproblem justifies the extra coordination.'],
+      ['Instrumentation','Track branch count, retries, failures, and token budgets per layer or the system becomes opaque.']
+    ],
+    runtime:[
+      ['Claude Code session','Use the whiteboard test: if you cannot explain the nesting in under a minute, simplify first.'],
+      ['Agent SDK / API','Requires deliberate tracing, correlation IDs, and budget enforcement at every layer.'],
+      ['Hybrid rollout','Move the outer orchestration last. First stabilize the inner contracts and specialist roles.']
+    ]
+  }
+];
+
+function show(i){
+  document.querySelectorAll('.tab').forEach((el,idx)=>el.classList.toggle('active',idx===i));
+  const d=patterns[i];
+  let html='<div class="panel-body"><div class="panel-copy">'+d.copy+'</div><div class="diagram">';
+  d.diagram.forEach(([label,text])=>{html+='<div class="node"><div class="node-label">'+label+'</div><div class="node-text">'+text+'</div></div>';});
+  html+='</div><div class="runtime">';
+  d.runtime.forEach(([label,text])=>{html+='<div class="surface"><div class="surface-name">'+label+'</div><div class="surface-text">'+text+'</div></div>';});
+  html+='</div></div>';
+  document.getElementById('panel').innerHTML=html;
+}
+
+show(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill Composition Patterns</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:820px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+.modes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.mode{padding:14px 12px;border-radius:12px;border:1px solid #222228;background:#141418;cursor:pointer;transition:all .3s cubic-bezier(.22,1,.36,1)}
+.mode:hover{border-color:#333;transform:translateY(-2px)}
+.mode.active{transform:translateY(-2px)}
+.mode[data-i="0"].active{border-color:#5ba4f5;background:#0a1525}
+.mode[data-i="1"].active{border-color:#4ade80;background:#0a1a14}
+.mode[data-i="2"].active{border-color:#f59e42;background:#1a150a}
+.mode[data-i="3"].active{border-color:#f87171;background:#1a0f12}
+.mode-name{font-size:14px;font-weight:700;color:#e8e6e1;margin-bottom:4px}
+.mode-meta{font-size:12px;color:#888;line-height:1.5}
+.panel{border-radius:14px;border:1px solid #222228;background:#141418;overflow:hidden;animation:fadeUp .3s ease;margin-bottom:18px}
+.panel-body{padding:20px 24px}
+.panel-copy{font-size:14px;color:#aaa;line-height:1.65;margin-bottom:14px}
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.flow-step{padding:12px 14px;border-radius:10px;background:#0a0a0c;border:1px solid #1a1a1e}
+.flow-kicker{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:#555;margin-bottom:4px}
+.flow-text{font-size:12px;color:#aaa;line-height:1.55}
+.takeaway{padding:12px 14px;border-radius:10px;background:#101017;border:1px solid #25253a;font-size:12px;color:#c8c6c1;line-height:1.55}
+.quiz-title{font-size:13px;font-weight:600;color:#e8e6e1;margin-bottom:4px}
+.quiz-instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px}
+.quiz{display:flex;flex-direction:column;gap:8px}
+.q-item{padding:12px 14px;border-radius:10px;background:#141418;border:1px solid #222228;cursor:pointer;transition:all .25s}
+.q-item:hover{border-color:#333;transform:translateX(2px)}
+.q-item.revealed{cursor:default}
+.q-row{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.q-copy{font-size:13px;color:#aaa;line-height:1.45}
+.q-answer{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:4px 9px;border-radius:999px;min-width:92px;text-align:center}
+.q-answer.hidden{background:#1a1a1e;color:#333}
+.q-answer.seq{background:#0a1525;color:#5ba4f5;border:1px solid #1a3a6a}
+.q-answer.par{background:#0a1a14;color:#4ade80;border:1px solid #20503a}
+.q-answer.cond{background:#1a150a;color:#f59e42;border:1px solid #4a3415}
+.q-answer.anti{background:#1a0f12;color:#f87171;border:1px solid #4b1e28}
+.q-why{display:none;font-size:12px;color:#777;line-height:1.55;margin-top:10px}
+.q-item.revealed .q-why{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media (max-width:760px){.modes,.flow{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){body{padding:1rem}.modes,.flow{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Skill composition patterns</h1>
+<div class="objective">
+  <span class="goal">Composition</span>
+  <span class="text">Skills become powerful when you can combine them deliberately. The key question is not "Can these two skills work together?" but "What control flow does the task actually require?"</span>
+</div>
+<div class="instruct">&#9654; Click each pattern to see the control flow, the engineering use case, and the failure mode to watch for.</div>
+
+<div class="modes">
+  <div class="mode active" data-i="0" onclick="show(0)"><div class="mode-name">Sequential</div><div class="mode-meta">One output becomes the next input.</div></div>
+  <div class="mode" data-i="1" onclick="show(1)"><div class="mode-name">Parallel</div><div class="mode-meta">Independent specialists run side by side.</div></div>
+  <div class="mode" data-i="2" onclick="show(2)"><div class="mode-name">Conditional</div><div class="mode-meta">A classifier selects the next skill.</div></div>
+  <div class="mode" data-i="3" onclick="show(3)"><div class="mode-name">Anti-Pattern</div><div class="mode-meta">Composition used where one skill should exist.</div></div>
+</div>
+
+<div class="panel" id="panel"></div>
+
+<div class="quiz-title">Pattern matching</div>
+<div class="quiz-instruct">&#9654; Click each scenario to reveal the composition pattern that fits best.</div>
+<div class="quiz" id="quiz"></div>
+</div>
+
+<script>
+const modes=[
+  {
+    copy:'Use sequential composition when each stage materially transforms the artifact and the next stage needs the previous output in full. Treat the boundary between skills as an interface contract, not an informal handoff.',
+    steps:[
+      ['Stage 1','Generate or collect the artifact: for example, extract the failing SQL query from a ticket.'],
+      ['Stage 2','Hand the full result to a specialist skill: analyze query plan, propose fixes, or rewrite the prompt.'],
+      ['Stage 3','Run a final formatter or reviewer skill only after the upstream stages have stabilized the output shape.']
+    ],
+    takeaway:'Best when the work is truly staged. Bad when later skills only rephrase the same output because the first skill was too vague.'
+  },
+  {
+    copy:'Use parallel composition when specialists can work independently on the same source material. The composition problem moves to aggregation: dedupe overlaps, reconcile conflicts, and preserve severity ordering.',
+    steps:[
+      ['Dispatch','Send the same repo slice or ticket to multiple bounded review skills such as security, performance, and docs.'],
+      ['Collect','Require a shared schema so every skill returns comparable fields and severity labels.'],
+      ['Aggregate','Merge duplicate findings, resolve disagreements, and produce one unified output for the operator.']
+    ],
+    takeaway:'Best when work is independent and aggregation is clear. If the merge rule is fuzzy, do not fan out yet.'
+  },
+  {
+    copy:'Use conditional composition when different input classes genuinely require different specialists. The classifier becomes part of the system, so its mistakes must be visible and recoverable.',
+    steps:[
+      ['Classify','Route the request by task type, stack, severity, or source system.'],
+      ['Specialize','Run the selected skill only after the routing criteria are explicit and testable.'],
+      ['Validate','Check whether the returned output is consistent with the route that was taken.']
+    ],
+    takeaway:'Best when the branches are categorically different. If two branches produce nearly the same procedure, they probably belong in one broader skill.'
+  },
+  {
+    copy:'Composition is an anti-pattern when you are using multiple skills to compensate for an under-specified first skill. Splitting one vague responsibility into three vague responsibilities does not create modularity.',
+    steps:[
+      ['Smell','One skill "understands the problem," another "improves the answer," and a third "polishes tone" with no stable contract between them.'],
+      ['Root cause','The base task, context, or format contract was never specified well enough for one skill to do the job cleanly.'],
+      ['Fix','Tighten the original skill body, then add composition only when a real control-flow reason remains.']
+    ],
+    takeaway:'If the only justification for composition is "the first skill was weak," strengthen the first skill instead.'
+  }
+];
+
+function show(i){
+  document.querySelectorAll('.mode').forEach((el,idx)=>el.classList.toggle('active',idx===i));
+  const d=modes[i];
+  let html='<div class="panel-body"><div class="panel-copy">'+d.copy+'</div><div class="flow">';
+  d.steps.forEach(([label,text])=>{html+='<div class="flow-step"><div class="flow-kicker">'+label+'</div><div class="flow-text">'+text+'</div></div>';});
+  html+='</div><div class="takeaway">'+d.takeaway+'</div></div>';
+  document.getElementById('panel').innerHTML=html;
+}
+
+const scenarios=[
+  ['Summarize a support ticket, then rewrite it as a test case, then generate a release note entry.','seq','Sequential','Each step needs the full output of the previous step.'],
+  ['Run security, performance, and docs review skills over the same pull request and merge the findings.','par','Parallel','The specialists can work independently on the same source material.'],
+  ['Route requests to a Python skill, a Rails skill, or a Terraform skill based on the repo that changed.','cond','Conditional','The classifier determines which specialist to invoke.'],
+  ['Split a simple changelog-writing task across three skills because the first prompt was vague.','anti','Anti-pattern','The control flow is fake complexity hiding a weak base skill.']
+];
+
+function renderQuiz(){
+  let html='';
+  scenarios.forEach((s,i)=>{
+    html+='<div class="q-item" id="q'+i+'" onclick="reveal('+i+')"><div class="q-row"><span class="q-copy">'+s[0]+'</span><span class="q-answer hidden" id="qa'+i+'">?</span></div><div class="q-why">'+s[3]+'</div></div>';
+  });
+  document.getElementById('quiz').innerHTML=html;
+}
+
+function reveal(i){
+  const item=document.getElementById('q'+i);
+  if(item.classList.contains('revealed')) return;
+  item.classList.add('revealed');
+  const answer=document.getElementById('qa'+i);
+  answer.className='q-answer '+scenarios[i][1];
+  answer.textContent=scenarios[i][2];
+}
+
+show(0);
+renderQuiz();
+</script>
+</body>
+</html>

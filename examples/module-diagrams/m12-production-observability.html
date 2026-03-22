@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Production Observability Companion</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:860px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.tab{padding:14px 12px;border-radius:12px;border:1px solid #222228;background:#141418;cursor:pointer;transition:all .3s cubic-bezier(.22,1,.36,1)}
+.tab:hover{border-color:#333;transform:translateY(-2px)}
+.tab.active{transform:translateY(-2px)}
+.tab[data-i="0"].active{border-color:#5ba4f5;background:#0a1525}
+.tab[data-i="1"].active{border-color:#4ade80;background:#0a1a14}
+.tab[data-i="2"].active{border-color:#f59e42;background:#1a150a}
+.tab[data-i="3"].active{border-color:#a78bfa;background:#1c1535}
+.tab-title{font-size:14px;font-weight:700;color:#e8e6e1;margin-bottom:4px}
+.tab-meta{font-size:12px;color:#888;line-height:1.5}
+.panel{border-radius:14px;border:1px solid #222228;background:#141418;overflow:hidden;animation:fadeUp .3s ease;margin-bottom:18px}
+.panel-body{padding:20px 24px}
+.panel-copy{font-size:14px;color:#aaa;line-height:1.65;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.box{padding:12px 14px;border-radius:10px;background:#0a0a0c;border:1px solid #1a1a1e}
+.box-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:#555;margin-bottom:4px}
+.box-text{font-size:12px;color:#aaa;line-height:1.55}
+.signals{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.signal{padding:10px 12px;border-radius:10px;background:#101017;border:1px solid #25253a;text-align:center}
+.signal-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#c8c6c1;margin-bottom:4px}
+.signal-text{font-size:11px;color:#888;line-height:1.45}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media (max-width:760px){.tabs,.grid,.signals{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){body{padding:1rem}.tabs,.grid,.signals{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Production observability companion</h1>
+<div class="objective">
+  <span class="goal">Production operations</span>
+  <span class="text">Reliable agent systems need more than good prompts. They need token budgets, runtime signals, alert thresholds, and maintenance routines that make failures visible before they become customer incidents.</span>
+</div>
+<div class="instruct">&#9654; Click each operating surface to see what to measure, what to cap, and what action it should drive in production.</div>
+<div class="tabs">
+  <div class="tab active" data-i="0" onclick="show(0)"><div class="tab-title">Budget</div><div class="tab-meta">Estimate cost before the run starts.</div></div>
+  <div class="tab" data-i="1" onclick="show(1)"><div class="tab-title">Trace</div><div class="tab-meta">Capture the runtime path of every request.</div></div>
+  <div class="tab" data-i="2" onclick="show(2)"><div class="tab-title">Alert</div><div class="tab-meta">Define thresholds that force investigation.</div></div>
+  <div class="tab" data-i="3" onclick="show(3)"><div class="tab-title">Maintain</div><div class="tab-meta">Keep the system current after launch.</div></div>
+</div>
+<div class="panel" id="panel"></div>
+<div class="instruct">&#9654; These are the core signals a capstone pipeline should expose on day one.</div>
+<div class="signals">
+  <div class="signal"><div class="signal-name">Token budget</div><div class="signal-text">Prompt, completion, and total tokens per run</div></div>
+  <div class="signal"><div class="signal-name">Latency</div><div class="signal-text">End-to-end time and slowest stage</div></div>
+  <div class="signal"><div class="signal-name">Failures</div><div class="signal-text">Validation rejects, tool errors, retries</div></div>
+  <div class="signal"><div class="signal-name">Drift</div><div class="signal-text">Prompt, schema, or skill changes over time</div></div>
+</div>
+</div>
+<script>
+const tabs=[
+  {
+    copy:'Budgeting starts before execution. Estimate prompt and completion volume, cap fan-out width, and define a circuit breaker so one pathological input cannot burn an entire daily budget.',
+    boxes:[
+      ['Measure','Prompt tokens, completion tokens, retry count, and per-stage fan-out.'],
+      ['Cap','Maximum concurrent branches, maximum retries, and maximum token budget per session or job.'],
+      ['Decision','Abort, narrow scope, or ask for approval when the predicted run exceeds policy.'],
+      ['Failure if missing','You learn the true cost only after the invoice or a runaway background job.']
+    ]
+  },
+  {
+    copy:'Tracing answers the question "What happened in this run?" Capture the route, the models used, tool calls, validation results, and correlation IDs so incidents are reconstructable.',
+    boxes:[
+      ['Measure','Request ID, branch ID, selected pattern, tool calls, model names, and stage durations.'],
+      ['Cap','Log enough context to debug without capturing sensitive data or full payloads unnecessarily.'],
+      ['Decision','Use traces to identify slow stages, bad routes, or branches that always fail validation.'],
+      ['Failure if missing','When a run misbehaves you have anecdotes, not evidence.']
+    ]
+  },
+  {
+    copy:'Alerts should correspond to actions, not just red dashboards. Thresholds matter when they tell the team to retry, roll back, disable a feature, or investigate a drift pattern.',
+    boxes:[
+      ['Measure','Budget burn rate, validation reject percentage, timeout spikes, and repeated tool failures.'],
+      ['Cap','Define thresholds per pipeline type rather than one global number for every workflow.'],
+      ['Decision','Page humans only for actionable signals; route noisy trends to backlog or dashboards.'],
+      ['Failure if missing','Teams either ignore alerts or get surprised by failures they never monitored.']
+    ]
+  },
+  {
+    copy:'Maintenance keeps the system aligned with reality. Review prompts, schemas, skills, and dependencies on a cadence, and treat drift as an expected operational cost.',
+    boxes:[
+      ['Measure','Version changes, prompt edits, schema revisions, rollback frequency, and manual override rate.'],
+      ['Cap','Set a cadence for review so updates are deliberate rather than emergency-only.'],
+      ['Decision','Promote repeated fixes into shared assets and remove stale branches or tools.'],
+      ['Failure if missing','The system degrades slowly until no one can tell whether behavior changed because of code, prompts, or upstream services.']
+    ]
+  }
+];
+function show(i){
+  document.querySelectorAll('.tab').forEach((el,idx)=>el.classList.toggle('active',idx===i));
+  const d=tabs[i];
+  let html='<div class="panel-body"><div class="panel-copy">'+d.copy+'</div><div class="grid">';
+  d.boxes.forEach(([label,text])=>{html+='<div class="box"><div class="box-label">'+label+'</div><div class="box-text">'+text+'</div></div>';});
+  html+='</div></div>';
+  document.getElementById('panel').innerHTML=html;
+}
+show(0);
+</script>
+</body>
+</html>

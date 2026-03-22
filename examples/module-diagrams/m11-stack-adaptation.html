@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stack Adaptation Decision Map</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:840px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+.gaps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.gap{padding:14px 12px;border-radius:12px;border:1px solid #222228;background:#141418;cursor:pointer;transition:all .3s cubic-bezier(.22,1,.36,1)}
+.gap:hover{border-color:#333;transform:translateY(-2px)}
+.gap.active{transform:translateY(-2px)}
+.gap[data-i="0"].active{border-color:#5ba4f5;background:#0a1525}
+.gap[data-i="1"].active{border-color:#4ade80;background:#0a1a14}
+.gap[data-i="2"].active{border-color:#f59e42;background:#1a150a}
+.gap[data-i="3"].active{border-color:#a78bfa;background:#1c1535}
+.gap-title{font-size:14px;font-weight:700;color:#e8e6e1;margin-bottom:4px}
+.gap-meta{font-size:12px;color:#888;line-height:1.5}
+.panel{border-radius:14px;border:1px solid #222228;background:#141418;overflow:hidden;animation:fadeUp .3s ease;margin-bottom:18px}
+.panel-body{padding:20px 24px}
+.panel-copy{font-size:14px;color:#aaa;line-height:1.65;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.box{padding:12px 14px;border-radius:10px;background:#0a0a0c;border:1px solid #1a1a1e}
+.box-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:#555;margin-bottom:4px}
+.box-text{font-size:12px;color:#aaa;line-height:1.55}
+.map{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.node{padding:12px 14px;border-radius:10px;background:#101017;border:1px solid #25253a}
+.node-name{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#c8c6c1;margin-bottom:4px}
+.node-text{font-size:12px;color:#888;line-height:1.55}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media (max-width:760px){.gaps,.grid,.map{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){body{padding:1rem}.gaps,.grid,.map{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Stack adaptation decision map</h1>
+<div class="objective">
+  <span class="goal">Adaptation</span>
+  <span class="text">When Claude underperforms on a stack, the fix is usually not "prompt harder." It is one of three gaps: stale docs, missing conventions, or missing runtime context. Each gap needs a different artifact.</span>
+</div>
+<div class="instruct">&#9654; Click each adaptation gap to see the symptom, the right intervention, and the artifact that closes it fastest.</div>
+<div class="gaps">
+  <div class="gap active" data-i="0" onclick="show(0)"><div class="gap-title">Documentation</div><div class="gap-meta">The model knows the wrong version or API surface.</div></div>
+  <div class="gap" data-i="1" onclick="show(1)"><div class="gap-title">Conventions</div><div class="gap-meta">The stack has local rules the docs do not encode.</div></div>
+  <div class="gap" data-i="2" onclick="show(2)"><div class="gap-title">Grounding</div><div class="gap-meta">The model lacks live repo or dependency context.</div></div>
+  <div class="gap" data-i="3" onclick="show(3)"><div class="gap-title">Operationalize</div><div class="gap-meta">Turn the fix into a repeatable team artifact.</div></div>
+</div>
+<div class="panel" id="panel"></div>
+<div class="instruct">&#9654; A practical adaptation loop moves from diagnosis to artifact selection to repeatable team usage.</div>
+<div class="map">
+  <div class="node"><div class="node-name">Diagnose</div><div class="node-text">Observe whether failure comes from stale facts, missing norms, or missing context.</div></div>
+  <div class="node"><div class="node-name">Select artifact</div><div class="node-text">Use Context7, CLAUDE.md, skills, examples, or MCP resources based on the diagnosed gap.</div></div>
+  <div class="node"><div class="node-name">Operationalize</div><div class="node-text">Keep the artifact close to the work so future sessions inherit the fix automatically.</div></div>
+</div>
+</div>
+<script>
+const gaps=[
+  {
+    copy:'Documentation currency gaps happen when the public docs and the live stack have diverged. The right response is to bring in up-to-date sources, not to keep elaborating the prompt from memory.',
+    boxes:[
+      ['Symptoms','Deprecated APIs suggested as current, old import paths, or wrong configuration defaults.'],
+      ['Best intervention','Load current docs through Context7 or another trusted resource before asking for code.'],
+      ['Artifact','Version-aware resource or doc preload attached to the task.'],
+      ['Failure if skipped','The model stays confidently wrong because the facts themselves are stale.']
+    ]
+  },
+  {
+    copy:'Convention gaps appear when your team has rules that do not live in upstream docs: naming, architecture, review expectations, deployment rituals, or migration policy.',
+    boxes:[
+      ['Symptoms','Code is technically valid but violates team structure, naming, or process rules.'],
+      ['Best intervention','Encode the rules in CLAUDE.md, examples, or skills so the agent can follow the local style without rediscovering it each session.'],
+      ['Artifact','Stack-level CLAUDE.md, skill file, or policy template with concrete examples.'],
+      ['Failure if skipped','You spend every session re-teaching house style and still get inconsistent output.']
+    ]
+  },
+  {
+    copy:'Grounding gaps show up when the model needs the actual repo, dependency graph, schemas, or generated artifacts to reason correctly. This is a live-context problem, not a wording problem.',
+    boxes:[
+      ['Symptoms','Correct generic advice that ignores the real file layout, dependency versions, or existing patterns in the repo.'],
+      ['Best intervention','Inject repo-local facts: current files, schemas, build outputs, or MCP resources tied to the stack.'],
+      ['Artifact','Context resource bundle, generated reference file, or explicit setup step for loading stack state.'],
+      ['Failure if skipped','The agent keeps suggesting patterns that would work somewhere, but not here.']
+    ]
+  },
+  {
+    copy:'A good adaptation fix becomes reusable. Once you know the missing artifact, place it where the next engineer and the next agent session will inherit it automatically.',
+    boxes:[
+      ['Promote to team asset','If the same explanation appears twice, move it out of chat history and into CLAUDE.md, a skill, or an MCP resource.'],
+      ['Keep it testable','The asset should be concrete enough that a reviewer can tell whether the agent followed it.'],
+      ['Pair with examples','One good example often teaches the stack convention faster than a page of prose.'],
+      ['Review cadence','Revisit these assets when the framework version, deployment pipeline, or repo architecture changes.']
+    ]
+  }
+];
+function show(i){
+  document.querySelectorAll('.gap').forEach((el,idx)=>el.classList.toggle('active',idx===i));
+  const d=gaps[i];
+  let html='<div class="panel-body"><div class="panel-copy">'+d.copy+'</div><div class="grid">';
+  d.boxes.forEach(([label,text])=>{html+='<div class="box"><div class="box-label">'+label+'</div><div class="box-text">'+text+'</div></div>';});
+  html+='</div></div>';
+  document.getElementById('panel').innerHTML=html;
+}
+show(0);
+</script>
+</body>
+</html>

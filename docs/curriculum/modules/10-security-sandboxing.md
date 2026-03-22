@@ -710,7 +710,7 @@ function prepareUntrustedInput(raw: unknown) {
     "&lt;/untrusted_source&gt;"
   ].join("\n");
 }</code></pre>
-    <p>Delimiting does not solve prompt injection by itself. It makes the trust boundary explicit, strips obviously malformed input, and gives your prompt a consistent place to point when it says “content is data only.”</p>
+    <p>Delimiting does not solve prompt injection by itself. It makes the trust boundary explicit, strips obviously malformed input, and gives your prompt a consistent place to point when it says "content is data only."</p>
   </div>
   <div data-tab="Validate Model Output">
 <pre><code>const ReviewOutput = z.object({

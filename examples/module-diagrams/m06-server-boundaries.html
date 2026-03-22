@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCP Server Design Boundaries</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0c0c0f;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.container{max-width:820px;width:100%}
+h1{font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#6b6a65;margin-bottom:.4rem}
+.objective{padding:14px 18px;border-radius:12px;background:#0a1525;border:1px solid #1a3a6a;margin-bottom:1.5rem;font-size:13px;line-height:1.6}
+.objective .goal{color:#5ba4f5;font-weight:600;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.objective .text{color:#8ab8e8}
+.instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px;padding-left:2px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.card{padding:14px 12px;border-radius:12px;border:1px solid #222228;background:#141418;cursor:pointer;transition:all .3s cubic-bezier(.22,1,.36,1);text-align:left}
+.card:hover{border-color:#333;transform:translateY(-2px)}
+.card.active{transform:translateY(-2px)}
+.card[data-i="0"].active{border-color:#4ade80;background:#0a1a14}
+.card[data-i="1"].active{border-color:#f59e42;background:#1a150a}
+.card[data-i="2"].active{border-color:#5ba4f5;background:#0a1525}
+.card[data-i="3"].active{border-color:#a78bfa;background:#1c1535}
+.card-kicker{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#555;margin-bottom:6px}
+.card.active .card-kicker{color:#c8c6c1}
+.card-title{font-size:15px;font-weight:700;color:#e8e6e1;margin-bottom:4px}
+.card-meta{font-size:12px;color:#888;line-height:1.5}
+.panel{border-radius:14px;border:1px solid #222228;background:#141418;overflow:hidden;animation:fadeUp .3s ease;margin-bottom:18px}
+.panel-body{padding:20px 24px}
+.panel-copy{font-size:14px;color:#aaa;line-height:1.65;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.item{padding:12px 14px;border-radius:10px;background:#0a0a0c;border:1px solid #1a1a1e}
+.item-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#555;margin-bottom:4px}
+.item-text{font-size:12px;color:#aaa;line-height:1.55}
+.test-title{font-size:13px;font-weight:600;color:#e8e6e1;margin-bottom:4px}
+.test-instruct{font-size:12px;color:#555;font-style:italic;margin-bottom:12px}
+.tests{display:flex;flex-direction:column;gap:8px}
+.test{padding:12px 14px;border-radius:10px;background:#141418;border:1px solid #222228;display:flex;justify-content:space-between;gap:12px;align-items:center;cursor:pointer;transition:all .25s}
+.test:hover{border-color:#333;transform:translateX(2px)}
+.test.revealed{cursor:default}
+.test-copy{font-size:13px;color:#aaa;line-height:1.45;flex:1}
+.badge{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:4px 9px;border-radius:999px;min-width:78px;text-align:center}
+.badge.hidden{background:#1a1a1e;color:#333}
+.badge.server{background:#0a1a14;color:#4ade80;border:1px solid #1f4d35}
+.badge.app{background:#1a150a;color:#f59e42;border:1px solid #4a3415}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media (max-width:760px){.cards,.grid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){body{padding:1rem}.cards,.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>MCP server design boundaries</h1>
+<div class="objective">
+  <span class="goal">Boundary design</span>
+  <span class="text">A good MCP server exposes a narrow, typed interface that helps the agent act safely. It should not absorb product UI logic, long procedural workflows, or every capability your backend happens to have.</span>
+</div>
+<div class="instruct">&#9654; Click each boundary to see what belongs inside the server, what stays outside, and what the interface must make explicit.</div>
+
+<div class="cards">
+  <div class="card active" data-i="0" onclick="show(0)"><div class="card-kicker">Own</div><div class="card-title">Expose to Claude</div><div class="card-meta">Tight capabilities the agent can call reliably.</div></div>
+  <div class="card" data-i="1" onclick="show(1)"><div class="card-kicker">Exclude</div><div class="card-title">Keep in the App</div><div class="card-meta">Business workflows and UI-only behavior.</div></div>
+  <div class="card" data-i="2" onclick="show(2)"><div class="card-kicker">Contract</div><div class="card-title">Shape the Interface</div><div class="card-meta">Name, schema, and result contract design.</div></div>
+  <div class="card" data-i="3" onclick="show(3)"><div class="card-kicker">Operate</div><div class="card-title">Guard Production</div><div class="card-meta">Limits, errors, and observability around the tool.</div></div>
+</div>
+
+<div class="panel" id="panel"></div>
+
+<div class="test-title">Boundary check</div>
+<div class="test-instruct">&#9654; Click each capability to reveal whether it belongs in the MCP server surface or the surrounding application/service layer.</div>
+<div class="tests" id="tests"></div>
+</div>
+
+<script>
+const panels=[
+  {
+    copy:'Expose verbs and data objects that map cleanly to how an agent reasons: search, fetch, validate, create, update, compare. The server should present capabilities in a form Claude can choose and sequence safely.',
+    items:[
+      ['Good fit','Search issue tracker, fetch schema docs, create a ticket, run a bounded query, validate deployment config.'],
+      ['Why it works','Each capability has a clear purpose, typed input, and a result the model can reason about without reverse-engineering hidden state.'],
+      ['Design test','Could another engineer infer what this tool does from the name, description, and schema alone? If not, tighten it.'],
+      ['Failure mode','Wrapping a vague service endpoint and forcing Claude to guess the valid inputs.']
+    ]
+  },
+  {
+    copy:'Do not turn the MCP server into your entire application. UI flows, approval policies, stateful orchestration, and brittle multi-step business logic belong in the application layer or orchestrator that calls the server.',
+    items:[
+      ['Keep outside','Wizard-style flows, session management, billing policy, human approval routing, retry queues, and rendering concerns.'],
+      ['Why outside','Those concerns depend on product context, persistence, or operator policy that should stay explicit in your runtime.'],
+      ['Smell','A single tool that takes ten arguments because it is really three separate business steps hidden behind one name.'],
+      ['Refactor move','Split the workflow into smaller tools and let the client/orchestrator own sequencing.']
+    ]
+  },
+  {
+    copy:'The interface is the product. Tool names, schema descriptions, output shape, and error semantics determine whether the model can use the server accurately under pressure.',
+    items:[
+      ['Name the action','Use precise verbs like search_commits, create_draft_pr, or validate_policy rather than generic names like run or execute.'],
+      ['Constrain input','Use enums, explicit limits, and required fields so the schema rules out nonsense before the model can emit it.'],
+      ['Shape output','Return stable fields the client can branch on: status, items, next_step, and isError when appropriate.'],
+      ['Explain edges','Document pagination, truncation, auth limits, and timeout behavior directly in the tool description.']
+    ]
+  },
+  {
+    copy:'Production MCP servers need operational boundaries as much as conceptual ones. You are exposing tools to an LLM, so retries, rate limits, audit trails, and safe error contracts are part of the design.',
+    items:[
+      ['Guardrails','Rate-limit external APIs, cap result size, enforce auth per tool, and reject requests that exceed safe query size.'],
+      ['Error contract','Return machine-readable failure shapes so the client can retry, narrow scope, or ask for help instead of hallucinating success.'],
+      ['Observability','Log tool name, latency, upstream errors, and rejection reasons so you can debug agent behavior later.'],
+      ['Rollout rule','Ship the smallest useful surface first. Add tools only after a real workflow proves they are needed.']
+    ]
+  }
+];
+
+function show(i){
+  document.querySelectorAll('.card').forEach((card,idx)=>card.classList.toggle('active',idx===i));
+  const d=panels[i];
+  let html='<div class="panel-body"><div class="panel-copy">'+d.copy+'</div><div class="grid">';
+  d.items.forEach(([label,text])=>{html+='<div class="item"><div class="item-label">'+label+'</div><div class="item-text">'+text+'</div></div>';});
+  html+='</div></div>';
+  document.getElementById('panel').innerHTML=html;
+}
+
+const tests=[
+  ['Fetch the latest open incidents for a given service.','server','Server'],
+  ['Decide whether a deployment needs director approval based on business policy.','app','App layer'],
+  ['Render a human-facing approval dialog with product-specific copy.','app','App layer'],
+  ['Validate that a tool payload contains one of three allowed environments.','server','Server'],
+  ['Retry a failed tool call with exponential backoff across a distributed queue.','app','App layer'],
+  ['Return a typed list of matching tickets with status and owner fields.','server','Server']
+];
+
+function renderTests(){
+  let html='';
+  tests.forEach((t,i)=>{
+    html+='<div class="test" id="test'+i+'" onclick="reveal('+i+')"><span class="test-copy">'+t[0]+'</span><span class="badge hidden" id="badge'+i+'">?</span></div>';
+  });
+  document.getElementById('tests').innerHTML=html;
+}
+
+function reveal(i){
+  const row=document.getElementById('test'+i);
+  if(row.classList.contains('revealed')) return;
+  row.classList.add('revealed');
+  const badge=document.getElementById('badge'+i);
+  badge.className='badge '+tests[i][1];
+  badge.textContent=tests[i][2];
+}
+
+show(0);
+renderTests();
+</script>
+</body>
+</html>

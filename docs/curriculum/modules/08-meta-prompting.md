@@ -311,7 +311,7 @@ The three applications from Section 8.1 combine into a single repeatable workflo
 
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m08-loop-bottleneck-predict" data-xp="8">
   <span class="ix-title">Predict: Where Does Iteration Stall?</span>
-  <p class="ix-predict-prompt">A team generated v1 and v2 prompts, but quality stopped improving. The evaluation output says: “better wording” and “more polished tone,” with no concrete failures. What should they do next?</p>
+  <p class="ix-predict-prompt">A team generated v1 and v2 prompts, but quality stopped improving. The evaluation output says: "better wording" and "more polished tone," with no concrete failures. What should they do next?</p>
   <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your next action and why..."></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>
@@ -426,7 +426,7 @@ The three applications from Section 8.1 combine into a single repeatable workflo
   <div class="ix-step" data-step="5">
     <span class="ix-step-label">Pilot the orchestration</span>
     <div class="ix-step-body">
-      <p>Run a small fan-out with one orchestrator and two or three specialists. If the aggregation breaks, the problem is usually not “multi-agent magic” -- it is an interface that was never made explicit during the meta-prompting phase.</p>
+      <p>Run a small fan-out with one orchestrator and two or three specialists. If the aggregation breaks, the problem is usually not "multi-agent magic" -- it is an interface that was never made explicit during the meta-prompting phase.</p>
     </div>
   </div>
 </div>
