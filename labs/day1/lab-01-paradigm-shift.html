@@ -1345,62 +1345,10 @@ finding in plain English."</span>
         <div class="question-feedback" id="fb-1"></div>
       </div>
 
-      <!-- Q3 -->
-      <div class="question-card" id="q-2">
-        <div class="question-text">
-          3. What is a CLAUDE.md file and when should you create one?
-        </div>
-        <div class="answer-options">
-          <label class="answer-option" onclick="answerQ(2, 0, false)">
-            <div class="option-indicator">A</div>
-            A log file where Claude records what it did — created automatically
-          </label>
-          <label class="answer-option" onclick="answerQ(2, 1, true)">
-            <div class="option-indicator">B</div>
-            A persistent context file with project conventions, rules, and background — created once per project
-          </label>
-          <label class="answer-option" onclick="answerQ(2, 2, false)">
-            <div class="option-indicator">C</div>
-            A system prompt replacement that must be included in every message
-          </label>
-          <label class="answer-option" onclick="answerQ(2, 3, false)">
-            <div class="option-indicator">D</div>
-            A configuration file for API keys and model selection
-          </label>
-        </div>
-        <div class="question-feedback" id="fb-2"></div>
-      </div>
-
-      <!-- Q4 -->
-      <div class="question-card" id="q-3">
-        <div class="question-text">
-          4. You watch an agent in OpenCode. It reads a file, plans an edit, makes the edit, then immediately reads the file again. Why does it do that last step?
-        </div>
-        <div class="answer-options">
-          <label class="answer-option" onclick="answerQ(3, 0, false)">
-            <div class="option-indicator">A</div>
-            It forgot it already read the file (a bug in the model)
-          </label>
-          <label class="answer-option" onclick="answerQ(3, 1, false)">
-            <div class="option-indicator">B</div>
-            It's checking for other edits made by other processes
-          </label>
-          <label class="answer-option" onclick="answerQ(3, 2, true)">
-            <div class="option-indicator">C</div>
-            It's completing the Observe phase — verifying that its action produced the intended result
-          </label>
-          <label class="answer-option" onclick="answerQ(3, 3, false)">
-            <div class="option-indicator">D</div>
-            It needs to re-read to include the file in the next tool call
-          </label>
-        </div>
-        <div class="question-feedback" id="fb-3"></div>
-      </div>
-
       <!-- Score display -->
       <div class="score-display" id="score-display">
         <div class="score-ring" id="score-ring">
-          <span id="score-text">0/4</span>
+          <span id="score-text">0/2</span>
         </div>
         <h3 id="score-title" style="margin-bottom: 12px;"></h3>
         <p id="score-message" style="font-size: 15px; max-width: 480px; margin: 0 auto 24px;"></p>
@@ -1438,7 +1386,7 @@ finding in plain English."</span>
 
       <div class="reflection-card">
         <h4><svg class="icon" data-lucide="help-circle" aria-hidden="true"></svg> What's still unclear?</h4>
-        <p style="font-size: 13px; margin-bottom: 12px;">Honest gaps — these feed into tomorrow's warm-up session.</p>
+        <p style="font-size: 13px; margin-bottom: 12px;">Honest gaps — we’ll discuss these together as a group.</p>
         <textarea id="reflection-2" placeholder="Write any remaining questions here..." aria-label="What is still unclear" oninput="saveReflection('reflection-2',this.value)"></textarea>
       </div>
 
@@ -1505,7 +1453,7 @@ finding in plain English."</span>
         <li>Write predictions before each trace — then compare them to reality</li>
         <li>Copy 5 starter commands you can use immediately after class</li>
         <li>Write a prompt for your own codebase and apply PRAO thinking</li>
-        <li>Take a 4-question knowledge check with targeted feedback</li>
+        <li>Take a 2-question knowledge check with targeted feedback</li>
         <li>Reflect on how this applies to your specific engineering context</li>
       </ul>
       <div style="height:1px; background: var(--border); margin: 8px 0;"></div>
@@ -1889,8 +1837,16 @@ finding in plain English."</span>
     quizAnswers[qIdx] = isCorrect;
 
     const options = document.querySelectorAll(`#q-${qIdx} .answer-option`);
-    options[optIdx].classList.add(isCorrect ? 'correct' : 'incorrect');
-    options[optIdx].querySelector('.option-indicator').textContent = isCorrect ? '✓' : '✗';
+    const selected = options[optIdx];
+    const correctOption = [...options].find(opt => opt.getAttribute('onclick')?.includes(', true)'));
+    selected.classList.add(isCorrect ? 'correct' : 'incorrect');
+    selected.querySelector('.option-indicator').textContent = isCorrect ? '✓' : '✗';
+
+    if (!isCorrect && correctOption) {
+      correctOption.classList.add('correct');
+      const indicator = correctOption.querySelector('.option-indicator');
+      if (indicator) indicator.textContent = '✓';
+    }
 
     // Inject correct vs. incorrect feedback text — semantically consistent with styling
     const fb = document.getElementById(`fb-${qIdx}`);
@@ -1904,23 +1860,36 @@ finding in plain English."</span>
     });
 
     // Check if all questions answered
-    if (Object.keys(quizAnswers).length === 4) {
+    if (Object.keys(quizAnswers).length === document.querySelectorAll('.question-card[id^="q-"]').length) {
       setTimeout(showScore, 800);
     }
   }
 
   function showScore() {
     const correct = Object.values(quizAnswers).filter(v => v).length;
-    const pct = (correct / 4) * 100;
+    const total = document.querySelectorAll('.question-card[id^="q-"]').length;
+    const pct = (correct / total) * 100;
 
     const display = document.getElementById('score-display');
     const ring = document.getElementById('score-ring');
     const title = document.getElementById('score-title');
     const msg = document.getElementById('score-message');
 
-    ring.textContent = `${correct}/4`;
+    ring.textContent = `${correct}/${total}`;
     ring.style.setProperty('--score-pct', `${pct}%`);
-    ring.style.background = `conic-gradient(${correct === 4 ? 'var(--success)' : correct >= 3 ? 'var(--primary)' : 'var(--warning)'} ${pct}%, var(--bg-raised) 0%)`;
+    ring.style.background = `conic-gradient(${pct === 100 ? 'var(--success)' : pct >= 70 ? 'var(--primary)' : 'var(--warning)'} ${pct}%, var(--bg-raised) 0%)`;
+
+    if (total === 2) {
+      const outcome =
+        correct === 2 ? { t: 'Perfect!', m: "You've internalized the paradigm shift. You're ready to build." } :
+        correct === 1 ? { t: 'Strong Foundation', m: 'Solid understanding. Review the feedback and continue to Lab 02.' } :
+        { t: 'Keep Going', m: 'Revisit PRAO and prompt specificity, then retry this check before moving on.' };
+      title.textContent = outcome.t;
+      msg.textContent = outcome.m;
+      display.style.display = 'block';
+      display.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
 
     const messages = {
       4: { t: 'Perfect!', m: 'You\'ve internalized the paradigm shift. You\'re ready to build.' },
