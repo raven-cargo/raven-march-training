@@ -817,6 +817,34 @@ In Module 06 you orchestrated individual tools. Now you orchestrate entire skill
 
 ---
 
+## 7.6 Standalone Knowledge Check
+
+<div class="ix-diagram" data-component="quiz" data-diagram-id="m07-standalone-knowledge-check" data-xp="12">
+  <span class="ix-title">Standalone Knowledge Check: Skills and Commands</span>
+  <div class="ix-quiz-question">
+    <p class="ix-quiz-prompt"><strong>Q1.</strong> Why should custom command names avoid built-in names like <code>/help</code> or <code>/config</code>?</p>
+    <div class="ix-quiz-options">
+      <button class="ix-quiz-option">Because built-in names are reserved only in CI mode</button>
+      <button class="ix-quiz-option" data-correct="true">Because custom commands shadow built-ins and can break native command behavior</button>
+      <button class="ix-quiz-option">Because slash commands cannot include short names</button>
+      <button class="ix-quiz-option">Because command names must match skill names exactly</button>
+    </div>
+    <p class="ix-quiz-explanation">Custom commands take precedence when names collide. Use unique, descriptive names to preserve native Claude Code command access.</p>
+  </div>
+  <div class="ix-quiz-question">
+    <p class="ix-quiz-prompt"><strong>Q2.</strong> In a multi-step command pipeline, what should happen if an upstream validation step fails?</p>
+    <div class="ix-quiz-options">
+      <button class="ix-quiz-option">Continue to commit step and log the failure later</button>
+      <button class="ix-quiz-option">Retry silently until the step passes</button>
+      <button class="ix-quiz-option" data-correct="true">Halt the pipeline and return a structured failure report</button>
+      <button class="ix-quiz-option">Skip validation and proceed with best effort</button>
+    </div>
+    <p class="ix-quiz-explanation">Fail-fast behavior keeps workflows safe and debuggable. Downstream steps should not run on invalid upstream output.</p>
+  </div>
+</div>
+
+---
+
 ## Lab Connection
 
 **Lab 06** is the direct hands-on companion for this module. You will build and refine skills and slash commands, then compose them into small workflows with explicit constraints and output contracts.
@@ -826,6 +854,7 @@ In Module 06 you orchestrated individual tools. Now you orchestrate entire skill
 ## Further Reading
 
 - [Claude Code Slash Commands Reference](https://docs.anthropic.com/en/docs/claude-code/slash-commands)
+- [Claude Code CLI Reference (built-in command behavior)](https://docs.anthropic.com/en/docs/claude-code/cli-reference)
 - [Claude Code Memory and Skills](https://docs.anthropic.com/en/docs/claude-code/memory)
 - [Claude Code Settings and Project Configuration](https://docs.anthropic.com/en/docs/claude-code/settings)
 - [Standalone Diagram: Skill Composition Patterns](/examples/module-diagrams/m07-skill-composition.html)

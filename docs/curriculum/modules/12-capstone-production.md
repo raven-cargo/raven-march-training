@@ -942,6 +942,8 @@ The deployment checklist extends the stack adaptation checklist from Module 11 w
 </div>
 </div>
 
+<p><strong>Threshold summary (text version):</strong> Trigger an alert when error rate exceeds <code>5%</code> (critical at <code>20%</code>), timeout rate exceeds <code>10%</code>, daily cost exceeds <code>150%</code> of 7-day average, session duration exceeds <code>200%</code> of 7-day median, or any approval gate bypass occurs.</p>
+
 <p class="ix-instruct">Test your understanding of observability and incident response.</p>
 
 <div class="ix-diagram" data-component="quiz" data-diagram-id="m12-observability-quiz" data-xp="15">

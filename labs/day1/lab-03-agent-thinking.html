@@ -592,6 +592,8 @@
   </div>
 </nav>
 
+<div id="lab-onboarding-tip" role="note" style="max-width:860px;margin:14px auto 0;padding:10px 14px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:10px;font-size:12px;color:var(--muted);">Tip: fill the section action in each block to earn XP, and use nav dots as progress signals (locked = not available yet, active = current section, complete = finished).</div>
+
 <main>
 
 <!-- Hero -->
@@ -1265,31 +1267,31 @@ router.post('/login', async (req, res) =&gt; {
         <div>
           <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">1. First 3 tool calls — what should Claude Code do first?</label>
           <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Write exact tool calls: which tool, which arguments, in which order. Don't start with "read everything" — be surgical.</p>
-          <textarea aria-label="Tool call 1: Bash(" id="ce-03-d-q1" placeholder="Tool call 1: Bash('git show a3f2d8c --stat') — see exactly what files changed in the breaking commit&#10;Tool call 2: Read('src/api/routes/auth.ts') — read the auth route that's failing&#10;Tool call 3: Read('src/models/user.ts') — read the user model that was refactored" style="width:100%;min-height:120px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+          <textarea aria-label="Tool call 1: Bash(" id="ce-03-d-q1" placeholder="Write your first three tool calls in order. Include tool name and arguments for each call." style="width:100%;min-height:120px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
         </div>
 
         <div>
           <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">2. PRAO annotation — label each of your 3 tool calls</label>
           <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">For each tool call, identify its PRAO phase and explain why it belongs there.</p>
-          <textarea aria-label="Tool call 1: P (Plan) — deciding what information we need be" id="ce-03-d-q2" placeholder="Tool call 1: P (Plan) — deciding what information we need before acting&#10;Tool call 2: O (Observe/Act) — reading the file IS the action that gives us observation data&#10;Tool call 3: O (Observe) — gathering more context to inform the plan" style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+          <textarea aria-label="Tool call 1: P (Plan) — deciding what information we need be" id="ce-03-d-q2" placeholder="Label each of your three tool calls with a PRAO phase and explain your reasoning." style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
         </div>
 
         <div>
           <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">3. Hypothesize the root cause</label>
           <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Based on the issue description: "Refactor user model to add profile fields" caused 500 on login. What's the most likely root cause?</p>
-          <textarea aria-label="Most likely: the user model schema changed (added non-nullab" id="ce-03-d-q3" placeholder="Most likely: the user model schema changed (added non-nullable profile fields) but the database migration wasn't applied or the Prisma client wasn't regenerated. When auth.ts tries to query users, Prisma's generated types don't match the actual DB schema, causing a runtime error..." style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+          <textarea aria-label="Most likely: the user model schema changed (added non-nullab" id="ce-03-d-q3" placeholder="Describe your root-cause hypothesis and the evidence you would gather to confirm it." style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
         </div>
 
         <div>
           <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">4. Write the fix prompt</label>
           <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Write the GCCF-structured prompt you'd give Claude Code to implement the fix.</p>
-          <textarea aria-label="Goal: Fix the 500 error on POST /api/auth/login caused by th" id="ce-03-d-q4" placeholder="Goal: Fix the 500 error on POST /api/auth/login caused by the user model refactor in commit a3f2d8c.&#10;Context: The refactor added profile fields to the user model. The error is likely a Prisma schema mismatch.&#10;Constraints: Do not change the auth route logic. Only fix the data layer issue. Run the existing auth tests after fixing.&#10;Format: Show me the exact files changed and explain why each change is needed before applying it." style="width:100%;min-height:120px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+          <textarea aria-label="Goal: Fix the 500 error on POST /api/auth/login caused by th" id="ce-03-d-q4" placeholder="Write a full GCCF prompt with Goal, Context, Constraints, and required output format." style="width:100%;min-height:120px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
         </div>
 
         <div>
           <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">5. Write the PR description Claude Code should generate</label>
           <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">After Claude fixes the bug, what should the PR description say? Include: what changed, why, how to verify.</p>
-          <textarea aria-label="## Fix: Resolve 500 on /api/auth/login after user model refa" id="ce-03-d-q5" placeholder="## Fix: Resolve 500 on /api/auth/login after user model refactor&#10;&#10;**Problem**: Login returning 500 after commit a3f2d8c which added profile fields to User model...&#10;**Root cause**: ...&#10;**Fix**: ...&#10;**Testing**: ...&#10;**Closes #1247**" style="width:100%;min-height:120px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+          <textarea aria-label="## Fix: Resolve 500 on /api/auth/login after user model refa" id="ce-03-d-q5" placeholder="Draft a PR description with sections for problem, root cause, fix, and verification steps." style="width:100%;min-height:120px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
         </div>
       </div>
 

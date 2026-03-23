@@ -555,6 +555,8 @@
   </div>
 </nav>
 
+<div id="lab-onboarding-tip" role="note" style="max-width:860px;margin:14px auto 0;padding:10px 14px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:10px;font-size:12px;color:var(--muted);">Tip: fill the section action in each block to earn XP, and use nav dots as progress signals (locked = not available yet, active = current section, complete = finished).</div>
+
 <main>
 
 <!-- Hero -->
@@ -1545,6 +1547,7 @@ const graderAnswers = {
 // Simulation state
 let simCurrentStep = 0;
 const SIM_STEPS = 5;
+let simCompletionAwarded = false;
 const simMessages = [
   'Step 1 of 5 — Pipeline starts: reading branch diff',
   'Step 2 of 5 — pr-reviewer skill running code review',
@@ -1779,15 +1782,24 @@ function submitGrader() {
 /* ─── Simulation ─────────────────────────────────────────────────── */
 function simStep(dir) {
   const steps = document.querySelectorAll('.sim-step');
+  const nextStep = Math.max(0, Math.min(SIM_STEPS - 1, simCurrentStep + dir));
+  if (nextStep === simCurrentStep) return;
+
   steps[simCurrentStep].classList.remove('active');
-  steps[simCurrentStep].classList.add('done');
-  simCurrentStep = Math.max(0, Math.min(SIM_STEPS - 1, simCurrentStep + dir));
+  if (dir > 0) {
+    steps[simCurrentStep].classList.add('done');
+  }
+
+  simCurrentStep = nextStep;
   steps[simCurrentStep].classList.remove('done');
   steps[simCurrentStep].classList.add('active');
   document.getElementById('sim-status').textContent = simMessages[simCurrentStep];
   document.getElementById('sim-prev').disabled = simCurrentStep === 0;
   document.getElementById('sim-next').disabled = simCurrentStep === SIM_STEPS - 1;
-  if (simCurrentStep === SIM_STEPS - 1) awardXP(15, 'simulation complete');
+  if (simCurrentStep === SIM_STEPS - 1 && !simCompletionAwarded) {
+    simCompletionAwarded = true;
+    awardXP(15, 'simulation complete');
+  }
 }
 
 function simReset() {
@@ -1797,6 +1809,7 @@ function simReset() {
     if (i === 0) s.classList.add('active');
   });
   simCurrentStep = 0;
+  simCompletionAwarded = false;
   document.getElementById('sim-status').textContent = simMessages[0];
   document.getElementById('sim-prev').disabled = true;
   document.getElementById('sim-next').disabled = false;

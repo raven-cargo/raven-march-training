@@ -708,6 +708,7 @@ Building on the prompt foundations from Module 03, **Lab 05** applies this modul
 
 - [Anthropic Prompt Engineering Guide](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview)
 - [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
+- Brown, T. B., et al. (2020). *Language Models are Few-Shot Learners.* https://arxiv.org/abs/2005.14165
 
 ---
 

@@ -117,7 +117,8 @@
     .card-body { flex: 1; min-width: 0; }
     .card-name {
       font-size: 14px; font-weight: 600; color: var(--text);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      line-height: 1.35;
+      white-space: normal;
     }
     .card-meta { font-size: 12px; color: var(--dim); margin-top: 3px; }
 
@@ -217,7 +218,8 @@
     .mm-body { flex: 1; min-width: 0; }
     .mm-title {
       font-size: 13px; font-weight: 600; color: var(--text);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      line-height: 1.35;
+      white-space: normal;
     }
     .mm-meta { font-size: 11px; color: var(--dim); margin-top: 2px; }
     .mm-badge {
@@ -263,6 +265,35 @@
     .icon { width:16px; height:16px; display:inline-block; vertical-align:-2px; stroke-width:2; flex-shrink:0; }
     .icon-lg { width:20px; height:20px; vertical-align:-4px; }
     .icon-sm { width:14px; height:14px; vertical-align:-2px; }
+
+    /* ── Search ── */
+    .search-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 20px;
+    }
+    .search-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 14px;
+      padding: 10px 12px;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: rgba(99,102,241,0.45);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+    }
+    .search-note {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--dim);
+    }
+    .hidden-by-search { display: none !important; }
   </style>
 </head>
 <body>
@@ -299,6 +330,17 @@
     </div>
   </div>
 
+  <div class="search-wrap">
+    <input
+      id="course-search"
+      class="search-input"
+      type="search"
+      placeholder="Search labs, modules, media, and missions..."
+      aria-label="Search course content"
+    />
+    <div id="search-note" class="search-note">Type to filter content cards across this dashboard.</div>
+  </div>
+
   <!-- LABS -->
   <div class="section-title">Interactive Labs</div>
 
@@ -315,7 +357,7 @@
           <div class="card-name">The Paradigm Shift</div>
           <div class="card-meta">2,030 lines · PRAO Loop · Old World vs New World</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/lab/02">
@@ -324,7 +366,7 @@
           <div class="card-name">First Agent Conversation</div>
           <div class="card-meta">1,976 lines · GCCF Pattern · Prompt structure</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/lab/03">
@@ -333,7 +375,7 @@
           <div class="card-name">Agent Thinking with OpenCode</div>
           <div class="card-meta">2,106 lines · PRAO trace · OpenCode reasoning annotation</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
     </div>
@@ -352,7 +394,7 @@
           <div class="card-name">MCP Server Explorer</div>
           <div class="card-meta">2,514 lines · Tools / Resources / Prompts primitives</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/lab/05">
@@ -361,7 +403,7 @@
           <div class="card-name">Prompt Engineering Workshop</div>
           <div class="card-meta">2,827 lines · TCEF Pattern · Ranking matrix</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/lab/06">
@@ -370,7 +412,7 @@
           <div class="card-name">Skills &amp; Commands Builder</div>
           <div class="card-meta">1,999 lines · Skill anatomy · Builder interface</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
     </div>
@@ -389,7 +431,7 @@
           <div class="card-name">Multi-Agent Orchestrator</div>
           <div class="card-meta">2,109 lines · Orchestrator pattern · Agent dispatch</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/lab/08">
@@ -398,7 +440,7 @@
           <div class="card-name">Production Patterns</div>
           <div class="card-meta">2,003 lines · Triage simulation · Permission gates</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/lab/09">
@@ -407,7 +449,7 @@
           <div class="card-name">Capstone Build</div>
           <div class="card-meta">2,081 lines · Full system design · Boss challenge</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
     </div>
@@ -429,7 +471,7 @@
           <div class="card-name">The Paradigm Shift</div>
           <div class="card-meta">Agent-first thinking · PRAO Loop · Mental models</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/module/02">
@@ -438,7 +480,7 @@
           <div class="card-name">Claude Code Foundations</div>
           <div class="card-meta">CLI · CLAUDE.md · settings.json · slash commands</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/module/03">
@@ -447,7 +489,7 @@
           <div class="card-name">Agent Thinking</div>
           <div class="card-meta">Chain-of-thought · Trace analysis · Wei et al. 2022</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/module/04">
@@ -456,7 +498,7 @@
           <div class="card-name">Prompt Engineering in Depth</div>
           <div class="card-meta">TCEF · Few-shot · Brown et al. 2020 · Signal/noise</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
     </div>
@@ -475,7 +517,7 @@
           <div class="card-name">MCP Architecture</div>
           <div class="card-meta">Tools / Resources / Prompts · Streamable HTTP · Spec</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/module/06">
@@ -484,7 +526,7 @@
           <div class="card-name">Building MCP Servers</div>
           <div class="card-meta">TypeScript SDK · Zod validation · Tool definitions</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/module/07">
@@ -493,7 +535,7 @@
           <div class="card-name">Skills &amp; Commands</div>
           <div class="card-meta">Skill anatomy · Slash commands · Conventional Commits</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/module/08">
@@ -502,7 +544,7 @@
           <div class="card-name">Meta-Prompting</div>
           <div class="card-meta">APE · DSPy · Meta-Prompting paper · Optimization loops</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
     </div>
@@ -521,7 +563,7 @@
           <div class="card-name">Multi-Agent Systems</div>
           <div class="card-meta">Orchestrator pattern · Parallel dispatch · Coordination</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/module/10">
@@ -530,7 +572,7 @@
           <div class="card-name">Security &amp; Sandboxing</div>
           <div class="card-meta">OWASP LLM Top 10 · Prompt injection · RSP</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/module/11">
@@ -539,7 +581,7 @@
           <div class="card-name">Tech Stack Adaptation</div>
           <div class="card-meta">Next.js · Pydantic v2 · Context7 · Stack integration</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
       <a class="card" href="/module/12">
@@ -548,7 +590,7 @@
           <div class="card-name">Capstone &amp; Production</div>
           <div class="card-meta">Full pipeline · CI/CD · Deployment patterns</div>
         </div>
-        <span class="pill done">✓ Done</span>
+        <span class="pill review">○ Not Started</span>
         <span class="card-arrow">→</span>
       </a>
     </div>
@@ -558,7 +600,7 @@
   <div class="section-title">Multimedia Learning</div>
 
   <!-- Featured: Audio Podcast -->
-  <a class="mm-featured" href="https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c" target="_blank" rel="noopener">
+  <a class="mm-featured" href="https://lh3.googleusercontent.com/notebooklm/ANHLwAzP-KRyC8JBWTyMq8b6hPFU0RP_gf_LKKwgA7ePHVhSSg5RirIRJBTDDE54IDRgLkofR_BGOddhHSEXEv50kVFZ1TIkfNpRkK4jTXic-j92DxHPiNZIKtGjUfWZZKCXgF-5wFMKI91q3gQRQ2VninUGvLObB_Q=m140-dv" target="_blank" rel="noopener">
     <div class="mm-icon"><svg class="icon-lg" data-lucide="mic" aria-hidden="true"></svg></div>
     <div class="mm-body">
       <div class="mm-title">Architecting Reliable Autonomous AI Agents — Deep Dive Podcast</div>
@@ -816,6 +858,14 @@
         </div>
         <span class="card-arrow">→</span>
       </a>
+      <a class="card" href="/challenges#mission-31b-bridge-to-end-to-end-automation-">
+        <div class="card-num" style="background:rgba(239,68,68,0.12);color:#f87171;font-size:11px;">3.1B</div>
+        <div class="card-body">
+          <div class="card-name">Bridge: Partial Pipeline + Review Gate</div>
+          <div class="card-meta">★★★★ · ~4h · Intake-to-test run + enforced checkpoint before merge automation</div>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
       <a class="card" href="/challenges#mission-32-issue-to-merge-end-to-end-automation-">
         <div class="card-num" style="background:rgba(239,68,68,0.12);color:#f87171;font-size:11px;">3.2</div>
         <div class="card-body">
@@ -931,6 +981,92 @@
   Course content &copy; 2026 Agentic AI Engineering Course.
 </footer>
 
-<script>if (window.lucide) lucide.createIcons();</script>
+<script>
+if (window.lucide) lucide.createIcons();
+
+(function initializeDashboardEnhancements() {
+  const notebookUrl = 'https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c';
+  const videoLinks = {
+    'M01 — AI: From Assistant to Agent': 'https://lh3.googleusercontent.com/notebooklm/ANHLwAwxHIS2bNO7aTNFqGMWj0XKL6zYTVrVAn7P6WZrT3fU8ptJNr8InnW_2mgL9dK3VhmhvtF4vS1rJEI3fLpr3ttxRWWzMfFor2w1SGW5e6OjIjJSXwtTt_JRVCEDDQM2c1w_Z7wxRgdutWOOekOll_6VNapiUhQ=m22-dv',
+    'M02 — Claude Code Foundations': 'https://lh3.googleusercontent.com/notebooklm/ANHLwAzn7LFgaNjuNer----jep63ACp8CCH0RzY493CYGJY_RvZJpvQALxWhJxIdwKxy19wmTR2K8movTXJ9ZPTdhs9k5hKI_OeOsgp3GDjUHbsHhiVCyYDPj70gy7yFSLcjeqU5TOy_LNQQbvHEqzeJC7Uzas22Sw=m22-dv',
+    'M03 — Agent Thinking': 'https://lh3.googleusercontent.com/notebooklm/ANHLwAzHXg8ForcPW2UsRXLxMdIhI4Vgo6Gh0hu_XIdxxXgFF8FlR9reVik3PUFosL3ujHPJ0lmJREJCU5oAujL92CtpCdhSyZiWgOirIKsMZoC5KHq0KNVcr7iA80LH9gOA1rmdBX3D91hoJEKxNtuAhOGXigYkWtU=m22-dv',
+    'M04 — Prompt Engineering Depth': 'https://lh3.googleusercontent.com/notebooklm/ANHLwAyJXliKcTZcJjjaN5bMoulr3V_sxNrfX192xepoS6ixo1MkszKHcpSQdRu9EyrM7UTqJo4d0bBOQw3pnwIbxnE7ZyeyUsmyGIDdsR73DrxkwRUPlP0bL5n46szc9QF2_2xrQGYsU0e1jjrE-2IPmyaZ-nd6rWA=m22-dv',
+    'M05 — MCP Architecture': 'https://lh3.googleusercontent.com/notebooklm/ANHLwAy7d2Vm5WK1-5KuXZcPnoLXGdqbNuACYBPLCAqcLKNTGuKxscWajYrngqU93UFsqR0Y9uYaYYBnUwQ-P8kzsdDss40CWawTGp0Oxo8p8BDMvRP5-GGIS2x8ZPYMo80BF1_yT1I-weqg_ReFnUQ4zLj6ph0uxg=m22-dv',
+    'M06 — Building MCP Servers': 'https://lh3.googleusercontent.com/notebooklm/ANHLwAxIujjztX6e6P9KRFkLD8H1PBrh7Lya_E-ax9NHdvA1cOligHLkuur-SAJ8gfWJ1yp2kYkS_XwncEXolluuv2KniFolU5su8xK9C0u7iHcFwLdb9Y-DX6lyigrl8JPKW99pJLCpKGFPwjUHqRDsOq8j9r_s0dk=m22-dv',
+    'M07 — Amnesiac to Collaborator': 'https://lh3.googleusercontent.com/notebooklm/ANHLwAzTCpsIGVZWhhNQABJNgHM9SgkZ6pewA23J-CNeAIZSsNJcUjLp1oAXLUpg3KBtH4FqglTpwfez24I0EunwYbCVAG2zderY7N8MHI4JBHbE5hZtw4zNf8D34JIzkSKp7_x4egMwfvOr6XL7Kr8FE4Yb0frZsb4=m22-dv',
+    'M08 — Meta-Prompting': 'https://lh3.googleusercontent.com/notebooklm/ANHLwAxQSuFjxKcRUSvaGWyPN7wYTZWZYAEDPO_ycP0pdkarZX2ywtxsjhYAYUaLIJcGCnrqoub28JTMYw8rVY0RccNgzQ-URAelzpP0NJn-pjNAwEvheVMbXuIyXZrdclu4hmqhHy6DQD9UbUv7_4YuLsecHOCUngg=m22-dv',
+    'M09 — Multi-Agent AI: A Guide': 'https://lh3.googleusercontent.com/notebooklm/ANHLwAyPyU3kS5iKaRTJPIxswK2mgf53QLXm9zbWBNh_d_7RZsDetjPThJRO55303r8dhVQJtIlPG3X4Szx8nw9WDBUUib94YcjrqZ4ftwz8bu2nMsVp4Yao0gJDUFgaD5ILOnEbk7KRFov9PiL05QuZbYjoAZj-tw0=m22-dv',
+    'M10 — Agentic AI Security': 'https://lh3.googleusercontent.com/notebooklm/ANHLwAyhTWp7SUyt_r-60OYTFPmbudcCtCvV4EI7IIhPkofcjv0U9Fnz8h10EChFSH27-SzfhA2BJXr7a4UbEDUz8bz5TPDCGSPPn-rG_Ho5K8qOAsHcq73fFZuZgEOlohvYVepFtkHKptbOJh1WpESCq2-1gkpFgQ=m22-dv',
+    'M11 — Adapting AI to Your Stack': 'https://lh3.googleusercontent.com/notebooklm/ANHLwAxWbbx5vGSRE2872ngLgpo1YZhUkR5aI4sZ7N59h5GHO8dzfo6rzj5zvfyezAqOPsRZuj7fBrClN-0B5RUyGM3Rm5SR_8-AZu3edgqgciSbC5nLlI-nYkhOpjTstjeK3kspDxHsgSnXwiEfYsg2O4lddDMalN0=m22-dv',
+    'M12 — Capstone & Production': 'https://lh3.googleusercontent.com/notebooklm/ANHLwAxkAOCLoFGUuggqag0ro1YWE1xqhSpTLaqT_SDEjm2oWvo6NYbFK2cMHbkuYrW32zWvpnAiCQMo5usYhZ5vZYbKXcbAcBU8S--M6WQVKKacTEKVOk=m22-dv'
+  };
+
+  const slideLinks = {
+    'Course Overview — Agentic Engineering Blueprint': 'https://contribution.usercontent.google.com/download?c=Cgpub3RlYm9va2xtEkYSD2FydGlmYWN0c19tZWRpYRozCiRjMjcxMWJhZi0xM2YyLTRkYmEtOWRjNy1kMjZlMWE2NjA3YjMSCxIHEIWrnsmWHhgB&filename=Agentic_Engineering_Blueprint.pdf&opi=96797242',
+    'M01 — Agentic AI Engineering': 'https://contribution.usercontent.google.com/download?c=Cgpub3RlYm9va2xtEkYSD2FydGlmYWN0c19tZWRpYRozCiQ3MmRkNDQ3MC05NDc0LTQ1ODEtYTg3ZS1kMGFkOGRlMmMwMGMSCxIHEIWrnsmWHhgB&filename=Agentic_AI_Engineering.pdf&opi=96797242',
+    'M02 — Claude Code Foundations': 'https://contribution.usercontent.google.com/download?c=Cgpub3RlYm9va2xtEkYSD2FydGlmYWN0c19tZWRpYRozCiQ4YzVkNzU3Ny1hZGQwLTRjMTgtYWEzMi1iYzk5Nzk4YTg3YzQSCxIHEIWrnsmWHhgB&filename=Claude_Code_Foundations.pdf&opi=96797242',
+    'M03 — Agentic Telemetry': 'https://contribution.usercontent.google.com/download?c=Cgpub3RlYm9va2xtEkYSD2FydGlmYWN0c19tZWRpYRozCiRjOWM4MWI0MC02NGZiLTRhMDctODRjNi1iMTdkNDc2NjQxODESCxIHEIWrnsmWHhgB&filename=Agentic_Telemetry.pdf&opi=96797242',
+    'M04 — Precision Prompt Architecture': 'https://contribution.usercontent.google.com/download?c=Cgpub3RlYm9va2xtEkYSD2FydGlmYWN0c19tZWRpYRozCiQ1NzhlMjM4YS01ZmJjLTRhMTktODNkZC0wOGIxZWVmZDY5YTMSCxIHEIWrnsmWHhgB&filename=Precision_Prompt_Architecture.pdf&opi=96797242',
+    'M05 — MCP Architecture': 'https://contribution.usercontent.google.com/download?c=Cgpub3RlYm9va2xtEkYSD2FydGlmYWN0c19tZWRpYRozCiRmMGM4ODQ2Ny04MTg3LTQ3MjQtODEzZC0xOWQ3ZGM1YjEyY2MSCxIHEIWrnsmWHhgB&filename=MCP_Architecture.pdf&opi=96797242',
+    'M06 — MCP Server Engineering': 'https://contribution.usercontent.google.com/download?c=Cgpub3RlYm9va2xtEkYSD2FydGlmYWN0c19tZWRpYRozCiRjNWM0ZDlkNS02MjIzLTQzMDgtOWJhNi1mNGEyNzQyZmU2NjQSCxIHEIWrnsmWHhgB&filename=MCP_Server_Engineering.pdf&opi=96797242',
+    'M07 — Claude Code Architecture': 'https://contribution.usercontent.google.com/download?c=Cgpub3RlYm9va2xtEkYSD2FydGlmYWN0c19tZWRpYRozCiQyMDFlN2JlZS1iZDVmLTQyMWYtODJhNC1hMTZhMjNmMTViNzMSCxIHEIWrnsmWHhgB&filename=Claude_Code_Architecture.pdf&opi=96797242',
+    'M08 — Meta-Prompting at Scale': 'https://contribution.usercontent.google.com/download?c=Cgpub3RlYm9va2xtEkYSD2FydGlmYWN0c19tZWRpYRozCiQ2NmM4ZDE0OC00OWJjLTRkNDEtOTk3MC05ZWJlYzAzNmE0OWISCxIHEIWrnsmWHhgB&filename=Meta-Prompting_at_Scale.pdf&opi=96797242',
+    'M09 — Multi-Agent Engineering Blueprints': 'https://contribution.usercontent.google.com/download?c=Cgpub3RlYm9va2xtEkYSD2FydGlmYWN0c19tZWRpYRozCiRkMWU1MTRlYy03NjczLTQwODEtOGExMy00OWQxMjhkMGZiOWYSCxIHEIWrnsmWHhgB&filename=Multi-Agent_Engineering_Blueprints.pdf&opi=96797242',
+    'M10 — Securing Agentic Systems': 'https://contribution.usercontent.google.com/download?c=Cgpub3RlYm9va2xtEkYSD2FydGlmYWN0c19tZWRpYRozCiRiMjk2M2IxMy0zMTY3LTRiNzYtYWRjYS04MGNiMjM5YmQxZjgSCxIHEIWrnsmWHhgB&filename=Securing_Agentic_Systems.pdf&opi=96797242',
+    'M11 — Agentic Stack Adaptation': 'https://contribution.usercontent.google.com/download?c=Cgpub3RlYm9va2xtEkYSD2FydGlmYWN0c19tZWRpYRozCiRiZWM3YzUwMi02YmViLTRkYzctODhhNy00YWI1YzFjYjI1MjgSCxIHEIWrnsmWHhgB&filename=Agentic_Stack_Adaptation.pdf&opi=96797242',
+    'M12 — Agentic Engineering Flight Manual': 'https://contribution.usercontent.google.com/download?c=Cgpub3RlYm9va2xtEkYSD2FydGlmYWN0c19tZWRpYRozCiQ0MGFhNzhiNC0zNmUzLTRjMWQtYWU1YS02ZDIzODdhNjk4YWQSCxIHEIWrnsmWHhgB&filename=Agentic_Engineering_Flight_Manual.pdf&opi=96797242'
+  };
+
+  const featured = document.querySelector('.mm-featured');
+  if (featured) {
+    featured.href = 'https://lh3.googleusercontent.com/notebooklm/ANHLwAzP-KRyC8JBWTyMq8b6hPFU0RP_gf_LKKwgA7ePHVhSSg5RirIRJBTDDE54IDRgLkofR_BGOddhHSEXEv50kVFZ1TIkfNpRkK4jTXic-j92DxHPiNZIKtGjUfWZZKCXgF-5wFMKI91q3gQRQ2VninUGvLObB_Q=m140-dv';
+  }
+
+  document.querySelectorAll('.mm-card').forEach(function(card) {
+    const titleEl = card.querySelector('.mm-title');
+    if (!titleEl) return;
+    const title = titleEl.textContent.trim();
+    if (card.tagName.toLowerCase() !== 'a') return;
+
+    const badgeEl = card.querySelector('.mm-badge');
+    const badge = badgeEl ? badgeEl.textContent.trim().toUpperCase() : '';
+    const map = badge === 'SLIDES' ? slideLinks : badge === 'VIDEO' ? videoLinks : null;
+
+    if (map && map[title]) {
+      card.href = map[title];
+    } else {
+      card.href = notebookUrl;
+    }
+  });
+
+  const searchInput = document.getElementById('course-search');
+  const searchNote = document.getElementById('search-note');
+  if (!searchInput || !searchNote) return;
+
+  const searchableCards = Array.from(document.querySelectorAll('a.card, .mm-card'));
+  const searchableTitles = searchableCards.map(function(card) {
+    return (card.textContent || '').toLowerCase();
+  });
+
+  function applySearch() {
+    const query = searchInput.value.trim().toLowerCase();
+    let visibleCount = 0;
+
+    searchableCards.forEach(function(card, idx) {
+      const match = !query || searchableTitles[idx].indexOf(query) !== -1;
+      card.classList.toggle('hidden-by-search', !match);
+      if (match) visibleCount += 1;
+    });
+
+    if (!query) {
+      searchNote.textContent = 'Type to filter content cards across this dashboard.';
+    } else {
+      searchNote.textContent = 'Showing ' + visibleCount + ' matching cards.';
+    }
+  }
+
+  searchInput.addEventListener('input', applySearch);
+})();
+</script>
 </body>
 </html>

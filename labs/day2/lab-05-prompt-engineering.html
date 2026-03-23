@@ -1363,7 +1363,7 @@ def create_user(user: UserCreate): ...</div>
         <div class="builder-field">
           <div class="builder-field-label task-label">
             T — Task
-            <button class="hint-btn" onclick="toggleHint('hint-task')" aria-label="Show Task hint">Hint</button>
+            <button class="hint-btn" onclick="toggleHint(this,'hint-task')" aria-label="Show Task hint">Hint</button>
           </div>
           <div class="hint-text" id="hint-task">Verb + what to find + what to produce. Be specific about what "missing validation" means.</div>
           <textarea id="tcef-task" rows="3" placeholder="What should Claude do? Use a precise action verb..." aria-label="Task component" oninput="saveTcef();checkTcefComplete()"></textarea>
@@ -1372,7 +1372,7 @@ def create_user(user: UserCreate): ...</div>
         <div class="builder-field">
           <div class="builder-field-label context-label">
             C — Context
-            <button class="hint-btn" onclick="toggleHint('hint-context')" aria-label="Show Context hint">Hint</button>
+            <button class="hint-btn" onclick="toggleHint(this,'hint-context')" aria-label="Show Context hint">Hint</button>
           </div>
           <div class="hint-text" id="hint-context">Language, framework, version. What does "missing validation" mean in your codebase? What tools do you use?</div>
           <textarea id="tcef-context" rows="3" placeholder="What does Claude need to know about the codebase and conventions?" aria-label="Context component" oninput="saveTcef();checkTcefComplete()"></textarea>
@@ -1381,7 +1381,7 @@ def create_user(user: UserCreate): ...</div>
         <div class="builder-field">
           <div class="builder-field-label examples-label">
             E — Examples
-            <button class="hint-btn" onclick="toggleHint('hint-examples')" aria-label="Show Examples hint">Hint</button>
+            <button class="hint-btn" onclick="toggleHint(this,'hint-examples')" aria-label="Show Examples hint">Hint</button>
           </div>
           <div class="hint-text" id="hint-examples">Show one example of a properly validated endpoint vs one that's missing validation. Code snippets work great here.</div>
           <textarea id="tcef-examples" rows="5" placeholder="Show Claude what good validation looks like vs missing validation..." aria-label="Examples component" oninput="saveTcef();checkTcefComplete()"></textarea>
@@ -1390,7 +1390,7 @@ def create_user(user: UserCreate): ...</div>
         <div class="builder-field">
           <div class="builder-field-label format-label">
             F — Format
-            <button class="hint-btn" onclick="toggleHint('hint-format')" aria-label="Show Format hint">Hint</button>
+            <button class="hint-btn" onclick="toggleHint(this,'hint-format')" aria-label="Show Format hint">Hint</button>
           </div>
           <div class="hint-text" id="hint-format">JSON array? Markdown report? What fields does each finding need? endpoint, method, issue, risk, fix?</div>
           <textarea id="tcef-format" rows="3" placeholder="Specify the exact output format Claude should use..." aria-label="Format component" oninput="saveTcef();checkTcefComplete()"></textarea>
@@ -1685,6 +1685,9 @@ Format: Return a JSON array. Each item:
         </div>
         <p style="font-size:13px;color:var(--text-muted);margin:12px 0 6px;">Write your improved version (Iteration 1):</p>
         <textarea id="iter-1-text" rows="4" placeholder="Improve the prompt based on the issues you identified..." aria-label="Iteration 1 improved prompt" oninput="saveTextarea('iter-1-text')"></textarea>
+        <div id="iter-1-requirements" style="margin-top:10px;font-size:12px;color:var(--text-muted);line-height:1.6;">
+          Requirements to enable submit: choose at least one issue checkbox and write an Iteration 1 prompt.
+        </div>
         <div style="margin-top:12px;">
           <button class="btn btn-primary" id="iter-1-btn" onclick="submitIter1()" disabled>
             Submit Iteration 1 <span style="font-size:12px;opacity:0.8;">+20 XP</span>
@@ -2331,9 +2334,14 @@ function submitS0Prediction() {
 // ============================================================
 // SECTION 1 — TCEF BUILDER
 // ============================================================
-function toggleHint(id) {
+function toggleHint(btn, id) {
   const el = document.getElementById(id);
-  el.classList.toggle('visible');
+  if (!el) return;
+  const visible = el.classList.toggle('visible');
+  if (btn) {
+    btn.textContent = visible ? 'Hide hint' : 'Hint';
+    btn.setAttribute('aria-expanded', visible ? 'true' : 'false');
+  }
 }
 
 function saveTcef() {
@@ -2509,12 +2517,22 @@ function checkIterChecks() {
   const c = document.getElementById('iter-check-1c').checked;
   const btn = document.getElementById('iter-1-btn');
   const text = document.getElementById('iter-1-text').value.trim();
-  btn.disabled = !((a || b || c) && text.length > 0);
+  const checksReady = (a || b || c);
+  const textReady = text.length > 0;
+  btn.disabled = !(checksReady && textReady);
+
+  const req = document.getElementById('iter-1-requirements');
+  if (req) {
+    req.innerHTML =
+      (checksReady ? '✓' : '○') + ' Select at least one issue checkbox<br>' +
+      (textReady ? '✓' : '○') + ' Write an Iteration 1 prompt';
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   const t = document.getElementById('iter-1-text');
   if (t) t.addEventListener('input', () => { saveTextarea('iter-1-text'); checkIterChecks(); });
+  checkIterChecks();
 });
 
 function submitIter1() {

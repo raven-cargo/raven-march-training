@@ -20,6 +20,20 @@ These missions cover the skills the labs introduce but don't have space to go de
 
 ---
 
+## Submission Flow (All Missions)
+
+Every mission now uses the same submission loop so work is reviewable by peers or instructors:
+
+1. Create a `mission-<id>-submission.md` file in your project root or `docs/submissions/`.
+2. Include five required blocks: `Scope`, `Artifacts`, `Verification`, `Risks`, and `Next Changes`.
+3. Attach evidence links: PR URL, issue URL, run logs, screenshots, and output files.
+4. Add a final status line: `Ready for Review`, `Needs Feedback`, or `Blocked`.
+5. Request review from one peer or instructor before marking the mission complete.
+
+If your workflow is private/internal, replace public URLs with internal tracker links and attach exported artifacts.
+
+---
+
 ## Track 1 — Skills, Commands, and Agents
 
 These missions cover the authoring side: writing the YAML that defines skills and subagents, building slash commands that orchestrate workflows, and understanding how the system actually activates and routes these.
@@ -389,6 +403,34 @@ These are the hardest missions. They require building something complete enough 
 
 ---
 
+### Mission 3.1B: Bridge to End-to-End Automation (★★★★)
+
+**Time**: ~3–4 hours · **Prerequisites**: Mission 3.1 complete
+
+**Purpose**: This bridge mission closes the difficulty gap between toolkit assembly (3.1) and full issue-to-merge automation (3.2).
+
+**Your deliverable**:
+
+1. Take one real issue and run only the first half of the 3.2 pipeline:
+   - issue intake
+   - codebase localization
+   - fix implementation
+   - test validation
+2. Implement exactly one human checkpoint (review gate) and prove the pipeline halts until approval.
+3. Produce a short handoff bundle for the merge phase:
+   - issue summary
+   - changed files and rationale
+   - test evidence
+   - open risks
+
+**Success criteria**:
+
+- [ ] Pipeline executes reliably from issue intake through test validation
+- [ ] Human checkpoint is enforced (no silent bypass)
+- [ ] Handoff bundle is complete enough for a second engineer to finish merge without re-discovery
+
+---
+
 ### Mission 3.2: Issue-to-Merge End-to-End Automation (★★★★★)
 
 **Time**: 8–12 hours · **Prerequisites**: All Track 1 + Track 2 missions recommended, all 12 modules, all 9 labs
@@ -467,6 +509,7 @@ Human Checkpoint #2: Final Merge Decision
 | 2.2 Issue-to-PR | MCP (Linear/GitHub), issue tracking, PR workflow | M05/06 MCP |
 | 2.3 PR Review Agent | Structured review, subagent scope, comparative evaluation | M09 Multi-Agent |
 | 3.1 Productivity Toolkit | Skills + commands + subagents as a system | M07, M09 |
+| 3.1B Bridge Mission | Partial pipeline + enforced checkpoint + handoff artifacts | M07, M09, M12 |
 | 3.2 Full Pipeline | All modules: MCP, permissions, multi-agent, production | All |
 
 ---

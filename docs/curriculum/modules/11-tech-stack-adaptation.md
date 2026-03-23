@@ -624,12 +624,12 @@ applies_to: [Go 1.23+]
 
 # Go Error Handling -- [Organization] Conventions
 
-## Pattern
+### Pattern
 
 All functions that can fail return (T, error). Errors are wrapped
 at each layer boundary with the function's package-qualified name.
 
-## Service Layer
+### Service Layer
 
 func (s *UserService) CreateUser(ctx context.Context,
     req CreateUserRequest) (*User, error) {
@@ -639,7 +639,7 @@ func (s *UserService) CreateUser(ctx context.Context,
     return user, nil
 }
 
-## Sentinel Errors
+### Sentinel Errors
 
 Define at the package level for expected failure conditions:
 
@@ -649,7 +649,7 @@ var (
     ErrUnauthorized  = errors.New("unauthorized")
 )
 
-## Handler Layer Conversion
+### Handler Layer Conversion
 
 func handleError(w http.ResponseWriter, err error) {
     switch {

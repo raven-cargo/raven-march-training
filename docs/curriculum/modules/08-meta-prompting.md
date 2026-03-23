@@ -673,6 +673,18 @@ Meta-prompting provides genuine leverage in the scenarios above. It also has rea
 
 ---
 
+## 8.6 DSPy in the Meta-Prompting Workflow
+
+DSPy is a practical extension point for this module's generate-evaluate-improve loop. Instead of manually tuning prompt text, DSPy lets you define a structured objective and optimize prompt programs against concrete evaluation signals. In practice:
+
+- Use a meta-prompt to generate the first draft prompt program.
+- Use DSPy evaluation metrics to score outputs against target behavior.
+- Feed evaluation failures back into the next meta-prompt iteration.
+
+This keeps optimization grounded in measurable outcomes rather than style-only edits.
+
+---
+
 ## Lab Connection
 
 **Lab 06** is the closest applied companion. You will build skills and commands where meta-prompting can be used to bootstrap first drafts, then refine them with explicit evaluation criteria before reuse. The reusable artifacts you create here -- skills, rubrics, and output formats -- are the exact kind of building blocks Module 09 turns into specialist roles inside an orchestrated system.
@@ -684,6 +696,7 @@ Meta-prompting provides genuine leverage in the scenarios above. It also has rea
 - [Anthropic Prompt Engineering Techniques](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview)
 - [Meta-Prompting: Enhancing Language Models with Task-Agnostic Scaffolding](https://arxiv.org/abs/2401.12954)
 - [Automatic Prompt Engineer (APE)](https://arxiv.org/abs/2211.01910)
+- [DSPy Documentation](https://dspy.ai/)
 - [Standalone Diagram: Generate-Evaluate-Improve Loop](/examples/module-diagrams/m08-meta-loop.html)
 
 ---

@@ -72,9 +72,9 @@
       background: var(--bg-raised); border: 1px solid var(--border);
       transition: all 0.3s ease;
     }
-    .nav-dot.dot-locked  { background: var(--text-dim); }
-    .nav-dot.dot-active  { background: var(--primary); box-shadow: 0 0 8px var(--primary-glow); }
-    .nav-dot.dot-complete { background: var(--success); }
+    .nav-dot.dot-locked  { background: transparent; border: 1px dashed var(--dim); opacity: 0.95; }
+    .nav-dot.dot-active  { background: var(--primary); border-color: var(--primary); transform: scale(1.2); box-shadow: 0 0 8px var(--primary-glow); }
+    .nav-dot.dot-complete { background: var(--success); border-color: var(--success); }
 
     /* ─── Sections ───────────────────────────────────────────────── */
     .section-block {
@@ -709,6 +709,8 @@
     <div id="nav-dots" style="display:flex;gap:6px;" aria-label="Lab progress"></div>
   </div>
 </nav>
+
+<div id="lab-onboarding-tip" role="note" style="max-width:860px;margin:14px auto 0;padding:10px 14px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:10px;font-size:12px;color:var(--muted);">Tip: fill the section action in each block to earn XP, and use nav dots as progress signals (locked = not available yet, active = current section, complete = finished).</div>
 
 <main>
 
@@ -2111,12 +2113,14 @@ function updateNavDots() {
       container.appendChild(dot);
     }
   }
+  const firstIncomplete = sectionComplete.indexOf(false);
   [...container.children].forEach((dot, i) => {
     dot.classList.remove('dot-locked', 'dot-active', 'dot-complete');
     if (sectionComplete[i]) dot.classList.add('dot-complete');
-    else if (i === sectionComplete.indexOf(false)) dot.classList.add('dot-active');
+    else if (i === firstIncomplete) dot.classList.add('dot-active');
     else dot.classList.add('dot-locked');
-    dot.setAttribute('aria-label', `Section ${i + 1}: ${sectionComplete[i] ? 'Complete' : 'Locked'}`);
+    const state = sectionComplete[i] ? 'Complete' : i === firstIncomplete ? 'Current' : 'Locked';
+    dot.setAttribute('aria-label', `Section ${i + 1}: ${state}`);
   });
 }
 

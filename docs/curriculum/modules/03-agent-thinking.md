@@ -1650,7 +1650,7 @@ database failure case.</pre>
 
 - Wei, J., Wang, X., Schuurmans, D., Bosma, M., Ichter, B., Xia, F., Chi, E., Le, Q., & Zhou, D. (2022). Chain-of-thought prompting elicits reasoning in large language models. *Advances in Neural Information Processing Systems, 35*. https://arxiv.org/abs/2201.11903
 
-- Kojima, T., Gu, S. S., Reid, M., Matsuo, Y., & Iwasawa, Y. (2022). Large language models are zero-shot reasoners. *Advances in Neural Information Processing Systems, 35*. https://arxiv.org/abs/2205.11916 *(The "Let's think step by step" paper)*
+- Kojima, T., Gu, S. S., Reid, M., Matsuo, Y., & Iwasawa, Y. (2022). Large language models are zero-shot reasoners. *Advances in Neural Information Processing Systems, 35*. https://arxiv.org/abs/2205.11916 *(The "Let's think step by step" paper introducing zero-shot reasoning prompt priming.)*
 
 ---
 

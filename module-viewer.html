@@ -5570,6 +5570,7 @@
     /* 1. Wrap h2 sections into .module-section cards */
     const h2s = Array.from(contentEl.querySelectorAll('h2'));
     totalSections = h2s.length;
+    const builtSections = [];
 
     h2s.forEach(function (h2, idx) {
       const sectionId = idx + 1;
@@ -5610,6 +5611,10 @@
 
       section.appendChild(header);
       section.appendChild(body);
+      builtSections.push(section);
+    });
+
+    builtSections.forEach(function (section) {
       contentEl.appendChild(section);
     });
 

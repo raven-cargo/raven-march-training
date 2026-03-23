@@ -125,6 +125,8 @@ Traditional security frameworks target a well-defined attack surface: network in
   <p><strong>Autonomy amplifies mistakes.</strong> In a traditional application, a misconfiguration produces the same wrong behavior on every call -- it's detectable. In an agentic system, the same misconfiguration can produce wildly different outcomes across runs, because the agent's autonomous decision-making interacts with the misconfiguration differently each time. Small errors become large incidents.</p>
 </div>
 
+<p><strong>Text-mode legend:</strong> <code>INCLUDE</code> means a defense pattern you should apply. <code>EXCLUDE</code> means a pattern you should reject because it increases injection risk.</p>
+
 <div class="ix-diagram" data-component="callout" data-variant="key-concept">
   <p><strong>Principle of least privilege.</strong> Grant the agent only the file access, command execution rights, and tool access it needs for its specific task -- and no more. When an error occurs (and it will), least privilege bounds the blast radius. An agent with <code>Write(src/**)</code> only cannot accidentally overwrite <code>infrastructure/terraform/</code> regardless of what reasoning error it makes.</p>
 </div>
@@ -813,6 +815,8 @@ An approval gate is a point where the agent stops, presents its planned action t
     <div class="ix-entry-body">Operations that are already covered by your <code>settings.json</code> allow list and that the operator has deliberately pre-approved for automated execution. The allow list is itself an approval mechanism -- adding redundant gates to already-approved operations reduces efficiency without improving safety.</div>
   </div>
 </div>
+
+<p><strong>Text-mode legend:</strong> In this list, <code>INCLUDE</code> means an action category that requires an approval gate. <code>EXCLUDE</code> means a category that should not require a gate.</p>
 
 <p class="ix-instruct">Step through the "show me the plan" approval pattern to see how it works in practice.</p>
 
