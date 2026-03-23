@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CC2 Observe Dashboard - Agentic AI Course Completeness</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #131a2e;
+      --panel-2: #1a2340;
+      --text: #edf2ff;
+      --muted: #9fb0d9;
+      --line: #2d3a63;
+      --live: #16a34a;
+      --partial: #f59e0b;
+      --preview: #6366f1;
+      --high: #ef4444;
+      --med: #f59e0b;
+      --low: #10b981;
+      --fixed: #22c55e;
+      --open: #f97316;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at 0 0, #172349 0%, var(--bg) 35%);
+      color: var(--text);
+      line-height: 1.35;
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: end;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 26px;
+      letter-spacing: 0.2px;
+    }
+
+    .sub {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .overall {
+      background: linear-gradient(135deg, #1f2e57, #243268);
+      border: 1px solid #3a4b7d;
+      border-radius: 14px;
+      padding: 12px 16px;
+      min-width: 220px;
+      text-align: right;
+    }
+
+    .overall .label {
+      color: #bdd0ff;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .overall .score {
+      font-size: 34px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .strip {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin: 14px 0 18px;
+    }
+
+    .kpi {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .kpi .k {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+    }
+
+    .kpi .v {
+      margin-top: 4px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 17px;
+      color: #d9e2ff;
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 12px;
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .cat {
+      background: var(--panel-2);
+      border: 1px solid #364777;
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .cat .top {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .cat .name { font-weight: 600; }
+    .cat .meta { color: var(--muted); }
+
+    .bar {
+      height: 8px;
+      background: #0b1230;
+      border: 1px solid #2e3e6d;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      background: linear-gradient(90deg, #22c55e, #84cc16);
+    }
+
+    .tiny {
+      margin-top: 6px;
+      color: #b5c2eb;
+      font-size: 12px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .live { color: #dcfce7; background: rgba(22, 163, 74, 0.25); border-color: rgba(22, 163, 74, 0.5); }
+    .partial { color: #fff7ed; background: rgba(245, 158, 11, 0.25); border-color: rgba(245, 158, 11, 0.5); }
+    .preview { color: #e0e7ff; background: rgba(99, 102, 241, 0.26); border-color: rgba(99, 102, 241, 0.5); }
+
+    .high { color: #fee2e2; background: rgba(239, 68, 68, 0.24); border-color: rgba(239, 68, 68, 0.55); }
+    .medium { color: #fff7ed; background: rgba(245, 158, 11, 0.24); border-color: rgba(245, 158, 11, 0.55); }
+    .low { color: #ecfdf5; background: rgba(16, 185, 129, 0.24); border-color: rgba(16, 185, 129, 0.55); }
+
+    .fixed { color: #ecfdf5; background: rgba(34, 197, 94, 0.2); border-color: rgba(34, 197, 94, 0.48); }
+    .open { color: #ffedd5; background: rgba(249, 115, 22, 0.2); border-color: rgba(249, 115, 22, 0.48); }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    input, select {
+      width: 100%;
+      background: #0e1531;
+      color: var(--text);
+      border: 1px solid #33457a;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 8px;
+      border-bottom: 1px solid #29375f;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th { color: #b8c8f7; font-size: 12px; text-transform: uppercase; letter-spacing: 0.6px; }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      color: #d7e2ff;
+      background: #0f1838;
+      border: 1px solid #2c3a67;
+      border-radius: 6px;
+      padding: 1px 6px;
+    }
+
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .cascade { margin-bottom: 8px; padding: 8px; border: 1px solid #364777; border-radius: 8px; background: var(--panel-2); }
+
+    .note {
+      color: #c8d5fb;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 980px) {
+      .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid2 { grid-template-columns: 1fr; }
+      .category-grid { grid-template-columns: 1fr; }
+      .filters { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div>
+        <h1>CC2 Observe - Course Completeness Assessment</h1>
+        <div class="sub">Repository: <code>/PROJECTS/agentic-ai-course</code> | Date: 2026-03-23 | Trust order: live code > runtime wiring > docs</div>
+      </div>
+      <div class="overall">
+        <div class="label">Weighted Completion</div>
+        <div class="score">89.6%</div>
+      </div>
+    </div>
+
+    <div class="strip">
+      <div class="kpi"><div class="k">Modules</div><div class="v">12</div></div>
+      <div class="kpi"><div class="k">Labs</div><div class="v">9</div></div>
+      <div class="kpi"><div class="k">Dashboard Routes</div><div class="v">21</div></div>
+      <div class="kpi"><div class="k">Live Review Items</div><div class="v">15</div></div>
+      <div class="kpi"><div class="k">Open Gaps</div><div class="v">5</div></div>
+    </div>
+
+    <div class="grid2">
+      <section class="card">
+        <h2>Five Core Completion Categories</h2>
+        <div class="category-grid">
+          <div class="cat">
+            <div class="top"><span class="name">1. Curriculum Core Coverage</span><span class="meta">94 / 100 (w=25)</span></div>
+            <div class="bar"><div class="fill" style="width:94%"></div></div>
+            <div class="tiny">12 module files present, citation and section gaps patched in M03/04/07/08/10/11/12.</div>
+          </div>
+          <div class="cat">
+            <div class="top"><span class="name">2. Lab Experience & Progression</span><span class="meta">89 / 100 (w=25)</span></div>
+            <div class="bar"><div class="fill" style="width:89%"></div></div>
+            <div class="tiny">9 lab routes wired, progression and hint/simulation/nav-dot fixes landed across day1/day2/day3 labs.</div>
+          </div>
+          <div class="cat">
+            <div class="top"><span class="name">3. Assessment & Challenge Path</span><span class="meta">87 / 100 (w=20)</span></div>
+            <div class="bar"><div class="fill" style="width:87%"></div></div>
+            <div class="tiny">Submission flow and bridge mission 3.1B added; challenge links aligned from dashboard.</div>
+          </div>
+          <div class="cat">
+            <div class="top"><span class="name">4. Multimedia Learning Surface</span><span class="meta">92 / 100 (w=15)</span></div>
+            <div class="bar"><div class="fill" style="width:92%"></div></div>
+            <div class="tiny">Video/slide maps are now route-selective by badge and featured podcast points to direct audio.</div>
+          </div>
+          <div class="cat">
+            <div class="top"><span class="name">5. Operational Readiness & Governance</span><span class="meta">84 / 100 (w=15)</span></div>
+            <div class="bar"><div class="fill" style="width:84%"></div></div>
+            <div class="tiny">Production deploy path is live, but runtime remains static-only with limited automated guardrails.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>CC2 Observation Matrix (Boundary-First)</h2>
+        <table>
+          <thead>
+            <tr><th>Layer</th><th>Status</th><th>Evidence</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Route surface</td><td><span class="tag live">LIVE</span></td><td><code>index.html</code> links to 9 labs + 12 modules + challenges</td></tr>
+            <tr><td>UI composition</td><td><span class="tag live">LIVE</span></td><td>Cards, pills, multimedia tiles, search panel, onboarding banners</td></tr>
+            <tr><td>Client logic</td><td><span class="tag live">LIVE</span></td><td>Inline JS in dashboard/labs; progression, filtering, hint toggles, simulation state</td></tr>
+            <tr><td>Server/API boundary</td><td><span class="tag partial">PARTIAL</span></td><td>No local API layer or handlers in repo; static delivery model</td></tr>
+            <tr><td>Persistence layer</td><td><span class="tag partial">PARTIAL</span></td><td>Local browser persistence only (localStorage patterns in multiple labs)</td></tr>
+            <tr><td>Vendor boundary</td><td><span class="tag live">LIVE</span></td><td>NotebookLM, Googleusercontent media, Anthropic docs, fonts/CDNs</td></tr>
+            <tr><td>Trigger/cascade layer</td><td><span class="tag live">LIVE</span></td><td>Doc structure -> viewer rendering, mission anchors -> challenge navigation</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>Tagged Review Elements</h2>
+      <div class="legend">
+        <span class="tag live">LIVE</span>
+        <span class="tag partial">PARTIAL</span>
+        <span class="tag preview">PREVIEW</span>
+        <span class="tag high">HIGH</span>
+        <span class="tag medium">MEDIUM</span>
+        <span class="tag low">LOW</span>
+        <span class="tag fixed">FIXED</span>
+        <span class="tag open">OPEN</span>
+      </div>
+
+      <div class="filters">
+        <input id="q" type="search" placeholder="Filter by element, tag, or evidence path..." />
+        <select id="cat"><option value="">All categories</option></select>
+        <select id="state"><option value="">All states</option><option>LIVE</option><option>PARTIAL</option><option>PREVIEW</option></select>
+        <select id="priority"><option value="">All priorities</option><option>HIGH</option><option>MEDIUM</option><option>LOW</option></select>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th><th>Category</th><th>Element</th><th>Tags</th><th>Evidence</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="note">Tagged elements combine implementation status with review urgency to keep remediation and completion scoring in one surface.</div>
+    </section>
+
+    <div class="grid2">
+      <section class="card">
+        <h2>External Vendor Entry Map</h2>
+        <table>
+          <thead><tr><th>Vendor</th><th>Entry Count</th><th>Role</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">fonts.googleapis.com</td><td>39</td><td>Typography delivery</td></tr>
+            <tr><td class="mono">docs.anthropic.com</td><td>22</td><td>Reference links for modules</td></tr>
+            <tr><td class="mono">unpkg.com</td><td>16</td><td>Client-side dependency/CDN assets</td></tr>
+            <tr><td class="mono">modelcontextprotocol.io</td><td>12</td><td>MCP specification references</td></tr>
+            <tr><td class="mono">arxiv.org</td><td>10</td><td>Academic citations</td></tr>
+            <tr><td class="mono">notebooklm.google.com</td><td>7</td><td>NotebookLM resource linking</td></tr>
+            <tr><td class="mono">lh3.googleusercontent.com</td><td>media</td><td>Video/podcast direct assets</td></tr>
+            <tr><td class="mono">agentic-ai-course-hazel.vercel.app</td><td>8</td><td>Deployed runtime references</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <h2>Cross-Domain Cascades</h2>
+        <div class="cascade"><span class="tag live">LIVE</span> <strong>Module Markdown headings</strong> <code>triggers</code> module section grouping in <code>module-viewer.html</code>; heading-depth mistakes previously caused ordering drift in render output.</div>
+        <div class="cascade"><span class="tag live">LIVE</span> <strong>Challenge mission IDs</strong> <code>gates</code> dashboard deep-links; adding Mission 3.1B in challenges and index re-wires end-to-end learner path continuity.</div>
+        <div class="cascade"><span class="tag live">LIVE</span> <strong>Lab progression state</strong> <code>persists_to</code> browser local state and <code>triggers</code> nav-dot lock/complete visuals, affecting learner guidance and XP flow.</div>
+        <div class="cascade"><span class="tag live">LIVE</span> <strong>Multimedia badge routing</strong> <code>proxies_to</code> badge-specific URL maps; title-level collisions are avoided by content-type keyed lookup.</div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>Highest-Priority Remaining Gaps</h2>
+      <ol>
+        <li>Establish automated link-health and media availability checks for external vendor URLs (<span class="tag high">HIGH</span> <span class="tag open">OPEN</span>).</li>
+        <li>Add CI quality gates for content wiring regressions (challenge anchors, section ordering, lab navigation states).</li>
+        <li>Introduce shared persistence (or backend API) for cross-device progress and completion analytics instead of browser-local state only.</li>
+        <li>Add machine-checkable rubric validation for challenge submissions to move assessment from static guidance toward measurable completion.</li>
+        <li>Document explicit LIVE/PARTIAL/PREVIEW status in a maintained repo artifact to reduce future documentation drift.</li>
+      </ol>
+    </section>
+  </div>
+
+  <script>
+    const items = [
+      {id:'R01', category:'Curriculum Core Coverage', element:'M03/M04/M07/M08/M10/M11/M12 updates present', state:'LIVE', priority:'LOW', status:'FIXED', evidence:'docs/curriculum/modules/*.md'},
+      {id:'R02', category:'Lab Experience & Progression', element:'Lab 03 challenge placeholders removed', state:'LIVE', priority:'HIGH', status:'FIXED', evidence:'labs/day1/lab-03-agent-thinking.html'},
+      {id:'R03', category:'Lab Experience & Progression', element:'Lab 05 hint toggle reliability and aria-expanded behavior', state:'LIVE', priority:'MEDIUM', status:'FIXED', evidence:'labs/day2/lab-05-prompt-engineering.html'},
+      {id:'R04', category:'Lab Experience & Progression', element:'Lab 06 simulation XP award guarded to single completion', state:'LIVE', priority:'MEDIUM', status:'FIXED', evidence:'labs/day2/lab-06-skills-commands.html'},
+      {id:'R05', category:'Lab Experience & Progression', element:'Lab 07 nav-dot lock/current/complete visual and label separation', state:'LIVE', priority:'MEDIUM', status:'FIXED', evidence:'labs/day3/lab-07-multi-agent.html'},
+      {id:'R06', category:'Assessment & Challenge Path', element:'Mission 3.1B bridge path linked from dashboard and challenge doc', state:'LIVE', priority:'HIGH', status:'FIXED', evidence:'index.html + docs/curriculum/CHALLENGE-MISSIONS.md'},
+      {id:'R07', category:'Assessment & Challenge Path', element:'Global submission flow formalized for missions', state:'LIVE', priority:'MEDIUM', status:'FIXED', evidence:'docs/curriculum/CHALLENGE-MISSIONS.md'},
+      {id:'R08', category:'Multimedia Learning Surface', element:'Featured podcast now direct audio URL', state:'LIVE', priority:'HIGH', status:'FIXED', evidence:'index.html'},
+      {id:'R09', category:'Multimedia Learning Surface', element:'Video/slide links routed by badge-specific maps', state:'LIVE', priority:'HIGH', status:'FIXED', evidence:'index.html (videoLinks/slideLinks)'},
+      {id:'R10', category:'Curriculum Core Coverage', element:'Dashboard search added for modules/labs/media/missions', state:'LIVE', priority:'MEDIUM', status:'FIXED', evidence:'index.html (#course-search)'},
+      {id:'R11', category:'Curriculum Core Coverage', element:'Card-title truncation removed for long content names', state:'LIVE', priority:'LOW', status:'FIXED', evidence:'index.html (.card-name/.mm-title)'},
+      {id:'R12', category:'Lab Experience & Progression', element:'Cross-lab onboarding tip for XP and lock-state semantics', state:'LIVE', priority:'LOW', status:'FIXED', evidence:'labs/day*/lab-*.html'},
+      {id:'R13', category:'Operational Readiness & Governance', element:'No first-party API/service layer in repo runtime boundary', state:'PARTIAL', priority:'MEDIUM', status:'OPEN', evidence:'repo structure (static html/js)'},
+      {id:'R14', category:'Operational Readiness & Governance', element:'Progress persistence is browser-local only', state:'PARTIAL', priority:'HIGH', status:'OPEN', evidence:'localStorage usage across labs'},
+      {id:'R15', category:'Assessment & Challenge Path', element:'Challenge rubric scoring still manual/document-guided', state:'PARTIAL', priority:'MEDIUM', status:'OPEN', evidence:'docs/curriculum/CHALLENGE-MISSIONS.md'},
+      {id:'R16', category:'Multimedia Learning Surface', element:'External media links lack automated health checks', state:'PREVIEW', priority:'HIGH', status:'OPEN', evidence:'index.html external URLs'},
+      {id:'R17', category:'Operational Readiness & Governance', element:'No CI guard for route/anchor/link regressions', state:'PREVIEW', priority:'HIGH', status:'OPEN', evidence:'repo lacks workflow enforcing link/route audit'},
+      {id:'R18', category:'Curriculum Core Coverage', element:'LIVE/PARTIAL/PREVIEW taxonomy not yet maintained as first-class artifact', state:'PREVIEW', priority:'LOW', status:'OPEN', evidence:'no dedicated status registry file'},
+      {id:'R19', category:'Assessment & Challenge Path', element:'Stand-alone knowledge checks now present in M07', state:'LIVE', priority:'LOW', status:'FIXED', evidence:'docs/curriculum/modules/07-skills-commands.md'},
+      {id:'R20', category:'Curriculum Core Coverage', element:'Module viewer section build ordering stabilized', state:'LIVE', priority:'HIGH', status:'FIXED', evidence:'module-viewer.html (postProcess)'}
+    ];
+
+    const tbody = document.getElementById('rows');
+    const q = document.getElementById('q');
+    const cat = document.getElementById('cat');
+    const state = document.getElementById('state');
+    const priority = document.getElementById('priority');
+
+    [...new Set(items.map(i => i.category))].forEach(c => {
+      const o = document.createElement('option');
+      o.value = c;
+      o.textContent = c;
+      cat.appendChild(o);
+    });
+
+    function tag(cls, txt) {
+      return `<span class="tag ${cls.toLowerCase()}">${txt}</span>`;
+    }
+
+    function render() {
+      const term = q.value.trim().toLowerCase();
+      const c = cat.value;
+      const s = state.value;
+      const p = priority.value;
+
+      const out = items.filter(i => {
+        if (c && i.category !== c) return false;
+        if (s && i.state !== s) return false;
+        if (p && i.priority !== p) return false;
+        if (!term) return true;
+        const hay = `${i.id} ${i.category} ${i.element} ${i.state} ${i.priority} ${i.status} ${i.evidence}`.toLowerCase();
+        return hay.includes(term);
+      });
+
+      tbody.innerHTML = out.map(i => `
+        <tr>
+          <td class="mono">${i.id}</td>
+          <td>${i.category}</td>
+          <td>${i.element}</td>
+          <td>${tag(i.state, i.state)} ${tag(i.priority === 'MEDIUM' ? 'medium' : i.priority.toLowerCase(), i.priority)} ${tag(i.status.toLowerCase(), i.status)}</td>
+          <td class="mono">${i.evidence}</td>
+        </tr>
+      `).join('');
+    }
+
+    [q, cat, state, priority].forEach(el => el.addEventListener('input', render));
+    render();
+  </script>
+</body>
+</html>
