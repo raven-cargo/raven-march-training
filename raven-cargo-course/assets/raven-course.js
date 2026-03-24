@@ -60,6 +60,70 @@
     return new Date(left.created_at || 0).getTime() - new Date(right.created_at || 0).getTime();
   }
 
+  function extractModuleNumber(item) {
+    var sources = [
+      item && item.category,
+      item && item.title,
+      item && item.file_name
+    ];
+    for (var index = 0; index < sources.length; index += 1) {
+      var value = String(sources[index] || '');
+      var match = value.match(/module\s+0?(\d{1,2})/i);
+      if (match) return Number(match[1]);
+    }
+    return null;
+  }
+
+  function resourceKindRank(item) {
+    var kind = mediaKind(item);
+    if (kind === 'pdf') return 0;
+    if (kind === 'video') return 1;
+    if (kind === 'audio') return 2;
+    if (kind === 'image') return 3;
+    return 4;
+  }
+
+  function compareResources(left, right) {
+    var leftModule = extractModuleNumber(left);
+    var rightModule = extractModuleNumber(right);
+
+    if (leftModule != null || rightModule != null) {
+      if (leftModule == null) return 1;
+      if (rightModule == null) return -1;
+      if (leftModule !== rightModule) return leftModule - rightModule;
+    }
+
+    var kindDelta = resourceKindRank(left) - resourceKindRank(right);
+    if (kindDelta !== 0) return kindDelta;
+
+    return compareByCreatedAtAsc(left, right);
+  }
+
+  function resourceTabLabel(item) {
+    var kind = mediaKind(item);
+    if (kind === 'pdf') return 'Slide Deck';
+    if (kind === 'video') return 'Video';
+    if (kind === 'audio') return 'Audio';
+    if (kind === 'image') return 'Image';
+    return 'File';
+  }
+
+  function resourceModuleTitle(item) {
+    var title = String(item && item.title || '');
+    var match = title.match(/^Module\s+\d+\s+[·-]\s+(.+?)\s+(Slide Deck|Video|Audio|Image|File)$/i);
+    if (match) return match[1];
+    match = title.match(/^Module\s+\d+\s+[·-]\s+(.+)$/i);
+    if (match) return match[1];
+    return title || 'Course Resource';
+  }
+
+  function resourceModuleSummary(items) {
+    if (!items || !items.length) return '';
+    var first = items[0];
+    var description = String(first.description || first.notes || '');
+    return description.replace(/^(Slide Deck|Video|Audio|Image|File)\s+for\s+Module\s+\d+\s+on\s+/i, '').replace(/\.$/, '');
+  }
+
   function fileExtension(value) {
     var parts = String(value || '').split('.');
     return parts.length > 1 ? parts.pop().toLowerCase() : '';
@@ -402,7 +466,7 @@
     var host = byId('resource-list');
     var summary = byId('resource-count-copy');
     if (!host) return;
-    var uploaded = (uploadedResources || []).slice().sort(compareByCreatedAtAsc);
+    var uploaded = (uploadedResources || []).slice().sort(compareResources);
     var videoCount = uploaded.filter(function (item) { return mediaKind(item) === 'video'; }).length;
     var deckCount = uploaded.filter(function (item) { return mediaKind(item) === 'pdf'; }).length;
 
@@ -416,38 +480,103 @@
       host.innerHTML = '<div class="raven-empty-state">No 2-day course resources have been uploaded yet.</div>';
       return;
     }
-    host.innerHTML =
-      '<div class="raven-resource-grid">' +
-        uploaded.map(function (item) {
-          var kind = item.kind || 'upload';
-          var href = item.href || item.file_url || item.url || item.path || '#';
-          var description = item.description || item.notes || 'Uploaded Raven resource.';
-          var category = item.category || item.kind || 'Course Resource';
-          var external = href.indexOf('http') === 0;
-          var fileBlock = renderFileBlock({
-            title: item.title || item.file_name || 'Untitled resource',
-            description: description,
-            file_url: item.file_url || (external ? href : ''),
-            file_name: item.file_name || item.title || '',
-            link_url: item.link_url || '',
-            href: href,
-            created_at: item.created_at || '',
-            content_type: item.content_type || '',
-            notes: description
-          }, 'resource');
+    var groups = [];
+    uploaded.forEach(function (item) {
+      var moduleNumber = extractModuleNumber(item);
+      var key = moduleNumber != null ? String(moduleNumber).padStart(2, '0') : 'misc';
+      var last = groups.length ? groups[groups.length - 1] : null;
+      if (!last || last.key !== key) {
+        groups.push({
+          key: key,
+          moduleNumber: moduleNumber,
+          items: []
+        });
+      }
+      groups[groups.length - 1].items.push(item);
+    });
 
+    host.innerHTML =
+      '<div class="raven-resource-modules">' +
+        groups.map(function (group, groupIndex) {
+          var moduleTitle = resourceModuleTitle(group.items[0]);
+          var moduleSummary = resourceModuleSummary(group.items);
           return '' +
-            '<article class="raven-resource-card resource-' + escapeHtml(kind) + '">' +
-              '<div class="raven-chip-row">' +
-                '<span class="raven-chip">' + escapeHtml(category) + '</span>' +
-                (item.created_at ? '<span class="raven-chip">' + escapeHtml(formatDate(item.created_at)) + '</span>' : '') +
+            '<article class="raven-resource-module">' +
+              '<div class="raven-resource-module-head">' +
+                '<div>' +
+                  '<div class="raven-resource-module-kicker">' + (group.moduleNumber != null ? 'Module ' + String(group.moduleNumber).padStart(2, '0') : 'Course Resource') + '</div>' +
+                  '<div class="raven-resource-module-title">' + escapeHtml(moduleTitle) + '</div>' +
+                  (moduleSummary ? '<p class="raven-resource-module-summary">' + escapeHtml(moduleSummary) + '</p>' : '') +
+                '</div>' +
               '</div>' +
-              '<div class="raven-resource-title">' + escapeHtml(item.title || item.file_name || 'Untitled resource') + '</div>' +
-              '<p>' + escapeHtml(description) + '</p>' +
-              fileBlock +
+              '<div class="raven-resource-module-shell">' +
+                '<div class="raven-resource-tablist" role="tablist" aria-label="' + escapeHtml(moduleTitle) + ' resources">' +
+                  group.items.map(function (item, itemIndex) {
+                    var tabId = 'resource-tab-' + groupIndex + '-' + itemIndex;
+                    var panelId = 'resource-panel-' + groupIndex + '-' + itemIndex;
+                    return '' +
+                      '<button class="raven-resource-tab' + (itemIndex === 0 ? ' is-active' : '') + '" type="button" role="tab" aria-selected="' + (itemIndex === 0 ? 'true' : 'false') + '" aria-controls="' + panelId + '" id="' + tabId + '" data-target="' + panelId + '">' +
+                        '<span class="raven-resource-tab-label">' + escapeHtml(resourceTabLabel(item)) + '</span>' +
+                        '<span class="raven-resource-tab-name">' + escapeHtml(item.file_name || item.title || 'Resource') + '</span>' +
+                      '</button>';
+                  }).join('') +
+                '</div>' +
+                '<div class="raven-resource-panels">' +
+                  group.items.map(function (item, itemIndex) {
+                    var panelId = 'resource-panel-' + groupIndex + '-' + itemIndex;
+                    var tabId = 'resource-tab-' + groupIndex + '-' + itemIndex;
+                    var href = item.href || item.file_url || item.url || item.path || '#';
+                    var description = item.description || item.notes || 'Uploaded Raven resource.';
+                    var external = href.indexOf('http') === 0;
+                    var fileBlock = renderFileBlock({
+                      title: item.title || item.file_name || 'Untitled resource',
+                      description: description,
+                      file_url: item.file_url || (external ? href : ''),
+                      file_name: item.file_name || item.title || '',
+                      link_url: item.link_url || '',
+                      href: href,
+                      created_at: item.created_at || '',
+                      content_type: item.content_type || '',
+                      notes: description
+                    }, 'resource');
+
+                    return '' +
+                      '<section class="raven-resource-panel' + (itemIndex === 0 ? ' is-active' : '') + '" role="tabpanel" id="' + panelId + '" aria-labelledby="' + tabId + '"' + (itemIndex === 0 ? '' : ' hidden') + '>' +
+                        fileBlock +
+                      '</section>';
+                  }).join('') +
+                '</div>' +
+              '</div>' +
             '</article>';
         }).join('') +
       '</div>';
+  }
+
+  function setupResourceTabs() {
+    var host = byId('resource-list');
+    if (!host) return;
+
+    host.querySelectorAll('.raven-resource-tablist').forEach(function (tablist) {
+      tablist.querySelectorAll('.raven-resource-tab').forEach(function (button) {
+        button.addEventListener('click', function () {
+          var targetId = button.getAttribute('data-target');
+          var shell = tablist.parentNode;
+          if (!shell) return;
+
+          tablist.querySelectorAll('.raven-resource-tab').forEach(function (tab) {
+            var active = tab === button;
+            tab.classList.toggle('is-active', active);
+            tab.setAttribute('aria-selected', active ? 'true' : 'false');
+          });
+
+          shell.querySelectorAll('.raven-resource-panel').forEach(function (panel) {
+            var active = panel.id === targetId;
+            panel.classList.toggle('is-active', active);
+            panel.hidden = !active;
+          });
+        });
+      });
+    });
   }
 
   function fetchSubmissions() {
@@ -468,6 +597,7 @@
       .then(function (payload) {
         uploadedResources = payload.items || [];
         renderResourceList();
+        setupResourceTabs();
       })
       .catch(function (error) {
         uploadedResources = [];

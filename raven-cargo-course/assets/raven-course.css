@@ -924,6 +924,109 @@ a {
   border-top: 2px solid transparent;
 }
 
+.raven-resource-modules {
+  display: grid;
+  gap: 16px;
+}
+
+.raven-resource-module {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: rgba(39, 44, 49, 0.76);
+  box-shadow: var(--shadow-soft);
+}
+
+.raven-resource-module-head {
+  margin-bottom: 14px;
+}
+
+.raven-resource-module-kicker {
+  color: var(--sage);
+  font: 600 11px/1.4 'JetBrains Mono', monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.raven-resource-module-title {
+  margin-top: 8px;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.raven-resource-module-summary {
+  margin: 10px 0 0;
+  max-width: 70ch;
+  color: var(--muted);
+}
+
+.raven-resource-module-shell {
+  display: grid;
+  grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.raven-resource-tablist {
+  display: grid;
+  gap: 10px;
+}
+
+.raven-resource-tab {
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(20, 22, 20, 0.72);
+  color: var(--cream);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.raven-resource-tab:hover,
+.raven-resource-tab:focus-visible {
+  transform: translateY(-1px);
+  border-color: var(--line-strong);
+  background: rgba(29, 33, 30, 0.92);
+  outline: none;
+}
+
+.raven-resource-tab.is-active {
+  border-color: rgba(199, 216, 185, 0.32);
+  background: rgba(199, 216, 185, 0.08);
+}
+
+.raven-resource-tab-label {
+  display: block;
+  color: var(--sage);
+  font: 600 11px/1.4 'JetBrains Mono', monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.raven-resource-tab-name {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.raven-resource-panels {
+  min-width: 0;
+}
+
+.raven-resource-panel {
+  display: none;
+}
+
+.raven-resource-panel.is-active {
+  display: block;
+}
+
 .resource-file {
   border-top-color: rgba(166, 119, 86, 0.7);
 }
@@ -989,11 +1092,17 @@ a {
 }
 
 .raven-media-preview video,
-.raven-media-preview img {
+.raven-media-preview img,
+.raven-media-preview iframe {
   display: block;
   width: 100%;
   max-height: 360px;
   object-fit: cover;
+}
+
+.raven-media-preview iframe {
+  min-height: 360px;
+  border: 0;
 }
 
 .raven-media-preview audio {
@@ -1037,6 +1146,16 @@ a {
 
 .raven-course-module .reading-progress {
   background: linear-gradient(90deg, var(--sage), var(--camel));
+}
+
+@media (max-width: 920px) {
+  .raven-resource-module-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .raven-resource-tablist {
+    grid-template-columns: 1fr;
+  }
 }
 
 .raven-course-module .back-link,
