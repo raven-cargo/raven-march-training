@@ -1,7 +1,7 @@
 <div class="ix-diagram" data-component="module-hero">
 <div class="ix-hero">
 <div class="ix-hero-bg"></div>
-<div class="ix-hero-module-num">Module 06</div>
+<div class="ix-hero-module-num">Module 05</div>
 <div class="ix-hero-title">MCP Architecture</div>
 <div class="ix-hero-subtitle">Understand the Model Context Protocol -- the standard that makes AI agents extensible, composable, and auditable</div>
 <div class="ix-hero-chips">
@@ -14,7 +14,7 @@
 </div>
 </div>
 
-# Module 06: MCP Architecture
+# Module 05: MCP Architecture
 ---
 
 ## Overview
@@ -27,7 +27,7 @@ In Module 02, you connected your first MCP server and saw how it extends Claude 
 
 ---
 
-## 6.1 The Extension Problem MCP Solves
+## 5.1 The Extension Problem MCP Solves
 
 <div class="ix-diagram" data-component="objective">
   <p>Explain the specific problem MCP solves and why a standard protocol is necessary for AI agent extensibility.</p>
@@ -165,7 +165,7 @@ In Module 02, you connected your first MCP server and saw how it extends Claude 
 
 ---
 
-## 6.2 The Three Primitives
+## 5.2 The Three Primitives
 
 <div class="ix-diagram" data-component="objective">
   <p>Distinguish the three MCP primitives -- Tools, Resources, and Prompts -- and identify the correct primitive for a given capability.</p>
@@ -343,7 +343,7 @@ In Module 02, you connected your first MCP server and saw how it extends Claude 
 
 ---
 
-## 6.3 Reading Tool Schemas
+## 5.3 Reading Tool Schemas
 
 <div class="ix-diagram" data-component="objective">
   <p>Interpret a complete MCP server tool schema including name, description, input schema, required vs. optional fields, and enum constraints.</p>
@@ -463,7 +463,7 @@ Tool schemas are the contract between the MCP server and any client that calls t
 
 ---
 
-## 6.4 Transport Configuration
+## 5.4 Transport Configuration
 
 <div class="ix-diagram" data-component="objective">
   <p>Configure both local (stdio) and remote (Streamable HTTP) MCP connections and understand the connection handshake.</p>
@@ -573,7 +573,7 @@ You configured <code>settings.json</code> in Module 02. Now let's understand the
 
 ---
 
-## 6.5 MCP and the Agentic Loop (PRAO)
+## 5.5 MCP and the Agentic Loop (PRAO)
 
 <div class="ix-diagram" data-component="objective">
   <p>Map how MCP primitives integrate into each phase of the Agentic Loop.</p>
@@ -624,7 +624,7 @@ In Module 01 you learned the Agentic Loop (PRAO) and in Module 03 you practiced 
 
 ---
 
-## Module 06 Knowledge Check
+## Module 05 Knowledge Check
 
 <div class="ix-diagram" data-component="objective">
   <p>Verify your understanding of MCP architecture, primitives, schemas, transport, and integration with the Agentic Loop.</p>
@@ -701,3 +701,5 @@ In Module 01 you learned the Agentic Loop (PRAO) and in Module 03 you practiced 
 - [Claude Code MCP Configuration](https://docs.anthropic.com/en/docs/claude-code/mcp)
 
 ---
+
+

@@ -471,7 +471,7 @@ CLAUDE.md is read at session start, making every entry available from the first 
 <p>Affirmative rules tell the agent what to use. Prohibitive rules tell the agent what NOT to use -- and in many cases, the prohibitive rule is more valuable because it eliminates an entire category of wrong answers rather than nudging toward one right answer.</p>
 <p>"NEVER use <code>getServerSideProps</code>" is more powerful than "Use Server Components" because it closes the door on a specific wrong answer the agent would otherwise consider. The agent knows how to write Server Components; it also knows how to write <code>getServerSideProps</code>. Without the prohibition, it might choose the wrong one based on subtle context signals. With the prohibition, the wrong choice is off the table entirely.</p>
 <p>The same principle applies to library conflicts: "NEVER use <code>class-validator</code>; use Zod" is more useful than "Use Zod" because it prevents the agent from reaching for a library that is installed but not approved. The agent does not know your team's library policy from package.json -- it only knows which packages are available, not which ones are sanctioned.</p>
-<p><strong>Note on skill YAML frontmatter:</strong> If you write skill files to encode stack patterns, the frontmatter should include <code>name:</code>, <code>version:</code>, and <code>applies_to:</code> fields. Do not include a <code>triggers:</code> field -- that is a LUXOR-specific convention, not a native Claude Code feature. See Module 05 for the correct skill frontmatter format used by Claude Code natively.</p>
+<p><strong>Note on skill YAML frontmatter:</strong> If you write skill files to encode stack patterns, the frontmatter should include <code>name:</code>, <code>version:</code>, and <code>applies_to:</code> fields. Do not include a <code>triggers:</code> field -- that is a LUXOR-specific convention, not a native Claude Code feature. See Module 07 for the correct skill frontmatter format used by Claude Code natively.</p>
 </div>
 </details>
 
@@ -918,3 +918,5 @@ Participants choose one of the five tech stacks covered in Section 11.3 and comp
 - [Standalone Diagram: Stack Adaptation Decision Map](/examples/module-diagrams/m11-stack-adaptation.html)
 
 ---
+
+

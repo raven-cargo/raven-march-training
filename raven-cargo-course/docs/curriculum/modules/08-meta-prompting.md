@@ -1,7 +1,7 @@
 <div class="ix-diagram" data-component="module-hero">
 <div class="ix-hero">
 <div class="ix-hero-bg"></div>
-<div class="ix-hero-module-num">Module 10</div>
+<div class="ix-hero-module-num">Module 08</div>
 <div class="ix-hero-title">Meta-Prompting</div>
 <div class="ix-hero-subtitle">Use LLMs to generate, evaluate, and improve prompts -- turning prompt development into an engineering discipline that scales</div>
 <div class="ix-hero-chips">
@@ -14,7 +14,7 @@
 </div>
 </div>
 
-# Module 10: Meta-Prompting
+# Module 08: Meta-Prompting
 ---
 
 ## Overview
@@ -23,7 +23,7 @@
   <p>Write meta-prompts that generate, evaluate, and improve prompts at scale -- and recognize when direct prompting is the better approach.</p>
 </div>
 
-In Module 04 you learned the TCEF framework for writing precise prompts. In Module 05 you packaged those prompts into skill files. Now you will use Claude itself to generate, critique, and refine those skill files -- meta-prompting turns the prompt development process into an automated, repeatable engineering workflow. For prompt engineering fundamentals, see the [Anthropic Prompt Engineering Guide](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview).
+In Module 04 you learned the TCEF framework for writing precise prompts. In Module 07 you packaged those prompts into skill files. Now you will use Claude itself to generate, critique, and refine those skill files -- meta-prompting turns the prompt development process into an automated, repeatable engineering workflow. For prompt engineering fundamentals, see the [Anthropic Prompt Engineering Guide](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview).
 
 ---
 
@@ -685,7 +685,7 @@ This keeps optimization grounded in measurable outcomes rather than style-only e
 
 ## Lab Connection
 
-**Lab 05** is the closest applied companion. You will build skills and commands where meta-prompting can be used to bootstrap first drafts, then refine them with explicit evaluation criteria before reuse. The reusable artifacts you create here -- skills, rubrics, and output formats -- are the exact kind of building blocks Module 08 turns into specialist roles inside an orchestrated system.
+**Lab 06** is the closest applied companion. You will build skills and commands where meta-prompting can be used to bootstrap first drafts, then refine them with explicit evaluation criteria before reuse. The reusable artifacts you create here -- skills, rubrics, and output formats -- are the exact kind of building blocks Module 09 turns into specialist roles inside an orchestrated system.
 
 ---
 
@@ -698,3 +698,4 @@ This keeps optimization grounded in measurable outcomes rather than style-only e
 - [Standalone Diagram: Generate-Evaluate-Improve Loop](/examples/module-diagrams/m08-meta-loop.html)
 
 ---
+

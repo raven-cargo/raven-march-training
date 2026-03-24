@@ -1335,6 +1335,7 @@
       cursor: pointer;
       transition: all 0.3s;
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       gap: 12px;
     }
@@ -1345,10 +1346,22 @@
 
     .ix-tree-node i { flex-shrink: 0; }
 
-    .ix-tree-node-text {
+    .ix-tree-node-text,
+    .ix-tree-node .ix-node-label,
+    .ix-tree-node .ix-node-question {
       font-size: 14px;
+      color: var(--text);
+      line-height: 1.5;
+      flex: 1 1 220px;
+    }
+
+    .ix-tree-node .ix-node-desc,
+    .ix-tree-node .ix-node-detail,
+    .ix-tree-node .ix-node-body {
+      width: 100%;
+      font-size: 13px;
       color: var(--muted);
-      flex: 1;
+      line-height: 1.6;
     }
 
     .ix-tree-children {
@@ -1360,6 +1373,51 @@
     }
 
     .ix-tree-children.open { display: block; }
+
+    .ix-tree-node[data-leaf="true"] {
+      cursor: default;
+    }
+
+    .ix-tree-node[data-leaf="true"]:hover {
+      border-color: var(--border);
+    }
+
+    .ix-tree-branch {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    .ix-tree-branch-label {
+      margin: 0 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+
+    .ix-tree-leaf {
+      margin: 8px 20px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--raised);
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .ix-tree-leaf strong,
+    .ix-tree-leaf .ix-node-label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .ix-tree-leaf p {
+      margin: 6px 0 0;
+    }
 
     /* ── Quadrant / Suitability Grid ── */
     .ix-quadrant {
@@ -1707,15 +1765,49 @@
       border: 1px solid rgba(239,68,68,0.3);
     }
     .ix-entry-content { flex: 1; }
+    .ix-entry-section {
+      margin-bottom: 14px;
+    }
+    .ix-entry-section:last-child { margin-bottom: 0; }
+    .ix-entry-section-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--dim);
+      margin: 2px 0 8px;
+    }
     .ix-entry-category {
       font-size: 10px; font-weight: 600;
       text-transform: uppercase; letter-spacing: 0.8px;
       color: var(--dim); margin-bottom: 4px;
     }
+    .ix-entry-title {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.45;
+      margin-bottom: 4px;
+    }
     .ix-entry-example {
       font-family: 'JetBrains Mono', monospace;
       font-size: 12px; color: var(--muted);
       line-height: 1.6; margin-bottom: 6px;
+    }
+    .ix-entry-detail {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .ix-entry-desc,
+    .ix-entry-body {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
     }
     .ix-entry-why {
       font-size: 12px; color: var(--dim); line-height: 1.5;
@@ -2262,7 +2354,8 @@
     /* ── 8. Intervention — Intervene/Hold Decision Guide ── */
     .ix-int-list { padding: 0 20px 20px; }
     .ix-int-list .ix-title { padding: 0 0 12px; }
-    .ix-int-item {
+    .ix-int-item,
+    .ix-intervention-item {
       padding: 14px 18px;
       border-radius: var(--radius);
       border: 1px solid var(--border);
@@ -2292,6 +2385,20 @@
       font-size: 13px; color: var(--muted); line-height: 1.55;
     }
     .ix-int-text strong { color: var(--text); font-weight: 600; }
+    .ix-intervention-label {
+      display: block;
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .ix-intervention-detail,
+    .ix-intervention-body {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
 
     /* ── 9. Debug Steps — Numbered Troubleshooting Steps ── */
     .ix-debug-steps-list {
@@ -3684,23 +3791,197 @@
     });
   }
 
+  function getDecisionTreeChildren(node) {
+    if (!node) return null;
+    var next = node.nextElementSibling;
+    if (next && next.classList.contains('ix-tree-children')) return next;
+    return node.querySelector(':scope > .ix-tree-children');
+  }
+
+  function ensureDecisionTreeNodeText(node) {
+    if (!node) return;
+    if (node.querySelector(':scope > .ix-node-label, :scope > .ix-node-question, :scope > .ix-tree-node-text')) return;
+
+    var textParts = [];
+    Array.from(node.childNodes).forEach(function (child) {
+      if (child.nodeType === Node.TEXT_NODE && child.textContent.trim()) {
+        textParts.push(child.textContent.trim());
+        node.removeChild(child);
+      }
+    });
+
+    var text = textParts.join(' ') || (node.dataset.question || '').trim();
+    if (!text) return;
+
+    var textEl = document.createElement('span');
+    textEl.className = node.dataset.phase ? 'ix-node-label' : 'ix-node-question';
+    textEl.textContent = text;
+    node.insertBefore(textEl, node.firstChild);
+  }
+
+  function ensureDecisionTreeBranchLabel(branch, fallbackLabel) {
+    if (!branch || branch.querySelector(':scope > .ix-tree-branch-label')) return;
+    var labelText = (branch.dataset.answer || branch.dataset.label || fallbackLabel || '').trim();
+    if (!labelText) return;
+    var label = document.createElement('div');
+    label.className = 'ix-tree-branch-label';
+    label.textContent = labelText;
+    branch.insertBefore(label, branch.firstChild);
+  }
+
+  function ensureDecisionTreeChevron(node, children) {
+    if (!node || !children) return;
+    if (node.querySelector(':scope > [data-lucide="chevron-right"], :scope > [data-lucide="chevron-down"], :scope > svg')) return;
+    var chevron = document.createElement('i');
+    chevron.setAttribute('data-lucide', 'chevron-right');
+    node.insertBefore(chevron, node.firstChild);
+  }
+
+  function normalizeSequentialDecisionTree(node) {
+    if (!node || node.dataset.ixTreeNormalized === 'true') return;
+    node.dataset.ixTreeNormalized = 'true';
+    ensureDecisionTreeNodeText(node);
+
+    var children = getDecisionTreeChildren(node);
+    var branchSource = [];
+
+    if (!children) {
+      branchSource = Array.from(node.querySelectorAll(':scope > .ix-tree-branch'));
+      if (!branchSource.length) {
+        var sibling = node.nextElementSibling;
+        while (sibling && sibling.classList.contains('ix-tree-branch')) {
+          branchSource.push(sibling);
+          sibling = sibling.nextElementSibling;
+        }
+      }
+
+      if (branchSource.length) {
+        children = document.createElement('div');
+        children.className = 'ix-tree-children';
+        node.parentNode.insertBefore(children, branchSource[0]);
+        branchSource.forEach(function (branch) {
+          children.appendChild(branch);
+        });
+      }
+    }
+
+    if (!children) return;
+
+    var branches = Array.from(children.children).filter(function (child) {
+      return child.classList && child.classList.contains('ix-tree-branch');
+    });
+
+    branches.forEach(function (branch, index) {
+      ensureDecisionTreeBranchLabel(branch, branches.length === 2 ? (index === 0 ? 'Yes' : 'No') : '');
+      var childNode = branch.querySelector(':scope > .ix-tree-node');
+      if (childNode) normalizeSequentialDecisionTree(childNode);
+    });
+  }
+
+  function buildFlatDecisionTreeNode(nodeMap, nodeId, ancestry) {
+    var source = nodeMap[nodeId];
+    var fragment = document.createDocumentFragment();
+    if (!source || ancestry.indexOf(nodeId) !== -1) return fragment;
+
+    var nextAncestry = ancestry.concat(nodeId);
+    var node = source.cloneNode(true);
+    node.removeAttribute('data-node-id');
+    node.removeAttribute('data-children');
+    node.removeAttribute('data-leaf');
+
+    var phaseLabel = node.querySelector(':scope > .ix-node-label[data-phase]');
+    if (phaseLabel && !node.dataset.phase) {
+      node.dataset.phase = phaseLabel.dataset.phase;
+    }
+
+    ensureDecisionTreeNodeText(node);
+    fragment.appendChild(node);
+
+    var childIds = (source.dataset.children || '')
+      .split(',')
+      .map(function (part) { return part.trim(); })
+      .filter(Boolean);
+
+    if (childIds.length) {
+      var children = document.createElement('div');
+      children.className = 'ix-tree-children';
+
+      childIds.forEach(function (childId, index) {
+        var branch = document.createElement('div');
+        branch.className = 'ix-tree-branch';
+        ensureDecisionTreeBranchLabel(branch, childIds.length === 2 ? (index === 0 ? 'Yes' : 'No') : '');
+        branch.appendChild(buildFlatDecisionTreeNode(nodeMap, childId, nextAncestry));
+        children.appendChild(branch);
+      });
+
+      fragment.appendChild(children);
+    }
+
+    return fragment;
+  }
+
+  function normalizeFlatDecisionTree(el) {
+    var flatNodes = Array.from(el.querySelectorAll(':scope > .ix-tree-node[data-node-id]'));
+    if (!flatNodes.length) return;
+
+    var nodeMap = {};
+    flatNodes.forEach(function (node) {
+      nodeMap[node.dataset.nodeId] = node;
+    });
+
+    var rootId = nodeMap.root ? 'root' : flatNodes[0].dataset.nodeId;
+    var normalizedTree = buildFlatDecisionTreeNode(nodeMap, rootId, []);
+    flatNodes.forEach(function (node) { node.remove(); });
+
+    var title = el.querySelector(':scope > .ix-title');
+    if (title && title.nextSibling) {
+      el.insertBefore(normalizedTree, title.nextSibling);
+    } else {
+      el.appendChild(normalizedTree);
+    }
+  }
+
   /* ── initDecisionTree ──
-   * Finds .ix-tree-node elements, wires click to toggle .ix-tree-children.
+   * Normalizes older decision tree markup variants, then wires click to toggle
+   * .ix-tree-children containers.
    */
   function initDecisionTree(el) {
+    if (el.querySelector(':scope > .ix-tree-node[data-node-id]')) {
+      normalizeFlatDecisionTree(el);
+    }
+
+    var roots = Array.from(el.querySelectorAll(':scope > .ix-tree-root'));
+    if (roots.length) {
+      roots.forEach(function (root) {
+        var rootNode = Array.from(root.children).find(function (child) {
+          return child.classList && child.classList.contains('ix-tree-node');
+        });
+        if (rootNode) normalizeSequentialDecisionTree(rootNode);
+      });
+    } else {
+      var firstNode = Array.from(el.children).find(function (child) {
+        return child.classList && child.classList.contains('ix-tree-node');
+      });
+      if (firstNode) normalizeSequentialDecisionTree(firstNode);
+    }
+
     var nodes = el.querySelectorAll('.ix-tree-node');
     nodes.forEach(function (node) {
-      var nodeChildren = node.nextElementSibling;
-      if (nodeChildren && nodeChildren.classList.contains('ix-tree-children')) {
+      var nodeChildren = getDecisionTreeChildren(node);
+      if (nodeChildren) {
+        ensureDecisionTreeChevron(node, nodeChildren);
         node.setAttribute('role', 'button');
         node.setAttribute('tabindex', '0');
         node.setAttribute('aria-expanded', nodeChildren.classList.contains('open') ? 'true' : 'false');
+      } else {
+        node.style.cursor = 'default';
       }
+      if (node.dataset.ixTreeBound === 'true') return;
+      node.dataset.ixTreeBound = 'true';
       node.addEventListener('click', function (e) {
         e.stopPropagation();
-        // Find the sibling .ix-tree-children
-        var children = node.nextElementSibling;
-        if (!children || !children.classList.contains('ix-tree-children')) return;
+        var children = getDecisionTreeChildren(node);
+        if (!children) return;
 
         var isOpen = children.classList.contains('open');
         children.classList.toggle('open');
@@ -3709,24 +3990,13 @@
         // Rotate chevron icon
         var chevron = node.querySelector('[data-lucide="chevron-right"], [data-lucide="chevron-down"]');
         if (chevron) {
-          if (isOpen) {
-            chevron.style.transform = 'rotate(0deg)';
-            chevron.style.transition = 'transform 0.2s ease';
-          } else {
-            chevron.style.transform = 'rotate(90deg)';
-            chevron.style.transition = 'transform 0.2s ease';
-          }
+          chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(90deg)';
+          chevron.style.transition = 'transform 0.2s ease';
         }
-        // Also handle already-rendered SVGs (Lucide replaces <i> with <svg>)
-        var svg = node.querySelector('svg');
+        var svg = node.querySelector(':scope > svg');
         if (svg && !chevron) {
-          if (isOpen) {
-            svg.style.transform = 'rotate(0deg)';
-            svg.style.transition = 'transform 0.2s ease';
-          } else {
-            svg.style.transform = 'rotate(90deg)';
-            svg.style.transition = 'transform 0.2s ease';
-          }
+          svg.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(90deg)';
+          svg.style.transition = 'transform 0.2s ease';
         }
       });
 
@@ -3743,7 +4013,8 @@
    * Shows one step at a time.
    */
   function initStepWalkthrough(el) {
-    var steps = Array.from(el.querySelectorAll(':scope > .ix-walk-step, :scope > .ix-sw-step'));
+    if (el.querySelector(':scope > .ix-walk-nav')) return;
+    var steps = Array.from(el.querySelectorAll(':scope > .ix-walk-step, :scope > .ix-sw-step, :scope > .ix-step'));
     if (!steps.length) return;
 
     var total = steps.length;
@@ -4723,22 +4994,41 @@
    */
   function initEntryList(el) {
     el.classList.add('ix-entry-list');
+
+    Array.from(el.querySelectorAll('.ix-entry-section')).forEach(function (section) {
+      if (!section.dataset.label || section.querySelector(':scope > .ix-entry-section-label')) return;
+      var sectionLabel = document.createElement('div');
+      sectionLabel.className = 'ix-entry-section-label';
+      sectionLabel.textContent = section.dataset.label;
+      section.insertBefore(sectionLabel, section.firstChild);
+    });
+
     var entries = Array.from(el.querySelectorAll('.ix-entry'));
     entries.forEach(function (entry) {
-      // Skip if badge already exists
-      if (entry.querySelector('.ix-entry-badge')) return;
       var badgeType = entry.dataset.badge || 'include';
-      var badge = document.createElement('div');
+      var badge = entry.querySelector(':scope > .ix-entry-badge');
+      if (!badge) {
+        badge = document.createElement('div');
+      }
       badge.className = 'ix-entry-badge ' + badgeType;
       badge.textContent = badgeType === 'include' ? 'Include' : 'Exclude';
 
-      // Wrap remaining content — move all children into content wrapper
-      var content = document.createElement('div');
-      content.className = 'ix-entry-content';
-      while (entry.firstChild) {
-        content.appendChild(entry.firstChild);
+      var content = entry.querySelector(':scope > .ix-entry-content');
+      if (!content) {
+        content = document.createElement('div');
+        content.className = 'ix-entry-content';
       }
 
+      var nodesToMove = Array.from(entry.childNodes).filter(function (child) {
+        if (child === badge || child === content) return false;
+        return child.nodeType !== Node.TEXT_NODE || child.textContent.trim();
+      });
+
+      nodesToMove.forEach(function (child) {
+        content.appendChild(child);
+      });
+
+      entry.innerHTML = '';
       entry.appendChild(badge);
       entry.appendChild(content);
     });
@@ -5207,15 +5497,36 @@
    */
   function initIntervention(el) {
     el.classList.add('ix-int-list');
-    var items = Array.from(el.querySelectorAll('.ix-int-item'));
+    var items = Array.from(el.querySelectorAll('.ix-int-item, .ix-intervention-item'));
     items.forEach(function (item) {
-      // Skip if badge already exists
-      if (item.querySelector('.ix-int-badge')) return;
-      var action = item.dataset.action || 'hold';
-      var badge = document.createElement('div');
+      item.classList.add('ix-int-item');
+
+      var action = item.dataset.action || item.dataset.badge || 'hold';
+      var badge = item.querySelector(':scope > .ix-int-badge');
+      if (!badge) {
+        badge = document.createElement('div');
+      }
       badge.className = 'ix-int-badge ' + action;
       badge.textContent = action === 'intervene' ? 'Intervene' : 'Hold';
-      item.prepend(badge);
+
+      var text = item.querySelector(':scope > .ix-int-text');
+      if (!text) {
+        text = document.createElement('div');
+        text.className = 'ix-int-text';
+      }
+
+      var nodesToMove = Array.from(item.childNodes).filter(function (child) {
+        if (child === badge || child === text) return false;
+        return child.nodeType !== Node.TEXT_NODE || child.textContent.trim();
+      });
+
+      nodesToMove.forEach(function (child) {
+        text.appendChild(child);
+      });
+
+      item.innerHTML = '';
+      item.appendChild(badge);
+      item.appendChild(text);
     });
   }
 
@@ -5646,16 +5957,52 @@
    * Primarily a layout/styling component; no complex interactivity.
    */
   function initCompare(el) {
-    var cols = Array.from(el.querySelectorAll('[data-col]'));
+    var colsWrapper = el.querySelector(':scope > .ix-compare-cols');
+    var cols = colsWrapper
+      ? Array.from(colsWrapper.children).filter(function (child) {
+          return child.classList && child.classList.contains('ix-compare-col');
+        })
+      : Array.from(el.children).filter(function (child) {
+          if (!child.matches || child.classList.contains('ix-title')) return false;
+          if (!child.matches('div, section, article')) return false;
+          return (
+            child.hasAttribute('data-col') ||
+            child.hasAttribute('data-side') ||
+            child.hasAttribute('data-compare-left') ||
+            child.hasAttribute('data-compare-right') ||
+            child.hasAttribute('data-label') ||
+            child.classList.contains('ix-compare-left') ||
+            child.classList.contains('ix-compare-right')
+          );
+        });
     if (!cols.length) return;
 
-    // Wrap columns in a flex container if not already wrapped
-    var colsWrapper = el.querySelector('.ix-compare-cols');
+    cols.forEach(function (col) {
+      col.classList.add('ix-compare-col');
+      if (!col.dataset.col) {
+        if (col.dataset.side) col.dataset.col = col.dataset.side;
+        else if (col.hasAttribute('data-compare-left') || col.classList.contains('ix-compare-left')) col.dataset.col = 'left';
+        else if (col.hasAttribute('data-compare-right') || col.classList.contains('ix-compare-right')) col.dataset.col = 'right';
+      }
+
+      if (!col.dataset.label) {
+        if (col.hasAttribute('data-compare-left')) col.dataset.label = col.getAttribute('data-compare-left');
+        else if (col.hasAttribute('data-compare-right')) col.dataset.label = col.getAttribute('data-compare-right');
+      }
+
+      if (!col.dataset.phase) {
+        if (col.dataset.col === 'left' && (col.hasAttribute('data-compare-left') || col.classList.contains('ix-compare-left'))) {
+          col.dataset.phase = 'error';
+        } else if (col.dataset.col === 'right' && (col.hasAttribute('data-compare-right') || col.classList.contains('ix-compare-right'))) {
+          col.dataset.phase = 'success';
+        }
+      }
+    });
+
     if (!colsWrapper) {
       colsWrapper = document.createElement('div');
       colsWrapper.className = 'ix-compare-cols';
       cols.forEach(function (col) {
-        col.classList.add('ix-compare-col');
         colsWrapper.appendChild(col);
       });
       // Insert after title if present, otherwise at start

@@ -1,7 +1,7 @@
 <div class="ix-diagram" data-component="module-hero">
 <div class="ix-hero">
 <div class="ix-hero-bg" data-phase="error"></div>
-<div class="ix-hero-module-num">Module 09</div>
+<div class="ix-hero-module-num">Module 10</div>
 <div class="ix-hero-title">Security and Sandboxing</div>
 <div class="ix-hero-subtitle">Design permission boundaries, manage secrets correctly, recognize prompt injection, and protect irreversible actions with approval gates</div>
 <div class="ix-hero-chips">
@@ -14,7 +14,7 @@
 </div>
 </div>
 
-# Module 09: Security and Sandboxing
+# Module 10: Security and Sandboxing
 ---
 
 ## Overview
@@ -1056,3 +1056,5 @@ In this lab, you configure a `settings.json` for a fictional financial services 
 - [Standalone Diagram: Trust Boundaries and Tool Gates](/examples/module-diagrams/m10-trust-boundaries.html)
 
 ---
+
+

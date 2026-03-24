@@ -23,7 +23,7 @@
   <p>Design and specify a complete agentic pipeline for an organizational problem, applying all course concepts in a single integrated design.</p>
 </div>
 
-You have built a complete mental model across eleven modules. The Agentic Loop (PRAO) from Module 01. Claude Code foundations from Module 02. Trace reading from Module 03. TCEF prompting from Module 04. The skills system from Module 05. MCP architecture and primitives from Module 06. Building MCP servers with schema discipline from Module 07. Multi-agent patterns from Module 08. Security and approval gates from Module 09. Meta-prompting from Module 10. Stack adaptation from Module 11. This module is where those pieces integrate into a single, production-ready pipeline design -- not another lesson, but an arrival.
+You have built a complete mental model across eleven modules. The Agentic Loop (PRAO) from Module 01. Claude Code foundations from Module 02. Trace reading from Module 03. TCEF prompting from Module 04. MCP architecture and primitives from Module 05. Building MCP servers with schema discipline from Module 06. The skills system from Module 07. Meta-prompting from Module 08. Multi-agent patterns from Module 09. Security and approval gates from Module 10. Stack adaptation from Module 11. This module is where those pieces integrate into a single, production-ready pipeline design -- not another lesson, but an arrival.
 
 <p class="ix-instruct">Click each component to see its role in a production pipeline and the prior module that built its foundation.</p>
 
@@ -74,7 +74,7 @@ You have built a complete mental model across eleven modules. The Agentic Loop (
 <div class="ix-sec-label">Production Example</div>
 <div class="ix-sec-text">Read changed files via <code>Read()</code>, fetch team docs via a Context7 MCP server, check PR description.</div>
 </div>
-<p class="ix-note"><strong>Foundations</strong>: Module 02 (context discipline), Module 06 (MCP architecture), Module 07 (MCP server implementation), and Module 11 (Context7 grounding for stack-specific docs).</p>
+<p class="ix-note"><strong>Foundations</strong>: Module 02 (context discipline), Module 05 (MCP architecture), Module 06 (MCP server implementation), and Module 11 (Context7 grounding for stack-specific docs).</p>
 </div>
 </div>
 <div class="ix-detail-panel">
@@ -88,7 +88,7 @@ You have built a complete mental model across eleven modules. The Agentic Loop (
 <div class="ix-sec-label">Production Example</div>
 <div class="ix-sec-text">TCEF prompt with the review task + loaded skill files encoding team security conventions.</div>
 </div>
-<p class="ix-note"><strong>Foundations</strong>: Module 04 (TCEF framework) + Module 05 (skills and session context).</p>
+<p class="ix-note"><strong>Foundations</strong>: Module 04 (TCEF framework) + Module 07 (skills and session context).</p>
 </div>
 </div>
 <div class="ix-detail-panel">
@@ -114,9 +114,9 @@ You have built a complete mental model across eleven modules. The Agentic Loop (
 </div>
 <div class="ix-section">
 <div class="ix-sec-label">Production Example</div>
-<div class="ix-sec-text">Post a structured PR review comment via GitHub MCP tool, using the Format contract from Module 04 and the MCP schema discipline from Module 06 as the integration contract.</div>
+<div class="ix-sec-text">Post a structured PR review comment via GitHub MCP tool, using the Format contract from Module 04 and the MCP schema discipline from Module 05 as the integration contract.</div>
 </div>
-<p class="ix-note"><strong>Foundations</strong>: Module 04 (Format as contract) + Module 06 (MCP schemas and structured results).</p>
+<p class="ix-note"><strong>Foundations</strong>: Module 04 (Format as contract) + Module 05 (MCP schemas and structured results).</p>
 </div>
 </div>
 </div>
@@ -358,8 +358,8 @@ Every agentic pipeline composes the five components above into a recognizable ar
 <p><strong>Deliverable:</strong> full TCEF prompt, skill list with loading plan, output schema</p>
 <ul>
 <li>Write the full TCEF prompt (Module 04): Task with precision verbs, grounding Context, concrete domain-specific Examples, constrained Format</li>
-<li>Identify domain knowledge that belongs in skill files (Module 05) rather than inline in the prompt</li>
-<li>Define the output schema for any programmatic output (Module 04 output contracts)</li>
+<li>Identify domain knowledge that belongs in skill files (Module 07) rather than inline in the prompt</li>
+<li>Define the output schema for any programmatic output (Module 05 output contracts)</li>
 </ul>
 <p><strong>The key discipline:</strong> knowledge that will be re-used across sessions belongs in a skill file, not copy-pasted into every prompt. Skills are loaded in CLAUDE.md at session start -- they do not need to be re-specified.</p>
 </div>
@@ -466,7 +466,7 @@ Every agentic pipeline composes the five components above into a recognizable ar
 </div>
 <div class="ix-trace-row" data-type="think" data-delay="4000">
 <span class="ix-trace-content">Format: {"findings": [{"severity": "HIGH|MEDIUM|LOW|INFO", "location": "file:line", "description": "...", "recommendation": "..."}], "blocking": true|false, "coverage_pct": number}</span>
-<span class="ix-trace-note"><strong>F -- Format</strong>: Machine-readable JSON schema. <code>blocking</code> field enables downstream automation (auto-label PR). This is a Module 04 output contract: the format is the integration point. A downstream system can parse this without understanding the agent's reasoning.</span>
+<span class="ix-trace-note"><strong>F -- Format</strong>: Machine-readable JSON schema. <code>blocking</code> field enables downstream automation (auto-label PR). This is a Module 05 output contract: the format is the integration point. A downstream system can parse this without understanding the agent's reasoning.</span>
 </div>
 <div class="ix-trace-row" data-type="response" data-delay="2500">
 <span class="ix-trace-content">TCEF prompt complete. All four components present: Task (bounded output), Context (skills + CLAUDE.md), Examples (domain-specific contrast pair), Format (machine-readable schema). Agent is ready for production deployment.</span>
@@ -1027,7 +1027,7 @@ Agentic systems are not write-once artifacts. The codebase they operate on evolv
 <div class="ix-diagram" data-component="tabbed-panel" data-diagram-id="m12-maintenance-tabs">
 <span class="ix-title">Three Maintenance Topics</span>
 <div data-tab="Skill Versioning">
-<p><strong>Convention</strong>: Major.minor version numbers. Treat skills as APIs (Module 05 -- skills encode one solved problem per file).</p>
+<p><strong>Convention</strong>: Major.minor version numbers. Treat skills as APIs (Module 07 -- skills encode one solved problem per file).</p>
 <p><strong>Major version increment</strong>: Changes that alter what code the skill generates -- changing the pattern, removing a pattern, changing an import convention. Any session loading the previous major version may produce different output. Document the breaking change explicitly in the skill frontmatter.</p>
 <p><strong>Minor version increment</strong>: Additions, clarifications, or corrections that do not alter the generated patterns -- adding an example, fixing a typo, clarifying an ambiguity.</p>
 <pre><code>---
@@ -1168,7 +1168,7 @@ supersedes: go-error-handling@1.x
 </div>
 
 <div class="ix-diagram" data-component="callout" data-variant="core-idea">
-<p><strong>Skills as institutional memory (Module 05)</strong>: Each skill encodes one solved problem. Skills accumulate across months. New team members inherit the team's collective knowledge by loading the skill library. When a team member leaves, their expertise does not leave -- it is encoded in the skill files they contributed. This is the compounding return of the skills system: each skill investment pays dividends for every future session that loads it.</p>
+<p><strong>Skills as institutional memory (Module 07)</strong>: Each skill encodes one solved problem. Skills accumulate across months. New team members inherit the team's collective knowledge by loading the skill library. When a team member leaves, their expertise does not leave -- it is encoded in the skill files they contributed. This is the compounding return of the skills system: each skill investment pays dividends for every future session that loads it.</p>
 </div>
 
 <div class="ix-diagram" data-component="callout" data-variant="tip">
@@ -1295,15 +1295,15 @@ supersedes: go-error-handling@1.x
 </div>
 <div class="ix-reveal-item">
 <div class="ix-reveal-label">Tools, Resources, Prompts (THREE primitives -- not four)</div>
-<div class="ix-reveal-answer" data-phase="act">Module 06 -- MCP architecture introduces the three primitives, and Module 07 turns them into concrete server implementations</div>
+<div class="ix-reveal-answer" data-phase="act">Module 05 -- MCP architecture introduces the three primitives, and Module 06 turns them into concrete server implementations</div>
 </div>
 <div class="ix-reveal-item">
 <div class="ix-reveal-label"><code>isError</code> pattern in MCP tool responses</div>
-<div class="ix-reveal-answer" data-phase="observe">Module 07 -- building MCP servers, including how recoverable tool failures return <code>isError: true</code> instead of crashing the server</div>
+<div class="ix-reveal-answer" data-phase="observe">Module 06 -- building MCP servers, including how recoverable tool failures return <code>isError: true</code> instead of crashing the server</div>
 </div>
 <div class="ix-reveal-item">
 <div class="ix-reveal-label"><code>triggers</code> is a LUXOR convention, not native Claude Code</div>
-<div class="ix-reveal-answer" data-phase="neutral">Module 05 -- the skills system and the distinction between LUXOR project conventions and native Claude Code features</div>
+<div class="ix-reveal-answer" data-phase="neutral">Module 07 -- the skills system and the distinction between LUXOR project conventions and native Claude Code features</div>
 </div>
 <div class="ix-reveal-item">
 <div class="ix-reveal-label">Evaluation is more valuable than generation</div>
@@ -1328,3 +1328,6 @@ supersedes: go-error-handling@1.x
 </div>
 
 ---
+
+
+[Back To Dashboard](/)

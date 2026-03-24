@@ -817,7 +817,7 @@ echo "$REVIEW" | mail -s "Security Review" team@example.com
 
 <div class="ix-diagram" data-component="timeline" data-diagram-id="claudemd-evolution">
   <span class="ix-title">CLAUDE.md is a living document</span>
-  <div class="ix-timeline-stage" data-week="Block 2" data-name="Project kickoff" data-lines="~8 lines">
+  <div class="ix-timeline-stage" data-week="Day 1" data-name="Project kickoff" data-lines="~8 lines">
     <div class="ix-timeline-file"><code># Project<br>TypeScript monorepo, pnpm workspaces<br># Conventions<br>Use zod for validation</code></div>
     <div class="ix-timeline-trigger"><strong>What triggered this:</strong> You created the project and wrote the initial briefing with architecture and one convention.</div>
   </div>
@@ -1925,3 +1925,13 @@ In Lab 02, you'll configure a project from scratch: writing a `CLAUDE.md` for a 
 - Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., & Cao, Y. (2023). ReAct: Synergizing reasoning and acting in language models. *International Conference on Learning Representations (ICLR)*. https://arxiv.org/abs/2210.03629 *(The reasoning + action pattern that underpins Claude Code's tool-use loop)*
 
 ---
+
+## Companion Media (NotebookLM)
+
+- [Module 02 Slide Deck (PDF)](https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c)
+- [Module 02 Explainer Video (open in Notebook Workspace)](https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c)
+- [Notebook Workspace (all companion media)](https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c)
+
+---
+
+

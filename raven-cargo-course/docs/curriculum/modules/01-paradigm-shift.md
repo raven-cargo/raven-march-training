@@ -985,6 +985,63 @@ Summary: separated token issuance, preserved external API, updated route wiring.
 </div>
 </div>
 
+<p class="ix-instruct">Step through both traces to compare the same task in two different paradigms. Use the arrow keys or click the step button.</p>
+
+<div class="ix-diagram" data-component="agent-trace"
+     data-variant="compare"
+     data-diagram-id="m01-era-compare"
+     data-default-mode="manual"
+     data-speed="0.5">
+  <span class="ix-title">Same task, different paradigms</span>
+
+  <div class="ix-trace-group" data-label="Era 2: You are the agent">
+    <div class="ix-trace-line" data-type="prompt" data-delay="0">
+      "The test in user.test.ts is failing. Can you help fix it?"
+    </div>
+    <div class="ix-trace-line" data-type="response" data-delay="2500">
+      Sure! Can you share the test file and the error message?
+    </div>
+    <div class="ix-trace-line" data-type="prompt" data-delay="2500">
+      [You manually copy-paste 47 lines of test code and the error output]
+    </div>
+    <div class="ix-trace-line" data-type="response" data-delay="2500">
+      The issue is on line 23. Change assertEquals to toEqual. Here is the corrected code: ...
+    </div>
+    <div class="ix-trace-line" data-type="prompt" data-delay="2500">
+      [You paste the fix into your editor, run npm test manually, report back]
+    </div>
+    <div class="ix-trace-line" data-type="response" data-delay="2000">
+      Glad it works!
+    </div>
+  </div>
+
+  <div class="ix-trace-group" data-label="Era 3: Agent is the agent">
+    <div class="ix-trace-line" data-type="prompt" data-delay="0">
+      "The test in user.test.ts is failing. Fix it."
+    </div>
+    <div class="ix-trace-line" data-type="tool" data-delay="1500">
+      Read(src/user.test.ts)
+    </div>
+    <div class="ix-trace-line" data-type="tool" data-delay="1500">
+      Bash(npm test -- --filter user)
+    </div>
+    <div class="ix-trace-line" data-type="result" data-delay="1500">
+      FAIL line 23: assertEquals is not a function
+    </div>
+    <div class="ix-trace-line" data-type="tool" data-delay="1500">
+      Edit(src/user.test.ts) -- line 23: assertEquals -> toEqual
+    </div>
+    <div class="ix-trace-line" data-type="tool" data-delay="1500">
+      Bash(npm test -- --filter user)
+    </div>
+    <div class="ix-trace-line" data-type="result" data-delay="1500">
+      All tests passed
+    </div>
+    <div class="ix-trace-line" data-type="response" data-delay="2500">
+      Fixed. The test used assertEquals (not available in vitest) instead of toEqual. Tests pass now.
+    </div>
+  </div>
+</div>
 
 ---
 
@@ -1246,6 +1303,12 @@ Summary: separated token issuance, preserved external API, updated route wiring.
 
 ---
 
+## Companion Media (NotebookLM)
+
+- [Module 01 Slide Deck (PDF)](https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c)
+- [Module 01 Explainer Video (open in Notebook Workspace)](https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c)
+- [Notebook Workspace (all companion media)](https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c)
+
 ## Further Reading
 
 ### Official Documentation
@@ -1258,3 +1321,4 @@ Summary: separated token issuance, preserved external API, updated route wiring.
 - Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., & Cao, Y. (2023). ReAct: Synergizing reasoning and acting in language models. *ICLR 2023*. https://arxiv.org/abs/2210.03629
 
 ---
+

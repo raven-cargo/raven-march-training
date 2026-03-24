@@ -1,7 +1,7 @@
 <div class="ix-diagram" data-component="module-hero">
 <div class="ix-hero">
 <div class="ix-hero-bg"></div>
-<div class="ix-hero-module-num">Module 07</div>
+<div class="ix-hero-module-num">Module 06</div>
 <div class="ix-hero-title">Building MCP Servers</div>
 <div class="ix-hero-subtitle">Design primitive sets, implement servers with the TypeScript SDK, write schemas Claude uses correctly, and handle production edge cases</div>
 <div class="ix-hero-chips">
@@ -14,7 +14,7 @@
 </div>
 </div>
 
-# Module 07: Building MCP Servers
+# Module 06: Building MCP Servers
 ---
 
 ## Overview
@@ -23,11 +23,11 @@
   <p>Design primitive sets, implement a minimal stdio MCP server using the TypeScript SDK, write effective tool schemas, and handle production error cases -- so you can extend Claude Code with custom capabilities.</p>
 </div>
 
-Module 06 established the architecture of MCP -- the three primitives, the transports, and the connection handshake. Now we translate that understanding into implementation. You will design before you build, because poor primitive selection produces servers that technically work but that Claude uses poorly. For the full SDK reference, see the [MCP TypeScript SDK documentation](https://github.com/modelcontextprotocol/typescript-sdk).
+Module 05 established the architecture of MCP -- the three primitives, the transports, and the connection handshake. Now we translate that understanding into implementation. You will design before you build, because poor primitive selection produces servers that technically work but that Claude uses poorly. For the full SDK reference, see the [MCP TypeScript SDK documentation](https://github.com/modelcontextprotocol/typescript-sdk).
 
 ---
 
-## 7.1 Design Principles for MCP Servers
+## 6.1 Design Principles for MCP Servers
 
 <div class="ix-diagram" data-component="objective">
   <p>Apply three design principles -- single responsibility, primitive selection, and authentication scoping -- before writing any server code.</p>
@@ -177,7 +177,7 @@ Module 06 established the architecture of MCP -- the three primitives, the trans
 
 ---
 
-## 7.2 The MCP SDK (TypeScript)
+## 6.2 The MCP SDK (TypeScript)
 
 <div class="ix-diagram" data-component="objective">
   <p>Implement a minimal stdio MCP server using the TypeScript SDK, defining tools, resources, and prompts with proper schema declarations.</p>
@@ -357,7 +357,7 @@ server.tool(
 
 ---
 
-## 7.3 Writing Tool Schemas That Work
+## 6.3 Writing Tool Schemas That Work
 
 <div class="ix-diagram" data-component="objective">
   <p>Write tool schemas with descriptions and input specifications that Claude uses correctly on the first attempt.</p>
@@ -489,13 +489,13 @@ The tool schema -- name, description, and input specification -- is the interfac
 
 ---
 
-## 7.4 Error Handling and Robustness
+## 6.4 Error Handling and Robustness
 
 <div class="ix-diagram" data-component="objective">
   <p>Handle errors using the <code>isError</code> flag pattern and implement timeout and partial result strategies for production MCP servers.</p>
 </div>
 
-In Module 06, you learned that tool results flow back through the Observe phase of the Agentic Loop. Good error messages help Claude reason about failures -- retry, try alternatives, or report to the user. Poor error handling produces servers that crash silently or return confusing results.
+In Module 05, you learned that tool results flow back through the Observe phase of the Agentic Loop. Good error messages help Claude reason about failures -- retry, try alternatives, or report to the user. Poor error handling produces servers that crash silently or return confusing results.
 
 <p class="ix-instruct">Predict the handler behavior before comparing the reference implementation.</p>
 
@@ -661,7 +661,7 @@ In Module 06, you learned that tool results flow back through the Observe phase 
 
 ---
 
-## 7.5 Production Considerations
+## 6.5 Production Considerations
 
 <div class="ix-diagram" data-component="objective">
   <p>Apply production hardening practices for secrets management, observability logging, and semantic versioning to a working MCP server.</p>
@@ -822,7 +822,7 @@ if (!apiKey) {
 
 ---
 
-## Module 07 Knowledge Check
+## Module 06 Knowledge Check
 
 <div class="ix-diagram" data-component="objective">
   <p>Verify your understanding of MCP server design, SDK implementation, schema writing, error handling, and production practices.</p>
@@ -888,7 +888,7 @@ if (!apiKey) {
 
 ## Lab Connection
 
-**Lab 04** reinforces this module's fundamentals by having you inspect and validate MCP capability surfaces (tools/resources/prompts) and verify server connectivity in-session. For full server implementation practice, use the optional build challenge in the advanced project track.
+**Lab 04** reinforces this module's fundamentals by having you inspect and validate MCP capability surfaces (tools/resources/prompts) and verify server connectivity in-session. For full server implementation practice, use the optional build challenge in the Day 2 project track.
 
 ---
 
@@ -903,3 +903,5 @@ if (!apiKey) {
 - [Standalone Diagram: MCP Server Design Boundaries](/examples/module-diagrams/m06-server-boundaries.html)
 
 ---
+
+

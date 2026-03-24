@@ -1,7 +1,7 @@
 <div class="ix-diagram" data-component="module-hero">
 <div class="ix-hero">
 <div class="ix-hero-bg"></div>
-<div class="ix-hero-module-num">Module 08</div>
+<div class="ix-hero-module-num">Module 09</div>
 <div class="ix-hero-title">Multi-Agent Systems</div>
 <div class="ix-hero-subtitle">Know when to split work across agents, design orchestrator patterns, structure inter-agent communication, and handle failure gracefully</div>
 <div class="ix-hero-chips">
@@ -14,7 +14,7 @@
 </div>
 </div>
 
-# Module 08: Multi-Agent Systems
+# Module 09: Multi-Agent Systems
 ---
 
 ## Overview
@@ -23,7 +23,7 @@
   <p>Determine when tasks warrant multi-agent decomposition, design orchestrator/sub-agent architectures, specify structured inter-agent communication, and handle the three primary failure modes.</p>
 </div>
 
-Everything from Modules 01-07 assumed a single agent: one session, one context, one Agentic Loop (PRAO) chain. In Module 05 you composed skills into multi-step workflows within a single agent session. Now you will learn when to break that single-agent boundary -- and, critically, when NOT to. Understanding the difference is the core skill this module develops. For sub-agent mechanics, see the [Claude Code Sub-agents docs](https://docs.anthropic.com/en/docs/claude-code/sub-agents).
+Everything from Modules 01-08 assumed a single agent: one session, one context, one Agentic Loop (PRAO) chain. In Module 07 you composed skills into multi-step workflows within a single agent, and in Module 08 you learned how to generate and evaluate the specialist artifacts those workflows depend on. Now you will learn when to break that single-agent boundary -- and, critically, when NOT to. Understanding the difference is the core skill this module develops. For sub-agent mechanics, see the [Claude Code Sub-agents docs](https://docs.anthropic.com/en/docs/claude-code/sub-agents).
 
 ---
 
@@ -33,7 +33,7 @@ Everything from Modules 01-07 assumed a single agent: one session, one context, 
   <p>Apply a four-question decision framework to determine whether a task warrants multi-agent decomposition or is better served by a single well-prompted agent.</p>
 </div>
 
-In Module 05 you composed skills into pipelines within a single agent session. Multi-agent extends that idea across session boundaries -- but at a real cost in complexity, debugging difficulty, and coordination overhead.
+In Module 07 you composed skills into pipelines within a single agent session. In Module 08 you learned how to generate, evaluate, and stabilize those specialist skills and rubrics. Multi-agent extends that idea across session boundaries -- but at a real cost in complexity, debugging difficulty, and coordination overhead.
 
 <p class="ix-instruct">Write your prediction, then reveal the reference reasoning.</p>
 
@@ -502,7 +502,7 @@ Net benefit: [(X - Y - W) minutes]</pre>
   <p>Design structured JSON communication schemas with the five mandatory fields (status, checked_scope, findings, error, metadata) and explain why prose communication fails.</p>
 </div>
 
-In Module 04 you learned that output contracts make agent output reliable for downstream consumers. Inter-agent communication schemas are output contracts between agents -- they deserve the same precision.
+In Module 05 you learned that output contracts make agent output reliable for downstream consumers. Inter-agent communication schemas are output contracts between agents -- they deserve the same precision.
 
 <p class="ix-instruct">Write your prediction, then reveal the reference reasoning.</p>
 
@@ -683,6 +683,37 @@ Every multi-agent system fails eventually. The difference between a robust syste
   </div>
 </div>
 
+<p class="ix-instruct">Step through the compare trace to see how two agents reach contradictory conclusions and how the orchestrator escalates correctly. This is the most important trace in the module.</p>
+
+<div class="ix-diagram" data-component="agent-trace"
+     data-variant="compare"
+     data-diagram-id="m09-contradiction-trace"
+     data-default-mode="manual"
+     data-speed="0.5">
+  <span class="ix-title">Contradictory Findings: Escalation in Action</span>
+  <div class="ix-trace-row" data-type="think" data-delay="0" data-col="left" data-col-label="Agent A (Security Reviewer)">
+    <span class="ix-trace-content">Reviewing src/auth/token.ts... Token validation logic checks existence of expiry field. Looks complete.</span>
+  </div>
+  <div class="ix-trace-row" data-type="think" data-delay="0" data-col="right" data-col-label="Agent B (Broad Scope Reviewer)">
+    <span class="ix-trace-content">Reviewing src/auth/token.ts... Line 47: expiry field checked for existence but not for value > current timestamp.</span>
+  </div>
+  <div class="ix-trace-row" data-type="result" data-delay="1500" data-col="left">
+    <span class="ix-trace-content">-> {"status":"success","findings":[],"checked_scope":["src/auth/token.ts"]}</span>
+  </div>
+  <div class="ix-trace-row" data-type="result" data-delay="1500" data-col="right">
+    <span class="ix-trace-content">-> {"status":"success","findings":[{"severity":"high","line":47,"description":"Token expiry not validated"}]}</span>
+  </div>
+  <div class="ix-trace-row" data-type="response" data-delay="2500" data-col="left">
+    <span class="ix-trace-content">Assessment: Secure. Token validation is complete and correct.</span>
+  </div>
+  <div class="ix-trace-row" data-type="response" data-delay="2500" data-col="right">
+    <span class="ix-trace-content">Assessment: Vulnerable. Token expiry not validated against current timestamp.</span>
+  </div>
+  <div class="ix-trace-row" data-type="error" data-delay="2500">
+    <span class="ix-trace-content">Contradiction detected on src/auth/token.ts line 47. Escalating to human review. Neither finding discarded.</span>
+  </div>
+</div>
+
 <p class="ix-instruct">Click each situation to determine whether to intervene or hold steady on scope creep.</p>
 
 <div class="ix-diagram" data-component="intervention" data-diagram-id="m09-scope-creep">
@@ -775,3 +806,4 @@ Every multi-agent system fails eventually. The difference between a robust syste
 - [Standalone Diagram: Orchestrator Runtime Patterns](/examples/module-diagrams/m09-orchestrator-patterns.html)
 
 ---
+

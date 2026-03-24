@@ -1,7 +1,7 @@
 <div class="ix-diagram" data-component="module-hero">
 <div class="ix-hero">
 <div class="ix-hero-bg"></div>
-<div class="ix-hero-module-num">Module 05</div>
+<div class="ix-hero-module-num">Module 07</div>
 <div class="ix-hero-title">Skills and Commands</div>
 <div class="ix-hero-subtitle">Encode expertise as reusable skill files, build slash commands, and compose multi-step workflows that survive session boundaries</div>
 <div class="ix-hero-chips">
@@ -14,7 +14,7 @@
 </div>
 </div>
 
-# Module 05: Skills and Commands
+# Module 07: Skills and Commands
 ---
 
 ## Overview
@@ -23,11 +23,11 @@
   <p>Write effective skill files, build slash commands, and compose skills into multi-step workflows that encode expertise for consistent, repeatable execution across sessions.</p>
 </div>
 
-You applied the TCEF pattern to individual prompts in Module 03 and learned how to read and steer agent behavior in Module 04. Now you will package that expertise into persistent, reusable artifacts -- skill files and slash commands -- so that your engineering knowledge survives session boundaries and scales across a team. For the official reference, see the [Claude Code Memory and Skills docs](https://docs.anthropic.com/en/docs/claude-code/memory).
+You applied the TCEF pattern to individual prompts in Module 04 and orchestrated tools in Module 06. Now you will package that expertise into persistent, reusable artifacts -- skill files and slash commands -- so that your engineering knowledge survives session boundaries and scales across a team. For the official reference, see the [Claude Code Memory and Skills docs](https://docs.anthropic.com/en/docs/claude-code/memory).
 
 ---
 
-## 5.1 The Persistence Problem
+## 7.1 The Persistence Problem
 
 <div class="ix-diagram" data-component="objective">
   <p>Identify why stateless sessions create inconsistency and how skill files solve the persistence problem.</p>
@@ -161,7 +161,7 @@ In Module 02 you configured `CLAUDE.md` as the agent's persistent project contex
 
 ---
 
-## 5.2 Anatomy of a Skill File
+## 7.2 Anatomy of a Skill File
 
 <div class="ix-diagram" data-component="objective">
   <p>Identify the required elements of a skill file -- YAML frontmatter fields and the four sections of a TCEF skill body.</p>
@@ -300,7 +300,7 @@ You are a senior application security engineer with expertise in OWASP Top 10 vu
 
 ---
 
-## 5.3 Writing Effective Skill Bodies
+## 7.3 Writing Effective Skill Bodies
 
 <div class="ix-diagram" data-component="objective">
   <p>Distinguish between beginning, developing, proficient, and distinguished skill quality levels, and write skill bodies at the proficient level or above.</p>
@@ -404,7 +404,7 @@ Understanding where your skills land on the quality spectrum -- and how to move 
       </div>
       <div class="ix-section">
         <div class="ix-sec-label">The Fix</div>
-        <div class="ix-sec-text">The Example section implicitly defines the output format. Include a complete, realistic example that serves as the output template. As learned in Module 03, the output contract is what makes output reliable.</div>
+        <div class="ix-sec-text">The Example section implicitly defines the output format. Include a complete, realistic example that serves as the output template. As learned in Module 05, the output contract is what makes output reliable.</div>
       </div>
     </div>
   </div>
@@ -471,7 +471,7 @@ Understanding where your skills land on the quality spectrum -- and how to move 
 
 ---
 
-## 5.4 Slash Commands
+## 7.4 Slash Commands
 
 <div class="ix-diagram" data-component="objective">
   <p>Build slash commands that invoke skills, pass arguments via <code>$ARGUMENTS</code>, and are discoverable to team members.</p>
@@ -585,13 +585,13 @@ ask the user which files to review.</code></pre>
 
 ---
 
-## 5.5 Skill Composition Patterns
+## 7.5 Skill Composition Patterns
 
 <div class="ix-diagram" data-component="objective">
   <p>Apply pipeline, router, and multi-expert composition patterns to build multi-step workflows from individual skills.</p>
 </div>
 
-In the prior modules you orchestrated prompts, traces, and focused tasks. Now you orchestrate entire skills -- each encapsulating the expertise of a specialist.
+In Module 06 you orchestrated individual tools. Now you orchestrate entire skills -- each encapsulating the expertise of a specialist.
 
 <p class="ix-instruct">Click each card to explore the three composition patterns.</p>
 
@@ -815,7 +815,7 @@ In the prior modules you orchestrated prompts, traces, and focused tasks. Now yo
 
 ---
 
-## 5.6 Standalone Knowledge Check
+## 7.6 Standalone Knowledge Check
 
 <div class="ix-diagram" data-component="quiz" data-diagram-id="m07-standalone-knowledge-check" data-xp="12">
   <span class="ix-title">Standalone Knowledge Check: Skills and Commands</span>
@@ -845,7 +845,7 @@ In the prior modules you orchestrated prompts, traces, and focused tasks. Now yo
 
 ## Lab Connection
 
-**Lab 05** is the direct hands-on companion for this module. You will build and refine skills and slash commands, then compose them into small workflows with explicit constraints and output contracts.
+**Lab 06** is the direct hands-on companion for this module. You will build and refine skills and slash commands, then compose them into small workflows with explicit constraints and output contracts.
 
 ---
 
@@ -858,3 +858,4 @@ In the prior modules you orchestrated prompts, traces, and focused tasks. Now yo
 - [Standalone Diagram: Skill Composition Patterns](/examples/module-diagrams/m07-skill-composition.html)
 
 ---
+

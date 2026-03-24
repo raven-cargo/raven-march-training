@@ -1,7 +1,7 @@
 <div class="ix-diagram" data-component="module-hero">
 <div class="ix-hero">
 <div class="ix-hero-bg"></div>
-<div class="ix-hero-module-num">Module 03</div>
+<div class="ix-hero-module-num">Module 04</div>
 <div class="ix-hero-title">Prompt Engineering Depth</div>
 <div class="ix-hero-subtitle">Move beyond basic prompts to the TCEF framework -- diagnose failures, inject context strategically, and iterate with engineering discipline</div>
 <div class="ix-hero-chips">
@@ -13,7 +13,7 @@
 </div>
 </div>
 
-# Module 03: Prompt Engineering Depth
+# Module 04: Prompt Engineering Depth
 ---
 
 ## Overview
@@ -698,7 +698,7 @@ In Module 01, you learned how the Agentic Loop (PRAO) drives every agent action.
 
 ## Lab Connection
 
-Building on the prompt foundations from Module 03, **Lab 03** applies this module's concepts directly. You will receive context fragments for a code review task and identify signal versus noise. You will then write a TCEF prompt, run it, diagnose the failure mode using the PRAO lens, and iterate until the output matches a provided specification.
+Building on the prompt foundations from Module 03, **Lab 05** applies this module's concepts directly. You will receive context fragments for a code review task and identify signal versus noise. You will then write a TCEF prompt, run it, diagnose the failure mode using the PRAO lens, and iterate until the output matches a provided specification.
 
 ---
 
@@ -709,3 +709,4 @@ Building on the prompt foundations from Module 03, **Lab 03** applies this modul
 - Brown, T. B., et al. (2020). *Language Models are Few-Shot Learners.* https://arxiv.org/abs/2005.14165
 
 ---
+

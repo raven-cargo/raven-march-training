@@ -1,7 +1,7 @@
 <div class="ix-diagram" data-component="module-hero">
 <div class="ix-hero">
 <div class="ix-hero-bg"></div>
-<div class="ix-hero-module-num">Module 04</div>
+<div class="ix-hero-module-num">Module 03</div>
 <div class="ix-hero-title">Reading Agent Thinking</div>
 <div class="ix-hero-subtitle">Learn to read agent traces, recognize tool call patterns, and know exactly when to intervene versus let the agent work</div>
 <div class="ix-hero-chips">
@@ -14,7 +14,7 @@
 </div>
 </div>
 
-# Module 04: Reading Agent Thinking
+# Module 03: Agent Thinking
 ---
 
 ## Overview
@@ -701,6 +701,70 @@ A sequence of tool calls tells a story about what the agent is doing and why. Le
         <div class="ix-sec-label">When to intervene</div>
         <div class="ix-sec-text">Immediately. Provide a clarifying statement or answer the question the agent is visibly circling around. After 2-3 unproductive thinking cycles, redirect.</div>
       </div>
+    </div>
+  </div>
+</div>
+
+<p class="ix-instruct">Step through both traces side by side. Compare how healthy progress differs from a stuck loop. Use the step button or right arrow key.</p>
+
+<div class="ix-diagram" data-component="agent-trace"
+     data-variant="compare"
+     data-diagram-id="m03-intervention-signals"
+     data-default-mode="manual"
+     data-speed="0.5">
+  <span class="ix-title">Healthy progress vs stuck loop -- when to intervene</span>
+
+  <div class="ix-trace-group" data-label="Healthy: making progress">
+    <div class="ix-trace-line" data-type="prompt" data-delay="0">
+      "Refactor the auth module to separate concerns."
+    </div>
+    <div class="ix-trace-line" data-type="tool" data-delay="1500">
+      Read(src/auth.ts)
+    </div>
+    <div class="ix-trace-line" data-type="think" data-delay="3500">
+      This file handles validation, token generation, and middleware. I will split into three files.
+    </div>
+    <div class="ix-trace-line" data-type="tool" data-delay="1500">
+      Write(src/auth/validate.ts)
+    </div>
+    <div class="ix-trace-line" data-type="tool" data-delay="1500">
+      Write(src/auth/tokens.ts)
+    </div>
+    <div class="ix-trace-line" data-type="tool" data-delay="1500">
+      Write(src/auth/middleware.ts)
+    </div>
+    <div class="ix-trace-line" data-type="tool" data-delay="1500">
+      Bash(npm test)
+    </div>
+    <div class="ix-trace-line" data-type="result" data-delay="1500">
+      All tests passed
+    </div>
+  </div>
+
+  <div class="ix-trace-group" data-label="Stuck: intervene here">
+    <div class="ix-trace-line" data-type="prompt" data-delay="0">
+      "Refactor the auth module to separate concerns."
+    </div>
+    <div class="ix-trace-line" data-type="tool" data-delay="1500">
+      Read(src/auth.ts)
+    </div>
+    <div class="ix-trace-line" data-type="think" data-delay="3500">
+      This file is complex. I need to understand all the dependencies before I can split it.
+    </div>
+    <div class="ix-trace-line" data-type="tool" data-delay="1500">
+      Read(src/auth.ts)
+    </div>
+    <div class="ix-trace-line" data-type="think" data-delay="3500">
+      There are many interconnected functions. Let me re-read to map the dependency graph.
+    </div>
+    <div class="ix-trace-line" data-type="tool" data-delay="1500">
+      Read(src/auth.ts)
+    </div>
+    <div class="ix-trace-line" data-type="think" data-delay="3500">
+      I am still not sure how to split the circular dependencies between validateToken and refreshToken...
+    </div>
+    <div class="ix-trace-line" data-type="error" data-delay="2500">
+      [Three reads of the same file, zero writes. The agent is stuck in a perception loop. Time to intervene with a specific instruction like "Split into validate.ts, tokens.ts, and middleware.ts".]
     </div>
   </div>
 </div>
@@ -1568,6 +1632,16 @@ database failure case.</pre>
 
 ---
 
-The conceptual core (Modules 01–04) is now complete. The next modules move into skills and commands first, then MCP architecture/building, multi-agent orchestration, and the capstone production block.
+## Companion Media (NotebookLM)
+
+- [Module 03 Slide Deck (PDF)](https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c)
+- [Module 03 Explainer Video (open in Notebook Workspace)](https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c)
+- [Notebook Workspace (all companion media)](https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c)
 
 ---
+
+The conceptual core (Modules 01–03) is now complete. Day 2 moves into applied execution with prompt engineering depth, then MCP architecture/building, followed by skills/commands. Day 3 advances into multi-agent orchestration, production controls, and capstone delivery.
+
+---
+
+
