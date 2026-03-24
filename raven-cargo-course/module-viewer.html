@@ -1456,14 +1456,16 @@
     }
 
     .ix-walk-step,
-    .ix-sw-step {
+    .ix-sw-step,
+    .ix-step {
       display: none;
       padding: 24px 28px;
       animation: ixFadeUp 0.3s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .ix-walk-step.active,
-    .ix-sw-step.active { display: block; }
+    .ix-sw-step.active,
+    .ix-step.active { display: block; }
 
     /* ── Detail Panel Sections ── */
     .ix-detail-section {
@@ -1522,6 +1524,41 @@
       line-height: 1.5;
       padding-left: 12px;
       border-left: 2px solid var(--border);
+    }
+
+    .ix-step-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .ix-step-content { flex: 1; }
+
+    .ix-step-title,
+    .ix-step-label {
+      display: block;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .ix-step-body,
+    .ix-step-desc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .ix-step-body > :first-child,
+    .ix-step-desc > :first-child {
+      margin-top: 0;
+    }
+
+    .ix-step-body > :last-child,
+    .ix-step-desc > :last-child {
+      margin-bottom: 0;
     }
 
     .ix-walk-cycle {
@@ -4695,17 +4732,13 @@
       badge.className = 'ix-entry-badge ' + badgeType;
       badge.textContent = badgeType === 'include' ? 'Include' : 'Exclude';
 
-      // Wrap remaining content
+      // Wrap remaining content — move all children into content wrapper
       var content = document.createElement('div');
       content.className = 'ix-entry-content';
-      var category = entry.querySelector('.ix-entry-category');
-      var example = entry.querySelector('.ix-entry-example');
-      var why = entry.querySelector('.ix-entry-why');
-      if (category) content.appendChild(category);
-      if (example) content.appendChild(example);
-      if (why) content.appendChild(why);
+      while (entry.firstChild) {
+        content.appendChild(entry.firstChild);
+      }
 
-      entry.innerHTML = '';
       entry.appendChild(badge);
       entry.appendChild(content);
     });
