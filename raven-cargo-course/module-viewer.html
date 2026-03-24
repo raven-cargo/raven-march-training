@@ -854,16 +854,26 @@
       overflow-wrap: break-word;
     }
 
-    /* Text content inside ix-diagram gets horizontal padding */
-    .ix-diagram > p,
-    .ix-diagram > ul,
-    .ix-diagram > ol,
-    .ix-diagram > blockquote,
-    .ix-diagram > strong,
-    .ix-diagram > .ix-predict-prompt,
-    .ix-diagram > details {
+    /* Universal horizontal padding for ix-diagram children.
+       Full-bleed components (traces, tabs, cards) break out with negative margin. */
+    .ix-diagram > * {
       padding-left: 24px;
       padding-right: 24px;
+    }
+
+    /* Full-bleed children that need edge-to-edge rendering */
+    .ix-diagram > .ix-trace-container,
+    .ix-diagram > .ix-tab-nav,
+    .ix-diagram > .ix-card-grid,
+    .ix-diagram > .ix-compare-cols,
+    .ix-diagram > .ix-sq-shell,
+    .ix-diagram > .ix-walk-nav,
+    .ix-diagram > .ix-terminal-shell,
+    .ix-diagram > .ix-checklist-progress,
+    .ix-diagram > .ix-quiz-shell,
+    .ix-diagram > .code-block-wrapper {
+      padding-left: 0;
+      padding-right: 0;
     }
 
     .ix-title {
@@ -4468,8 +4478,8 @@
       try { lucide.createIcons({ nodes: [controls] }); } catch (e) { /* no-op */ }
     }
 
-    // Manual mode: pre-render the first step so columns are not blank
-    if (defaultManual && state.current === 0 && state.total > 0) {
+    // Pre-render the first step so the trace is never completely empty
+    if (state.current === 0 && state.total > 0) {
       showNext();
     }
 
