@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Raven Cargo Resources</title>
+  <script>
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.style.colorScheme = 'dark';
+  </script>
+  <script>
+    (function () {
+      var baseHref = window.location.protocol === 'file:' ? './' : '/raven-cargo-course/';
+      document.write('<base href="' + baseHref + '">');
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/theme-toggle.css" />
+  <link rel="stylesheet" href="assets/raven-course.css" />
+  <script src="assets/theme-toggle.js" defer></script>
+  <script src="assets/raven-course.js" defer></script>
+</head>
+<body class="raven-course-home">
+  <div class="raven-topbar">
+    <div class="raven-topbar-inner">
+      <div class="raven-brand">
+        <span class="raven-brand-label">CETI AI · Raven March Training</span>
+        <span class="raven-brand-title" id="page-title">Raven Cargo AI Transformation</span>
+      </div>
+      <div class="raven-tabs" aria-label="Course sections">
+        <a class="raven-tab" href="index.html#course-flow-section">Course Flow</a>
+        <a class="raven-tab" href="submissions.html">Submissions</a>
+        <a class="raven-tab is-active" href="resources.html">Resources</a>
+        <a class="raven-tab" href="challenges.html">Challenges</a>
+        <a class="raven-tab" href="async.html">Async</a>
+      </div>
+      <div class="raven-topbar-badge" id="course-badge">Loading…</div>
+    </div>
+  </div>
+
+  <main class="raven-app">
+    <section class="raven-hero">
+      <div class="raven-hero-copy">
+        <div class="raven-overline">Raven Cargo · 2-Day Course Resources</div>
+        <h1 id="course-title">Raven Cargo AI Transformation</h1>
+        <p id="course-summary">Upload and manage the materials used during the live 2-day course.</p>
+      </div>
+      <div class="raven-meta-grid">
+        <article class="raven-meta-card">
+          <div class="raven-meta-label">Course Instance</div>
+          <div class="raven-meta-value" id="course-subtitle">Loading…</div>
+        </article>
+        <article class="raven-meta-card">
+          <div class="raven-meta-label">Resources</div>
+          <div class="raven-meta-value" id="resource-count-copy">Only uploaded 2-day course materials appear here for now.</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="raven-section">
+      <div class="raven-section-heading">
+        <h2>Resources</h2>
+        <button class="raven-button is-secondary" id="open-resource-form" type="button">Admin Upload</button>
+      </div>
+      <p class="raven-section-copy">Course materials for the live 2-day Raven program appear here in a clean, chronological list.</p>
+      <div class="raven-collapsible-panel" id="resource-form-panel" hidden>
+        <article class="raven-form-card">
+          <div class="raven-section-heading raven-subheading">
+            <div class="raven-mini-label">Admin Resource Upload</div>
+            <button class="raven-inline-link is-secondary-link" id="close-resource-form" type="button">Close</button>
+          </div>
+          <p class="raven-status-line">Upload NotebookLM exports, PDFs, handouts, or module-aligned videos for the live course.</p>
+          <form id="resource-form" style="margin-top:14px;">
+            <div class="raven-form-grid">
+              <div class="raven-field">
+                <label for="resource-title">Title</label>
+                <input id="resource-title" name="title" />
+              </div>
+              <div class="raven-field">
+                <label for="resource-category">Category</label>
+                <input id="resource-category" name="category" placeholder="NotebookLM Resource" />
+              </div>
+              <div class="raven-field" style="flex-basis:100%;">
+                <label for="resource-description">Description</label>
+                <textarea id="resource-description" name="description" placeholder="Why this file matters for the live course."></textarea>
+              </div>
+              <div class="raven-field">
+                <label for="resource-token">Write Token</label>
+                <input id="resource-token" name="token" placeholder="Optional admin token" />
+              </div>
+              <div class="raven-field">
+                <label for="resource-file">File</label>
+                <input id="resource-file" name="file" type="file" />
+                <div class="raven-field-note">Use the local batch uploader for large mp4 videos; this form is best for lighter assets.</div>
+              </div>
+            </div>
+            <div class="raven-form-actions">
+              <button class="raven-button is-secondary" type="submit">Upload Resource</button>
+              <div class="raven-status" id="resource-status"></div>
+            </div>
+          </form>
+        </article>
+      </div>
+      <div id="resource-list" style="margin-top:14px;"></div>
+    </section>
+  </main>
+</body>
+</html>

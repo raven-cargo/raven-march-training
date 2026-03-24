@@ -1,6 +1,31 @@
 {
   "version": 2,
   "rewrites": [
+    { "source": "/raven-cargo-course", "destination": "/raven-cargo-course/index.html" },
+    { "source": "/raven-cargo-course/resources", "destination": "/raven-cargo-course/resources.html" },
+    { "source": "/raven-cargo-course/submissions", "destination": "/raven-cargo-course/submissions.html" },
+    { "source": "/raven-cargo-course/async", "destination": "/raven-cargo-course/async.html" },
+    { "source": "/raven-cargo-course/module/:id", "destination": "/raven-cargo-course/module-viewer.html" },
+    { "source": "/raven-cargo-course/challenges", "destination": "/raven-cargo-course/module-viewer.html" },
+    { "source": "/raven-cargo-course/challenge", "destination": "/raven-cargo-course/module-viewer.html" },
+    { "source": "/raven-cargo-course/lab/1", "destination": "/raven-cargo-course/labs/lab-01-paradigm-shift.html" },
+    { "source": "/raven-cargo-course/lab/2", "destination": "/raven-cargo-course/labs/lab-02-first-agent.html" },
+    { "source": "/raven-cargo-course/lab/3", "destination": "/raven-cargo-course/labs/lab-05-prompt-engineering.html" },
+    { "source": "/raven-cargo-course/lab/4", "destination": "/raven-cargo-course/labs/lab-03-agent-thinking.html" },
+    { "source": "/raven-cargo-course/lab/5", "destination": "/raven-cargo-course/labs/lab-06-skills-commands.html" },
+    { "source": "/raven-cargo-course/lab/6", "destination": "/raven-cargo-course/labs/lab-04-mcp-explorer.html" },
+    { "source": "/raven-cargo-course/lab/7", "destination": "/raven-cargo-course/labs/lab-07-multi-agent.html" },
+    { "source": "/raven-cargo-course/lab/8", "destination": "/raven-cargo-course/labs/lab-08-production.html" },
+    { "source": "/raven-cargo-course/lab/9", "destination": "/raven-cargo-course/labs/lab-09-capstone.html" },
+    { "source": "/raven-cargo-course/lab/01", "destination": "/raven-cargo-course/labs/lab-01-paradigm-shift.html" },
+    { "source": "/raven-cargo-course/lab/02", "destination": "/raven-cargo-course/labs/lab-02-first-agent.html" },
+    { "source": "/raven-cargo-course/lab/03", "destination": "/raven-cargo-course/labs/lab-05-prompt-engineering.html" },
+    { "source": "/raven-cargo-course/lab/04", "destination": "/raven-cargo-course/labs/lab-03-agent-thinking.html" },
+    { "source": "/raven-cargo-course/lab/05", "destination": "/raven-cargo-course/labs/lab-06-skills-commands.html" },
+    { "source": "/raven-cargo-course/lab/06", "destination": "/raven-cargo-course/labs/lab-04-mcp-explorer.html" },
+    { "source": "/raven-cargo-course/lab/07", "destination": "/raven-cargo-course/labs/lab-07-multi-agent.html" },
+    { "source": "/raven-cargo-course/lab/08", "destination": "/raven-cargo-course/labs/lab-08-production.html" },
+    { "source": "/raven-cargo-course/lab/09", "destination": "/raven-cargo-course/labs/lab-09-capstone.html" },
     { "source": "/lab/1", "destination": "/labs/day1/lab-01-paradigm-shift.html" },
     { "source": "/lab/2", "destination": "/labs/day1/lab-02-first-agent.html" },
     { "source": "/lab/3", "destination": "/labs/day1/lab-03-agent-thinking.html" },
@@ -46,6 +71,10 @@
   "headers": [
     {
       "source": "/labs/(.*)",
+      "headers": [{ "key": "X-Frame-Options", "value": "SAMEORIGIN" }]
+    },
+    {
+      "source": "/raven-cargo-course/labs/(.*)",
       "headers": [{ "key": "X-Frame-Options", "value": "SAMEORIGIN" }]
     }
   ]

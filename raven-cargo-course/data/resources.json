@@ -1,0 +1,100 @@
+{
+  "categories": [
+    {
+      "id": "client-inputs",
+      "label": "Client Inputs",
+      "items": [
+        {
+          "title": "Raven Cargo Transformation Dashboard Source",
+          "kind": "HTML",
+          "description": "Original CETI/Raven dashboard with use cases, schedule, and mapping detail.",
+          "path": "/raven-cargo-course/resources/client/raven-cargo-dashboard.html"
+        },
+        {
+          "title": "Raven Cargo 2-Day Plan",
+          "kind": "PDF",
+          "description": "Two-page condensed delivery plan for the Raven cohort.",
+          "path": "/raven-cargo-course/resources/client/raven-cargo-2day-plan.pdf"
+        }
+      ]
+    },
+    {
+      "id": "notebooklm-files",
+      "label": "NotebookLM Files",
+      "items": [
+        {
+          "title": "NotebookLM Artifact URLs",
+          "kind": "Markdown",
+          "description": "All generated video, slide, podcast, and flashcard links used by the master course.",
+          "path": "/raven-cargo-course/docs/notebooklm/ARTIFACT-URLS.md"
+        },
+        {
+          "title": "Day 1 Prompt Pack",
+          "kind": "Markdown",
+          "description": "Prompt pack for modules 01-03.",
+          "path": "/raven-cargo-course/docs/notebooklm/prompts/day1-modules-01-03-prompts.md"
+        },
+        {
+          "title": "Day 2A Prompt Pack",
+          "kind": "Markdown",
+          "description": "Prompt pack for modules 04-06.",
+          "path": "/raven-cargo-course/docs/notebooklm/prompts/day2a-modules-04-06-prompts.md"
+        },
+        {
+          "title": "Day 2B Prompt Pack",
+          "kind": "Markdown",
+          "description": "Prompt pack for modules 07-09.",
+          "path": "/raven-cargo-course/docs/notebooklm/prompts/day2b-modules-07-09-prompts.md"
+        },
+        {
+          "title": "Day 3 Prompt Pack",
+          "kind": "Markdown",
+          "description": "Prompt pack for modules 10-12.",
+          "path": "/raven-cargo-course/docs/notebooklm/prompts/day3-modules-10-12-prompts.md"
+        },
+        {
+          "title": "Audio and Overview Prompts",
+          "kind": "Markdown",
+          "description": "Podcast and overview prompt pack.",
+          "path": "/raven-cargo-course/docs/notebooklm/prompts/audio-and-overview-prompts.md"
+        },
+        {
+          "title": "Flashcards Prompts",
+          "kind": "Markdown",
+          "description": "Prompt pack for the two flashcard sets.",
+          "path": "/raven-cargo-course/docs/notebooklm/prompts/flashcards-prompts.md"
+        },
+        {
+          "title": "NotebookLM Prompt README",
+          "kind": "Markdown",
+          "description": "How the prompt packs were generated and how to reuse them.",
+          "path": "/raven-cargo-course/docs/notebooklm/prompts/README.md"
+        }
+      ]
+    },
+    {
+      "id": "live-links",
+      "label": "Live Links",
+      "items": [
+        {
+          "title": "NotebookLM Workspace",
+          "kind": "External",
+          "description": "Primary notebook containing the generated artifacts and flashcards.",
+          "url": "https://notebooklm.google.com/notebook/742e3671-5a55-4420-b2a2-5e960e241b2c"
+        },
+        {
+          "title": "Overview Slide Deck",
+          "kind": "External PDF",
+          "description": "Overview deck used by the course review dashboard.",
+          "url": "https://contribution.usercontent.google.com/download?c=Cgpub3RlYm9va2xtEkYSD2FydGlmYWN0c19tZWRpYRozCiRjMjcxMWJhZi0xM2YyLTRkYmEtOWRjNy1kMjZlMWE2NjA3YjMSCxIHEIWrnsmWHhgB&filename=Agentic_Engineering_Blueprint.pdf&opi=96797242"
+        },
+        {
+          "title": "Deep Dive Podcast",
+          "kind": "External Audio",
+          "description": "Long-form async companion to the live Raven course.",
+          "url": "https://lh3.googleusercontent.com/notebooklm/ANHLwAzP-KRyC8JBWTyMq8b6hPFU0RP_gf_LKKwgA7ePHVhSSg5RirIRJBTDDE54IDRgLkofR_BGOddhHSEXEv50kVFZ1TIkfNpRkK4jTXic-j92DxHPiNZIKtGjUfWZZKCXgF-5wFMKI91q3gQRQ2VninUGvLObB_Q=m140-dv"
+        }
+      ]
+    }
+  ]
+}

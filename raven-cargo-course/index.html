@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Raven Cargo AI Transformation</title>
+  <script>
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.style.colorScheme = 'dark';
+  </script>
+  <script>
+    (function () {
+      var baseHref = window.location.protocol === 'file:' ? './' : '/raven-cargo-course/';
+      document.write('<base href="' + baseHref + '">');
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/theme-toggle.css" />
+  <link rel="stylesheet" href="assets/raven-course.css" />
+  <script src="assets/theme-toggle.js" defer></script>
+  <script src="assets/raven-course.js" defer></script>
+</head>
+<body class="raven-course-home">
+  <div class="raven-topbar">
+    <div class="raven-topbar-inner">
+      <div class="raven-brand">
+        <span class="raven-brand-label">CETI AI · Raven March Training</span>
+        <span class="raven-brand-title" id="page-title">Raven Cargo AI Transformation</span>
+      </div>
+      <div class="raven-tabs" aria-label="Course sections">
+        <a class="raven-tab is-active" href="index.html#course-flow-section">Course Flow</a>
+        <a class="raven-tab" href="submissions.html">Submissions</a>
+        <a class="raven-tab" href="resources.html">Resources</a>
+        <a class="raven-tab" href="challenges.html">Challenges</a>
+        <a class="raven-tab" href="async.html">Async</a>
+      </div>
+      <div class="raven-topbar-badge" id="course-badge">Loading…</div>
+    </div>
+  </div>
+
+  <main class="raven-app">
+    <section class="raven-hero" style="position:relative;overflow:hidden;">
+      <canvas id="hero-network" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.55;z-index:0;"></canvas>
+      <div class="raven-hero-copy" style="position:relative;z-index:1;">
+        <div class="raven-overline">Raven Cargo · Student Portal</div>
+        <h1 id="course-title">Raven Cargo AI Transformation</h1>
+        <p id="course-summary" data-raven-summary="manifest">Loading course summary…</p>
+      </div>
+      <!-- course-subtitle consumed by JS but not displayed -->
+      <span id="course-subtitle" hidden></span>
+    </section>
+    <script>
+    (function () {
+      var canvas = document.getElementById('hero-network');
+      if (!canvas) return;
+      var ctx = canvas.getContext('2d');
+      var dpr = window.devicePixelRatio || 1;
+      var W, H, nodes = [], edges = [], packets = [];
+      var SAGE = [199, 216, 185];
+      var SLATE = [61, 85, 104];
+      var CREAM = [231, 225, 215];
+
+      function resize() {
+        var rect = canvas.parentElement.getBoundingClientRect();
+        W = rect.width; H = rect.height;
+        canvas.width = W * dpr; canvas.height = H * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        buildNetwork();
+      }
+
+      function buildNetwork() {
+        nodes = []; edges = []; packets = [];
+        var count = Math.max(14, Math.floor((W * H) / 18000));
+        /* Place hub nodes (larger, fixed positions suggesting cities) */
+        var hubs = [
+          { x: W * 0.12, y: H * 0.3 },
+          { x: W * 0.35, y: H * 0.15 },
+          { x: W * 0.55, y: H * 0.7 },
+          { x: W * 0.78, y: H * 0.25 },
+          { x: W * 0.9, y: H * 0.65 },
+          { x: W * 0.22, y: H * 0.75 },
+          { x: W * 0.65, y: H * 0.42 }
+        ];
+        hubs.forEach(function (h) {
+          nodes.push({ x: h.x, y: h.y, r: 3.5 + Math.random() * 2, hub: true, vx: 0, vy: 0 });
+        });
+        /* Scatter smaller relay nodes */
+        for (var i = nodes.length; i < count; i++) {
+          nodes.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            r: 1.5 + Math.random() * 1.5,
+            hub: false,
+            vx: (Math.random() - 0.5) * 0.15,
+            vy: (Math.random() - 0.5) * 0.15
+          });
+        }
+        /* Build edges based on proximity */
+        var maxDist = Math.min(W, H) * 0.32;
+        for (var a = 0; a < nodes.length; a++) {
+          for (var b = a + 1; b < nodes.length; b++) {
+            var dx = nodes[a].x - nodes[b].x, dy = nodes[a].y - nodes[b].y;
+            var d = Math.sqrt(dx * dx + dy * dy);
+            if (d < maxDist && (nodes[a].hub || nodes[b].hub || d < maxDist * 0.5)) {
+              edges.push({ a: a, b: b, d: d });
+            }
+          }
+        }
+        /* Seed packets (moving dots along edges) */
+        for (var e = 0; e < Math.min(edges.length, 8); e++) {
+          var idx = Math.floor(Math.random() * edges.length);
+          packets.push({ edge: idx, t: Math.random(), speed: 0.002 + Math.random() * 0.003, forward: Math.random() > 0.5 });
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        /* Draw edges */
+        edges.forEach(function (e) {
+          var na = nodes[e.a], nb = nodes[e.b];
+          var alpha = Math.max(0.04, 0.18 - (e.d / (Math.min(W, H) * 0.32)) * 0.14);
+          ctx.beginPath();
+          ctx.moveTo(na.x, na.y);
+          ctx.lineTo(nb.x, nb.y);
+          ctx.strokeStyle = 'rgba(' + SLATE[0] + ',' + SLATE[1] + ',' + SLATE[2] + ',' + alpha + ')';
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        });
+        /* Draw nodes */
+        nodes.forEach(function (n) {
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+          if (n.hub) {
+            ctx.fillStyle = 'rgba(' + SAGE[0] + ',' + SAGE[1] + ',' + SAGE[2] + ',0.7)';
+            /* Glow */
+            ctx.shadowColor = 'rgba(' + SAGE[0] + ',' + SAGE[1] + ',' + SAGE[2] + ',0.3)';
+            ctx.shadowBlur = 12;
+          } else {
+            ctx.fillStyle = 'rgba(' + CREAM[0] + ',' + CREAM[1] + ',' + CREAM[2] + ',0.35)';
+            ctx.shadowBlur = 0;
+          }
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        });
+        /* Draw packets */
+        packets.forEach(function (p) {
+          var e = edges[p.edge];
+          var na = nodes[e.a], nb = nodes[e.b];
+          var px = na.x + (nb.x - na.x) * p.t;
+          var py = na.y + (nb.y - na.y) * p.t;
+          ctx.beginPath();
+          ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(' + SAGE[0] + ',' + SAGE[1] + ',' + SAGE[2] + ',0.9)';
+          ctx.shadowColor = 'rgba(' + SAGE[0] + ',' + SAGE[1] + ',' + SAGE[2] + ',0.5)';
+          ctx.shadowBlur = 8;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        });
+      }
+
+      function update() {
+        /* Drift non-hub nodes gently */
+        nodes.forEach(function (n) {
+          if (n.hub) return;
+          n.x += n.vx; n.y += n.vy;
+          if (n.x < 0 || n.x > W) n.vx *= -1;
+          if (n.y < 0 || n.y > H) n.vy *= -1;
+        });
+        /* Move packets */
+        packets.forEach(function (p) {
+          p.t += p.forward ? p.speed : -p.speed;
+          if (p.t >= 1 || p.t <= 0) {
+            p.forward = !p.forward;
+            p.edge = Math.floor(Math.random() * edges.length);
+            p.t = p.forward ? 0 : 1;
+          }
+        });
+      }
+
+      var rafId;
+      function loop() {
+        update(); draw();
+        rafId = requestAnimationFrame(loop);
+      }
+
+      /* Respect reduced motion */
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        resize(); draw();
+      } else {
+        resize(); loop();
+      }
+
+      window.addEventListener('resize', function () {
+        cancelAnimationFrame(rafId);
+        resize(); loop();
+      });
+    })();
+    </script>
+
+    <section class="raven-section">
+      <div class="raven-stat-grid" id="delivery-stats"></div>
+    </section>
+
+    <section class="raven-section" id="course-flow-section">
+      <div class="raven-section-heading">
+        <h2>Course Flow</h2>
+      </div>
+      <p class="raven-section-copy">Each block expands into the actual modules, actual labs, freight-specific outcomes, and use cases that will be built or discussed in class.</p>
+      <div id="course-flow"></div>
+    </section>
+
+    <section class="raven-section" id="use-cases-section">
+      <div class="raven-section-heading">
+        <h2>Use Cases</h2>
+      </div>
+      <p class="raven-section-copy">Freight-specific use cases pulled from the Raven dashboard and mapped directly to the extracted course assets.</p>
+      <div class="raven-usecase-grid" id="use-case-grid"></div>
+    </section>
+  </main>
+</body>
+</html>

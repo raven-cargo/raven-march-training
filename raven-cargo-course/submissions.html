@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Raven Cargo Submissions</title>
+  <script>
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.style.colorScheme = 'dark';
+  </script>
+  <script>
+    (function () {
+      var baseHref = window.location.protocol === 'file:' ? './' : '/raven-cargo-course/';
+      document.write('<base href="' + baseHref + '">');
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/theme-toggle.css" />
+  <link rel="stylesheet" href="assets/raven-course.css" />
+  <script src="assets/theme-toggle.js" defer></script>
+  <script src="assets/raven-course.js" defer></script>
+</head>
+<body class="raven-course-home">
+  <div class="raven-topbar">
+    <div class="raven-topbar-inner">
+      <div class="raven-brand">
+        <span class="raven-brand-label">CETI AI · Raven March Training</span>
+        <span class="raven-brand-title" id="page-title">Raven Cargo AI Transformation</span>
+      </div>
+      <div class="raven-tabs" aria-label="Course sections">
+        <a class="raven-tab" href="index.html#course-flow-section">Course Flow</a>
+        <a class="raven-tab is-active" href="submissions.html">Submissions</a>
+        <a class="raven-tab" href="resources.html">Resources</a>
+        <a class="raven-tab" href="challenges.html">Challenges</a>
+        <a class="raven-tab" href="async.html">Async</a>
+      </div>
+      <div class="raven-topbar-badge" id="course-badge">Loading…</div>
+    </div>
+  </div>
+
+  <main class="raven-app">
+    <section class="raven-hero">
+      <div class="raven-hero-copy">
+        <div class="raven-overline">Raven Cargo · Student Submission Hub</div>
+        <h1 id="course-title">Raven Cargo AI Transformation</h1>
+        <p id="course-summary">Submit lab work, notes, and supporting files for the 2-day course here.</p>
+      </div>
+      <div class="raven-meta-grid">
+        <article class="raven-meta-card">
+          <div class="raven-meta-label">Course Instance</div>
+          <div class="raven-meta-value" id="course-subtitle">Loading…</div>
+        </article>
+        <article class="raven-meta-card">
+          <div class="raven-meta-label">Submission Order</div>
+          <div class="raven-meta-value">Newest submissions appear first for grading.</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="raven-section">
+      <div class="raven-section-heading">
+        <h2>Submissions</h2>
+      </div>
+      <p class="raven-section-copy">Share your lab work, notes, links, or files here. Newest submissions appear first.</p>
+      <div class="raven-form-layout raven-form-layout-single">
+        <article class="raven-form-card">
+          <form id="submission-form">
+            <div class="raven-form-grid">
+              <div class="raven-field">
+                <label for="submission-name">Name</label>
+                <input id="submission-name" name="name" required />
+              </div>
+              <div class="raven-field">
+                <label for="submission-email">Email</label>
+                <input id="submission-email" name="email" type="email" />
+              </div>
+              <div class="raven-field">
+                <label for="submission-lab">Lab</label>
+                <select id="submission-lab" name="lab"></select>
+              </div>
+              <div class="raven-field">
+                <label for="submission-use-case">Use Case Tag</label>
+                <select id="submission-use-case" name="use_case"></select>
+              </div>
+              <div class="raven-field">
+                <label for="submission-link">Link</label>
+                <input id="submission-link" name="link" type="url" placeholder="https://…" />
+              </div>
+              <div class="raven-field" style="flex-basis:100%;">
+                <label for="submission-notes">Notes</label>
+                <textarea id="submission-notes" name="notes" placeholder="What was built, what remains, and what needs review."></textarea>
+              </div>
+              <div class="raven-field" style="flex-basis:100%;">
+                <label for="submission-file">Attachment</label>
+                <input id="submission-file" name="file" type="file" />
+                <div class="raven-field-note">Attach source files, exports, images, PDFs, or videos.</div>
+              </div>
+            </div>
+            <div class="raven-form-actions">
+              <button class="raven-button" type="submit">Upload Submission</button>
+              <div class="raven-status" id="submission-status"></div>
+            </div>
+          </form>
+        </article>
+      </div>
+      <div class="raven-submission-grid" id="submission-list" style="margin-top:14px;"></div>
+    </section>
+  </main>
+</body>
+</html>

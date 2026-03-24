@@ -1,1 +1,3 @@
 .vercel
+raven-cargo-course/resources-drop/*
+!raven-cargo-course/resources-drop/.gitkeep

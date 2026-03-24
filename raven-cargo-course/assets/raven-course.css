@@ -1,0 +1,1137 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&family=Oswald:wght@400;500;600&display=swap');
+
+:root {
+  --olive: #262721;
+  --olive-dark: #1a1a17;
+  --olive-light: #2e2f28;
+  --slate: #324555;
+  --slate-light: #3d5568;
+  --sage: #c7d8b9;
+  --cream: #e7e1d7;
+  --camel: #a67756;
+  --earth: #76390c;
+  --muted: rgba(231, 225, 215, 0.74);
+  --muted-soft: rgba(231, 225, 215, 0.52);
+  --line: rgba(231, 225, 215, 0.12);
+  --line-strong: rgba(199, 216, 185, 0.26);
+  --panel: rgba(50, 69, 85, 0.32);
+  --panel-strong: rgba(50, 69, 85, 0.46);
+  --panel-soft: rgba(46, 47, 40, 0.84);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.18);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body,
+body.raven-course-home,
+body.raven-course-module {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(199, 216, 185, 0.06), transparent 30%),
+    radial-gradient(circle at top right, rgba(61, 85, 104, 0.14), transparent 28%),
+    linear-gradient(180deg, var(--olive) 0%, var(--olive-dark) 100%);
+  color: var(--cream);
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+html[data-theme="light"] body.raven-course-home,
+html[data-theme="light"] body.raven-course-module {
+  background:
+    radial-gradient(circle at top left, rgba(199, 216, 185, 0.06), transparent 30%),
+    radial-gradient(circle at top right, rgba(61, 85, 104, 0.14), transparent 28%),
+    linear-gradient(180deg, var(--olive) 0%, var(--olive-dark) 100%) !important;
+  color: var(--cream) !important;
+}
+
+a {
+  color: inherit;
+}
+
+.raven-app {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 18px 24px 96px;
+}
+
+.raven-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  backdrop-filter: blur(20px);
+  background: rgba(26, 26, 23, 0.86);
+  border-bottom: 1px solid var(--line);
+}
+
+.raven-topbar-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.raven-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.raven-brand-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sage);
+}
+
+.raven-brand-title {
+  font-family: 'Oswald', 'Arial Narrow', sans-serif;
+  font-size: 24px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.raven-topbar-badge {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(231, 225, 215, 0.04);
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.raven-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.raven-tab {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  background: rgba(231, 225, 215, 0.03);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 9px 14px;
+  font: 600 12px/1 'JetBrains Mono', monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.raven-tab:hover,
+.raven-tab:focus-visible {
+  transform: translateY(-1px);
+  border-color: var(--line-strong);
+  color: var(--cream);
+  outline: none;
+}
+
+.raven-tab.is-active {
+  background: var(--sage);
+  color: var(--olive-dark);
+  border-color: rgba(199, 216, 185, 0.5);
+}
+
+.raven-hero {
+  padding: 24px 0 8px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.raven-hero-copy {
+  background: var(--panel-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  padding: 28px 30px 30px;
+  box-shadow: var(--shadow-soft);
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.raven-overline {
+  margin: 0 0 10px;
+  color: var(--sage);
+  font: 600 11px/1.4 'JetBrains Mono', monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.raven-hero h1,
+.raven-course-module .markdown-body h1,
+.raven-course-module .markdown-body h2,
+.raven-course-module .markdown-body h3 {
+  margin: 0;
+  font-family: 'Oswald', 'Arial Narrow', sans-serif;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.raven-hero h1 {
+  font-size: clamp(40px, 6.2vw, 68px);
+  line-height: 0.94;
+  color: var(--cream);
+}
+
+.raven-hero p {
+  margin: 16px 0 0;
+  max-width: 640px;
+  font-size: 17px;
+  color: var(--muted);
+}
+
+.raven-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.raven-meta-card,
+.raven-stat-card,
+.raven-sequence-card,
+.raven-block-card,
+.raven-usecase-card,
+.raven-form-card,
+.raven-resource-card,
+.raven-empty-state {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+.raven-meta-card {
+  padding: 18px 18px 16px;
+  min-height: 144px;
+}
+
+.raven-meta-label {
+  color: var(--muted-soft);
+  font: 600 11px/1.4 'JetBrains Mono', monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.raven-meta-value {
+  margin-top: 8px;
+  font-size: 18px;
+  line-height: 1.35;
+}
+
+.raven-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 8px 0 28px;
+}
+
+.raven-stat-card {
+  padding: 18px;
+}
+
+.raven-stat-value {
+  font-family: 'Oswald', 'Arial Narrow', sans-serif;
+  font-size: 34px;
+  letter-spacing: 0.04em;
+  color: var(--sage);
+}
+
+.raven-stat-label {
+  color: var(--muted-soft);
+  font: 600 11px/1.4 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.raven-section {
+  margin-top: 24px;
+  padding: 24px;
+  background: rgba(46, 47, 40, 0.42);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
+}
+
+.raven-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.raven-section-heading h2 {
+  margin: 0;
+  font-family: 'Oswald', 'Arial Narrow', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.raven-section-copy {
+  margin: 0 0 18px;
+  color: var(--muted);
+}
+
+.raven-sequence-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.raven-sequence-card {
+  padding: 14px;
+  text-decoration: none;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.raven-sequence-card:hover,
+.raven-sequence-card:focus-visible,
+.raven-block-link:hover,
+.raven-block-link:focus-visible,
+.raven-resource-card:hover,
+.raven-resource-card:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--line-strong);
+  background: var(--panel-strong);
+  outline: none;
+}
+
+.raven-sequence-kicker,
+.raven-chip,
+.raven-pill,
+.raven-block-time,
+.raven-mini-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.raven-sequence-kicker {
+  color: var(--sage);
+}
+
+.raven-sequence-title {
+  margin-top: 10px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.raven-chip-row,
+.raven-link-cluster,
+.raven-mini-grid,
+.raven-form-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.raven-chip,
+.raven-pill {
+  border-radius: 999px;
+  padding: 6px 10px;
+  border: 1px solid transparent;
+}
+
+.raven-chip {
+  background: rgba(231, 225, 215, 0.06);
+  color: var(--muted);
+}
+
+.chip-live {
+  background: rgba(199, 216, 185, 0.13);
+  color: var(--sage);
+}
+
+.chip-async {
+  background: rgba(166, 119, 86, 0.13);
+  color: #d9b08f;
+}
+
+.chip-safety {
+  background: rgba(118, 57, 12, 0.22);
+  color: #e3b084;
+}
+
+.chip-capstone {
+  background: rgba(61, 85, 104, 0.22);
+  color: #c6d6e0;
+}
+
+.raven-tab-panel {
+  display: none;
+}
+
+.raven-tab-panel.is-active {
+  display: block;
+}
+
+.raven-day {
+  margin-bottom: 24px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: rgba(26, 26, 23, 0.42);
+}
+
+.raven-day-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.raven-day-title {
+  font-family: 'Oswald', 'Arial Narrow', sans-serif;
+  font-size: 30px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.raven-day-theme {
+  color: var(--muted-soft);
+  font-size: 14px;
+}
+
+.raven-block-list {
+  display: grid;
+  gap: 10px;
+}
+
+.raven-block-card {
+  overflow: hidden;
+  background: rgba(50, 69, 85, 0.22);
+}
+
+.raven-block-card summary {
+  list-style: none;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 120px 1fr 18px;
+  gap: 16px;
+  align-items: start;
+  padding: 16px 18px;
+}
+
+.raven-block-card summary::-webkit-details-marker {
+  display: none;
+}
+
+.raven-block-time {
+  color: var(--sage);
+  padding-top: 3px;
+}
+
+.raven-block-topic {
+  color: var(--muted-soft);
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.raven-block-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.raven-block-caret {
+  color: var(--muted-soft);
+  font-size: 16px;
+  transition: transform 0.2s ease;
+}
+
+.raven-block-card[open] .raven-block-caret {
+  transform: rotate(90deg);
+}
+
+.raven-block-body {
+  padding: 0 18px 18px 154px;
+  display: grid;
+  gap: 16px;
+}
+
+.raven-mini-grid {
+  gap: 14px;
+}
+
+.raven-mini-card {
+  flex: 1 1 220px;
+  min-width: 220px;
+}
+
+.raven-mini-card ul {
+  margin: 8px 0 0 18px;
+  color: var(--muted);
+}
+
+.raven-mini-label {
+  color: var(--sage);
+}
+
+.raven-block-link {
+  text-decoration: none;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(231, 225, 215, 0.04);
+  min-width: 200px;
+}
+
+.raven-link-type {
+  display: block;
+  color: var(--muted-soft);
+  font: 600 10px/1.5 'JetBrains Mono', monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.raven-link-title {
+  display: block;
+  margin-top: 6px;
+  font-weight: 700;
+}
+
+.raven-closeout {
+  padding: 18px;
+  margin-top: 10px;
+}
+
+.raven-status-line {
+  margin-top: 8px;
+}
+
+.raven-closeout ul,
+.raven-form-card ul {
+  margin: 10px 0 0 18px;
+  color: var(--muted);
+}
+
+.raven-usecase-grid,
+.raven-resource-grid,
+.raven-submission-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.raven-submission-grid {
+  grid-template-columns: 1fr;
+}
+
+.raven-mission-group + .raven-mission-group {
+  margin-top: 24px;
+}
+
+.raven-mission-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.raven-mission-head h3 {
+  margin: 0;
+  font-family: 'Oswald', 'Arial Narrow', sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.raven-track-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font: 600 11px/1.2 'JetBrains Mono', monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+
+.track-1 {
+  background: rgba(139, 92, 246, 0.14);
+  color: #c4b5fd;
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.track-2 {
+  background: rgba(107, 187, 198, 0.14);
+  color: #90d4dd;
+  border-color: rgba(107, 187, 198, 0.3);
+}
+
+.track-3 {
+  background: rgba(204, 126, 95, 0.16);
+  color: #e7b08f;
+  border-color: rgba(204, 126, 95, 0.28);
+}
+
+.track-ex {
+  background: rgba(189, 145, 75, 0.16);
+  color: #e3c07d;
+  border-color: rgba(189, 145, 75, 0.3);
+}
+
+.raven-mission-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.raven-mission-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: var(--panel);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.raven-mission-card:hover,
+.raven-mission-card:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--line-strong);
+  background: var(--panel-strong);
+  outline: none;
+}
+
+.raven-mission-num {
+  min-width: 54px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font: 700 11px/1 'JetBrains Mono', monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.raven-mission-body {
+  min-width: 0;
+}
+
+.raven-mission-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--cream);
+}
+
+.raven-mission-meta {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.raven-mission-arrow {
+  color: var(--sage);
+  font-size: 18px;
+  line-height: 1;
+  padding-top: 2px;
+}
+
+.raven-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(199, 216, 185, 0.35);
+  background: rgba(199, 216, 185, 0.14);
+  color: var(--sage);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.raven-resource-section + .raven-resource-section {
+  margin-top: 18px;
+}
+
+.raven-section-heading h3 {
+  margin: 0;
+  font-family: 'Oswald', 'Arial Narrow', sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.raven-usecase-card,
+.raven-resource-card,
+.raven-submission-card {
+  padding: 18px;
+}
+
+.raven-submission-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  gap: 16px;
+}
+
+.raven-submission-side {
+  display: flex;
+  flex-direction: column;
+}
+
+.raven-empty-attachment {
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 16px;
+  background: rgba(231, 225, 215, 0.03);
+  color: var(--muted-soft);
+  text-align: center;
+}
+
+.raven-usecase-title,
+.raven-resource-title,
+.raven-submission-title {
+  margin: 12px 0 8px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.raven-usecase-card p,
+.raven-resource-card p,
+.raven-submission-card p,
+.raven-status-line {
+  color: var(--muted);
+}
+
+.raven-meta-list {
+  margin-top: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.raven-meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+}
+
+.raven-meta-row span:first-child {
+  color: var(--muted-soft);
+}
+
+.raven-form-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+  gap: 12px;
+}
+
+.raven-form-layout-single {
+  grid-template-columns: 1fr;
+}
+
+.raven-form-card {
+  padding: 20px;
+}
+
+.raven-collapsible-panel {
+  margin-bottom: 14px;
+}
+
+.raven-subheading {
+  margin-bottom: 8px;
+}
+
+.raven-form-grid {
+  gap: 12px;
+}
+
+.raven-field {
+  display: grid;
+  gap: 6px;
+  flex: 1 1 220px;
+}
+
+.raven-field label {
+  color: var(--muted-soft);
+  font: 600 11px/1.4 'JetBrains Mono', monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.raven-field input,
+.raven-field select,
+.raven-field textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(26, 26, 23, 0.72);
+  color: var(--cream);
+  padding: 12px 14px;
+  font: inherit;
+}
+
+.raven-field input[type="file"] {
+  padding: 14px;
+  border-style: dashed;
+  background: rgba(50, 69, 85, 0.2);
+}
+
+.raven-field label[for="submission-file"]::before,
+.raven-field label[for="resource-file"]::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 8px;
+  vertical-align: -2px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 14px 14px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c7d8b9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/%3E%3Cpolyline points='7 10 12 5 17 10'/%3E%3Cline x1='12' y1='5' x2='12' y2='17'/%3E%3C/svg%3E");
+}
+
+.raven-field input[type="file"]::file-selector-button {
+  margin-right: 12px;
+  border: 1px solid rgba(199, 216, 185, 0.4);
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: var(--sage);
+  color: var(--olive-dark);
+  font: 700 12px/1 'JetBrains Mono', monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.raven-field-note {
+  color: var(--muted-soft);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.raven-field input:focus,
+.raven-field select:focus,
+.raven-field textarea:focus {
+  outline: 1px solid rgba(199, 216, 185, 0.32);
+  border-color: var(--line-strong);
+}
+
+.raven-field textarea {
+  min-height: 132px;
+  resize: vertical;
+}
+
+.raven-form-actions {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.raven-button,
+.raven-inline-link {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 10px 16px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.raven-button {
+  background: var(--sage);
+  color: var(--olive-dark);
+  font: 700 12px/1 'JetBrains Mono', monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.raven-button:hover,
+.raven-button:focus-visible,
+.raven-inline-link:hover,
+.raven-inline-link:focus-visible {
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.raven-button.is-secondary,
+.raven-inline-link {
+  background: rgba(231, 225, 215, 0.04);
+  color: var(--cream);
+  border-color: var(--line);
+}
+
+.raven-inline-link.is-secondary-link {
+  background: transparent;
+  border-color: var(--line-strong);
+}
+
+.raven-status {
+  min-height: 20px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.raven-status.is-error {
+  color: #e3b084;
+}
+
+.raven-status.is-success {
+  color: var(--sage);
+}
+
+.raven-resource-card {
+  text-decoration: none;
+  display: block;
+  border-top: 2px solid transparent;
+}
+
+.resource-file {
+  border-top-color: rgba(166, 119, 86, 0.7);
+}
+
+.resource-module {
+  border-top-color: rgba(199, 216, 185, 0.7);
+}
+
+.resource-upload {
+  border-top-color: rgba(61, 85, 104, 0.8);
+}
+
+.raven-file-block {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(18, 20, 17, 0.62);
+}
+
+.raven-file-block.is-submission {
+  min-height: 220px;
+}
+
+.raven-file-block-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.raven-file-label {
+  color: var(--sage);
+  font: 600 11px/1.4 'JetBrains Mono', monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.raven-file-name {
+  margin-top: 6px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.raven-file-description {
+  margin: 12px 0 0;
+  color: var(--muted);
+}
+
+.raven-file-actions {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.raven-media-preview {
+  margin-top: 14px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.24);
+}
+
+.raven-media-preview video,
+.raven-media-preview img {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  object-fit: cover;
+}
+
+.raven-media-preview audio {
+  display: block;
+  width: 100%;
+  padding: 14px;
+}
+
+.raven-empty-state {
+  padding: 18px;
+  color: var(--muted);
+}
+
+.raven-course-module nav,
+.raven-course-module .engagement-strip,
+.raven-course-module .module-section,
+.raven-course-module .table-wrapper,
+.raven-course-module .insight-card,
+.raven-course-module .code-block-wrapper,
+.raven-course-module .process-flow,
+.raven-course-module .module-nav-links,
+.raven-course-module footer {
+  background: var(--panel) !important;
+  border-color: var(--line) !important;
+  box-shadow: none !important;
+}
+
+.raven-course-module nav,
+.raven-course-module footer {
+  backdrop-filter: blur(16px);
+}
+
+.raven-course-module body,
+.raven-course-module .markdown-body,
+.raven-course-module .markdown-body p,
+.raven-course-module .markdown-body li,
+.raven-course-module .markdown-body td,
+.raven-course-module .markdown-body th {
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+.raven-course-module .reading-progress {
+  background: linear-gradient(90deg, var(--sage), var(--camel));
+}
+
+.raven-course-module .back-link,
+.raven-course-module .nav-title,
+.raven-course-module .section-header h2,
+.raven-course-module .markdown-body strong {
+  color: var(--cream) !important;
+}
+
+.raven-course-module .nav-progress-indicator,
+.raven-course-module .engagement-chip,
+.raven-course-module .section-num,
+.raven-course-module .section-status,
+.raven-course-module .code-lang,
+.raven-course-module .copy-btn {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.raven-course-module .section-num,
+.raven-course-module .section-status,
+.raven-course-module .copy-btn.copied,
+.raven-course-module .step-num,
+.raven-course-module .next-btn,
+.raven-course-module .prev-btn {
+  background: rgba(199, 216, 185, 0.16) !important;
+  color: var(--sage) !important;
+}
+
+.raven-course-module .module-table thead,
+.raven-course-module .section-header,
+.raven-course-module .code-toolbar {
+  background: rgba(231, 225, 215, 0.04) !important;
+}
+
+.raven-course-module .module-nav-links a,
+.raven-course-module #error a,
+.raven-course-module .ix-walk-btn {
+  background: rgba(231, 225, 215, 0.05) !important;
+  border-color: var(--line) !important;
+  color: var(--cream) !important;
+}
+
+.raven-course-module .module-nav-links a:hover,
+.raven-course-module .ix-walk-btn:hover {
+  border-color: var(--line-strong) !important;
+}
+
+@media (max-width: 960px) {
+  .raven-hero,
+  .raven-form-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .raven-submission-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .raven-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .raven-app,
+  .raven-topbar-inner {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .raven-section,
+  .raven-day {
+    padding: 18px;
+  }
+
+  .raven-hero-copy,
+  .raven-meta-card,
+  .raven-stat-card,
+  .raven-form-card {
+    padding: 18px;
+  }
+
+  .raven-block-card summary {
+    grid-template-columns: 1fr 18px;
+  }
+
+  .raven-block-time {
+    grid-column: 1 / -1;
+    padding-top: 0;
+  }
+
+  .raven-block-body {
+    padding: 0 18px 18px;
+  }
+
+  .raven-stat-grid {
+    grid-template-columns: 1fr;
+  }
+}

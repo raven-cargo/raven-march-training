@@ -1,0 +1,541 @@
+{
+  "courseTitle": "Raven Cargo AI Transformation",
+  "courseSubtitle": "Raven 2-Day Student Portal",
+  "courseBadge": "CETI AI · Raven March Training · March 24-25, 2026",
+  "summary": "Student portal for the live Raven 2-day course, with the class sequence, module pages, labs, submissions, resources, challenges, and async follow-through in one place.",
+  "deliveryStats": [
+    { "label": "Live Days", "value": "2" },
+    { "label": "Live Blocks", "value": "10" },
+    { "label": "Labs", "value": "9" },
+    { "label": "Async Assets", "value": "4" }
+  ],
+  "labSequence": [
+    { "id": "01", "title": "The Paradigm Shift", "href": "/raven-cargo-course/lab/01", "block": "D1 B1" },
+    { "id": "02", "title": "First Agent Conversation", "href": "/raven-cargo-course/lab/02", "block": "D1 B2" },
+    { "id": "03", "title": "Prompt Engineering Workshop", "href": "/raven-cargo-course/lab/03", "block": "D1 B3" },
+    { "id": "04", "title": "Agentic Reasoning", "href": "/raven-cargo-course/lab/04", "block": "D1 B4" },
+    { "id": "05", "title": "Skills & Commands Builder", "href": "/raven-cargo-course/lab/05", "block": "D2 B5" },
+    { "id": "06", "title": "MCP Server Explorer", "href": "/raven-cargo-course/lab/06", "block": "D2 B6" },
+    { "id": "07", "title": "Multi-Agent Orchestrator", "href": "/raven-cargo-course/lab/07", "block": "D2 B7" },
+    { "id": "08", "title": "Production Patterns", "href": "/raven-cargo-course/lab/08", "block": "D2 B8" },
+    { "id": "09", "title": "Capstone Build", "href": "/raven-cargo-course/lab/09", "block": "D2 B8" }
+  ],
+  "moduleSequence": [
+    { "id": "01", "title": "The Agentic Coding Paradigm", "href": "/raven-cargo-course/module/01", "mode": "live", "block": "D1 B1" },
+    { "id": "02", "title": "Claude Code Foundations", "href": "/raven-cargo-course/module/02", "mode": "live", "block": "D1 B2" },
+    { "id": "03", "title": "Prompt Engineering Depth", "href": "/raven-cargo-course/module/03", "mode": "live", "block": "D1 B3" },
+    { "id": "04", "title": "Reading Agent Thinking", "href": "/raven-cargo-course/module/04", "mode": "live", "block": "D1 B4" },
+    { "id": "05", "title": "Skills & Commands", "href": "/raven-cargo-course/module/05", "mode": "live", "block": "D2 B5" },
+    { "id": "06", "title": "MCP Architecture", "href": "/raven-cargo-course/module/06", "mode": "live", "block": "D2 B6" },
+    { "id": "07", "title": "Building MCP Servers", "href": "/raven-cargo-course/module/07", "mode": "live", "block": "D2 B6" },
+    { "id": "08", "title": "Multi-Agent Systems", "href": "/raven-cargo-course/module/08", "mode": "live", "block": "D2 B7" },
+    { "id": "09", "title": "Security + Capstone Build", "href": "/raven-cargo-course/module/09", "mode": "live", "block": "D2 B8" },
+    { "id": "10", "title": "Meta-Prompting", "href": "/raven-cargo-course/module/10", "mode": "async", "block": "Async" },
+    { "id": "11", "title": "Tech Stack Adaptation", "href": "/raven-cargo-course/module/11", "mode": "async", "block": "Async" },
+    { "id": "12", "title": "Capstone & Production", "href": "/raven-cargo-course/module/12", "mode": "async", "block": "Async" },
+    { "id": "challenge", "title": "Challenge Missions 1.1–3.2", "href": "/raven-cargo-course/challenges", "mode": "async", "block": "Async" }
+  ],
+  "days": [
+    {
+      "id": "day-1",
+      "label": "Day 1 — Foundations",
+      "theme": "AI-First Freight Operations",
+      "blocks": [
+        {
+          "id": "d1-b1",
+          "time": "9:00–10:30",
+          "topic": "AI Foundations for Freight Operations",
+          "title": "Block 1 — The Agentic Coding Paradigm",
+          "trainingModule": "SOW Module 1",
+          "modules": [
+            { "id": "01", "title": "The Agentic Coding Paradigm", "href": "/raven-cargo-course/module/01" }
+          ],
+          "labs": [
+            { "id": "01", "title": "The Paradigm Shift", "href": "/raven-cargo-course/lab/01" }
+          ],
+          "coreSkill": "PRAO loop, task suitability, structured extraction triage",
+          "deliverables": [
+            "Map Raven freight tasks into Best Fit / Needs Better Spec / Poor Fit.",
+            "Anchor shipment-email extraction and exception summaries in the PRAO loop."
+          ],
+          "useCaseIds": [
+            "shipment-email-extraction",
+            "carrier-communication-classification",
+            "exception-report-summarization"
+          ]
+        },
+        {
+          "id": "d1-b2",
+          "time": "10:45–12:15",
+          "topic": "AI-Powered Development with RavenEye",
+          "title": "Block 2 — Claude Code Foundations",
+          "trainingModule": "SOW Module 2",
+          "modules": [
+            { "id": "02", "title": "Claude Code Foundations", "href": "/raven-cargo-course/module/02" }
+          ],
+          "labs": [
+            { "id": "02", "title": "First Agent Conversation", "href": "/raven-cargo-course/lab/02" }
+          ],
+          "coreSkill": "CLAUDE.md hierarchy, permissions model, GCCF prompting, real PR shipping",
+          "deliverables": [
+            "Configure RavenEye-specific CLAUDE.md conventions.",
+            "Pair the lab with a real RavenEye bugfix or backlog issue."
+          ],
+          "useCaseIds": [
+            "raveneye-codebase-configuration",
+            "raveneye-pr-review"
+          ]
+        },
+        {
+          "id": "d1-b3",
+          "time": "13:15–14:45",
+          "topic": "Document Processing & BOL Automation",
+          "title": "Block 3 — Prompt Engineering Depth",
+          "trainingModule": "SOW Module 3",
+          "modules": [
+            { "id": "03", "title": "Prompt Engineering Depth", "href": "/raven-cargo-course/module/03" }
+          ],
+          "labs": [
+            { "id": "03", "title": "Prompt Engineering Workshop", "href": "/raven-cargo-course/lab/03" }
+          ],
+          "coreSkill": "TCEF prompts, constraint specification, extraction debugging",
+          "deliverables": [
+            "Build a BOL extraction prompt with explicit confidence fields.",
+            "Validate PRO numbers, SCAC codes, and lane data with verifiable rules."
+          ],
+          "useCaseIds": [
+            "bol-extraction",
+            "rate-quote-extraction"
+          ]
+        },
+        {
+          "id": "d1-b4",
+          "time": "15:00–16:30",
+          "topic": "Carrier Intelligence & Rate Optimization",
+          "title": "Block 4 — Reading Agent Thinking",
+          "trainingModule": "SOW Module 4",
+          "modules": [
+            { "id": "04", "title": "Reading Agent Thinking", "href": "/raven-cargo-course/module/04" }
+          ],
+          "labs": [
+            { "id": "04", "title": "Agentic Reasoning", "href": "/raven-cargo-course/lab/04" }
+          ],
+          "coreSkill": "Trace reading, intervention, multi-source carrier analysis",
+          "deliverables": [
+            "Read and diagnose carrier-scoring agent traces.",
+            "Intervene when an agent loops on incomplete authority or claims data."
+          ],
+          "useCaseIds": [
+            "carrier-intelligence-scoring"
+          ]
+        }
+      ],
+      "close": {
+        "title": "Day 1 Close",
+        "summary": "Synthesis, evening assignment, and async runway activation.",
+        "actions": [
+          "Map the day’s learnings to immediate Raven workflows.",
+          "Assign one developer task: ship a PR, extract a BOL, or analyze carrier data.",
+          "Preview Day 2 system-building blocks and async access."
+        ]
+      }
+    },
+    {
+      "id": "day-2",
+      "label": "Day 2 — Systems",
+      "theme": "Build the AI Infrastructure",
+      "blocks": [
+        {
+          "id": "d2-b5",
+          "time": "9:00–10:30",
+          "topic": "Skills Foundation",
+          "title": "Block 5 — Skills & Commands",
+          "trainingModule": "SOW Module 5",
+          "modules": [
+            { "id": "05", "title": "Skills & Commands", "href": "/raven-cargo-course/module/05" }
+          ],
+          "labs": [
+            { "id": "05", "title": "Skills & Commands Builder", "href": "/raven-cargo-course/lab/05" }
+          ],
+          "coreSkill": "YAML skills, slash commands, HUMAN GATE handoffs",
+          "deliverables": [
+            "Author freight-specific skills such as /carrier-check and /bol-extract.",
+            "Define where human approval is mandatory before operational action."
+          ],
+          "useCaseIds": [
+            "freight-skills-library"
+          ]
+        },
+        {
+          "id": "d2-b6",
+          "time": "10:45–12:15",
+          "topic": "MCP Servers & Tool Integration",
+          "title": "Block 6 — MCP Architecture + Building Servers",
+          "trainingModule": "SOW Module 5 Continued",
+          "modules": [
+            { "id": "06", "title": "MCP Architecture", "href": "/raven-cargo-course/module/06" },
+            { "id": "07", "title": "Building MCP Servers", "href": "/raven-cargo-course/module/07" }
+          ],
+          "labs": [
+            { "id": "06", "title": "MCP Server Explorer", "href": "/raven-cargo-course/lab/06" }
+          ],
+          "coreSkill": "Three primitives, TypeScript SDK, schema design, Streamable HTTP production model",
+          "deliverables": [
+            "Classify Raven operations as tools, resources, or prompts.",
+            "Draft a real RavenEye endpoint schema for MCP integration."
+          ],
+          "useCaseIds": [
+            "fmcsa-verification",
+            "raveneye-mcp-server",
+            "gps-tracking-resource",
+            "exception-report-prompt"
+          ]
+        },
+        {
+          "id": "d2-b7",
+          "time": "13:15–14:45",
+          "topic": "Agentic Workflows & Exception Management",
+          "title": "Block 8 — Multi-Agent Systems",
+          "trainingModule": "SOW Module 6",
+          "modules": [
+            { "id": "08", "title": "Multi-Agent Systems", "href": "/raven-cargo-course/module/08" }
+          ],
+          "labs": [
+            { "id": "07", "title": "Multi-Agent Orchestrator", "href": "/raven-cargo-course/lab/07" }
+          ],
+          "coreSkill": "Parallel composition, routing, recovery policies, agent coordination",
+          "deliverables": [
+            "Model delay detection, notification, and contingency routing as a pipeline.",
+            "Design a compliance fan-out pattern with deduped findings."
+          ],
+          "useCaseIds": [
+            "delay-detection-pipeline",
+            "compliance-verification"
+          ]
+        },
+        {
+          "id": "d2-b8",
+          "time": "15:00–16:30",
+          "topic": "Capstone: Production-Ready Agent Pipeline",
+          "title": "Block 9 — Security + Capstone Build",
+          "trainingModule": "SOW Module 9",
+          "modules": [
+            { "id": "09", "title": "Security + Capstone Build", "href": "/raven-cargo-course/module/09" }
+          ],
+          "labs": [
+            { "id": "08", "title": "Production Patterns", "href": "/raven-cargo-course/lab/08" },
+            { "id": "09", "title": "Capstone Build", "href": "/raven-cargo-course/lab/09" }
+          ],
+          "coreSkill": "Permissions, secrets, approval gates, pipeline blueprinting",
+          "deliverables": [
+            "Scope agent permissions and secrets for production freight workflows.",
+            "Ship a capstone design that becomes the Phase 2 implementation backlog."
+          ],
+          "useCaseIds": [
+            "human-gate-approval",
+            "secrets-permission-audit",
+            "carrier-intelligence-capstone"
+          ]
+        }
+      ],
+      "close": {
+        "title": "Day 2 Close",
+        "summary": "Capstone share-out, Phase 2 preview, async learning path, and feedback channel setup.",
+        "actions": [
+          "Present pipeline design as Problem → Architecture → Safety Decision.",
+          "Activate async modules M08, M11, M12, and challenge missions.",
+          "Set up the support channel for implementation blockers and follow-through."
+        ]
+      }
+    }
+  ],
+  "useCases": [
+    {
+      "id": "bol-extraction",
+      "title": "BOL Data Extraction Pipeline",
+      "day": "Day 1",
+      "moduleTag": "M03",
+      "labTag": "Lab 03",
+      "fit": "Best Fit",
+      "pattern": "TCEF + Constraint Spec",
+      "description": "Extract shipper name, consignee, commodity, weight, piece count, PRO number, and SCAC code from scanned Bills of Lading with confidence-scored JSON output.",
+      "meta": [
+        { "label": "Module", "value": "Prompt Engineering Depth" },
+        { "label": "Validation", "value": "PRO: [A-Z]{4}[0-9]{8}" },
+        { "label": "Deliverable", "value": "Production-ready extraction prompt" }
+      ]
+    },
+    {
+      "id": "carrier-intelligence-scoring",
+      "title": "Carrier Intelligence Scoring",
+      "day": "Day 1",
+      "moduleTag": "M04",
+      "labTag": "Lab 04",
+      "fit": "Best Fit",
+      "pattern": "Multi-File Scout + Act & Verify",
+      "description": "Read FMCSA data, claims history, and lane performance to pre-score carriers in seconds rather than manual 20-minute multi-source review.",
+      "meta": [
+        { "label": "Sources", "value": "FMCSA, Claims DB, TMS" },
+        { "label": "Outcome", "value": "Trace reading + intervention" }
+      ]
+    },
+    {
+      "id": "shipment-email-extraction",
+      "title": "Shipment Detail Extraction from Emails",
+      "day": "Day 1",
+      "moduleTag": "M01",
+      "labTag": "Lab 01",
+      "fit": "Best Fit",
+      "pattern": "PRAO Loop",
+      "description": "Parse carrier and customer emails into structured shipment context including origin, destination, commodity, timing, and special requirements.",
+      "meta": [
+        { "label": "Suitability", "value": "Canonical Best Fit task" }
+      ]
+    },
+    {
+      "id": "carrier-communication-classification",
+      "title": "Carrier Communication Classification",
+      "day": "Day 1",
+      "moduleTag": "M01",
+      "labTag": "Lab 01",
+      "fit": "Best Fit",
+      "pattern": "Task Suitability Framework",
+      "description": "Classify incoming carrier communications by urgency and type so delays, capacity alerts, and compliance issues route to the right operating queue.",
+      "meta": [
+        { "label": "Output", "value": "Priority + category routing" }
+      ]
+    },
+    {
+      "id": "exception-report-summarization",
+      "title": "Exception Report Summarization",
+      "day": "Day 1",
+      "moduleTag": "M01",
+      "labTag": "Lab 01",
+      "fit": "Best Fit",
+      "pattern": "PRAO + Structured Output",
+      "description": "Summarize last week’s delays, missed pickups, claims, and detention incidents into standup-ready operational briefs.",
+      "meta": [
+        { "label": "Cadence", "value": "Daily standup / weekly ops review" }
+      ]
+    },
+    {
+      "id": "raveneye-codebase-configuration",
+      "title": "RavenEye Codebase Configuration",
+      "day": "Day 1",
+      "moduleTag": "M02",
+      "labTag": "Lab 02",
+      "fit": "Best Fit",
+      "pattern": "CLAUDE.md + GCCF",
+      "description": "Configure RavenEye’s CLAUDE.md hierarchy with Zod validation, /api/v2/ conventions, and safe permission defaults before shipping a real PR.",
+      "meta": [
+        { "label": "Deliverable", "value": "Live PR on RavenEye" }
+      ]
+    },
+    {
+      "id": "raveneye-pr-review",
+      "title": "RavenEye PR Review Automation",
+      "day": "Day 1",
+      "moduleTag": "M02",
+      "labTag": "Lab 02",
+      "fit": "Best Fit",
+      "pattern": "CLAUDE.md + Permissions",
+      "description": "Run agent-assisted code review on each RavenEye PR against local codebase standards and security constraints.",
+      "meta": [
+        { "label": "Deliverable", "value": "Reusable review prompt/skill" }
+      ]
+    },
+    {
+      "id": "rate-quote-extraction",
+      "title": "Rate Quote Extraction from Carrier Sheets",
+      "day": "Day 1",
+      "moduleTag": "M03",
+      "labTag": "Lab 03",
+      "fit": "Best Fit",
+      "pattern": "TCEF + Constraint Spec",
+      "description": "Extract rate sheets and carrier quote emails with explicit rules for lane codes, accessorials, minimums, and effective dates.",
+      "meta": [
+        { "label": "Checks", "value": "Lane code, SCAC, dates" }
+      ]
+    },
+    {
+      "id": "fmcsa-verification",
+      "title": "FMCSA Carrier Authority Verification",
+      "day": "Day 2",
+      "moduleTag": "M06",
+      "labTag": "Lab 06",
+      "fit": "Best Fit",
+      "pattern": "MCP Tool",
+      "description": "Check carrier authority, MC/USDOT numbers, insurance, and safety ratings through a production MCP tool surface.",
+      "meta": [
+        { "label": "Integration", "value": "FMCSA SAFER API" }
+      ]
+    },
+    {
+      "id": "raveneye-mcp-server",
+      "title": "Build RavenEye MCP Server",
+      "day": "Day 2",
+      "moduleTag": "M07",
+      "labTag": "Lab 06",
+      "fit": "Best Fit",
+      "pattern": "TypeScript MCP SDK",
+      "description": "Build a working MCP server that connects Claude to Raven operational data with production-safe schema design and error handling.",
+      "meta": [
+        { "label": "Transport", "value": "Streamable HTTP" }
+      ]
+    },
+    {
+      "id": "gps-tracking-resource",
+      "title": "Live Shipment GPS Tracking via MCP",
+      "day": "Day 2",
+      "moduleTag": "M06",
+      "labTag": "Lab 06",
+      "fit": "Best Fit",
+      "pattern": "MCP Resource",
+      "description": "Expose read-only shipment position and tracking-feed state as addressable MCP resources for operational agents.",
+      "meta": [
+        { "label": "Data", "value": "RavenEye tracking feed" }
+      ]
+    },
+    {
+      "id": "exception-report-prompt",
+      "title": "Exception Report via MCP Prompt",
+      "day": "Day 2",
+      "moduleTag": "M06",
+      "labTag": "Lab 06",
+      "fit": "Best Fit",
+      "pattern": "MCP Prompt",
+      "description": "Template a reusable exception-report prompt that turns delayed-load data into structured operations reporting.",
+      "meta": [
+        { "label": "Consumers", "value": "Ops team + leadership" }
+      ]
+    },
+    {
+      "id": "freight-skills-library",
+      "title": "Freight Operational Skills Library",
+      "day": "Day 2",
+      "moduleTag": "M05",
+      "labTag": "Lab 05",
+      "fit": "Best Fit",
+      "pattern": "YAML Skills + Slash Commands",
+      "description": "Author carrier-scorer, /bol-extract, and exception-report skills that persist Raven’s operating patterns beyond the live sessions.",
+      "meta": [
+        { "label": "Deliverable", "value": "Real skill files for reuse" }
+      ]
+    },
+    {
+      "id": "delay-detection-pipeline",
+      "title": "Delay Detection & Auto-Notification",
+      "day": "Day 2",
+      "moduleTag": "M08",
+      "labTag": "Lab 07",
+      "fit": "Best Fit",
+      "pattern": "Fan-Out / Pipeline",
+      "description": "Split tracking analysis, customer notification, and contingency routing into coordinated agents that hand off state cleanly.",
+      "meta": [
+        { "label": "Agents", "value": "Monitor → Notify → Route" }
+      ]
+    },
+    {
+      "id": "compliance-verification",
+      "title": "Compliance Verification Pipeline",
+      "day": "Day 2",
+      "moduleTag": "M08",
+      "labTag": "Lab 07",
+      "fit": "Best Fit",
+      "pattern": "Fan-Out / Fan-In",
+      "description": "Run carrier authority, insurance, and hazmat documentation checks in parallel and aggregate them back into a single compliance response.",
+      "meta": [
+        { "label": "Safety", "value": "HUMAN GATE required" }
+      ]
+    },
+    {
+      "id": "human-gate-approval",
+      "title": "HUMAN GATE Approval Pattern",
+      "day": "Day 2",
+      "moduleTag": "M09",
+      "labTag": "Lab 08",
+      "fit": "Safety Critical",
+      "pattern": "Plan-Halt-Approve-Execute",
+      "description": "Require human sign-off before rate changes, rebooking shipments, or public/customer communications with real operational impact.",
+      "meta": [
+        { "label": "Gate Types", "value": "Financial, operational, public" }
+      ]
+    },
+    {
+      "id": "secrets-permission-audit",
+      "title": "Agent Secrets & Permission Audit",
+      "day": "Day 2",
+      "moduleTag": "M09",
+      "labTag": "Lab 08",
+      "fit": "Security",
+      "pattern": "Least Privilege + Env Vars",
+      "description": "Audit API keys and permission scopes for freight systems touching carrier data, finance, and exception handling at production scale.",
+      "meta": [
+        { "label": "Exercises", "value": "CE-08-A + cost calculator" }
+      ]
+    },
+    {
+      "id": "carrier-intelligence-capstone",
+      "title": "Carrier Intelligence Pipeline Capstone",
+      "day": "Day 2",
+      "moduleTag": "M09",
+      "labTag": "Lab 09",
+      "fit": "Capstone",
+      "pattern": "Pipeline Blueprint",
+      "description": "Turn the live course into a Phase 2-ready design document covering trigger, context, decision logic, action scope, and output delivery.",
+      "meta": [
+        { "label": "Outcome", "value": "Phase 2 implementation backlog" }
+      ]
+    }
+  ],
+  "builtInResources": [
+    {
+      "id": "plan-pdf",
+      "title": "Raven 2-Day Mapping PDF",
+      "description": "Original 2-day breakdown used to derive the extracted course chronology.",
+      "href": "/raven-cargo-course/resources/raven-cargo-2day-plan.pdf",
+      "category": "Planning File",
+      "kind": "file"
+    },
+    {
+      "id": "dashboard-html",
+      "title": "Raven Use Case Dashboard HTML",
+      "description": "Original dashboard reference containing the schedule, use cases, and CETI/Raven design language.",
+      "href": "/raven-cargo-course/resources/Raven%20Cargo%20AI%20Transformation%20Dashboard.html",
+      "category": "Reference File",
+      "kind": "file"
+    },
+    {
+      "id": "async-m08",
+      "title": "Async Module 08 — Meta-Prompting",
+      "description": "Post-course prompt refinement and meta-prompting continuation.",
+      "href": "/raven-cargo-course/module/08",
+      "category": "Async Module",
+      "kind": "module"
+    },
+    {
+      "id": "async-m11",
+      "title": "Async Module 11 — Tech Stack Adaptation",
+      "description": "Apply course patterns to RavenEye’s real stack and integration boundaries.",
+      "href": "/raven-cargo-course/module/11",
+      "category": "Async Module",
+      "kind": "module"
+    },
+    {
+      "id": "async-m12",
+      "title": "Async Module 12 — Capstone & Production",
+      "description": "Full production follow-through for Phase 2 implementation work.",
+      "href": "/raven-cargo-course/module/12",
+      "category": "Async Module",
+      "kind": "module"
+    },
+    {
+      "id": "challenge-missions",
+      "title": "Challenge Missions 1.1–3.2",
+      "description": "Take-home assignments referenced at Day 2 close.",
+      "href": "/raven-cargo-course/challenges",
+      "category": "Take-Home",
+      "kind": "challenge"
+    }
+  ]
+}

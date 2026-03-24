@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Raven Cargo Challenges</title>
+  <script>
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.style.colorScheme = 'dark';
+  </script>
+  <script>
+    (function () {
+      var baseHref = window.location.protocol === 'file:' ? './' : '/raven-cargo-course/';
+      document.write('<base href="' + baseHref + '">');
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/theme-toggle.css" />
+  <link rel="stylesheet" href="assets/raven-course.css" />
+  <script src="assets/theme-toggle.js" defer></script>
+  <script src="assets/raven-course.js" defer></script>
+</head>
+<body class="raven-course-home">
+  <div class="raven-topbar">
+    <div class="raven-topbar-inner">
+      <div class="raven-brand">
+        <span class="raven-brand-label">CETI AI · Raven March Training</span>
+        <span class="raven-brand-title" id="page-title">Raven Cargo AI Transformation</span>
+      </div>
+      <div class="raven-tabs" aria-label="Course sections">
+        <a class="raven-tab" href="index.html#course-flow-section">Course Flow</a>
+        <a class="raven-tab" href="submissions.html">Submissions</a>
+        <a class="raven-tab" href="resources.html">Resources</a>
+        <a class="raven-tab is-active" href="challenges.html">Challenges</a>
+        <a class="raven-tab" href="async.html">Async</a>
+      </div>
+      <div class="raven-topbar-badge" id="course-badge">Loading…</div>
+    </div>
+  </div>
+
+  <main class="raven-app">
+    <section class="raven-hero">
+      <div class="raven-hero-copy">
+        <div class="raven-overline">Raven Cargo · Challenge Missions</div>
+        <h1 id="course-title">Raven Cargo AI Transformation</h1>
+        <p id="course-summary">Open-ended engineering challenges with clear success criteria. These are not guided tutorials. They require working artifacts on real codebases.</p>
+      </div>
+      <div class="raven-meta-grid">
+        <article class="raven-meta-card">
+          <div class="raven-meta-label">Challenge Path</div>
+          <div class="raven-meta-value" id="course-subtitle">Loading…</div>
+        </article>
+        <article class="raven-meta-card">
+          <div class="raven-meta-label">Briefings</div>
+          <div class="raven-meta-value">Use this page to browse the mission tracks, then open the full mission briefings for complete requirements and rubrics.</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="raven-section">
+      <div class="raven-section-heading">
+        <h2>Challenge Missions</h2>
+      </div>
+      <p class="raven-section-copy">
+        Open-ended engineering challenges with clear success criteria. These are not guided tutorials. They require you to produce working artifacts on real codebases.
+        <a href="/raven-cargo-course/challenges" style="color:var(--sage);">View full mission briefings →</a>
+      </p>
+
+      <div class="raven-mission-group">
+        <div class="raven-mission-head">
+          <span class="raven-track-badge track-1">Track 1</span>
+          <h3>Skills, Commands &amp; Agents</h3>
+        </div>
+        <div class="raven-mission-grid">
+          <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-11-author-two-skills-from-scratch-">
+            <div class="raven-mission-num track-1">1.1</div>
+            <div class="raven-mission-body">
+              <div class="raven-mission-name">Author Two Skills From Scratch</div>
+              <div class="raven-mission-meta">★★★ · ~3h · Write code-focused + workflow-focused skill YAMLs · M05</div>
+            </div>
+            <span class="raven-mission-arrow">→</span>
+          </a>
+          <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-12-build-a-slash-command-that-orchestrates-multiple-steps-">
+            <div class="raven-mission-num track-1">1.2</div>
+            <div class="raven-mission-body">
+              <div class="raven-mission-name">Build a Multi-Step Slash Command</div>
+              <div class="raven-mission-meta">★★★ · ~3h · /ship, /onboard, or /incident — 3+ chained steps · M07</div>
+            </div>
+            <span class="raven-mission-arrow">→</span>
+          </a>
+          <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-13-configure-a-specialized-subagent-">
+            <div class="raven-mission-num track-1">1.3</div>
+            <div class="raven-mission-body">
+              <div class="raven-mission-name">Configure a Specialized Subagent</div>
+              <div class="raven-mission-meta">★★★★ · ~4h · Security reviewer, doc writer, or test generator · M09</div>
+            </div>
+            <span class="raven-mission-arrow">→</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="raven-mission-group">
+        <div class="raven-mission-head">
+          <span class="raven-track-badge track-2">Track 2</span>
+          <h3>Codebase Navigation &amp; Issue Resolution</h3>
+        </div>
+        <div class="raven-mission-grid">
+          <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-21-codebase-archaeology-understand-before-touching-">
+            <div class="raven-mission-num track-2">2.1</div>
+            <div class="raven-mission-body">
+              <div class="raven-mission-name">Codebase Archaeology</div>
+              <div class="raven-mission-meta">★★★ · ~3h · Navigate unfamiliar codebase · Bug hunt + fix · M03</div>
+            </div>
+            <span class="raven-mission-arrow">→</span>
+          </a>
+          <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-22-issue-to-pr-pipeline-using-linear-or-github-mcp-">
+            <div class="raven-mission-num track-2">2.2</div>
+            <div class="raven-mission-body">
+              <div class="raven-mission-name">Issue-to-PR Pipeline</div>
+              <div class="raven-mission-meta">★★★★ · ~5h · Linear/GitHub MCP · 6-step workflow · M06/M07</div>
+            </div>
+            <span class="raven-mission-arrow">→</span>
+          </a>
+          <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-23-pr-review-workflow-agent-as-reviewer-">
+            <div class="raven-mission-num track-2">2.3</div>
+            <div class="raven-mission-body">
+              <div class="raven-mission-name">PR Review Workflow</div>
+              <div class="raven-mission-meta">★★★★ · ~4h · 5-category structured review agent · M09</div>
+            </div>
+            <span class="raven-mission-arrow">→</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="raven-mission-group">
+        <div class="raven-mission-head">
+          <span class="raven-track-badge track-3">Track 3</span>
+          <h3>Production-Grade Systems</h3>
+        </div>
+        <div class="raven-mission-grid">
+          <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-31-build-a-developer-productivity-toolkit-">
+            <div class="raven-mission-num track-3">3.1</div>
+            <div class="raven-mission-body">
+              <div class="raven-mission-name">Developer Productivity Toolkit</div>
+              <div class="raven-mission-meta">★★★★ · ~6h · Skill + command + subagent as a system · M07/M09</div>
+            </div>
+            <span class="raven-mission-arrow">→</span>
+          </a>
+          <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-31b-bridge-to-end-to-end-automation-">
+            <div class="raven-mission-num track-3">3.1B</div>
+            <div class="raven-mission-body">
+              <div class="raven-mission-name">Bridge: Partial Pipeline + Review Gate</div>
+              <div class="raven-mission-meta">★★★★ · ~4h · Intake-to-test run + enforced checkpoint before merge automation</div>
+            </div>
+            <span class="raven-mission-arrow">→</span>
+          </a>
+          <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-32-issue-to-merge-end-to-end-automation-">
+            <div class="raven-mission-num track-3">3.2</div>
+            <div class="raven-mission-body">
+              <div class="raven-mission-name">Issue-to-Merge Automation</div>
+              <div class="raven-mission-meta">★★★★★ · ~10h · Full pipeline · Human checkpoints · Production-grade · All modules</div>
+            </div>
+            <span class="raven-mission-arrow">→</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="raven-mission-group">
+        <div class="raven-mission-head">
+          <span class="raven-track-badge track-ex">Exercises</span>
+          <h3>Build Challenges Baked Into Labs</h3>
+        </div>
+        <p class="raven-section-copy">Non-gating exercises inside the labs. These award bonus XP and connect directly to the longer challenge missions.</p>
+        <div class="raven-mission-grid">
+          <a class="raven-mission-card" href="/raven-cargo-course/lab/04#ce-03-d">
+            <div class="raven-mission-num track-ex">CE</div>
+            <div class="raven-mission-body">
+              <div class="raven-mission-name">CE-03-D · Issue Navigation</div>
+              <div class="raven-mission-meta">Lab 04 · Debug auth 500 error · PRAO + GCCF fix prompt · +30 XP</div>
+            </div>
+            <span class="raven-mission-arrow">→</span>
+          </a>
+          <a class="raven-mission-card" href="/raven-cargo-course/lab/06#ce-04-b">
+            <div class="raven-mission-num track-ex">CE</div>
+            <div class="raven-mission-body">
+              <div class="raven-mission-name">CE-04-B · Tool Schema Design</div>
+              <div class="raven-mission-meta">Lab 06 · Write production MCP tool JSON schema · Auto-validated · +30 XP</div>
+            </div>
+            <span class="raven-mission-arrow">→</span>
+          </a>
+          <a class="raven-mission-card" href="/raven-cargo-course/lab/05#ce-06-c">
+            <div class="raven-mission-num track-ex">CE</div>
+            <div class="raven-mission-body">
+              <div class="raven-mission-name">CE-06-C · Author a Skill YAML</div>
+              <div class="raven-mission-meta">Lab 05 · Write standup-writer skill from scratch · 6-field validation · +30 XP</div>
+            </div>
+            <span class="raven-mission-arrow">→</span>
+          </a>
+          <a class="raven-mission-card" href="/raven-cargo-course/lab/05#ce-06-d">
+            <div class="raven-mission-num track-ex">CE</div>
+            <div class="raven-mission-body">
+              <div class="raven-mission-name">CE-06-D · Build /pr-ready Command</div>
+              <div class="raven-mission-meta">Lab 05 · Design slash command with 4 sections · Data flow required · +30 XP</div>
+            </div>
+            <span class="raven-mission-arrow">→</span>
+          </a>
+          <a class="raven-mission-card" href="/raven-cargo-course/lab/07#ce-07-b">
+            <div class="raven-mission-num track-ex">CE</div>
+            <div class="raven-mission-body">
+              <div class="raven-mission-name">CE-07-B · Subagent System Prompt</div>
+              <div class="raven-mission-meta">Lab 07 · Write 200+ word system prompt · 6-section spec · +30 XP</div>
+            </div>
+            <span class="raven-mission-arrow">→</span>
+          </a>
+          <a class="raven-mission-card" href="/raven-cargo-course/lab/08#ce-08-a">
+            <div class="raven-mission-num track-ex">CE</div>
+            <div class="raven-mission-body">
+              <div class="raven-mission-name">CE-08-A · Permission Models</div>
+              <div class="raven-mission-meta">Lab 08 · Write settings.json for 3 scenarios · JSON validated · +30 XP</div>
+            </div>
+            <span class="raven-mission-arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="raven-section">
+      <div class="raven-section-heading">
+        <h2>Full Mission Briefings</h2>
+      </div>
+      <p class="raven-section-copy">The complete challenge document remains intact from the main course. Open it for full requirements, success criteria, and submission rules.</p>
+      <div class="raven-chip-row">
+        <a class="raven-cta" href="/raven-cargo-course/challenges">Open Full Challenge Briefings</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
