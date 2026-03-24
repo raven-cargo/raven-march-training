@@ -46,7 +46,7 @@
           "time": "9:00–10:30",
           "topic": "AI Foundations for Freight Operations",
           "title": "Block 1 — The Agentic Coding Paradigm",
-          "trainingModule": "SOW Module 1",
+          "trainingModule": "Module 01",
           "modules": [
             { "id": "01", "title": "The Agentic Coding Paradigm", "href": "/raven-cargo-course/module/01" }
           ],
@@ -69,7 +69,7 @@
           "time": "10:45–12:15",
           "topic": "AI-Powered Development with RavenEye",
           "title": "Block 2 — Claude Code Foundations",
-          "trainingModule": "SOW Module 2",
+          "trainingModule": "Module 02",
           "modules": [
             { "id": "02", "title": "Claude Code Foundations", "href": "/raven-cargo-course/module/02" }
           ],
@@ -91,7 +91,7 @@
           "time": "13:15–14:45",
           "topic": "Document Processing & BOL Automation",
           "title": "Block 3 — Prompt Engineering Depth",
-          "trainingModule": "SOW Module 3",
+          "trainingModule": "Module 03",
           "modules": [
             { "id": "03", "title": "Prompt Engineering Depth", "href": "/raven-cargo-course/module/03" }
           ],
@@ -113,7 +113,7 @@
           "time": "15:00–16:30",
           "topic": "Carrier Intelligence & Rate Optimization",
           "title": "Block 4 — Reading Agent Thinking",
-          "trainingModule": "SOW Module 4",
+          "trainingModule": "Module 04",
           "modules": [
             { "id": "04", "title": "Reading Agent Thinking", "href": "/raven-cargo-course/module/04" }
           ],
@@ -150,7 +150,7 @@
           "time": "9:00–10:30",
           "topic": "Skills Foundation",
           "title": "Block 5 — Skills & Commands",
-          "trainingModule": "SOW Module 5",
+          "trainingModule": "Module 05",
           "modules": [
             { "id": "05", "title": "Skills & Commands", "href": "/raven-cargo-course/module/05" }
           ],
@@ -171,7 +171,7 @@
           "time": "10:45–12:15",
           "topic": "MCP Servers & Tool Integration",
           "title": "Block 6 — MCP Architecture + Building Servers",
-          "trainingModule": "SOW Module 5 Continued",
+          "trainingModule": "Modules 06–07",
           "modules": [
             { "id": "06", "title": "MCP Architecture", "href": "/raven-cargo-course/module/06" },
             { "id": "07", "title": "Building MCP Servers", "href": "/raven-cargo-course/module/07" }
@@ -196,7 +196,7 @@
           "time": "13:15–14:45",
           "topic": "Agentic Workflows & Exception Management",
           "title": "Block 8 — Multi-Agent Systems",
-          "trainingModule": "SOW Module 6",
+          "trainingModule": "Module 08",
           "modules": [
             { "id": "08", "title": "Multi-Agent Systems", "href": "/raven-cargo-course/module/08" }
           ],
@@ -218,7 +218,7 @@
           "time": "15:00–16:30",
           "topic": "Capstone: Production-Ready Agent Pipeline",
           "title": "Block 9 — Security + Capstone Build",
-          "trainingModule": "SOW Module 9",
+          "trainingModule": "Module 09",
           "modules": [
             { "id": "09", "title": "Security + Capstone Build", "href": "/raven-cargo-course/module/09" }
           ],

@@ -42,7 +42,7 @@
 
   <main class="raven-app">
     <section class="raven-hero" style="position:relative;overflow:hidden;">
-      <canvas id="hero-network" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.55;z-index:0;"></canvas>
+      <canvas id="hero-network" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:1;z-index:0;"></canvas>
       <div class="raven-hero-copy" style="position:relative;z-index:1;">
         <div class="raven-overline">Raven Cargo · Student Portal</div>
         <h1 id="course-title">Raven Cargo AI Transformation</h1>
@@ -120,12 +120,12 @@
         /* Draw edges */
         edges.forEach(function (e) {
           var na = nodes[e.a], nb = nodes[e.b];
-          var alpha = Math.max(0.04, 0.18 - (e.d / (Math.min(W, H) * 0.32)) * 0.14);
+          var alpha = Math.max(0.08, 0.32 - (e.d / (Math.min(W, H) * 0.32)) * 0.22);
           ctx.beginPath();
           ctx.moveTo(na.x, na.y);
           ctx.lineTo(nb.x, nb.y);
           ctx.strokeStyle = 'rgba(' + SLATE[0] + ',' + SLATE[1] + ',' + SLATE[2] + ',' + alpha + ')';
-          ctx.lineWidth = 0.8;
+          ctx.lineWidth = 1.2;
           ctx.stroke();
         });
         /* Draw nodes */
@@ -133,12 +133,12 @@
           ctx.beginPath();
           ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
           if (n.hub) {
-            ctx.fillStyle = 'rgba(' + SAGE[0] + ',' + SAGE[1] + ',' + SAGE[2] + ',0.7)';
+            ctx.fillStyle = 'rgba(' + SAGE[0] + ',' + SAGE[1] + ',' + SAGE[2] + ',0.9)';
             /* Glow */
-            ctx.shadowColor = 'rgba(' + SAGE[0] + ',' + SAGE[1] + ',' + SAGE[2] + ',0.3)';
-            ctx.shadowBlur = 12;
+            ctx.shadowColor = 'rgba(' + SAGE[0] + ',' + SAGE[1] + ',' + SAGE[2] + ',0.5)';
+            ctx.shadowBlur = 16;
           } else {
-            ctx.fillStyle = 'rgba(' + CREAM[0] + ',' + CREAM[1] + ',' + CREAM[2] + ',0.35)';
+            ctx.fillStyle = 'rgba(' + CREAM[0] + ',' + CREAM[1] + ',' + CREAM[2] + ',0.55)';
             ctx.shadowBlur = 0;
           }
           ctx.fill();

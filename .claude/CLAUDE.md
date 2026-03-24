@@ -9,6 +9,19 @@ Before any work on this project, read these two files for current state and plan
 
 - **`progress.md`** — inventory of everything built, what's complete, what's missing
 - **`next.md`** — prioritized task plan with exact file paths and execution steps
+- **`decisions.md`** — durable implementation decisions and renderer rules that should persist across sessions
+
+## Baseline Awareness
+
+- Fix shared interaction patterns in the renderer or shared CSS first. Do not patch quiz, prompt, or feedback bugs one question at a time when the issue is systemic.
+- Quiz explanations should contain explanation body copy only. Do not rely on hardcoded `Correct answer:` prefixes in markdown; the viewer must label `Correct.` vs `Not quite.` from runtime state.
+- For the Raven extracted course, keep branding, theme, and interactive affordances centralized in shared viewer/CSS logic rather than hardcoded per module or per lab.
+- For Raven file intake, prefer direct storage uploads plus shared file-block renderers over base64-through-function uploads or raw link lists. Large artifacts such as `.mp4` should be treated as first-class course assets.
+- Treat the Raven environment as a student portal first. Navigation, copy, density, labels, actions, and page structure should optimize for student clarity and long-term course access, not internal planning language, operator workflows, or implementation detail.
+- Student-facing titles must be carefully constructed. Prefer the simplest clear course label over implementation-heavy wording. Example: use `Learning Path`, not `Chronological Learning Path`. Keep this rule aligned with `decisions.md`.
+- For Raven schedule/order disputes, follow the approved Raven delivery flow recorded in `decisions.md`, not stale extracted numbering and not any temporarily incorrect upstream webpage. Current live order: Day 1 M01/L01, M02/L02, M03/L03, M04/L04; Day 2 M05/L05, M06+M07/L06, M08/L07, M09/L08+L09.
+- At session start, infer the current core task from the user's latest request plus `progress.md`, `next.md`, and `decisions.md`. Use that same distilled task statement when briefing subagents so orchestration stays aligned.
+- During tight UI/debug loops, redeploy after each major shared-pattern change and report the live check point immediately so review can happen before more context accumulates.
 
 ## Key File Locations
 

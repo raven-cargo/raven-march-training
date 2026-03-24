@@ -31,7 +31,7 @@ You configured `settings.json` permissions in Module 02 and used approval prompt
 
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m10-overview-predict" data-xp="8">
   <span class="ix-title">Predict Before You Learn</span>
-  <p class="ix-predict-prompt">Before we explore what makes agentic security different: think about a traditional web application versus a Claude Code agent, both with a misconfiguration that grants too-broad access. In the web app, you'd expect consistent wrong behavior on every request. What would you expect from the agent -- and why might that difference make agentic misconfiguration harder to catch and correct?</p>
+  <p class="ix-predict-prompt">Compare a traditional web app and an agent, both with overly broad access. Why is the agent failure pattern often intermittent instead of consistent, and why does that make misconfiguration harder to detect?</p>
   <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- what would you expect and why?"></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>

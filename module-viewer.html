@@ -32,6 +32,9 @@
       --ix-phase-observe:  #10b981;
       --ix-err:            #ef4444;
       --ix-warn:           #f59e0b;
+      --ix-caution:        #f6b76a;
+      --ix-caution-bg:     rgba(246, 183, 106, 0.14);
+      --ix-caution-line:   rgba(246, 183, 106, 0.30);
     }
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
     html { scroll-behavior: smooth; }
@@ -212,11 +215,24 @@
       margin: 0; padding: 0; border: none;
     }
     .section-status {
+      width: 20px;
+      text-align: center;
       font-size: 16px; color: var(--dim);
+      font-weight: 700;
+      line-height: 1;
+      flex-shrink: 0;
       transition: color 0.3s;
     }
     .section-status.done { color: var(--success); }
     .section-body { /* no extra styles needed */ }
+    .section-next-row {
+      margin-top: 18px;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .module-next-btn {
+      min-width: 170px;
+    }
 
     /* ── Collapsible prose inside sections ── */
     .section-body details,
@@ -430,9 +446,9 @@
 
     /* ── Interactive Quiz ── */
     .ix-quiz-shell {
-      margin: 16px 20px 20px;
+      margin: 18px 24px 24px;
       border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border-radius: calc(var(--radius) + 2px);
       background: var(--raised);
       overflow: hidden;
     }
@@ -440,7 +456,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 14px;
+      padding: 12px 20px;
       border-bottom: 1px solid var(--border);
       background: rgba(0,0,0,0.16);
       font-size: 12px;
@@ -452,29 +468,32 @@
       color: var(--text);
     }
     .ix-quiz-question {
-      padding: 16px 14px;
+      padding: 20px 20px 22px;
       border-bottom: 1px solid var(--border);
     }
     .ix-quiz-question:last-of-type { border-bottom: none; }
     .ix-quiz-prompt {
       color: var(--text);
-      margin-bottom: 10px;
-      font-size: 14px;
-      line-height: 1.6;
+      margin: 0 0 14px;
+      font-size: 16px;
+      line-height: 1.5;
+      font-weight: 700;
+      max-width: 46rem;
     }
     .ix-quiz-options {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 12px;
     }
     .ix-quiz-option {
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 12px;
       background: var(--surface);
       color: var(--muted);
       text-align: left;
-      padding: 10px 12px;
-      font-size: 13px;
+      padding: 14px 16px;
+      font-size: 14px;
+      line-height: 1.45;
       cursor: pointer;
       transition: border-color 0.15s, color 0.15s, background 0.15s;
     }
@@ -498,25 +517,32 @@
     }
     .ix-quiz-explanation {
       display: none;
-      margin-top: 10px;
-      padding: 10px 12px;
-      border-radius: 8px;
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 12px;
       border-left: 3px solid var(--primary);
       background: rgba(99,102,241,0.08);
       color: var(--muted);
-      font-size: 13px;
+      font-size: 14px;
       line-height: 1.6;
     }
+    .ix-quiz-explanation-state,
+    .ix-quiz-answer-label {
+      font-weight: 700;
+      color: var(--text);
+    }
+    .ix-quiz-explanation-state.is-correct { color: var(--success); }
+    .ix-quiz-explanation-state.is-wrong { color: #f6c2c2; }
     .ix-quiz-explanation.visible { display: block; }
     .ix-quiz-summary {
       display: none;
       justify-content: space-between;
-      gap: 10px;
+      gap: 12px;
       align-items: center;
-      padding: 12px 14px;
+      padding: 14px 20px;
       border-top: 1px solid var(--border);
       background: rgba(16,185,129,0.08);
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text);
     }
     .ix-quiz-summary.visible { display: flex; }
@@ -580,6 +606,8 @@
       font-size: 12px;
       color: var(--dim);
     }
+    .ix-predict-status[data-state="pending"] { color: var(--warning); }
+    .ix-predict-status[data-state="saved"] { color: var(--success); }
     .ix-predict-shell details {
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -1015,9 +1043,9 @@
     .ix-flow-node[data-phase="error"],
     .ix-walk-badge[data-phase="error"],
     .ix-detail-header[data-phase="error"] {
-      background: rgba(239,68,68,0.1);
-      border-color: rgba(239,68,68,0.3);
-      color: var(--ix-err);
+      background: var(--ix-caution-bg);
+      border-color: var(--ix-caution-line);
+      color: var(--ix-caution);
     }
     .ix-flow-node[data-phase="success"],
     .ix-walk-badge[data-phase="success"],
@@ -1048,7 +1076,7 @@
     .ix-tree-node[data-phase="act"] { border-color: rgba(6,182,212,0.3); }
     .ix-tree-node[data-phase="observe"] { border-color: rgba(16,185,129,0.3); }
     .ix-tree-node[data-phase="success"] { border-color: rgba(16,185,129,0.3); }
-    .ix-tree-node[data-phase="error"] { border-color: rgba(239,68,68,0.3); }
+    .ix-tree-node[data-phase="error"] { border-color: var(--ix-caution-line); }
     .ix-tree-node[data-phase="neutral"] { border-color: rgba(71,85,105,0.3); }
     .ix-tree-node[data-phase="goal"] { border-color: rgba(245,158,11,0.3); }
 
@@ -1058,7 +1086,7 @@
     .ix-cap-fill[data-phase="act"] { background: var(--ix-phase-act); }
     .ix-cap-fill[data-phase="observe"] { background: var(--ix-phase-observe); }
     .ix-cap-fill[data-phase="success"] { background: var(--success); }
-    .ix-cap-fill[data-phase="error"] { background: var(--ix-err); }
+    .ix-cap-fill[data-phase="error"] { background: var(--ix-caution); }
     .ix-cap-fill[data-phase="warning"] { background: var(--ix-warn); }
     .ix-cap-fill[data-phase="neutral"] { background: var(--dim); }
 
@@ -1068,7 +1096,7 @@
     .ix-cap-val[data-phase="act"] { color: var(--ix-phase-act); }
     .ix-cap-val[data-phase="observe"] { color: var(--ix-phase-observe); }
     .ix-cap-val[data-phase="success"] { color: var(--success); }
-    .ix-cap-val[data-phase="error"] { color: var(--ix-err); }
+    .ix-cap-val[data-phase="error"] { color: var(--ix-caution); }
     .ix-cap-val[data-phase="warning"] { color: var(--ix-warn); }
 
     /* Example box accent border */
@@ -1083,7 +1111,7 @@
     .ix-card[data-phase="reason"].active { border-color: var(--ix-phase-reason); }
     .ix-card[data-phase="act"].active { border-color: var(--ix-phase-act); }
     .ix-card[data-phase="observe"].active { border-color: var(--ix-phase-observe); }
-    .ix-card[data-phase="error"].active { border-color: var(--ix-err); }
+    .ix-card[data-phase="error"].active { border-color: var(--ix-caution); }
     .ix-card[data-phase="success"].active { border-color: var(--success); }
     .ix-card[data-phase="neutral"].active { border-color: var(--dim); }
     .ix-card[data-phase="warning"].active { border-color: var(--ix-warn); }
@@ -1093,7 +1121,7 @@
     .ix-card[data-phase="reason"].active .ix-card-icon { color: var(--ix-phase-reason); }
     .ix-card[data-phase="act"].active .ix-card-icon { color: var(--ix-phase-act); }
     .ix-card[data-phase="observe"].active .ix-card-icon { color: var(--ix-phase-observe); }
-    .ix-card[data-phase="error"].active .ix-card-icon { color: var(--ix-err); }
+    .ix-card[data-phase="error"].active .ix-card-icon { color: var(--ix-caution); }
     .ix-card[data-phase="success"].active .ix-card-icon { color: var(--success); }
     .ix-card[data-phase="warning"].active .ix-card-icon { color: var(--ix-warn); }
 
@@ -1890,6 +1918,15 @@
       transform: translateX(4px);
     }
     .ix-sq-choice.selected { pointer-events: none; }
+    .ix-sq-choice.chosen {
+      position: relative;
+      border-width: 2px;
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.02), 0 14px 30px rgba(0,0,0,0.22);
+      transform: translateX(0);
+    }
+    .ix-sq-choice.unselected {
+      opacity: 0.7;
+    }
     .ix-sq-choice.correct {
       border-color: rgba(16,185,129,0.3);
       background: rgba(16,185,129,0.06);
@@ -1928,6 +1965,30 @@
       font-size: 13px; color: var(--muted); line-height: 1.5;
     }
     .ix-sq-choice.correct .ix-sq-choice-text { color: var(--text); }
+    .ix-sq-choice-result {
+      margin-left: auto;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font: 700 11px/1 'JetBrains Mono', monospace;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .ix-sq-choice-result.correct {
+      background: rgba(16,185,129,0.18);
+      color: #9ff5cf;
+      border: 1px solid rgba(16,185,129,0.34);
+    }
+    .ix-sq-choice-result.wrong {
+      background: rgba(239,68,68,0.18);
+      color: #ffc2c2;
+      border: 1px solid rgba(239,68,68,0.34);
+    }
+    .ix-sq-choice-result.neutral {
+      background: rgba(245,158,11,0.18);
+      color: #ffdca0;
+      border: 1px solid rgba(245,158,11,0.34);
+    }
 
     .ix-sq-feedback {
       padding: 16px 20px;
@@ -1939,6 +2000,44 @@
       animation: ixFadeUp 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
     .ix-sq-feedback.show { display: block; }
+    .ix-sq-feedback.is-correct {
+      border-color: rgba(16,185,129,0.34);
+      background: rgba(16,185,129,0.12);
+    }
+    .ix-sq-feedback.is-wrong {
+      border-color: rgba(239,68,68,0.34);
+      background: rgba(239,68,68,0.12);
+    }
+    .ix-sq-feedback.is-neutral {
+      border-color: rgba(245,158,11,0.34);
+      background: rgba(245,158,11,0.1);
+    }
+    .ix-sq-feedback-state {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font: 700 11px/1 'JetBrains Mono', monospace;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .ix-sq-feedback-state.correct {
+      background: rgba(16,185,129,0.18);
+      color: #9ff5cf;
+      border: 1px solid rgba(16,185,129,0.34);
+    }
+    .ix-sq-feedback-state.wrong {
+      background: rgba(239,68,68,0.18);
+      color: #ffc2c2;
+      border: 1px solid rgba(239,68,68,0.34);
+    }
+    .ix-sq-feedback-state.neutral {
+      background: rgba(245,158,11,0.18);
+      color: #ffdca0;
+      border: 1px solid rgba(245,158,11,0.34);
+    }
     .ix-sq-feedback strong { color: var(--text); font-weight: 600; }
     .ix-sq-feedback code {
       font-family: 'JetBrains Mono', monospace;
@@ -2450,6 +2549,10 @@
       overflow: hidden;
     }
 
+    .ix-trace-stage {
+      min-height: 420px;
+    }
+
     .ix-trace-output {
       padding: 16px 20px;
       font-family: 'JetBrains Mono', monospace;
@@ -2465,7 +2568,7 @@
       display: flex;
       gap: 10px;
       padding: 4px 0;
-      align-items: baseline;
+      align-items: flex-start;
     }
 
     .ix-trace-row[data-type="prompt"] {
@@ -2499,6 +2602,9 @@
       color: var(--muted);
       line-height: 1.6;
       flex: 1;
+      min-width: 0;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
     .ix-trace-row[data-type="prompt"] .ix-trace-text {
@@ -2533,23 +2639,38 @@
 
     /* ── Control Bar ── */
     .ix-trace-controls {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 10px 20px;
+      display: grid;
+      gap: 12px;
+      padding: 14px 20px;
       background: rgba(0,0,0,0.3);
       border-top: 1px solid var(--border);
+    }
+
+    .ix-trace-controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .ix-trace-controls-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      min-width: 0;
     }
 
     .ix-trace-btn {
       background: var(--surface);
       color: var(--primary);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 5px 10px;
+      border-radius: 10px;
+      padding: 8px 12px;
       cursor: pointer;
       font-family: 'Inter', sans-serif;
-      font-size: 12px;
+      font-size: 13px;
       display: inline-flex;
       align-items: center;
       gap: 4px;
@@ -2567,18 +2688,19 @@
     .ix-trace-btn-primary:hover { background: var(--primary); opacity: 0.85; }
 
     .ix-trace-manual-hint {
-      font-size: 0.75rem;
-      color: var(--text-muted);
+      margin: 0;
+      font-size: 13px;
+      color: var(--dim);
       font-style: italic;
-      padding: 0 8px;
+      line-height: 1.45;
     }
 
     .ix-trace-progress {
-      font-size: 12px;
-      color: var(--dim);
+      font-size: 13px;
+      color: var(--text);
       font-family: 'JetBrains Mono', monospace;
-      margin-left: auto;
-      margin-right: 8px;
+      white-space: nowrap;
+      padding: 0 2px;
     }
 
     /* ── Speed Control ── */
@@ -2586,8 +2708,9 @@
       display: flex;
       gap: 2px;
       background: var(--raised);
-      border-radius: 6px;
-      padding: 2px;
+      border-radius: 10px;
+      padding: 4px;
+      border: 1px solid var(--border);
     }
 
     .ix-trace-speed-btn {
@@ -2596,8 +2719,8 @@
       color: var(--dim);
       font-size: 11px;
       font-family: 'JetBrains Mono', monospace;
-      padding: 3px 8px;
-      border-radius: 4px;
+      padding: 6px 10px;
+      border-radius: 8px;
       cursor: pointer;
       transition: all 0.15s;
     }
@@ -2643,12 +2766,13 @@
     /* ── Variant C: Side-by-Side Compare ── */
     .ix-trace-compare {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       min-height: 300px;
     }
 
     .ix-trace-compare-col {
       border-right: 1px solid var(--border);
+      min-width: 0;
     }
 
     .ix-trace-compare-col:last-child { border-right: none; }
@@ -2778,8 +2902,10 @@
       .ix-trace-compare-col:last-child { border-bottom: none; }
       .ix-trace-prao { grid-template-columns: 30px 1fr; }
       .ix-trace-prao-seg { min-height: 40px; font-size: 10px; }
-      .ix-trace-controls { flex-wrap: wrap; gap: 4px; }
-      .ix-trace-output { font-size: 11px; padding: 12px; max-height: 300px; }
+      .ix-trace-stage { min-height: 0; }
+      .ix-trace-controls-row { flex-direction: column; align-items: flex-start; }
+      .ix-trace-controls-group { width: 100%; }
+      .ix-trace-output { font-size: 11px; padding: 12px; max-height: 320px; }
       .ix-quiz-shell,
       .ix-predict-shell { margin: 12px; }
       .ix-terminal-shell { margin: 12px; }
@@ -2960,11 +3086,11 @@
       content: ''; width: 8px; height: 8px; border-radius: 50%;
     }
     .ix-compare-col[data-phase="success"] .ix-compare-label::before { background: var(--success); }
-    .ix-compare-col[data-phase="error"] .ix-compare-label::before { background: var(--ix-err); }
+    .ix-compare-col[data-phase="error"] .ix-compare-label::before { background: var(--ix-caution); }
     .ix-compare-col[data-phase="success"] .ix-compare-label { color: var(--success); }
-    .ix-compare-col[data-phase="error"] .ix-compare-label { color: var(--ix-err); }
+    .ix-compare-col[data-phase="error"] .ix-compare-label { color: var(--ix-caution); }
     .ix-compare-col[data-phase="success"] { background: rgba(16, 185, 129, 0.04); }
-    .ix-compare-col[data-phase="error"] { background: rgba(239, 68, 68, 0.04); }
+    .ix-compare-col[data-phase="error"] { background: rgba(246, 183, 106, 0.06); }
     .ix-compare-verdict {
       margin-top: 10px; padding: 8px 12px; border-radius: 6px;
       font-size: 12px; line-height: 1.5;
@@ -2973,7 +3099,7 @@
       background: rgba(16, 185, 129, 0.08); color: var(--success);
     }
     .ix-compare-verdict[data-phase="error"] {
-      background: rgba(239, 68, 68, 0.08); color: var(--ix-err);
+      background: rgba(246, 183, 106, 0.12); color: var(--ix-caution);
     }
     .ix-compare-col .ix-code-block {
       font-size: 11px; margin-top: 8px;
@@ -2989,9 +3115,9 @@
     [data-theme="light"] .ix-checklist-subtask code { background: #f0f2f6; color: #475569; }
     [data-theme="light"] .ix-checklist-verify { background: #f0f2f6; color: #475569; }
     [data-theme="light"] .ix-compare-col[data-phase="success"] { background: rgba(16, 185, 129, 0.06); }
-    [data-theme="light"] .ix-compare-col[data-phase="error"] { background: rgba(239, 68, 68, 0.06); }
+    [data-theme="light"] .ix-compare-col[data-phase="error"] { background: rgba(246, 183, 106, 0.10); }
     [data-theme="light"] .ix-compare-verdict[data-phase="success"] { background: rgba(16, 185, 129, 0.1); }
-    [data-theme="light"] .ix-compare-verdict[data-phase="error"] { background: rgba(239, 68, 68, 0.1); }
+    [data-theme="light"] .ix-compare-verdict[data-phase="error"] { background: rgba(246, 183, 106, 0.16); }
 
     /* ── Step Checklist + Compare: Reduced Motion ── */
     @media (prefers-reduced-motion: reduce) {
@@ -3609,6 +3735,9 @@
     }
 
     // --- Terminal output area ---
+    var stage = document.createElement('div');
+    stage.className = 'ix-trace-stage';
+
     var outputArea = document.createElement('div');
     outputArea.className = 'ix-trace-output';
     outputArea.setAttribute('role', 'log');
@@ -3625,7 +3754,7 @@
       annotationPanel.className = 'ix-trace-annotations';
       annotationPanel.setAttribute('aria-label', 'Trace commentary');
       splitWrap.appendChild(annotationPanel);
-      container.appendChild(splitWrap);
+      stage.appendChild(splitWrap);
     }
     // --- VARIANT C: Side-by-side ---
     else if (isCompare) {
@@ -3647,14 +3776,26 @@
         group._outputEl = colOutput;
         group._lines = Array.from(group.querySelectorAll('.ix-trace-line'));
       });
-      container.appendChild(compareWrap);
+      stage.appendChild(compareWrap);
     } else {
-      container.appendChild(outputArea);
+      stage.appendChild(outputArea);
     }
+
+    container.appendChild(stage);
 
     // --- Control bar ---
     var controls = document.createElement('div');
     controls.className = 'ix-trace-controls';
+    var topRow = document.createElement('div');
+    topRow.className = 'ix-trace-controls-row';
+    var primaryGroup = document.createElement('div');
+    primaryGroup.className = 'ix-trace-controls-group ix-trace-controls-main';
+    var statusGroup = document.createElement('div');
+    statusGroup.className = 'ix-trace-controls-group ix-trace-controls-status';
+    var bottomRow = document.createElement('div');
+    bottomRow.className = 'ix-trace-controls-row';
+    var speedGroup = document.createElement('div');
+    speedGroup.className = 'ix-trace-controls-group ix-trace-controls-speed';
 
     var playBtn = document.createElement('button');
     playBtn.className = 'ix-trace-btn ix-trace-play';
@@ -3690,22 +3831,30 @@
       speedControl.appendChild(btn);
     });
 
-    controls.appendChild(playBtn);
-    controls.appendChild(pauseBtn);
-    controls.appendChild(stepBtn);
-    controls.appendChild(resetBtn);
-    controls.appendChild(progress);
-    controls.appendChild(speedControl);
+    primaryGroup.appendChild(playBtn);
+    primaryGroup.appendChild(pauseBtn);
+    primaryGroup.appendChild(stepBtn);
+    primaryGroup.appendChild(resetBtn);
+    statusGroup.appendChild(progress);
+    speedGroup.appendChild(speedControl);
+    topRow.appendChild(primaryGroup);
+    topRow.appendChild(statusGroup);
+    bottomRow.appendChild(speedGroup);
 
+    var manualHint = null;
     // Manual-mode: highlight step button and add hint text
     if (defaultManual) {
       stepBtn.classList.add('ix-trace-btn-primary');
-      var hint = document.createElement('span');
-      hint.className = 'ix-trace-manual-hint';
-      hint.textContent = 'Click step or press \u2192 to advance';
-      controls.insertBefore(hint, progress);
+      manualHint = document.createElement('div');
+      manualHint.className = 'ix-trace-manual-hint';
+      manualHint.textContent = 'Manual mode: click Step or press \u2192 to advance';
     }
 
+    controls.appendChild(topRow);
+    controls.appendChild(bottomRow);
+    if (manualHint) {
+      bottomRow.appendChild(manualHint);
+    }
     container.appendChild(controls);
 
     // Insert container after title, remove source lines
@@ -4016,6 +4165,41 @@
       awardXP(xp, 'Knowledge check completed', badgeKey);
     }
 
+    function stripQuizFeedbackLead(html) {
+      return String(html || '')
+        .replace(/^\s*(?:<strong>\s*)?correct\s+an(?:s)?wer(?:\s+here)?\s*:\s*(?:<\/strong>\s*)?/i, '')
+        .trim();
+    }
+
+    function plainTextFromHtml(html) {
+      var div = document.createElement('div');
+      div.innerHTML = html || '';
+      return (div.textContent || div.innerText || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function renderQuizExplanation(explanation, isCorrect, correctLabel) {
+      if (!explanation) return;
+
+      if (!explanation.dataset.baseHtml) {
+        explanation.dataset.baseHtml = explanation.innerHTML;
+      }
+
+      var baseHtml = stripQuizFeedbackLead(explanation.dataset.baseHtml);
+      var baseText = plainTextFromHtml(baseHtml).toLowerCase();
+      var normalizedCorrect = String(correctLabel || '').replace(/\s+/g, ' ').trim().toLowerCase();
+      var stateHtml = isCorrect
+        ? '<span class="ix-quiz-explanation-state is-correct">Correct.</span> '
+        : '<span class="ix-quiz-explanation-state is-wrong">Not quite.</span> ';
+      var answerHtml = '';
+
+      if (!isCorrect && normalizedCorrect && baseText.indexOf(normalizedCorrect) !== 0) {
+        answerHtml = '<span class="ix-quiz-answer-label">Correct answer: ' + escapeHtml(correctLabel) + '.</span> ';
+      }
+
+      explanation.innerHTML = stateHtml + answerHtml + baseHtml;
+      explanation.classList.add('visible');
+    }
+
     function wireQuestion(q) {
       var options = Array.from(q.querySelectorAll('.ix-quiz-option'));
       if (!options.length) return;
@@ -4028,13 +4212,15 @@
           locked = true;
           answered += 1;
           var correct = opt.dataset.correct === 'true';
+          var correctOption = options.find(function (o) { return o.dataset.correct === 'true'; });
+          var correctLabel = correctOption ? (correctOption.textContent || '').trim() : '';
           options.forEach(function (o) {
             o.disabled = true;
             if (o.dataset.correct === 'true') o.classList.add('is-correct');
           });
           if (!correct) opt.classList.add('is-wrong');
           if (correct) score += 1;
-          if (explanation) explanation.classList.add('visible');
+          renderQuizExplanation(explanation, correct, correctLabel);
           refreshProgress();
           finalizeIfDone();
         });
@@ -4046,7 +4232,10 @@
           o.disabled = false;
           o.classList.remove('is-correct', 'is-wrong');
         });
-        if (explanation) explanation.classList.remove('visible');
+        if (explanation) {
+          explanation.classList.remove('visible');
+          if (explanation.dataset.baseHtml) explanation.innerHTML = explanation.dataset.baseHtml;
+        }
       };
     }
 
@@ -4115,21 +4304,55 @@
     var xp = parseInt(el.dataset.xp, 10);
     if (isNaN(xp)) xp = 10;
     var badgeKey = 'predict-' + baseId;
+    var saveBtnResetTimer = null;
+
+    function normalizePredictText(value) {
+      return String(value || '').replace(/\s+/g, ' ').trim();
+    }
+
+    var promptText = normalizePredictText(prompt.textContent);
+    var placeholderText = normalizePredictText(input.getAttribute('placeholder'));
+
+    function isPromptSeedValue(value) {
+      var normalized = normalizePredictText(value);
+      if (!normalized) return false;
+      return normalized === promptText || (placeholderText && normalized === placeholderText);
+    }
+
+    function setPredictStatus(message, state) {
+      status.textContent = message;
+      if (state) status.dataset.state = state;
+      else status.removeAttribute('data-state');
+    }
 
     try {
       var saved = localStorage.getItem(predictionKey);
-      if (saved) {
+      if (saved && !isPromptSeedValue(saved)) {
         input.value = saved;
-        status.textContent = 'Saved locally';
+        setPredictStatus('Saved locally', 'saved');
+      } else if (saved && isPromptSeedValue(saved)) {
+        localStorage.removeItem(predictionKey);
       }
     } catch (_) {
       // no-op
     }
+    if (isPromptSeedValue(input.value)) {
+      input.value = '';
+    }
+
+    input.addEventListener('input', function () {
+      var value = (input.value || '').trim();
+      if (!value) {
+        setPredictStatus('Not saved yet');
+        return;
+      }
+      setPredictStatus('Unsaved changes', 'pending');
+    });
 
     saveBtn.addEventListener('click', function () {
       var value = (input.value || '').trim();
       if (!value) {
-        status.textContent = 'Add a short prediction first';
+        setPredictStatus('Add a short prediction first', 'pending');
         return;
       }
       try {
@@ -4137,14 +4360,19 @@
       } catch (_) {
         // no-op
       }
-      status.textContent = 'Saved locally';
+      setPredictStatus('Saved just now', 'saved');
+      saveBtn.textContent = 'Saved';
+      if (saveBtnResetTimer) clearTimeout(saveBtnResetTimer);
+      saveBtnResetTimer = setTimeout(function () {
+        saveBtn.textContent = 'Save Prediction';
+      }, 1200);
     });
 
     reveal.addEventListener('toggle', function () {
       if (!reveal.open) return;
       var value = (input.value || '').trim();
       if (!value) {
-        status.textContent = 'Write and save a prediction before reveal';
+        setPredictStatus('Write and save a prediction before reveal', 'pending');
         return;
       }
       awardXP(xp, 'Prediction checkpoint completed', badgeKey);
@@ -4634,7 +4862,20 @@
 
     var sIdx = 0;
     var answered = new Array(scenarioData.length).fill(false);
+    var selectedChoices = new Array(scenarioData.length).fill(-1);
     var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function scenarioResultLabel(rating) {
+      if (rating === 'correct') return 'Your choice - Correct';
+      if (rating === 'wrong') return 'Your choice - Wrong';
+      return 'Your choice - Review';
+    }
+
+    function scenarioFeedbackLabel(rating) {
+      if (rating === 'correct') return 'Correct';
+      if (rating === 'wrong') return 'Wrong answer';
+      return 'Review this choice';
+    }
 
     function renderTerminal(lines) {
       var h = '';
@@ -4656,18 +4897,27 @@
       questionEl.textContent = s.question;
 
       var h = '';
+      var selectedIdx = selectedChoices[sIdx];
       s.choices.forEach(function (c, i) {
-        var cls = answered[sIdx] ? 'ix-sq-choice selected ' + c.rating : 'ix-sq-choice';
+        var isChosen = answered[sIdx] && selectedIdx === i;
+        var cls = 'ix-sq-choice';
+        if (answered[sIdx]) {
+          cls += ' selected ' + c.rating + (isChosen ? ' chosen' : ' unselected');
+        }
         h += '<div class="' + cls + '" data-idx="' + i + '">';
         h += '<span class="ix-sq-choice-key">' + c.key + '</span>';
         h += '<span class="ix-sq-choice-text">' + escapeHtml(c.text) + '</span>';
+        if (isChosen) {
+          h += '<span class="ix-sq-choice-result ' + c.rating + '">' + scenarioResultLabel(c.rating) + '</span>';
+        }
         h += '</div>';
       });
       choicesEl.innerHTML = h;
 
       if (answered[sIdx]) {
-        feedbackEl.className = 'ix-sq-feedback show';
-        feedbackEl.innerHTML = s.feedback;
+        var selectedChoice = s.choices[selectedIdx] || { rating: 'neutral' };
+        feedbackEl.className = 'ix-sq-feedback show is-' + selectedChoice.rating;
+        feedbackEl.innerHTML = '<div class="ix-sq-feedback-state ' + selectedChoice.rating + '">' + scenarioFeedbackLabel(selectedChoice.rating) + '</div>' + s.feedback;
       } else {
         feedbackEl.className = 'ix-sq-feedback';
         feedbackEl.innerHTML = '';
@@ -4680,6 +4930,7 @@
     function choose(ci) {
       if (answered[sIdx]) return;
       answered[sIdx] = true;
+      selectedChoices[sIdx] = ci;
       renderScenario();
     }
 
@@ -5756,10 +6007,13 @@
     /* 8. Wire milestone-style reveal cards */
     initInteractiveRevealMilestones(contentEl);
 
-    /* 9. Update nav progress indicator */
+    /* 9. Add explicit Next controls for reliable section progression */
+    injectSectionNextButtons(contentEl);
+
+    /* 10. Update nav progress indicator */
     updateNavProgress();
 
-    /* 10. Append prev/next module links */
+    /* 11. Append prev/next module links */
     appendModuleNav(contentEl);
   }
 
@@ -5838,10 +6092,49 @@
     });
   }
 
+  function injectSectionNextButtons(contentEl) {
+    const sections = Array.from(contentEl.querySelectorAll('.module-section'));
+    if (!sections.length) return;
+
+    sections.forEach(function (sec, idx) {
+      if (sec.querySelector('.section-next-row')) return;
+
+      const row = document.createElement('div');
+      row.className = 'section-next-row';
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'next-btn module-next-btn';
+      btn.textContent = idx === sections.length - 1 ? 'Finish Module' : 'Next Section →';
+      btn.setAttribute('aria-label', idx === sections.length - 1 ? 'Mark final section complete' : 'Mark section complete and go to next section');
+
+      btn.addEventListener('click', function () {
+        const sectionId = String(sec.dataset.sectionId || (idx + 1));
+        markRead(sec, sectionId);
+        awardXP(3, 'Section advanced', 'read-next-' + sectionId);
+
+        if (idx < sections.length - 1) {
+          sections[idx + 1].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          checkCompletion();
+        }
+      });
+
+      row.appendChild(btn);
+      sec.appendChild(row);
+    });
+  }
+
   function setupObservers(contentEl) {
     const sections = contentEl.querySelectorAll('.module-section');
     if (!('IntersectionObserver' in window)) {
-      sections.forEach(function (sec) { sec.classList.add('visible'); });
+      sections.forEach(function (sec) {
+        sec.classList.add('visible');
+        const id = String(sec.dataset.sectionId || '');
+        if (id && !readSections.has(id)) {
+          markRead(sec, id);
+        }
+      });
       return;
     }
 
@@ -5855,32 +6148,36 @@
       });
     }, { threshold: 0.05 });
 
-    // Read observer (threshold 0.45 → mark read on realistic viewport coverage)
+    // Read observer: trigger when section header enters viewport.
+    // Using rootMargin avoids requiring large sections to hit a high intersection ratio.
     const readObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
-          const sec = entry.target;
-          const id = sec.dataset.sectionId;
-          if (!readSections.has(id)) {
+          const sec = entry.target.closest('.module-section') || entry.target;
+          const id = String(sec.dataset.sectionId || '');
+          if (id && !readSections.has(id)) {
             markRead(sec, id);
           }
-          readObserver.unobserve(sec);
+          readObserver.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.45 });
+    }, { threshold: 0, rootMargin: '0px 0px -60% 0px' });
 
     sections.forEach(function (sec) {
       animObserver.observe(sec);
-      readObserver.observe(sec);
+      const readTarget = sec.querySelector('.section-header') || sec;
+      readObserver.observe(readTarget);
     });
   }
 
   function markRead(sectionEl, id) {
-    readSections.add(id);
+    const normalizedId = String(id || '');
+    if (!normalizedId || readSections.has(normalizedId)) return;
+    readSections.add(normalizedId);
     sectionEl.classList.add('read');
     const status = sectionEl.querySelector('.section-status');
     if (status) { status.textContent = '✓'; status.classList.add('done'); }
-    localStorage.setItem(slug + '-s' + id, '1');
+    localStorage.setItem(slug + '-s' + normalizedId, '1');
     updateNavProgress();
     updateEngagementStrip();
     checkCompletion();
@@ -5898,7 +6195,7 @@
       }
     });
     updateNavProgress();
-    updateEngagementStrip();
+    checkCompletion();
   }
 
   function updateNavProgress() {
@@ -5917,9 +6214,9 @@
       if (!alreadyDone) {
         localStorage.setItem(slug + '-complete', Date.now());
         awardXP(50, 'Reading milestone reached', 'module-complete');
+        showCompletionBanner();
       }
       updateEngagementStrip();
-      showCompletionBanner();
     }
   }
 

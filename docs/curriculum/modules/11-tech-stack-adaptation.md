@@ -31,7 +31,7 @@ Modules 02 through 10 taught generic patterns: CLAUDE.md structure, skills compo
 
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m11-overview-predict" data-xp="8">
 <span class="ix-title">Predict Before You Learn</span>
-<p class="ix-predict-prompt">Your agent has been producing code that compiles and passes tests on every run. But every single PR comes back from review with the same corrections: wrong data-fetching pattern, wrong validation library, wrong error-wrapping style. No errors -- just the wrong conventions, every time. What is missing from the agent's context, and what is the one-word category of fix you need to apply?</p>
+<p class="ix-predict-prompt">Your agent's code compiles and tests pass, but every PR still gets the same convention fixes. What context is missing, and what one-word fix category resolves it?</p>
 <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- what is missing and why does it keep happening?"></textarea>
 <details class="ix-predict-reveal">
 <summary>Reveal reference reasoning</summary>
@@ -53,7 +53,7 @@ A well-constructed lab succeeds because the environment is designed to match the
 
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m11-adapt-predict" data-xp="8">
 <span class="ix-title">Predict Before You Learn</span>
-<p class="ix-predict-prompt">Your team adopted React Query for all data fetching six months ago. You start a new Claude Code session -- no mention of React Query anywhere in your prompt. The agent uses <code>useEffect</code> for data fetching on every component it generates. Why does this happen? And what is the one-word answer for what to do about it?</p>
+<p class="ix-predict-prompt">Your team standardized on React Query, but a fresh session generates <code>useEffect</code> data fetching. Why does this happen, and what one-word action fixes it?</p>
 <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- why useEffect, and what is the fix?"></textarea>
 <details class="ix-predict-reveal">
 <summary>Reveal reference reasoning</summary>

@@ -4,10 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Agentic AI Engineering — Course Review</title>
+  <script>
+    (function () {
+      var baseHref = window.location.protocol === 'file:' ? './' : '/';
+      document.write('<base href="' + baseHref + '">');
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/theme-toggle.css" />
-  <script src="/assets/theme-toggle.js" defer></script>
+  <link rel="stylesheet" href="assets/theme-toggle.css" />
+  <script src="assets/theme-toggle.js" defer></script>
   <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
   <style>
     :root {
@@ -160,6 +166,26 @@
       border: 1px solid rgba(16,185,129,0.25);
       border-radius: var(--radius); padding: 16px 24px;
       margin-bottom: 32px;
+    }
+    .client-banner {
+      display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap;
+      background: rgba(6,182,212,0.08);
+      border: 1px solid rgba(6,182,212,0.22);
+      border-radius: var(--radius); padding: 18px 22px;
+      margin-bottom: 24px;
+    }
+    .client-banner h2 {
+      font-size: 16px; font-weight: 700; margin-bottom: 4px;
+    }
+    .client-banner p {
+      font-size: 13px; color: var(--muted);
+    }
+    .client-banner a {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 14px; border-radius: 999px;
+      text-decoration: none; background: rgba(6,182,212,0.12);
+      border: 1px solid rgba(6,182,212,0.26); color: var(--text);
+      font-size: 13px; font-weight: 600;
     }
     .val-icon { font-size: 24px; }
     .val-text { font-size: 14px; color: var(--muted); }
@@ -328,6 +354,14 @@
       <strong>Anti-confabulation: PASS</strong> — 8 checks across 21 files (9 labs + 12 modules).
       Zero technical errors. All trademark &amp; font license attribution added. Academic citations complete.
     </div>
+  </div>
+
+  <div class="client-banner">
+    <div>
+      <h2>Raven Cargo Extracted Course</h2>
+      <p>Separate Raven-scoped 2-day course instance with chronological ordering, submissions, and resources.</p>
+    </div>
+    <a href="/raven-cargo-course">Open Raven Course <svg class="icon" data-lucide="arrow-up-right" aria-hidden="true"></svg></a>
   </div>
 
   <div class="search-wrap">
@@ -1042,6 +1076,150 @@ if (window.lucide) lucide.createIcons();
   const searchInput = document.getElementById('course-search');
   const searchNote = document.getElementById('search-note');
   if (!searchInput || !searchNote) return;
+
+  const MODULE_SLUGS = {
+    '01': '01-paradigm-shift',
+    '02': '02-claude-code-foundations',
+    '03': '03-agent-thinking',
+    '04': '04-prompt-engineering-depth',
+    '05': '05-mcp-architecture',
+    '06': '06-mcp-building',
+    '07': '07-skills-commands',
+    '08': '08-meta-prompting',
+    '09': '09-multi-agent-systems',
+    '10': '10-security-sandboxing',
+    '11': '11-tech-stack-adaptation',
+    '12': '12-capstone-production'
+  };
+  const COURSE_PROGRESS_KEY = 'agentic-course-progress-v1';
+
+  function hasLocalPrefix(prefix) {
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.indexOf(prefix) === 0) return true;
+      }
+    } catch (_) {
+      return false;
+    }
+    return false;
+  }
+
+  function getCourseProgressRecord(labKey) {
+    try {
+      const raw = localStorage.getItem(COURSE_PROGRESS_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== 'object' || !parsed.labs) return null;
+      return parsed.labs[labKey] || null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function classifyLabState(labNum) {
+    const normalized = String(labNum).padStart(2, '0');
+    const labKey = 'lab-' + normalized;
+    let completed = false;
+    let inProgress = false;
+    try {
+      completed = localStorage.getItem(labKey + '-complete') != null;
+      inProgress = hasLocalPrefix(labKey + '-s') || hasLocalPrefix(labKey + '-xp') || hasLocalPrefix(labKey + '-q');
+    } catch (_) {
+      completed = false;
+      inProgress = false;
+    }
+
+    const progressRecord = getCourseProgressRecord(labKey);
+    if (progressRecord) {
+      completed = completed || !!progressRecord.completed;
+      if (!completed && Number(progressRecord.completedSections || 0) > 0) {
+        inProgress = true;
+      }
+    }
+
+    return { completed, inProgress: inProgress && !completed };
+  }
+
+  function classifyModuleState(moduleNum) {
+    const normalized = String(moduleNum).padStart(2, '0');
+    const slug = MODULE_SLUGS[normalized];
+    if (!slug) return { completed: false, inProgress: false };
+
+    let completed = false;
+    let inProgress = false;
+    try {
+      completed = localStorage.getItem(slug + '-complete') != null;
+      inProgress =
+        hasLocalPrefix(slug + '-s') ||
+        localStorage.getItem(slug + '-xp-total') != null ||
+        hasLocalPrefix(slug + '-xp-mile-');
+    } catch (_) {
+      completed = false;
+      inProgress = false;
+    }
+    return { completed, inProgress: inProgress && !completed };
+  }
+
+  function applyCardStatus(card, state) {
+    const pill = card.querySelector('.pill');
+    if (!pill) return;
+    if (state.completed) {
+      pill.textContent = '✓ Complete';
+      pill.classList.remove('review');
+      pill.classList.add('done');
+      return;
+    }
+    if (state.inProgress) {
+      pill.textContent = '◐ In Progress';
+      pill.classList.remove('done');
+      pill.classList.add('review');
+      return;
+    }
+    pill.textContent = '○ Not Started';
+    pill.classList.remove('done');
+    pill.classList.add('review');
+  }
+
+  function updateCompletionStats(labsCompleted, modulesCompleted) {
+    const stats = Array.from(document.querySelectorAll('.stat'));
+    stats.forEach(function(stat) {
+      const label = stat.querySelector('.stat-lbl');
+      const value = stat.querySelector('.stat-val');
+      if (!label || !value) return;
+      const text = label.textContent.trim().toLowerCase();
+      if (text === 'labs complete') value.textContent = String(labsCompleted);
+      if (text === 'modules complete') value.textContent = String(modulesCompleted);
+    });
+  }
+
+  function hydrateProgressState() {
+    const cards = Array.from(document.querySelectorAll('a.card[href]'));
+    let labsCompleted = 0;
+    let modulesCompleted = 0;
+
+    cards.forEach(function(card) {
+      const href = card.getAttribute('href') || '';
+      let match = href.match(/^\/lab\/(\d{1,2})$/);
+      if (match) {
+        const state = classifyLabState(match[1]);
+        if (state.completed) labsCompleted += 1;
+        applyCardStatus(card, state);
+        return;
+      }
+
+      match = href.match(/^\/module\/(\d{1,2})$/);
+      if (match) {
+        const state = classifyModuleState(match[1]);
+        if (state.completed) modulesCompleted += 1;
+        applyCardStatus(card, state);
+      }
+    });
+
+    updateCompletionStats(labsCompleted, modulesCompleted);
+  }
+
+  hydrateProgressState();
 
   const searchableCards = Array.from(document.querySelectorAll('a.card, .mm-card'));
   const searchableTitles = searchableCards.map(function(card) {

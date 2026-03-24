@@ -1564,20 +1564,10 @@ database failure case.</pre>
 
 <p class="ix-instruct">Complete the final knowledge check to verify your understanding of all Module 03 concepts.</p>
 
-<div class="ix-diagram" data-component="quiz" data-diagram-id="m03-final-knowledge-check" data-xp="20">
+<div class="ix-diagram" data-component="quiz" data-diagram-id="m03-final-knowledge-check" data-xp="14">
   <span class="ix-title">Module 03 Final Knowledge Check</span>
   <div class="ix-quiz-question">
-    <p class="ix-quiz-prompt"><strong>Q1.</strong> What are the three layers of Claude Code agent output?</p>
-    <div class="ix-quiz-options">
-      <button class="ix-quiz-option" data-correct="true">Thinking, tool calls, response</button>
-      <button class="ix-quiz-option" data-correct="false">Input, processing, output</button>
-      <button class="ix-quiz-option" data-correct="false">Prompt, completion, summary</button>
-      <button class="ix-quiz-option" data-correct="false">Planning, execution, reporting</button>
-    </div>
-    <p class="ix-quiz-explanation">The three layers are thinking (internal reasoning), tool calls (concrete actions), and response (synthesis narrative).</p>
-  </div>
-  <div class="ix-quiz-question">
-    <p class="ix-quiz-prompt"><strong>Q2.</strong> An agent reads the same file three times with no intervening writes. What is the most likely interpretation?</p>
+    <p class="ix-quiz-prompt"><strong>Q1.</strong> An agent reads the same file three times with no intervening writes. What is the most likely interpretation?</p>
     <div class="ix-quiz-options">
       <button class="ix-quiz-option" data-correct="false">Normal thoroughness</button>
       <button class="ix-quiz-option" data-correct="true">Stuck loop -- intervene with specific guidance</button>
@@ -1587,17 +1577,7 @@ database failure case.</pre>
     <p class="ix-quiz-explanation">Three reads of the same file without writes suggests the agent is looping. Provide a clarifying decision to break the impasse.</p>
   </div>
   <div class="ix-quiz-question">
-    <p class="ix-quiz-prompt"><strong>Q3.</strong> The agent asks "Should I use PostgreSQL or Redis for caching?" This is what type of clarification?</p>
-    <div class="ix-quiz-options">
-      <button class="ix-quiz-option" data-correct="false">Scope clarification</button>
-      <button class="ix-quiz-option" data-correct="true">Authority clarification</button>
-      <button class="ix-quiz-option" data-correct="false">Context clarification</button>
-      <button class="ix-quiz-option" data-correct="false">Not a valid clarification</button>
-    </div>
-    <p class="ix-quiz-explanation">Authority clarification -- the agent has identified an architectural choice between valid alternatives and is correctly escalating the decision to you.</p>
-  </div>
-  <div class="ix-quiz-question">
-    <p class="ix-quiz-prompt"><strong>Q4.</strong> You answer a clarifying question about your testing philosophy. Where should this answer go?</p>
+    <p class="ix-quiz-prompt"><strong>Q2.</strong> You answer a clarifying question about your testing philosophy. Where should this answer go?</p>
     <div class="ix-quiz-options">
       <button class="ix-quiz-option" data-correct="false">Only in the current conversation</button>
       <button class="ix-quiz-option" data-correct="true">CLAUDE.md -- it is a standing convention</button>
@@ -1607,7 +1587,7 @@ database failure case.</pre>
     <p class="ix-quiz-explanation">Standing conventions and recurring decisions belong in CLAUDE.md so future sessions have the context without asking.</p>
   </div>
   <div class="ix-quiz-question">
-    <p class="ix-quiz-prompt"><strong>Q5.</strong> When is extended thinking most valuable?</p>
+    <p class="ix-quiz-prompt"><strong>Q3.</strong> When is extended thinking most valuable?</p>
     <div class="ix-quiz-options">
       <button class="ix-quiz-option" data-correct="false">Adding JSDoc comments to exported functions</button>
       <button class="ix-quiz-option" data-correct="false">Generating a standard route handler</button>
@@ -1617,7 +1597,7 @@ database failure case.</pre>
     <p class="ix-quiz-explanation">Extended thinking is valuable for multi-constraint decisions where the correct answer requires reasoning through many intermediate steps. Simple, well-defined tasks do not benefit from the additional reasoning overhead.</p>
   </div>
   <div class="ix-quiz-question">
-    <p class="ix-quiz-prompt"><strong>Q6.</strong> The agent's response says "I fixed the bug and all tests pass." The thinking layer shows sound reasoning. You should trust this and move on. True or false?</p>
+    <p class="ix-quiz-prompt"><strong>Q4.</strong> The agent's response says "I fixed the bug and all tests pass." The thinking layer shows sound reasoning. You should trust this and move on. True or false?</p>
     <div class="ix-quiz-options">
       <button class="ix-quiz-option" data-correct="false">True -- sound reasoning plus a confident response is sufficient</button>
       <button class="ix-quiz-option" data-correct="false">True -- if thinking is correct, tool calls must be correct too</button>

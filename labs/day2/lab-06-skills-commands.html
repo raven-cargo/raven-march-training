@@ -83,7 +83,7 @@
       position: relative;
     }
     .section-block:last-child { border-bottom: none; }
-    .section-block.locked { pointer-events: none; user-select: none; min-height: 220px; }
+    .section-block.locked { user-select: none; min-height: 220px; }
 
     /* ─── Typography ─────────────────────────────────────────────── */
     .overline {
@@ -1528,8 +1528,8 @@ Arguments: $ARGUMENTS (optional — specific files to scope the review)</div>
 <script>
 
     /* ─── Safe localStorage wrappers ─── */
-    function safeSave(k,v){try{safeSave(k,v)}catch(e){}}
-    function safeLoad(k,d){try{return safeLoad(k)||d}catch(e){return d}}
+    function safeSave(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+    function safeLoad(k,d){try{const v=localStorage.getItem(k);return v==null?d:v}catch(e){return d}}
 /* ─── State ──────────────────────────────────────────────────────── */
 const LAB_KEY = 'lab-06';
 const SECTION_COUNT = 7; // sections 0-5 + boss (6)
@@ -2043,6 +2043,7 @@ function submitCE06D() {
 /* ─── Init ───────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', loadAllReflections);
 </script>
+<script src="/assets/lab-progression-bridge.js"></script>
 <script>if (window.lucide) lucide.createIcons();</script>
 
   <!-- ─── Attribution Footer ─────────────────────────────────────────────── -->

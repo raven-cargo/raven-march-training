@@ -335,7 +335,7 @@ echo "$REVIEW" | mail -s "Security Review" team@example.com
 </div>
 
 <div class="ix-diagram" data-component="callout" data-variant="key-concept">
-  <p><strong>The promote pattern:</strong> Develop a task interactively first -- work out the right prompt, verify the agent's approach, adjust CLAUDE.md. Then promote it to <code>claude -p</code> for repeated use. This gives you the best of both modes.</p>
+  <p><strong>The promote pattern:</strong> Develop a task interactively first -- work out the right prompt, verify the agent's approach, adjust <code>CLAUDE.md</code> (or add the prompt to a stored prompt library with clarifying context). Then promote it to <code>claude -p</code> for repeated use. This gives you the best of both modes.</p>
 </div>
 
 <p class="ix-instruct">Test your understanding of mode selection.</p>

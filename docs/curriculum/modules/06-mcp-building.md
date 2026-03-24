@@ -39,7 +39,7 @@ Module 05 established the architecture of MCP -- the three primitives, the trans
 
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m06-design-predict" data-xp="8">
   <span class="ix-title">Predict Before You Learn</span>
-  <p class="ix-predict-prompt">You are about to build an MCP server. Before writing any code, what design decisions do you think you need to make? Consider: how many domains should one server cover, how you decide what gets exposed as a Tool vs. a Resource vs. a Prompt, and how you handle credentials. What could go wrong if you skip this design step?</p>
+  <p class="ix-predict-prompt">Before writing code, which three design decisions must you lock in for an MCP server: domain scope, primitive mapping (Tool/Resource/Prompt), and credential boundaries? What fails first if you skip this step?</p>
   <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- what design decisions matter before implementation?"></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>

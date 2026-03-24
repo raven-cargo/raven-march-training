@@ -40,7 +40,7 @@ A basic GCCF pattern works for narrow, well-defined tasks. It fails predictably 
 
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m04-gccf-limits" data-xp="8">
   <span class="ix-title">Predict Before You Learn</span>
-  <p class="ix-predict-prompt">You have been using a simple Goal + Context + Constraints + Format pattern for prompts. Consider these two scenarios: (1) asking an agent to "refactor the authentication module," and (2) asking it to produce JSON output that feeds a CI pipeline parser. What could go wrong with a basic prompt pattern in each case? Where would you expect it to break?</p>
+  <p class="ix-predict-prompt">You use Goal + Context + Constraints + Format prompts today. Where will that break first in two cases: (1) "refactor the authentication module," and (2) JSON output consumed by a CI parser?</p>
   <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- what failure modes would you expect and why?"></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>

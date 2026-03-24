@@ -83,7 +83,7 @@
       position: relative;
     }
     .section-block:last-child { border-bottom: none; }
-    .section-block.locked { pointer-events: none; user-select: none; min-height: 200px; }
+    .section-block.locked { user-select: none; min-height: 200px; }
 
     /* ─── Typography ─────────────────────────────────────────────── */
     .overline {
@@ -1524,8 +1524,8 @@ Middleware: requireAuth() — JWT validation, already imported in routes files
 <script>
 
     /* ─── Safe localStorage wrappers ─── */
-    function safeSave(k,v){try{safeSave(k,v)}catch(e){}}
-    function safeLoad(k,d){try{return safeLoad(k)||d}catch(e){return d}}
+    function safeSave(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+    function safeLoad(k,d){try{const v=localStorage.getItem(k);return v==null?d:v}catch(e){return d}}
 /* ─── State ───────────────────────────────────────────────── */
 const LAB_KEY      = 'lab-03';
 const SECTION_COUNT = 7; // sections 0-6
@@ -1666,11 +1666,15 @@ function updateStreak(correct) {
 
 /* ─── Section Unlock ──────────────────────────────────────── */
 function markSectionComplete(idx) {
+  if (sectionComplete[idx]) return;
   sectionComplete[idx] = true;
   safeSave(`${LAB_KEY}-s${idx}`, '1');
   checkSectionUnlock(idx + 1);
   updateNavDots();
-  if (idx === SECTION_COUNT - 1) completeLab();
+  if (idx === SECTION_COUNT - 1) {
+    completeLab();
+    return;
+  }
     const nextMilestoneLevel = getMilestoneLevel();
     if (nextMilestoneLevel > milestoneLevel) {
       milestoneLevel = nextMilestoneLevel;
@@ -1923,7 +1927,10 @@ function submitBoss() {
 
 /* ─── Lab Complete ────────────────────────────────────────── */
 function completeLab() {
-  markSectionComplete(6);
+  if (!sectionComplete[6]) {
+    markSectionComplete(6);
+    return;
+  }
   awardXPOnce('lab-complete', 100, 'lab complete!');
   const banner = document.getElementById('completion-banner');
   banner.style.display = 'block';
@@ -2127,6 +2134,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <p>Course content &copy; 2026 Agentic AI Engineering Course. Educational use.</p>
   </footer>
 
+<script src="/assets/lab-progression-bridge.js"></script>
 <script>if (window.lucide) lucide.createIcons();</script>
 </body>
 </html>

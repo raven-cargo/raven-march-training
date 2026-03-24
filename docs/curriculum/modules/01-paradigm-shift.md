@@ -949,7 +949,7 @@ Summary: separated token issuance, preserved external API, updated route wiring.
   </div>
 </div>
 
-<p class="ix-instruct">Work through each scenario and choose your response -- then reveal the coaching feedback.</p>
+<p class="ix-instruct">Work through two high-signal scenarios and choose your response -- then reveal the coaching feedback.</p>
 
 <div class="ix-diagram" data-component="scenario-quiz" data-diagram-id="m01-disorientation-sim">
 <span class="ix-title">The disorientation simulator</span>
@@ -969,24 +969,6 @@ Summary: separated token issuance, preserved external API, updated route wiring.
 <div class="ix-scenario-choice" data-rating="wrong">Close the terminal. You did not authorize file writes.</div>
 <div class="ix-scenario-feedback"><strong>This is normal agent behavior.</strong> The agent is running through the Agentic Loop: perceiving (reading files), reasoning (the thinking trace), and acting (writing the fix). The disorientation you feel is the gap between expecting a response and watching an agent operate. Let it work, then review the diff.</div>
 </div>
-<div class="ix-scenario" data-correct="0">
-<div class="ix-scenario-terminal">
-<div class="ix-term-line" data-type="prompt">> Refactor the auth module to use JWT</div>
-<div class="ix-term-line" data-type="tool">  Read("src/auth/session.ts")</div>
-<div class="ix-term-line" data-type="tool">  Read("src/auth/middleware.ts")</div>
-<div class="ix-term-line" data-type="tool">  Bash("npm install jsonwebtoken @types/jsonwebtoken")</div>
-<div class="ix-term-line" data-type="thinking">  thinking: need to replace session store with JWT...</div>
-<div class="ix-term-line" data-type="tool">  Write("src/auth/jwt.ts")  -- new file</div>
-<div class="ix-term-line" data-type="tool">  Write("src/auth/middleware.ts")</div>
-<div class="ix-term-line" data-type="tool">  Bash("npm test")</div>
-<div class="ix-term-line" data-type="fail">  -> 7 tests failing</div>
-</div>
-<div class="ix-scenario-question">The agent installed a new npm package without asking, then its changes broke 7 tests. What do you do?</div>
-<div class="ix-scenario-choice" data-rating="correct">Let it continue -- it can see the test failures and will try to fix them in the next Agentic Loop cycle.</div>
-<div class="ix-scenario-choice" data-rating="neutral">Interrupt and revert everything. It should not install packages without permission.</div>
-<div class="ix-scenario-choice" data-rating="wrong">This is fine. The tests will probably fix themselves.</div>
-<div class="ix-scenario-feedback"><strong>Test failures during a refactor are expected.</strong> The agent will observe the failures, read the output, and fix them -- that is the feedback loop working correctly. However, if you want to prevent unsanctioned npm installs, add that rule to your CLAUDE.md or settings.json. Do not interrupt mid-cycle for this -- add the constraint for next time.</div>
-</div>
 <div class="ix-scenario" data-correct="1">
 <div class="ix-scenario-terminal">
 <div class="ix-term-line" data-type="prompt">> Update the user model to support roles</div>
@@ -1002,24 +984,6 @@ Summary: separated token issuance, preserved external API, updated route wiring.
 <div class="ix-scenario-choice" data-rating="correct">Interrupt NOW. Schema migrations are irreversible in production. Review the migration file before it runs.</div>
 <div class="ix-scenario-choice" data-rating="wrong">Let it finish, then check the migration file after.</div>
 <div class="ix-scenario-feedback"><strong>This is where intervention is appropriate.</strong> Schema migrations are exactly the kind of action where the cost of error is high. The lesson: add "Do not modify prisma/schema.prisma without asking" to your CLAUDE.md. Constraints prevent repeat mistakes.</div>
-</div>
-<div class="ix-scenario" data-correct="1">
-<div class="ix-scenario-terminal">
-<div class="ix-term-line" data-type="prompt">> Improve the performance of the product search</div>
-<div class="ix-term-line" data-type="tool">  Read("src/services/product.ts")</div>
-<div class="ix-term-line" data-type="tool">  Read("src/routes/products.ts")</div>
-<div class="ix-term-line" data-type="thinking">  thinking: the search queries all products then filters in JS...</div>
-<div class="ix-term-line" data-type="thinking">  thinking: could add a database index, or use SQL WHERE...</div>
-<div class="ix-term-line" data-type="thinking">  thinking: or implement elasticsearch...</div>
-<div class="ix-term-line" data-type="thinking">  thinking: going with SQL WHERE + index for now...</div>
-<div class="ix-term-line" data-type="tool">  Write("src/services/product.ts")</div>
-<div class="ix-term-line" data-type="tool">  Write("prisma/schema.prisma")  -- adding @@index</div>
-</div>
-<div class="ix-scenario-question">The agent is reasoning through three approaches and picked one (SQL optimization) without asking you. But you wanted it to use Elasticsearch. What do you do?</div>
-<div class="ix-scenario-choice" data-rating="neutral">Let it finish with SQL optimization. It made a reasonable choice, and you can always do Elasticsearch later.</div>
-<div class="ix-scenario-choice" data-rating="correct">Interrupt and redirect: "Use Elasticsearch instead -- we are expecting 10M+ products and need full-text search."</div>
-<div class="ix-scenario-choice" data-rating="wrong">Say nothing. The agent should have known you wanted Elasticsearch.</div>
-<div class="ix-scenario-feedback"><strong>This is a case for better prompting, not agent failure.</strong> "Improve performance" is vague -- the agent made a reasonable default choice. If you had a specific approach in mind, the prompt should have been: "Improve product search performance by integrating Elasticsearch for full-text search. We expect 10M+ products." Intervening now is correct, but the root cause is an underspecified prompt.</div>
 </div>
 </div>
 
@@ -1103,36 +1067,6 @@ Summary: separated token issuance, preserved external API, updated route wiring.
 
 <div class="ix-diagram" data-component="callout" data-variant="core-idea">
 <p><strong>The decision framework:</strong> Before using the agent, ask four questions. (1) How long would this take manually? Longer = more value. (2) How specific can I be about the goal? More specific = lower risk. (3) How verifiable is the output? Tests/diffs = safer. (4) What is the cost if the agent gets it wrong? Lower cost = more appropriate.</p>
-</div>
-
-<p class="ix-instruct">Click each scenario to reveal whether it is a good fit for the agent.</p>
-
-<div class="ix-diagram" data-component="reveal-quiz" data-diagram-id="m01-task-suitability-quiz">
-<span class="ix-title">Is this task right for the agent?</span>
-<div class="ix-reveal-item" data-answer="best-fit" data-label="Best fit" data-variant="scenario">
-<div class="ix-reveal-prompt">Rename a concept across 60 files, keep tests green, preserve the public API.</div>
-<div class="ix-reveal-why">High specificity + high verifiability. Clear goal, testable outcome, diffable changes.</div>
-</div>
-<div class="ix-reveal-item" data-answer="poor-fit" data-label="Poor fit" data-variant="scenario">
-<div class="ix-reveal-prompt">"Make the code better" with no further specification.</div>
-<div class="ix-reveal-why">Low specificity + low verifiability. The agent cannot determine what "better" means without criteria.</div>
-</div>
-<div class="ix-reveal-item" data-answer="best-fit" data-label="Best fit" data-variant="scenario">
-<div class="ix-reveal-prompt">Generate test cases for all exported functions in src/utils.ts based on the existing API.</div>
-<div class="ix-reveal-why">Spec-driven, pass/fail verification, well-bounded scope.</div>
-</div>
-<div class="ix-reveal-item" data-answer="needs-spec" data-label="Needs better spec" data-variant="scenario">
-<div class="ix-reveal-prompt">Review this PR for "code quality issues."</div>
-<div class="ix-reveal-why">Verifiable output, but "quality" is undefined. Add a checklist of what to look for and this becomes a best fit.</div>
-</div>
-<div class="ix-reveal-item" data-answer="verify-manual" data-label="Verify manually" data-variant="scenario">
-<div class="ix-reveal-prompt">Deploy the staging build and verify the checkout flow works end-to-end.</div>
-<div class="ix-reveal-why">Well-specified steps, but consequences require human verification. The agent can execute but you must validate.</div>
-</div>
-<div class="ix-reveal-item" data-answer="poor-fit" data-label="Poor fit" data-variant="scenario">
-<div class="ix-reveal-prompt">Run a production database migration with no rollback path and no monitoring access.</div>
-<div class="ix-reveal-why">High blast radius with no recovery. Manual control is essential regardless of agent competence.</div>
-</div>
 </div>
 
 <p class="ix-instruct">Click each card to explore the task suitability quadrants.</p>
@@ -1234,51 +1168,61 @@ Summary: separated token issuance, preserved external API, updated route wiring.
   </div>
 </div>
 
+<p class="ix-instruct">Now apply the framework to concrete scenarios.</p>
+
+<div class="ix-diagram" data-component="reveal-quiz" data-diagram-id="m01-task-suitability-quiz">
+<span class="ix-title">Is this task right for the agent?</span>
+<div class="ix-reveal-item" data-answer="best-fit" data-label="Best fit" data-variant="scenario">
+<div class="ix-reveal-prompt">Rename a concept across 60 files, keep tests green, preserve the public API.</div>
+<div class="ix-reveal-why">High specificity + high verifiability. Clear goal, testable outcome, diffable changes.</div>
+</div>
+<div class="ix-reveal-item" data-answer="poor-fit" data-label="Poor fit" data-variant="scenario">
+<div class="ix-reveal-prompt">"Make the code better" with no further specification.</div>
+<div class="ix-reveal-why">Low specificity + low verifiability. The agent cannot determine what "better" means without criteria.</div>
+</div>
+<div class="ix-reveal-item" data-answer="best-fit" data-label="Best fit" data-variant="scenario">
+<div class="ix-reveal-prompt">Generate test cases for all exported functions in src/utils.ts based on the existing API.</div>
+<div class="ix-reveal-why">Spec-driven, pass/fail verification, well-bounded scope.</div>
+</div>
+<div class="ix-reveal-item" data-answer="needs-spec" data-label="Needs better spec" data-variant="scenario">
+<div class="ix-reveal-prompt">Review this PR for "code quality issues."</div>
+<div class="ix-reveal-why">Verifiable output, but "quality" is undefined. Add a checklist of what to look for and this becomes a best fit.</div>
+</div>
+<div class="ix-reveal-item" data-answer="verify-manual" data-label="Verify manually" data-variant="scenario">
+<div class="ix-reveal-prompt">Deploy the staging build and verify the checkout flow works end-to-end.</div>
+<div class="ix-reveal-why">Well-specified steps, but consequences require human verification. The agent can execute but you must validate.</div>
+</div>
+<div class="ix-reveal-item" data-answer="poor-fit" data-label="Poor fit" data-variant="scenario">
+<div class="ix-reveal-prompt">Run a production database migration with no rollback path and no monitoring access.</div>
+<div class="ix-reveal-why">High blast radius with no recovery. Manual control is essential regardless of agent competence.</div>
+</div>
+</div>
+
 <p class="ix-instruct">Test your understanding of task suitability for agentic AI.</p>
 
-<div class="ix-diagram" data-component="quiz" data-diagram-id="m01-suitability-check" data-xp="14">
+<div class="ix-diagram" data-component="quiz" data-diagram-id="m01-suitability-check" data-xp="10">
   <span class="ix-title">Decision Check: Should You Use The Agent?</span>
 
   <div class="ix-quiz-question">
-    <p class="ix-quiz-prompt"><strong>Q1.</strong> “Rename one concept across 60 files, keep tests green, and preserve public API.” Best classification?</p>
+    <p class="ix-quiz-prompt"><strong>Q1.</strong> A task has a clear, testable definition of done and touches 200 files. An engineer says "too many files for the agent." Is this reasoning correct?</p>
     <div class="ix-quiz-options">
-      <button class="ix-quiz-option" data-correct="true">Best fit for agentic execution</button>
-      <button class="ix-quiz-option" data-correct="false">Poor fit because it touches many files</button>
-      <button class="ix-quiz-option" data-correct="false">Only possible in assistant mode</button>
-      <button class="ix-quiz-option" data-correct="false">Manual only regardless of safeguards</button>
+      <button class="ix-quiz-option" data-correct="false">Yes -- agents should only handle small changes</button>
+      <button class="ix-quiz-option" data-correct="false">Yes -- 200 files exceeds the context window by default</button>
+      <button class="ix-quiz-option" data-correct="true">No -- specificity and verifiability matter more than file count</button>
+      <button class="ix-quiz-option" data-correct="false">No -- but only in non-interactive mode</button>
     </div>
-    <p class="ix-quiz-explanation">Correct answer: best fit. High specificity and high verifiability are ideal for agent workflows.</p>
+    <p class="ix-quiz-explanation">Correct answer: no. File count is not a suitability axis. If the goal is precise and the result is verifiable, it can still be an excellent fit.</p>
   </div>
 
   <div class="ix-quiz-question">
-    <p class="ix-quiz-prompt"><strong>Q2.</strong> “Deploy directly to production with no rollback path and no monitoring access for the agent.” Best classification?</p>
+    <p class="ix-quiz-prompt"><strong>Q2.</strong> "Improve product search performance" is the only instruction, but you already know the required solution is Elasticsearch for 10M+ products. Best classification?</p>
     <div class="ix-quiz-options">
-      <button class="ix-quiz-option" data-correct="false">Best fit</button>
-      <button class="ix-quiz-option" data-correct="false">Needs better spec only</button>
-      <button class="ix-quiz-option" data-correct="true">Poor fit / manual verification required</button>
-      <button class="ix-quiz-option" data-correct="false">Equivalent to any low-risk refactor</button>
+      <button class="ix-quiz-option" data-correct="true">Needs better spec -- architecture intent is underspecified</button>
+      <button class="ix-quiz-option" data-correct="false">Best fit -- the agent should infer Elasticsearch automatically</button>
+      <button class="ix-quiz-option" data-correct="false">Poor fit -- performance tasks should never use agents</button>
+      <button class="ix-quiz-option" data-correct="false">Verify manually only -- no prompt changes needed</button>
     </div>
-    <p class="ix-quiz-explanation">Correct answer: poor fit. High blast radius with weak verification should default to tighter manual control.</p>
-  </div>
-  <div class="ix-quiz-question">
-    <p class="ix-quiz-prompt"><strong>Q3.</strong> "Review all pull requests for security vulnerabilities using a checklist I will provide." Best classification?</p>
-    <div class="ix-quiz-options">
-      <button class="ix-quiz-option" data-correct="false">Poor fit -- security requires human judgment</button>
-      <button class="ix-quiz-option" data-correct="false">Best fit -- the agent can do everything autonomously</button>
-      <button class="ix-quiz-option" data-correct="true">Needs better spec -- verifiable output, but scope must be defined</button>
-      <button class="ix-quiz-option" data-correct="false">Only works in non-interactive mode</button>
-    </div>
-    <p class="ix-quiz-explanation">Correct answer: needs better spec. The output is verifiable (a checklist report), but "security vulnerabilities" is too vague without a defined checklist. Once you specify the patterns to flag, this moves into best fit.</p>
-  </div>
-  <div class="ix-quiz-question">
-    <p class="ix-quiz-prompt"><strong>Q4.</strong> A task has a clear, testable definition of done and touches 200 files. An engineer says "too many files for the agent." Is this reasoning correct?</p>
-    <div class="ix-quiz-options">
-      <button class="ix-quiz-option" data-correct="false">Yes -- agents should only handle small changes</button>
-      <button class="ix-quiz-option" data-correct="false">Yes -- 200 files exceeds the context window</button>
-      <button class="ix-quiz-option" data-correct="true">No -- file count is irrelevant; specificity and verifiability determine fit</button>
-      <button class="ix-quiz-option" data-correct="false">No -- but only if you use non-interactive mode</button>
-    </div>
-    <p class="ix-quiz-explanation">Correct answer: no. The two axes that determine suitability are specificity (can you describe "done"?) and verifiability (can you check the result?). File count is an implementation detail, not a suitability factor. A 200-file rename with tests is a better agent fit than a 1-file "make it better" task.</p>
+    <p class="ix-quiz-explanation">Correct answer: needs better spec. The task can be a good agent fit, but only after you encode the architectural constraint explicitly in the prompt.</p>
   </div>
 </div>
 
@@ -1291,13 +1235,13 @@ Summary: separated token issuance, preserved external API, updated route wiring.
 <div class="ix-diagram" data-component="tabbed-panel" data-diagram-id="m01-best-practices-tabs">
   <span class="ix-title">Best Practices by Category</span>
   <div data-tab="Prompt Design">
-    <p>Describe outcomes ("the tests should still pass after the refactor"). Specify constraints explicitly ("do not modify any files in <code>/config</code>"). Never issue step-by-step micro-instructions for tasks the agent can plan itself. Never use vague goals like "improve the code" without defining what improvement means.</p>
+    <p>Describe outcomes ("the tests should still pass after the refactor"). Specify constraints explicitly ("do not modify any files in <code>/config</code>"). Avoid step-by-step micro-instructions for tasks the agent can plan itself. Avoid vague goals like "improve the code" without defining what improvement means.</p>
   </div>
   <div data-tab="Context Management">
     <p>Keep <code>CLAUDE.md</code> up to date with conventions and architecture. Include relevant file paths in your prompt when they are not already in <code>CLAUDE.md</code>. Never rely on in-session instructions for things that matter across sessions. Never include secrets, API keys, or credentials in <code>CLAUDE.md</code>.</p>
   </div>
   <div data-tab="Verification">
-    <p>Read the diff of changed files before accepting. Run tests yourself -- do not just trust that the agent reported they pass. Ask the agent to explain its approach if the reasoning is unclear from the trace. Never accept agent output without understanding what changed and why.</p>
+    <p>Read the diff of changed files before accepting. Run tests yourself -- do not just trust that the agent reported they pass. Ask the agent to explain its approach if the reasoning is unclear from the trace. Avoid accepting agent output without understanding what changed and why.</p>
   </div>
 </div>
 

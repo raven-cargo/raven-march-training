@@ -14,7 +14,7 @@
   <script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script>
   <style>
     :root {
-      --bg:      #080d1a;
+      --bg:      #0a0f1c;
       --surface: #0f1729;
       --raised:  #172035;
       --primary: #6366f1;
@@ -850,6 +850,20 @@
       border-radius: var(--radius);
       overflow: hidden;
       margin: 24px 0;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    /* Text content inside ix-diagram gets horizontal padding */
+    .ix-diagram > p,
+    .ix-diagram > ul,
+    .ix-diagram > ol,
+    .ix-diagram > blockquote,
+    .ix-diagram > strong,
+    .ix-diagram > .ix-predict-prompt,
+    .ix-diagram > details {
+      padding-left: 24px;
+      padding-right: 24px;
     }
 
     .ix-title {
@@ -867,7 +881,7 @@
       color: var(--raven-answer-strong);
       font-style: normal;
       font-weight: 700;
-      padding: 0 20px;
+      padding: 0 24px;
       margin-bottom: 10px;
       line-height: 1.45;
       letter-spacing: 0.01em;
@@ -1441,13 +1455,15 @@
       cursor: not-allowed;
     }
 
-    .ix-walk-step {
+    .ix-walk-step,
+    .ix-sw-step {
       display: none;
       padding: 24px 28px;
       animation: ixFadeUp 0.3s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    .ix-walk-step.active { display: block; }
+    .ix-walk-step.active,
+    .ix-sw-step.active { display: block; }
 
     /* ── Detail Panel Sections ── */
     .ix-detail-section {
@@ -2318,8 +2334,11 @@
       padding: 48px 24px 32px;
       overflow: hidden;
       border-radius: var(--radius);
-      background: linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(6,182,212,0.06) 50%, rgba(16,185,129,0.04) 100%);
-      border: 1px solid var(--border);
+      background:
+        radial-gradient(circle at 20% 40%, rgba(199,216,185,0.04), transparent 40%),
+        radial-gradient(circle at 80% 30%, rgba(61,85,104,0.06), transparent 35%),
+        linear-gradient(180deg, #111827, #0d1220);
+      border: 1px solid rgba(255,255,255,0.08);
       margin-bottom: 24px;
     }
 
@@ -2330,18 +2349,15 @@
       pointer-events: none;
     }
 
-    .ix-hero-dot {
-      position: absolute;
-      border-radius: 50%;
-      opacity: 0.15;
-      animation: ixHeroFloat linear infinite;
-    }
+    .ix-hero-dot { display: none; }
 
-    @keyframes ixHeroFloat {
-      0% { transform: translateY(0) translateX(0); opacity: 0; }
-      10% { opacity: 0.15; }
-      90% { opacity: 0.15; }
-      100% { transform: translateY(-280px) translateX(40px); opacity: 0; }
+    .ix-hero-network {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.5;
     }
 
     .ix-hero-module-num {
@@ -2358,10 +2374,7 @@
     .ix-hero-title {
       font-size: 28px;
       font-weight: 800;
-      background: linear-gradient(135deg, #6366f1, #06b6d4, #10b981);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--raven-sage-strong, #d7e5ca);
       line-height: 1.2;
       margin-bottom: 16px;
       position: relative;
@@ -2392,9 +2405,9 @@
       border-radius: 20px;
       font-size: 12px;
       font-weight: 600;
-      background: rgba(99,102,241,0.1);
-      border: 1px solid rgba(99,102,241,0.2);
-      color: var(--primary);
+      background: rgba(199,216,185,0.08);
+      border: 1px solid rgba(199,216,185,0.2);
+      color: var(--raven-sage, #c7d8b9);
     }
 
     .ix-hero-scroll {
@@ -2532,6 +2545,7 @@
     }
 
     /* ── Module Hero: Light Theme ── */
+    [data-theme="light"] .ix-hero-network { opacity: 0.3; }
     [data-theme="light"] .ix-hero {
       background: linear-gradient(135deg, rgba(99,102,241,0.06) 0%, rgba(6,182,212,0.04) 50%, rgba(16,185,129,0.03) 100%);
     }
@@ -2586,16 +2600,19 @@
 
     /* ── Agent Trace: Base ── */
     .ix-trace-container {
-      background: #04080f;
+      background: #0a0e18;
       border-radius: 0 0 var(--radius) var(--radius);
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto;
     }
 
     .ix-trace-stage {
-      min-height: 320px;
+      min-height: 200px;
       width: 100%;
+      grid-column: 1;
+      display: flex;
     }
 
     .ix-trace-output {
@@ -2690,6 +2707,7 @@
       background: rgba(0,0,0,0.3);
       border-top: 1px solid var(--border);
       width: 100%;
+      grid-column: 1;
     }
 
     .ix-trace-controls-row {
@@ -2813,13 +2831,15 @@
     /* ── Variant C: Side-by-Side Compare ── */
     .ix-trace-compare {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      min-height: 300px;
+      grid-template-columns: 1fr 1fr;
+      min-height: 200px;
+      flex: 1;
     }
 
     .ix-trace-compare-col {
       border-right: 1px solid var(--border);
       min-width: 0;
+      overflow: hidden;
     }
 
     .ix-trace-compare-col:last-child { border-right: none; }
@@ -2830,13 +2850,25 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--dim);
-      padding: 10px 20px;
+      padding: 10px 16px;
       background: rgba(0,0,0,0.2);
       border-bottom: 1px solid var(--border);
     }
 
     .ix-trace-compare-col .ix-trace-output {
       max-height: 360px;
+      padding: 14px 16px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .ix-trace-compare-col .ix-trace-row {
+      gap: 6px;
+    }
+
+    .ix-trace-compare-col .ix-trace-tag {
+      font-size: 9px;
+      padding: 2px 6px;
     }
 
     /* ── Variant D: PRAO Phase Strip ── */
@@ -3353,7 +3385,7 @@
    * First tab is active by default.
    */
   function initTabbedPanel(el) {
-    var tabs = Array.from(el.querySelectorAll(':scope > .ix-tab'));
+    var tabs = Array.from(el.querySelectorAll(':scope > .ix-tab, :scope > [data-tab]'));
     if (!tabs.length) return;
 
     // Build tab nav bar
@@ -3674,7 +3706,7 @@
    * Shows one step at a time.
    */
   function initStepWalkthrough(el) {
-    var steps = Array.from(el.querySelectorAll(':scope > .ix-walk-step'));
+    var steps = Array.from(el.querySelectorAll(':scope > .ix-walk-step, :scope > .ix-sw-step'));
     if (!steps.length) return;
 
     var total = steps.length;
@@ -3761,7 +3793,7 @@
       : null;
     var lines = isCompare
       ? null
-      : Array.from(el.querySelectorAll(':scope > .ix-trace-line'));
+      : Array.from(el.querySelectorAll(':scope > .ix-trace-line, :scope > .ix-trace-row'));
 
     // Build the visual container
     var container = document.createElement('div');
@@ -3822,7 +3854,7 @@
         compareWrap.appendChild(col);
         // Store reference for playback
         group._outputEl = colOutput;
-        group._lines = Array.from(group.querySelectorAll('.ix-trace-line'));
+        group._lines = Array.from(group.querySelectorAll(':scope > .ix-trace-line, :scope > .ix-trace-row'));
       });
       stage.appendChild(compareWrap);
     } else {
@@ -3961,10 +3993,15 @@
       // Text content (exclude annotation spans)
       var textSpan = document.createElement('span');
       textSpan.className = 'ix-trace-text';
-      var clone = lineData.cloneNode(true);
-      var annots = clone.querySelectorAll('.ix-trace-annotation');
-      annots.forEach(function (a) { a.remove(); });
-      textSpan.innerHTML = clone.innerHTML;
+      var contentEl = lineData.querySelector('.ix-trace-content');
+      if (contentEl) {
+        textSpan.innerHTML = contentEl.innerHTML;
+      } else {
+        var clone = lineData.cloneNode(true);
+        var annots = clone.querySelectorAll('.ix-trace-annotation, .ix-trace-note');
+        annots.forEach(function (a) { a.remove(); });
+        textSpan.innerHTML = clone.innerHTML;
+      }
       row.appendChild(textSpan);
 
       // Animate entry
@@ -3974,7 +4011,7 @@
 
       // Annotation
       if (annotPanel) {
-        var annotEl = lineData.querySelector('.ix-trace-annotation');
+        var annotEl = lineData.querySelector('.ix-trace-note, .ix-trace-annotation');
         if (annotEl) {
           var note = document.createElement('div');
           note.className = 'ix-trace-note';
@@ -3986,10 +4023,11 @@
       }
 
       // PRAO strip highlight
-      if (praoStrip && lineData.dataset.prao) {
+      var phase = lineData.dataset.prao || lineData.dataset.phase;
+      if (praoStrip && phase) {
         var segs = praoStrip.querySelectorAll('.ix-trace-prao-seg');
         segs.forEach(function (seg) {
-          seg.classList.toggle('active', seg.dataset.phase === lineData.dataset.prao);
+          seg.classList.toggle('active', seg.dataset.phase === phase);
         });
       }
     }
@@ -4819,8 +4857,88 @@
    * Multi-scenario terminal replay + A/B/C quiz with prev/next navigation.
    */
   function initScenarioQuiz(el) {
-    var scenarios = Array.from(el.querySelectorAll('.ix-scenario'));
-    if (!scenarios.length) return;
+    var scenarios = Array.from(el.querySelectorAll(':scope > .ix-scenario'));
+
+    function parseTerminal(termContainer) {
+      var terminal = [];
+      if (!termContainer) return terminal;
+      Array.from(termContainer.children).forEach(function (line) {
+        terminal.push({
+          type: line.dataset.type || 'output',
+          text: line.textContent
+        });
+      });
+      return terminal;
+    }
+
+    function parseChoices(choiceEls) {
+      var keys = ['A', 'B', 'C', 'D', 'E'];
+      return Array.from(choiceEls).map(function (c, i) {
+        var rating = c.dataset.rating;
+        if (!rating) {
+          rating = c.dataset.correct === 'true' ? 'correct' : 'wrong';
+        }
+        return {
+          key: keys[i] || String.fromCharCode(65 + i),
+          text: c.textContent,
+          rating: rating || 'neutral'
+        };
+      });
+    }
+
+    var scenarioData = [];
+    var scenarioNodesToRemove = [];
+
+    if (scenarios.length) {
+      scenarios.forEach(function (s) {
+        scenarioData.push({
+          terminal: parseTerminal(s.querySelector('.ix-sq-terminal, .ix-scenario-terminal')),
+          question: (s.querySelector('.ix-sq-question, .ix-scenario-question') || {}).textContent || '',
+          choices: parseChoices(s.querySelectorAll('.ix-sq-choice, .ix-scenario-choice')),
+          feedback: ((s.querySelector('.ix-sq-feedback, .ix-scenario-feedback') || {}).innerHTML) || ''
+        });
+        scenarioNodesToRemove.push(s);
+      });
+    } else {
+      var children = Array.from(el.children);
+      var legacyTermContainer = children.find(function (child) {
+        return child.matches('.ix-sq-terminal, .ix-scenario-terminal');
+      });
+      var legacyQuestions = children.filter(function (child) {
+        return child.matches('.ix-sq-question, .ix-scenario-question');
+      });
+
+      if (legacyTermContainer && legacyQuestions.length) {
+        scenarioNodesToRemove.push(legacyTermContainer);
+        legacyQuestions.forEach(function (questionNode) {
+          var choiceContainer = questionNode.nextElementSibling;
+          var feedbackNode = choiceContainer ? choiceContainer.nextElementSibling : null;
+          var choiceEls = choiceContainer && choiceContainer.matches('.ix-sq-choices, .ix-quiz-options')
+            ? choiceContainer.querySelectorAll('.ix-sq-choice, .ix-scenario-choice, .ix-quiz-option')
+            : [];
+          var feedbackHtml = feedbackNode && feedbackNode.matches('.ix-sq-feedback, .ix-scenario-feedback, .ix-quiz-explanation')
+            ? feedbackNode.innerHTML
+            : '';
+
+          scenarioData.push({
+            terminal: parseTerminal(legacyTermContainer),
+            question: questionNode.textContent,
+            choices: parseChoices(choiceEls),
+            feedback: feedbackHtml
+          });
+
+          scenarioNodesToRemove.push(questionNode);
+          if (choiceContainer && choiceContainer.matches('.ix-sq-choices, .ix-quiz-options')) {
+            scenarioNodesToRemove.push(choiceContainer);
+          }
+          if (feedbackNode && feedbackNode.matches('.ix-sq-feedback, .ix-scenario-feedback, .ix-quiz-explanation')) {
+            scenarioNodesToRemove.push(feedbackNode);
+          }
+        });
+      }
+    }
+
+    if (!scenarioData.length) return;
 
     var shell = document.createElement('div');
     shell.className = 'ix-sq-shell';
@@ -4862,48 +4980,8 @@
     navEl.appendChild(nextBtn);
     shell.appendChild(navEl);
 
-    // Parse scenario data
-    var scenarioData = [];
-    scenarios.forEach(function (s) {
-      var termLines = Array.from(s.querySelectorAll('.ix-sq-terminal .ix-term-line, [data-type]'))
-        .filter(function (tl) { return tl.classList.contains('ix-term-line') || tl.dataset.type; });
-
-      // Parse terminal lines from child elements
-      var terminal = [];
-      var termContainer = s.querySelector('.ix-sq-terminal, .ix-scenario-terminal');
-      if (termContainer) {
-        Array.from(termContainer.children).forEach(function (line) {
-          terminal.push({
-            type: line.dataset.type || 'output',
-            text: line.textContent
-          });
-        });
-      }
-
-      var question = '';
-      var qEl = s.querySelector('.ix-sq-question, .ix-scenario-question');
-      if (qEl) question = qEl.textContent;
-
-      var choices = [];
-      var choiceEls = s.querySelectorAll('.ix-sq-choice, .ix-scenario-choice');
-      var keys = ['A', 'B', 'C', 'D', 'E'];
-      Array.from(choiceEls).forEach(function (c, i) {
-        choices.push({
-          key: keys[i] || String.fromCharCode(65 + i),
-          text: c.textContent,
-          rating: c.dataset.rating || 'neutral'
-        });
-      });
-
-      var feedback = '';
-      var fbEl = s.querySelector('.ix-sq-feedback, .ix-scenario-feedback');
-      if (fbEl) feedback = fbEl.innerHTML;
-
-      scenarioData.push({ terminal: terminal, question: question, choices: choices, feedback: feedback });
-    });
-
     // Remove original scenario elements
-    scenarios.forEach(function (s) { s.remove(); });
+    scenarioNodesToRemove.forEach(function (node) { node.remove(); });
 
     // Insert shell after title if present
     var titleEl = el.querySelector('.ix-title');
@@ -5144,28 +5222,79 @@
 
     var bg = hero.querySelector('.ix-hero-bg');
     if (bg) {
-      var dotColors = ['var(--primary)', 'var(--accent)', 'var(--success)', 'var(--ix-phase-reason)'];
-      var dotCount = 18;
-      var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      for (var i = 0; i < dotCount; i++) {
-        var dot = document.createElement('div');
-        dot.className = 'ix-hero-dot';
-        var size = Math.round(3 + Math.random() * 5);
-        var left = Math.round(Math.random() * 100);
-        var top = Math.round(40 + Math.random() * 60);
-        var dur = (8 + Math.random() * 7).toFixed(1);
-        var delay = (Math.random() * -15).toFixed(1);
-        dot.style.width = size + 'px';
-        dot.style.height = size + 'px';
-        dot.style.left = left + '%';
-        dot.style.top = top + '%';
-        dot.style.background = dotColors[i % dotColors.length];
-        if (!reducedMotion) {
-          dot.style.animationDuration = dur + 's';
-          dot.style.animationDelay = delay + 's';
+      var cvs = document.createElement('canvas');
+      cvs.className = 'ix-hero-network';
+      bg.appendChild(cvs);
+      (function (canvas) {
+        var ctx = canvas.getContext('2d');
+        var dpr = window.devicePixelRatio || 1;
+        var W, H, nodes = [], edges = [], packets = [];
+        var SAGE = [199, 216, 185], SLATE = [61, 85, 104], CREAM = [231, 225, 215];
+        function resize() {
+          var rect = canvas.parentElement.getBoundingClientRect();
+          W = rect.width; H = rect.height;
+          canvas.width = W * dpr; canvas.height = H * dpr;
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          build();
         }
-        bg.appendChild(dot);
-      }
+        function build() {
+          nodes = []; edges = []; packets = [];
+          var count = Math.max(10, Math.floor((W * H) / 22000));
+          for (var i = 0; i < count; i++) {
+            nodes.push({
+              x: Math.random() * W, y: Math.random() * H,
+              r: i < 5 ? 3 + Math.random() * 1.5 : 1.5 + Math.random(),
+              hub: i < 5,
+              vx: (Math.random() - 0.5) * 0.12, vy: (Math.random() - 0.5) * 0.12
+            });
+          }
+          var maxD = Math.min(W, H) * 0.35;
+          for (var a = 0; a < nodes.length; a++) {
+            for (var b = a + 1; b < nodes.length; b++) {
+              var dx = nodes[a].x - nodes[b].x, dy = nodes[a].y - nodes[b].y;
+              var d = Math.sqrt(dx * dx + dy * dy);
+              if (d < maxD && (nodes[a].hub || nodes[b].hub || d < maxD * 0.45)) {
+                edges.push({ a: a, b: b, d: d });
+              }
+            }
+          }
+          for (var e = 0; e < Math.min(edges.length, 5); e++) {
+            packets.push({ edge: Math.floor(Math.random() * edges.length), t: Math.random(), speed: 0.002 + Math.random() * 0.003, forward: Math.random() > 0.5 });
+          }
+        }
+        function draw() {
+          ctx.clearRect(0, 0, W, H);
+          edges.forEach(function (e) {
+            var na = nodes[e.a], nb = nodes[e.b];
+            ctx.beginPath(); ctx.moveTo(na.x, na.y); ctx.lineTo(nb.x, nb.y);
+            ctx.strokeStyle = 'rgba(' + SLATE[0] + ',' + SLATE[1] + ',' + SLATE[2] + ',' + Math.max(0.06, 0.25 - (e.d / (Math.min(W, H) * 0.35)) * 0.18) + ')';
+            ctx.lineWidth = 1; ctx.stroke();
+          });
+          nodes.forEach(function (n) {
+            ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+            ctx.fillStyle = n.hub ? 'rgba(' + SAGE[0] + ',' + SAGE[1] + ',' + SAGE[2] + ',0.8)' : 'rgba(' + CREAM[0] + ',' + CREAM[1] + ',' + CREAM[2] + ',0.4)';
+            if (n.hub) { ctx.shadowColor = 'rgba(' + SAGE[0] + ',' + SAGE[1] + ',' + SAGE[2] + ',0.4)'; ctx.shadowBlur = 10; }
+            ctx.fill(); ctx.shadowBlur = 0;
+          });
+          packets.forEach(function (p) {
+            var e = edges[p.edge]; if (!e) return;
+            var na = nodes[e.a], nb = nodes[e.b];
+            ctx.beginPath(); ctx.arc(na.x + (nb.x - na.x) * p.t, na.y + (nb.y - na.y) * p.t, 2, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(' + SAGE[0] + ',' + SAGE[1] + ',' + SAGE[2] + ',0.9)';
+            ctx.shadowColor = 'rgba(' + SAGE[0] + ',' + SAGE[1] + ',' + SAGE[2] + ',0.5)'; ctx.shadowBlur = 6;
+            ctx.fill(); ctx.shadowBlur = 0;
+          });
+        }
+        function update() {
+          nodes.forEach(function (n) { if (n.hub) return; n.x += n.vx; n.y += n.vy; if (n.x < 0 || n.x > W) n.vx *= -1; if (n.y < 0 || n.y > H) n.vy *= -1; });
+          packets.forEach(function (p) { p.t += p.forward ? p.speed : -p.speed; if (p.t >= 1 || p.t <= 0) { p.forward = !p.forward; p.edge = Math.floor(Math.random() * edges.length); p.t = p.forward ? 0 : 1; } });
+        }
+        var rafId;
+        function loop() { update(); draw(); rafId = requestAnimationFrame(loop); }
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { resize(); draw(); }
+        else { resize(); loop(); }
+        window.addEventListener('resize', function () { cancelAnimationFrame(rafId); resize(); loop(); });
+      })(cvs);
     }
 
     // Add scroll indicator
@@ -6376,12 +6505,29 @@
   loadXp();
 
   /* ── Fetch & render ── */
-  const url = MODULE_CONTENT_PATHS[slug] || (COURSE_BASE + '/docs/curriculum/modules/' + slug + '.md');
-  fetch(url)
-    .then(function (res) {
-      if (!res.ok) throw new Error('HTTP ' + res.status + ': ' + url);
-      return res.text();
-    })
+  function fetchModuleMarkdown(slug) {
+    var urls = MODULE_CONTENT_PATHS[slug]
+      ? [MODULE_CONTENT_PATHS[slug]]
+      : [
+          COURSE_BASE + '/docs/curriculum/modules/' + slug + '.md',
+          COURSE_BASE + '/docs/modules/' + slug + '.md'
+        ];
+
+    function tryFetch(idx, lastError) {
+      if (idx >= urls.length) {
+        throw lastError || new Error('No module content URL resolved for ' + slug);
+      }
+      var url = urls[idx];
+      return fetch(url).then(function (res) {
+        if (res.ok) return res.text();
+        return tryFetch(idx + 1, new Error('HTTP ' + res.status + ': ' + url));
+      });
+    }
+
+    return tryFetch(0, null);
+  }
+
+  fetchModuleMarkdown(slug)
     .then(function (md) {
       document.getElementById('loading').style.display = 'none';
       const contentEl = document.getElementById('content');

@@ -41,7 +41,7 @@ In Module 07 you composed skills into pipelines within a single agent session. I
 
 <div class="ix-diagram" data-component="predict-reveal" data-diagram-id="m09-multi-agent-predict" data-xp="8">
   <span class="ix-title">Predict Before You Learn</span>
-  <p class="ix-predict-prompt">You have a code review pipeline that checks security, performance, documentation, and test coverage. Currently, a single agent runs all four checks sequentially, taking about 4 minutes total. A colleague suggests using four agents in parallel. Before you agree, what costs and risks should you consider? Under what conditions would you say "no, keep it single-agent"?</p>
+  <p class="ix-predict-prompt">A single agent runs four review checks in 4 minutes. A colleague wants four parallel agents. What coordination costs and failure risks must be true first, and when would you keep it single-agent?</p>
   <textarea class="ix-predict-input" aria-label="Your prediction" placeholder="Write your reasoning -- what costs and risks would you expect and why?"></textarea>
   <details class="ix-predict-reveal">
     <summary>Reveal reference reasoning</summary>
