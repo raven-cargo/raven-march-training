@@ -1,0 +1,2540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 06 · MCP Server Explorer | Agentic AI Engineering</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/raven-cargo-course/assets/theme-toggle.css" />
+  <link rel="stylesheet" href="/raven-cargo-course/assets/raven-labs.css" />
+  <script src="/raven-cargo-course/assets/theme-toggle.js" defer></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <style>
+    :root {
+      --bg-base:    #080d1a;
+      --bg-surface: #0f1729;
+      --bg-raised:  #172035;
+      --bg-glass:   rgba(23, 32, 53, 0.7);
+      --primary:    #6366f1;
+      --primary-glow: rgba(99,102,241,0.25);
+      --secondary:  #8b5cf6;
+      --accent:     #06b6d4;
+      --accent-glow: rgba(6,182,212,0.2);
+      --success:    #10b981;
+      --warning:    #f59e0b;
+      --danger:     #ef4444;
+      --text:       #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim:   #475569;
+      --border:     rgba(255,255,255,0.08);
+      --border-bright: rgba(99,102,241,0.4);
+      --radius:     16px;
+      --radius-sm:  8px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-base);
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 100vh;
+    }
+
+    /* ── Progress Bar ── */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      z-index: 1000;
+      transition: width 0.2s ease;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 3px; left: 0; right: 0;
+      height: 56px;
+      background: rgba(8,13,26,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 999;
+      gap: 16px;
+    }
+
+    .nav-brand {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .nav-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .nav-dot {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--bg-raised);
+      color: var(--text-dim);
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .nav-dot:hover { border-color: var(--primary); color: var(--primary); }
+    .nav-dot.active { border-color: var(--primary); background: var(--primary); color: #fff; }
+    .nav-dot.locked { opacity: 0.4; cursor: not-allowed; }
+
+    .nav-xp {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--warning);
+      white-space: nowrap;
+      background: rgba(245,158,11,0.12);
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(245,158,11,0.25);
+    }
+
+    /* ── Main Layout ── */
+    main {
+      padding-top: 72px;
+      max-width: 860px;
+      margin: 0 auto;
+      padding-bottom: 80px;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    /* ── Section ── */
+    .section {
+      margin-bottom: 64px;
+      scroll-margin-top: 80px;
+      position: relative;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .section-badge {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .section-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ── Lock Overlay ── */
+    .lock-overlay {
+      position: absolute;
+      inset: -16px;
+      background: rgba(8,13,26,0.88);
+      backdrop-filter: blur(6px);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    .lock-overlay .lock-icon { font-size: 2.5rem; }
+    .lock-overlay p { color: var(--text-muted); font-size: 0.9rem; text-align: center; max-width: 280px; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .card-raised {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    /* ── Callback Card ── */
+    .callback-card {
+      background: rgba(139,92,246,0.1);
+      border: 1px solid rgba(139,92,246,0.35);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .callback-card .cb-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 2px; }
+    .callback-card .cb-label { font-size: 0.7rem; font-weight: 700; color: var(--secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+    .callback-card .cb-text { font-size: 0.9rem; color: var(--text-muted); line-height: 1.55; }
+
+    /* ── Info Card ── */
+    .info-card {
+      background: var(--accent-glow);
+      border: 1px solid rgba(6,182,212,0.3);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .info-card strong { color: var(--accent); }
+
+    /* ── Warning Card ── */
+    .warning-card {
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.35);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .warning-card strong { color: var(--warning); }
+
+    /* ── Insight Card ── */
+    .insight-card {
+      background: var(--primary-glow);
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      color: var(--text);
+      font-style: italic;
+    }
+
+    /* ── Architecture Diagram ── */
+    .arch-diagram {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin: 28px 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .arch-box {
+      background: var(--bg-raised);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 24px;
+      cursor: pointer;
+      transition: all 0.25s;
+      min-width: 140px;
+      text-align: center;
+      position: relative;
+    }
+
+    .arch-box:hover, .arch-box:focus {
+      border-color: var(--primary);
+      background: var(--primary-glow);
+      outline: none;
+    }
+
+    .arch-box.clicked {
+      border-color: var(--success);
+      background: rgba(16,185,129,0.1);
+    }
+
+    .arch-box .arch-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+
+    .arch-box .arch-emoji { font-size: 1.6rem; margin-bottom: 6px; display: block; }
+
+    .arch-expand {
+      margin-top: 10px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: none;
+      text-align: left;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+      line-height: 1.5;
+    }
+
+    .arch-box.clicked .arch-expand { display: block; }
+
+    .arch-arrow {
+      font-size: 1.4rem;
+      color: var(--text-dim);
+      padding: 0 12px;
+      flex-shrink: 0;
+    }
+
+    /* ── Primitive Cards ── */
+    .primitive-card {
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+      background: var(--bg-raised);
+    }
+
+    .primitive-card.tools { border-left: 4px solid var(--success); }
+    .primitive-card.resources { border-left: 4px solid var(--accent); }
+    .primitive-card.prompts { border-left: 4px solid var(--secondary); }
+
+    .primitive-card .prim-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .primitive-card .prim-name {
+      font-weight: 700; font-size: 1rem;
+    }
+
+    .prim-badge {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    .tools .prim-badge { background: rgba(16,185,129,0.2); color: var(--success); }
+    .resources .prim-badge { background: rgba(6,182,212,0.2); color: var(--accent); }
+    .prompts .prim-badge { background: rgba(139,92,246,0.2); color: var(--secondary); }
+
+    .primitive-card .prim-direction {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .primitive-card .prim-example {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      background: var(--bg-surface);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      margin-bottom: 10px;
+      color: var(--accent);
+      overflow-x: auto;
+    }
+
+    .primitive-card .prim-use {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Primitive Matcher ── */
+    .matcher-item {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: border-color 0.2s;
+    }
+
+    .matcher-item.correct { border-color: var(--success); background: rgba(16,185,129,0.08); }
+    .matcher-item.wrong { border-color: var(--danger); background: rgba(239,68,68,0.08); }
+
+    .matcher-scenario { font-size: 0.9rem; margin-bottom: 12px; color: var(--text); }
+
+    .matcher-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .matcher-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .matcher-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .matcher-btn.selected-correct { background: rgba(16,185,129,0.2); border-color: var(--success); color: var(--success); }
+    .matcher-btn.selected-wrong { background: rgba(239,68,68,0.2); border-color: var(--danger); color: var(--danger); }
+
+    .matcher-feedback {
+      font-size: 0.82rem;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .matcher-feedback.show { display: block; }
+    .matcher-feedback.ok { color: var(--success); }
+    .matcher-feedback.bad { color: var(--danger); }
+
+    /* ── Code Blocks ── */
+    .code-block {
+      background: #050a14;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: #e2e8f0;
+      overflow-x: auto;
+      margin-bottom: 16px;
+      white-space: pre;
+      line-height: 1.7;
+    }
+
+    .code-block .kw { color: #818cf8; }
+    .code-block .str { color: #86efac; }
+    .code-block .key { color: #7dd3fc; }
+    .code-block .num { color: #fdba74; }
+    .code-block .comment { color: #475569; font-style: italic; }
+
+    .code-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 640px) {
+      .code-grid { grid-template-columns: 1fr; }
+    }
+
+    .code-caption {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: -10px;
+      margin-bottom: 16px;
+      font-style: italic;
+    }
+
+    .code-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    /* ── Schema Explorer ── */
+    .schema-explorer {
+      background: #050a14;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .schema-line {
+      padding: 4px 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.8;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      position: relative;
+    }
+
+    .schema-line:hover { background: rgba(99,102,241,0.08); }
+    .schema-line.annotated { border-left: 2px solid transparent; }
+    .schema-line.annotated:hover { border-left-color: var(--primary); }
+
+    .schema-line .schema-text { color: #e2e8f0; flex: 1; }
+    .schema-line .schema-hint { font-size: 0.7rem; color: var(--text-dim); margin-left: auto; white-space: nowrap; }
+
+    .schema-annotation {
+      background: var(--primary-glow);
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-sm);
+      padding: 10px 16px;
+      margin: 4px 20px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: none;
+      line-height: 1.5;
+    }
+
+    .schema-annotation.open { display: block; }
+    .schema-annotation strong { color: var(--primary); }
+    .schema-annotation .star { color: var(--warning); }
+
+    /* ── PRAO Trace ── */
+    .prao-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+
+    .prao-step {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      background: var(--bg-raised);
+    }
+
+    .prao-step:hover { border-color: var(--border-bright); }
+    .prao-step.active { border-color: var(--primary); background: var(--primary-glow); }
+
+    .prao-badge {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 800;
+      flex-shrink: 0;
+      letter-spacing: 0.04em;
+    }
+
+    .prao-P { background: rgba(6,182,212,0.25); color: var(--accent); }
+    .prao-R { background: rgba(139,92,246,0.25); color: var(--secondary); }
+    .prao-A { background: rgba(16,185,129,0.25); color: var(--success); }
+    .prao-O { background: rgba(245,158,11,0.25); color: var(--warning); }
+
+    .prao-step-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
+    .prao-step-body { font-size: 0.85rem; color: var(--text-muted); display: none; }
+    .prao-step.active .prao-step-body { display: block; }
+
+    /* ── Knowledge Checks ── */
+    .kcheck {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .kcheck-q { font-weight: 600; font-size: 0.95rem; margin-bottom: 14px; }
+    .kcheck-options { display: flex; flex-direction: column; gap: 8px; }
+
+    .kcheck-opt {
+      padding: 10px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-surface);
+      cursor: pointer;
+      font-size: 0.87rem;
+      color: var(--text-muted);
+      transition: all 0.2s;
+      text-align: left;
+      font-family: 'Inter', sans-serif;
+      width: 100%;
+    }
+
+    .kcheck-opt:hover { border-color: var(--primary); color: var(--text); }
+    .kcheck-opt.correct { border-color: var(--success); background: rgba(16,185,129,0.12); color: var(--success); }
+    .kcheck-opt.wrong { border-color: var(--danger); background: rgba(239,68,68,0.12); color: var(--danger); }
+    .kcheck-opt:disabled { cursor: not-allowed; }
+
+    .kcheck-feedback {
+      margin-top: 10px;
+      font-size: 0.83rem;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      display: none;
+    }
+
+    .kcheck-feedback.show { display: block; }
+    .kcheck-feedback.ok { background: rgba(16,185,129,0.1); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
+    .kcheck-feedback.bad { background: rgba(239,68,68,0.1); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
+
+    /* ── Textarea ── */
+    textarea {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      resize: vertical;
+      min-height: 100px;
+      transition: border-color 0.2s;
+      outline: none;
+      line-height: 1.6;
+    }
+
+    textarea:focus { border-color: var(--primary); }
+    textarea::placeholder { color: var(--text-dim); }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.87rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover { background: #5254d4; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-bright);
+      color: var(--primary);
+    }
+    .btn-outline:hover { background: var(--primary-glow); }
+
+    .btn-success {
+      background: var(--success);
+      color: #fff;
+    }
+    .btn-success:hover { background: #0da271; }
+
+    /* ── Banner ── */
+    .success-banner {
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.4);
+      border-radius: var(--radius-sm);
+      padding: 14px 20px;
+      color: var(--success);
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-top: 16px;
+      display: none;
+    }
+
+    .success-banner.show { display: block; }
+
+    /* ── Prediction Box ── */
+    .prediction-box { margin-bottom: 20px; }
+    .prediction-label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    /* ── Model Answer ── */
+    .model-answer {
+      background: rgba(99,102,241,0.08);
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      margin-top: 12px;
+      display: none;
+    }
+    .model-answer.show { display: block; }
+    .model-answer .ma-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+
+    /* ── Capstone Challenge ── */
+    .boss-section { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+
+    .boss-field { margin-bottom: 20px; }
+    .boss-field-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .boss-field-hint { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 8px; }
+
+    .arch-doc-output {
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      line-height: 1.8;
+      color: var(--text-muted);
+      white-space: pre-wrap;
+      margin-top: 16px;
+      display: none;
+    }
+    .arch-doc-output.show { display: block; }
+
+    /* ── Completion Card ── */
+    .completion-card {
+      background: linear-gradient(135deg, var(--primary-glow), rgba(139,92,246,0.15));
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius);
+      padding: 28px;
+      text-align: center;
+      margin-top: 32px;
+    }
+
+    .completion-card h3 { font-size: 1.2rem; margin-bottom: 10px; color: var(--text); }
+    .completion-card p { color: var(--text-muted); font-size: 0.9rem; }
+
+    .milestone-display {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: rgba(6,182,212,0.08);
+      border: 1px solid rgba(6,182,212,0.25);
+      border-radius: 999px;
+      padding: 4px 10px;
+      white-space: nowrap;
+    }
+    .milestone-toast {
+      position: fixed; top: 120px; right: 24px;
+      background: var(--accent); color: #02131a;
+      padding: 8px 14px; border-radius: 20px;
+      font-weight: 700; font-size: 12px;
+      animation: toastFade 2s forwards;
+      pointer-events: none; z-index: 9999;
+    }
+    @keyframes toastFade {
+      0%  { opacity:0; transform:translateY(-10px) }
+      20% { opacity:1; transform:translateY(0) }
+      80% { opacity:1 }
+      100%{ opacity:0; transform:translateY(-10px) }
+    }
+
+    /* ── XP Toast ── */
+    #xp-toast {
+      position: fixed;
+      bottom: 32px;
+      right: 24px;
+      background: var(--warning);
+      color: #000;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 10px 20px;
+      border-radius: 20px;
+      z-index: 2000;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    #xp-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Streak Toast ── */
+    #streak-toast {
+      position: fixed;
+      bottom: 80px;
+      right: 24px;
+      background: linear-gradient(135deg, #ef4444, #f59e0b);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 12px 20px;
+      border-radius: 20px;
+      z-index: 2000;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    #streak-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Divider ── */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+    /* ── Typography helpers ── */
+    p { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 14px; }
+    h3 { font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+    h4 { font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    ul { color: var(--text-muted); font-size: 0.9rem; padding-left: 20px; margin-bottom: 14px; }
+    li { margin-bottom: 4px; }
+
+    @media (max-width: 600px) {
+      nav { padding: 0 12px; gap: 8px; }
+      .nav-title { font-size: 0.8rem; }
+      .arch-diagram { flex-direction: column; }
+      .arch-arrow { transform: rotate(90deg); }
+      main { padding-left: 12px; padding-right: 12px; }
+    }
+
+    /* ── Icon System (Lucide) ─────────────────────────────── */
+    .icon { width:16px; height:16px; display:inline-block; vertical-align:-2px; stroke-width:2; flex-shrink:0; }
+    .icon-lg { width:20px; height:20px; vertical-align:-4px; }
+    .icon-sm { width:14px; height:14px; vertical-align:-2px; }
+    .badge-label .icon, .badge-label .icon-lg { margin-right:4px; }
+    .quiz-feedback .icon { margin-right:3px; }
+
+    /* ─── Build Challenge Exercises ──────────────────────────── */
+    .build-challenge {
+      margin-top: 32px;
+      background: rgba(99,102,241,0.05);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-top: 3px solid var(--primary);
+      border-radius: 12px;
+      padding: 28px;
+    }
+    .build-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 4px 14px;
+      border-radius: 20px; display: inline-block;
+      background: var(--primary); color: #fff;
+    }
+    .ce-xp-badge {
+      font-size: 12px; font-weight: 600; color: var(--primary);
+      background: rgba(99,102,241,0.1); padding: 4px 12px; border-radius: 20px;
+    }
+    .ce-requirements {
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px;
+      margin-bottom: 16px; font-size: 13px; color: var(--text-muted);
+    }
+    .ce-model-answer {
+      margin-top: 20px; padding: 20px;
+      background: var(--bg-surface); border: 1px solid rgba(99,102,241,0.3);
+      border-left: 3px solid var(--primary);
+      border-radius: 8px;
+    }
+  
+    pre { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .sr-only { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0; }
+    /* Focus-visible for keyboard navigation */
+    :focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    button:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+</style>
+  <link rel="stylesheet" href="/raven-cargo-course/assets/raven-labs.css" />
+  <link rel="stylesheet" href="/raven-cargo-course/assets/raven-course.css" />
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<nav>
+  <div style="display:flex; flex-direction:column; min-width:0;">
+    <span class="nav-brand">Lab 06</span>
+    <span class="nav-title">MCP Server Explorer</span>
+  </div>
+  <div class="nav-center" id="nav-dots"></div>
+  <div id="milestone-display" class="milestone-display" aria-live="polite" aria-label="Current milestone">Milestone: Not started</div>
+  <div class="nav-xp"><span id="xp-count">0</span> XP</div>
+</nav>
+
+<div style="max-width:1040px;margin:14px auto 0;padding:0 20px;display:flex;gap:10px;flex-wrap:wrap;">
+  <a href="/raven-cargo-course/module/07" class="btn btn-outline" style="font-size:12px;padding:8px 16px;text-decoration:none;">← Module 07: Building MCP Servers</a>
+  <a href="/raven-cargo-course/module/08" class="btn btn-outline" style="font-size:12px;padding:8px 16px;text-decoration:none;">Module 08: Multi-Agent Systems →</a>
+</div>
+
+<main>
+
+  <h1 class="sr-only">Lab 06: MCP Server Explorer</h1>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 0: The Extension Problem
+  ═══════════════════════════════════════════════ -->
+  <section class="section" id="s0" data-section="0">
+    <div class="section-header">
+      <div class="section-badge">S0</div>
+      <div>
+        <div class="section-title">The Extension Problem</div>
+        <div class="section-subtitle">Why Claude Code needs MCP</div>
+      </div>
+    </div>
+
+    <p>Claude Code ships with 9 built-in tools: Read, Write, Bash, Glob, Grep, and a few others. Powerful — but what if your workflow needs to query your database, search your Jira board, or call your internal API? That's the extension problem. MCP solves it.</p>
+
+    <div class="callback-card">
+      <span class="cb-icon"><svg class="icon" data-lucide="refresh-cw" aria-hidden="true"></svg></span>
+      <div>
+        <div class="cb-label">Callback · Lab 01 S1 — PRAO Loop</div>
+        <div class="cb-text">Earlier in Lab 01, you mapped the PRAO loop. Every MCP tool call IS the Act phase — the tool result feeds directly into Observe. We'll see exactly how this maps in Section 4.</div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <strong>History:</strong> MCP (Model Context Protocol) was open-sourced by Anthropic in November 2024. It's now supported by dozens of clients and hundreds of community servers — an emerging standard for AI extensibility.
+    </div>
+
+    <div class="card">
+      <h2>Click each component to understand the architecture</h2>
+      <p style="font-size:0.82rem;">Click all three boxes to unlock Section 1.</p>
+
+      <div class="arch-diagram">
+        <div
+          class="arch-box"
+          id="arch-claude"
+          role="button"
+          tabindex="0"
+          aria-label="Claude Code component — click to expand"
+          onclick="clickArchBox('claude')"
+          onkeydown="if(event.key==='Enter'||event.key===' '){clickArchBox('claude')}"
+        >
+          <span class="arch-emoji"><svg class="icon-lg" data-lucide="bot" aria-hidden="true"></svg></span>
+          <div class="arch-title">Claude Code</div>
+          <div style="font-size:0.78rem;color:var(--text-muted);">The Orchestrator</div>
+          <div class="arch-expand">The orchestrator. Reads MCP tool schemas and decides when to call them based on the user's goal. It doesn't know the tool's implementation — only its schema.</div>
+        </div>
+
+        <div class="arch-arrow">← MCP →</div>
+
+        <div
+          class="arch-box"
+          id="arch-mcp"
+          role="button"
+          tabindex="0"
+          aria-label="MCP Server component — click to expand"
+          onclick="clickArchBox('mcp')"
+          onkeydown="if(event.key==='Enter'||event.key===' '){clickArchBox('mcp')}"
+        >
+          <span class="arch-emoji"><svg class="icon-lg" data-lucide="zap" aria-hidden="true"></svg></span>
+          <div class="arch-title">MCP Server</div>
+          <div style="font-size:0.78rem;color:var(--text-muted);">The Bridge</div>
+          <div class="arch-expand">A small process (local or remote) that exposes tools, resources, and prompts over a standard protocol. You write it; Claude calls it.</div>
+        </div>
+
+        <div class="arch-arrow">↔</div>
+
+        <div
+          class="arch-box"
+          id="arch-sys"
+          role="button"
+          tabindex="0"
+          aria-label="Your System component — click to expand"
+          onclick="clickArchBox('sys')"
+          onkeydown="if(event.key==='Enter'||event.key===' '){clickArchBox('sys')}"
+        >
+          <span class="arch-emoji"><svg class="icon-lg" data-lucide="database" aria-hidden="true"></svg></span>
+          <div class="arch-title">Your System</div>
+          <div style="font-size:0.78rem;color:var(--text-muted);">The Target</div>
+          <div class="arch-expand">Your database, API, internal service — anything you want Claude to access. The MCP server handles all the connection logic, so Claude stays generic.</div>
+        </div>
+      </div>
+
+      <div id="arch-gate-msg" class="success-banner" role="status">
+        <svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Architecture understood! Section 1 is now unlocked.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 1: The Three Primitives
+  ═══════════════════════════════════════════════ -->
+  <section class="section" id="s1" data-section="1" style="position:relative;">
+    <div class="lock-overlay" id="lock-s1" aria-live="polite">
+      <span class="lock-icon"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></span>
+      <p>Complete the previous section to unlock — click all three architecture boxes in S0.</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-badge">S1</div>
+      <div>
+        <div class="section-title">The Three Primitives</div>
+        <div class="section-subtitle">Tools · Resources · Prompts — the complete MCP surface</div>
+      </div>
+    </div>
+
+    <!-- Prediction -->
+    <div class="card">
+      <h3><svg class="icon" data-lucide="target" aria-hidden="true"></svg> Predict First</h3>
+      <p>Before we reveal the MCP primitives, predict: what categories of functionality would you need to expose to an AI assistant?</p>
+      <div class="prediction-box">
+        <div class="prediction-label">Your prediction:</div>
+        <textarea
+          id="s1-prediction"
+          placeholder="e.g., 'I'd want to expose functions it can call, data it can read, and maybe some instruction templates...'"
+          rows="3"
+          aria-label="Prediction textarea for MCP primitives"
+          oninput="saveToStorage('s1-prediction', this.value)"
+        ></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="submitPrediction('s1')" id="s1-pred-btn">Submit Prediction → +10 XP</button>
+    </div>
+
+    <!-- Reveal: primitives -->
+    <div id="s1-reveal" style="display:none;">
+      <div class="insight-card">
+        "Tools are verbs, Resources are nouns, Prompts are templates." That's the entire MCP surface in one sentence.
+      </div>
+
+      <div class="primitive-card tools">
+        <div class="prim-header">
+          <span class="prim-name"><svg class="icon" data-lucide="wrench" aria-hidden="true"></svg> Tools</span>
+          <span class="prim-badge">Callable Functions</span>
+        </div>
+        <div class="prim-direction">Direction: Claude → MCP Server (Claude calls the tool)</div>
+        <div class="prim-example">search_issues(query: string, status?: string)</div>
+        <div class="prim-use"><strong>Use when:</strong> You want Claude to take an action or retrieve computed data — anything with side effects or real-time computation.</div>
+      </div>
+
+      <div class="primitive-card resources">
+        <div class="prim-header">
+          <span class="prim-name"><svg class="icon" data-lucide="file-text" aria-hidden="true"></svg> Resources</span>
+          <span class="prim-badge">URI-Addressable Data</span>
+        </div>
+        <div class="prim-direction">Direction: MCP Server exposes → Claude reads</div>
+        <div class="prim-example">confluence://pages/12345  or  file:///path/to/doc</div>
+        <div class="prim-use"><strong>Use when:</strong> You want to make data available for Claude to read, without the overhead of a function call. Think documents, configs, schemas.</div>
+      </div>
+
+      <div class="primitive-card prompts">
+        <div class="prim-header">
+          <span class="prim-name"><svg class="icon" data-lucide="message-square" aria-hidden="true"></svg> Prompts</span>
+          <span class="prim-badge">Reusable Templates</span>
+        </div>
+        <div class="prim-direction">Direction: MCP Server defines → Claude (or user) invokes</div>
+        <div class="prim-example">review-pr template: structures a code review request</div>
+        <div class="prim-use"><strong>Use when:</strong> You want to package common interaction patterns — pre-written instruction sets that shape how Claude approaches a task.</div>
+      </div>
+
+      <hr class="divider" />
+      <h3><svg class="icon" data-lucide="gamepad-2" aria-hidden="true"></svg> Primitive Matcher — Apply Challenge</h3>
+      <p>Match each scenario to the correct MCP primitive. You need <strong>5 out of 6</strong> correct to unlock Section 2.</p>
+
+      <div id="matcher-container"></div>
+
+      <div id="matcher-result" style="margin-top:16px;display:none;">
+        <div id="matcher-score" style="font-size:0.9rem;margin-bottom:8px;"></div>
+        <button class="btn btn-primary" onclick="retryMatcher()" id="matcher-retry" style="display:none;">Try Again</button>
+      </div>
+
+      <div id="s1-gate-msg" class="success-banner" role="status">
+        <svg class="icon-lg" data-lucide="party-popper" aria-hidden="true"></svg> Primitives mastered! Section 2 is now unlocked. +20 XP
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 2: Connecting MCP Servers
+  ═══════════════════════════════════════════════ -->
+  <section class="section" id="s2" data-section="2" style="position:relative;">
+    <div class="lock-overlay" id="lock-s2" aria-live="polite">
+      <span class="lock-icon"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></span>
+      <p>Complete the previous section to unlock — get 5/6 in the Primitive Matcher.</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-badge">S2</div>
+      <div>
+        <div class="section-title">Connecting MCP Servers</div>
+        <div class="section-subtitle">Transport types: stdio vs Streamable HTTP</div>
+      </div>
+    </div>
+
+    <!-- Prediction -->
+    <div class="card">
+      <h3><svg class="icon" data-lucide="target" aria-hidden="true"></svg> Predict First</h3>
+      <p>How do you think Claude Code knows where to find an MCP server?</p>
+      <div class="prediction-box">
+        <div class="prediction-label">Your prediction:</div>
+        <textarea
+          id="s2-prediction"
+          placeholder="e.g., 'Maybe a config file that lists server addresses or commands to run...'"
+          rows="3"
+          aria-label="Prediction textarea for MCP transport"
+          oninput="saveToStorage('s2-prediction', this.value)"
+        ></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="submitPrediction('s2')" id="s2-pred-btn">Submit Prediction → +10 XP</button>
+    </div>
+
+    <div id="s2-reveal" style="display:none;">
+
+      <p>Claude Code reads an <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;background:var(--bg-raised);padding:2px 6px;border-radius:4px;">mcpServers</code> block — either in your project's <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;background:var(--bg-raised);padding:2px 6px;border-radius:4px;">.claude/settings.json</code> or your global <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;background:var(--bg-raised);padding:2px 6px;border-radius:4px;">~/.claude/settings.json</code>. Two transport types exist:</p>
+
+      <div class="code-grid">
+        <div>
+          <div class="code-label">stdio — Local Subprocess</div>
+          <div class="code-block"><span class="kw">{</span>
+  <span class="key">"mcpServers"</span>: <span class="kw">{</span>
+    <span class="key">"my-db-server"</span>: <span class="kw">{</span>
+      <span class="key">"command"</span>: <span class="str">"node"</span>,
+      <span class="key">"args"</span>: [
+        <span class="str">"./mcp-servers/db-server.js"</span>
+      ],
+      <span class="key">"env"</span>: <span class="kw">{</span>
+        <span class="key">"DB_URL"</span>: <span class="str">"${DB_URL}"</span>
+      <span class="kw">}</span>
+    <span class="kw">}</span>
+  <span class="kw">}</span>
+<span class="kw">}</span></div>
+          <p class="code-caption">Claude Code spawns this as a child process. Perfect for local tools with direct filesystem access.</p>
+        </div>
+        <div>
+          <div class="code-label">Streamable HTTP — Remote Server</div>
+          <div class="code-block"><span class="kw">{</span>
+  <span class="key">"mcpServers"</span>: <span class="kw">{</span>
+    <span class="key">"github-server"</span>: <span class="kw">{</span>
+      <span class="key">"url"</span>: <span class="str">"https://mcp.github.com/api"</span>,
+      <span class="key">"headers"</span>: <span class="kw">{</span>
+        <span class="key">"Authorization"</span>:
+          <span class="str">"Bearer ${GITHUB_TOKEN}"</span>
+      <span class="kw">}</span>
+    <span class="kw">}</span>
+  <span class="kw">}</span>
+<span class="kw">}</span></div>
+          <p class="code-caption">Claude Code connects over HTTP. Perfect for shared team servers or cloud-hosted services.</p>
+        </div>
+      </div>
+
+      <div class="warning-card">
+        <strong><svg class="icon" data-lucide="triangle-alert" aria-hidden="true"></svg> SSE Deprecated:</strong> SSE (Server-Sent Events) transport was the original remote option. It was deprecated in MCP spec 2025-03-26. New servers should use Streamable HTTP. If you see <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;">"transport": "sse"</code> in tutorials, they're outdated.
+      </div>
+
+      <div class="card">
+        <h3><svg class="icon" data-lucide="pencil-line" aria-hidden="true"></svg> Apply Task</h3>
+        <p>Write the <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;background:var(--bg-raised);padding:2px 6px;border-radius:4px;">mcpServers</code> config to connect to a local Python MCP server at <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;background:var(--bg-raised);padding:2px 6px;border-radius:4px;">./servers/linear.py</code> that needs a <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;background:var(--bg-raised);padding:2px 6px;border-radius:4px;">LINEAR_API_KEY</code> environment variable.</p>
+        <textarea
+          id="s2-apply"
+          placeholder="{ &quot;mcpServers&quot;: { ... } }"
+          rows="8"
+          aria-label="Write mcpServers config for local Python server"
+          oninput="saveToStorage('s2-apply', this.value)"
+        ></textarea>
+        <div style="margin-top:12px;">
+          <button class="btn btn-primary" onclick="submitApply('s2')" id="s2-apply-btn">Submit → +20 XP</button>
+        </div>
+        <div id="s2-apply-answer" class="model-answer">
+          <div class="ma-label">Model Answer</div>
+          <div class="code-block"><span class="kw">{</span>
+  <span class="key">"mcpServers"</span>: <span class="kw">{</span>
+    <span class="key">"linear"</span>: <span class="kw">{</span>
+      <span class="key">"command"</span>: <span class="str">"python3"</span>,
+      <span class="key">"args"</span>: [<span class="str">"./servers/linear.py"</span>],
+      <span class="key">"env"</span>: <span class="kw">{</span>
+        <span class="key">"LINEAR_API_KEY"</span>: <span class="str">"${LINEAR_API_KEY}"</span>
+      <span class="kw">}</span>
+    <span class="kw">}</span>
+  <span class="kw">}</span>
+<span class="kw">}</span></div>
+          <p style="font-size:0.82rem;margin-top:8px;">Key points: <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;background:var(--bg-raised);padding:2px 6px;border-radius:4px;">command</code> = <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;background:var(--bg-raised);padding:2px 6px;border-radius:4px;">python3</code>, args array with file path, env with <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;background:var(--bg-raised);padding:2px 6px;border-radius:4px;">${VAR}</code> substitution syntax.</p>
+        </div>
+      </div>
+
+      <div id="s2-gate-msg" class="success-banner" role="status">
+        <svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Transport config understood! Section 3 is now unlocked.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 3: Reading Tool Schemas
+  ═══════════════════════════════════════════════ -->
+  <section class="section" id="s3" data-section="3" style="position:relative;">
+    <div class="lock-overlay" id="lock-s3" aria-live="polite">
+      <span class="lock-icon"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></span>
+      <p>Complete the previous section to unlock — submit the S2 apply task.</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-badge">S3</div>
+      <div>
+        <div class="section-title">Reading Tool Schemas</div>
+        <div class="section-subtitle">How Claude understands what tools do and when to call them</div>
+      </div>
+    </div>
+
+    <p>Claude reads tool JSON schemas to understand what each tool does and how to call it. The <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;background:var(--bg-raised);padding:2px 6px;border-radius:4px;">description</code> field is what Claude actually uses to decide <em>when</em> to call a tool — write it for Claude, not for humans.</p>
+
+    <div class="card">
+      <h2><svg class="icon" data-lucide="search" aria-hidden="true"></svg> Interactive Schema Explorer</h2>
+      <p style="font-size:0.82rem;">Click any line to reveal an annotation explaining what Claude does with that field.</p>
+
+      <div class="schema-explorer" role="region" aria-label="Interactive tool schema explorer">
+        <div style="padding: 12px 20px 4px; font-size:0.7rem;color:var(--text-dim);font-family:'JetBrains Mono',monospace;">// search_issues tool schema</div>
+
+        <div class="schema-line annotated" role="button" tabindex="0" aria-label="name field — click for annotation" onclick="toggleAnnotation('ann-name')" onkeydown="if(event.key==='Enter'||event.key===' '){toggleAnnotation('ann-name')}">
+          <span class="schema-text"><span style="color:#7dd3fc">"name"</span>: <span style="color:#86efac">"search_issues"</span>,</span>
+          <span class="schema-hint">click ▾</span>
+        </div>
+        <div id="ann-name" class="schema-annotation">
+          <strong>name</strong> — The tool identifier Claude uses in its <code style="font-family:'JetBrains Mono',monospace;font-size:0.9em;">tool_call</code> JSON when it decides to invoke this tool. Must be unique within a server.
+        </div>
+
+        <div class="schema-line annotated" role="button" tabindex="0" aria-label="description field — click for annotation" onclick="toggleAnnotation('ann-desc')" onkeydown="if(event.key==='Enter'||event.key===' '){toggleAnnotation('ann-desc')}">
+          <span class="schema-text"><span style="color:#7dd3fc">"description"</span>: <span style="color:#86efac">"Search Linear issues by text query with optional filters"</span>,</span>
+          <span class="schema-hint">click ▾</span>
+        </div>
+        <div id="ann-desc" class="schema-annotation">
+          <strong>description</strong> — This is what Claude reads to decide <em>WHEN</em> to use this tool. Claude's reasoning is: "Does my current goal match this description?" Write it for Claude's reasoning, not for human documentation.
+        </div>
+
+        <div class="schema-line annotated" role="button" tabindex="0" aria-label="inputSchema field — click for annotation" onclick="toggleAnnotation('ann-schema')" onkeydown="if(event.key==='Enter'||event.key===' '){toggleAnnotation('ann-schema')}">
+          <span class="schema-text"><span style="color:#7dd3fc">"inputSchema"</span>: {</span>
+          <span class="schema-hint">click ▾</span>
+        </div>
+        <div id="ann-schema" class="schema-annotation">
+          <strong>inputSchema</strong> — Standard JSON Schema. Claude validates its arguments against this before making the call. If Claude tries to pass an invalid argument, the schema prevents the bad call.
+        </div>
+
+        <div class="schema-line" style="padding-left:40px;"><span class="schema-text" style="color:#94a3b8;">"type": "object",</span></div>
+        <div class="schema-line" style="padding-left:40px;"><span class="schema-text" style="color:#94a3b8;">"properties": {</span></div>
+
+        <div class="schema-line" style="padding-left:60px;"><span class="schema-text"><span style="color:#7dd3fc">"query"</span>: {</span></div>
+        <div class="schema-line" style="padding-left:80px;"><span class="schema-text" style="color:#94a3b8;">"type": "string",</span></div>
+        <div class="schema-line" style="padding-left:80px;"><span class="schema-text" style="color:#94a3b8;">"description": "Full-text search query"</span></div>
+        <div class="schema-line" style="padding-left:60px;"><span class="schema-text" style="color:#94a3b8;">},</span></div>
+
+        <div class="schema-line" style="padding-left:60px;"><span class="schema-text"><span style="color:#7dd3fc">"status"</span>: {</span></div>
+        <div class="schema-line" style="padding-left:80px;"><span class="schema-text" style="color:#94a3b8;">"type": "string",</span></div>
+        <div class="schema-line annotated" style="padding-left:80px;" role="button" tabindex="0" aria-label="enum field — click for annotation" onclick="toggleAnnotation('ann-enum')" onkeydown="if(event.key==='Enter'||event.key===' '){toggleAnnotation('ann-enum')}">
+          <span class="schema-text"><span style="color:#7dd3fc">"enum"</span>: [<span style="color:#86efac">"Todo"</span>, <span style="color:#86efac">"In Progress"</span>, <span style="color:#86efac">"Done"</span>, <span style="color:#86efac">"Cancelled"</span>],</span>
+          <span class="schema-hint">click ▾</span>
+        </div>
+        <div id="ann-enum" class="schema-annotation">
+          <strong>enum</strong> — Constrains Claude to only pass valid values. Without this, Claude might pass "in-progress" or "completed" which would fail the API call. Enums prevent invalid calls before they happen.
+        </div>
+        <div class="schema-line" style="padding-left:80px;"><span class="schema-text" style="color:#94a3b8;">"description": "Filter by issue status"</span></div>
+        <div class="schema-line" style="padding-left:60px;"><span class="schema-text" style="color:#94a3b8;">},</span></div>
+
+        <div class="schema-line" style="padding-left:60px;"><span class="schema-text"><span style="color:#7dd3fc">"assignee"</span>: {</span></div>
+        <div class="schema-line" style="padding-left:80px;"><span class="schema-text" style="color:#94a3b8;">"type": "string",</span></div>
+        <div class="schema-line" style="padding-left:80px;"><span class="schema-text" style="color:#94a3b8;">"description": "Filter by assignee username"</span></div>
+        <div class="schema-line" style="padding-left:60px;"><span class="schema-text" style="color:#94a3b8;">},</span></div>
+
+        <div class="schema-line" style="padding-left:60px;"><span class="schema-text"><span style="color:#7dd3fc">"limit"</span>: {</span></div>
+        <div class="schema-line" style="padding-left:80px;"><span class="schema-text" style="color:#94a3b8;">"type": "integer",</span></div>
+        <div class="schema-line" style="padding-left:80px;"><span class="schema-text" style="color:#94a3b8;">"minimum": 1, "maximum": 100,</span></div>
+        <div class="schema-line annotated" style="padding-left:80px;" role="button" tabindex="0" aria-label="default field — click for annotation" onclick="toggleAnnotation('ann-default')" onkeydown="if(event.key==='Enter'||event.key===' '){toggleAnnotation('ann-default')}">
+          <span class="schema-text"><span style="color:#7dd3fc">"default"</span>: <span style="color:#fdba74">20</span>,</span>
+          <span class="schema-hint">click ▾</span>
+        </div>
+        <div id="ann-default" class="schema-annotation">
+          <strong>default: 20</strong> — Claude uses this when the user doesn't specify a limit. Instead of guessing or asking, Claude fills in the sensible default. Makes the tool more autonomous.
+        </div>
+        <div class="schema-line" style="padding-left:80px;"><span class="schema-text" style="color:#94a3b8;">"description": "Maximum results to return"</span></div>
+        <div class="schema-line" style="padding-left:60px;"><span class="schema-text" style="color:#94a3b8;">}</span></div>
+        <div class="schema-line" style="padding-left:40px;"><span class="schema-text" style="color:#94a3b8;">},</span></div>
+
+        <div class="schema-line annotated" style="padding-left:40px;" role="button" tabindex="0" aria-label="required field — click for annotation" onclick="toggleAnnotation('ann-required')" onkeydown="if(event.key==='Enter'||event.key===' '){toggleAnnotation('ann-required')}">
+          <span class="schema-text"><span style="color:#7dd3fc">"required"</span>: [<span style="color:#86efac">"query"</span>]</span>
+          <span class="schema-hint">click ▾</span>
+        </div>
+        <div id="ann-required" class="schema-annotation">
+          <strong>required: ["query"]</strong> — Only <code style="font-family:'JetBrains Mono',monospace;font-size:0.9em;">query</code> is required. Everything else is optional — Claude can call the tool with just a search query and omit filters if the user didn't specify them.
+        </div>
+
+        <div class="schema-line" style="padding-left:20px;"><span class="schema-text" style="color:#94a3b8;">}</span></div>
+        <div class="schema-line" style="padding-bottom:12px;"><span class="schema-text" style="color:#94a3b8;">}</span></div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <div class="card">
+      <h3><svg class="icon" data-lucide="pencil-line" aria-hidden="true"></svg> Apply Challenge — Write a Tool Schema</h3>
+      <p>Write a JSON tool schema for a <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;background:var(--bg-raised);padding:2px 6px;border-radius:4px;">create_branch</code> tool that:</p>
+      <ul>
+        <li>Takes a required <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;background:var(--bg-raised);padding:2px 6px;border-radius:4px;">repo</code> (string)</li>
+        <li>Takes a required <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;background:var(--bg-raised);padding:2px 6px;border-radius:4px;">branch_name</code> (string)</li>
+        <li>Takes an optional <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;background:var(--bg-raised);padding:2px 6px;border-radius:4px;">from_branch</code> (string, default: 'main')</li>
+        <li>Includes a description that tells Claude <em>when</em> to use it</li>
+      </ul>
+      <textarea
+        id="s3-apply"
+        placeholder='{ "name": "create_branch", "description": "...", "inputSchema": { ... } }'
+        rows="12"
+        aria-label="Write create_branch tool schema"
+        oninput="saveToStorage('s3-apply', this.value)"
+      ></textarea>
+      <div style="margin-top:12px;">
+        <button class="btn btn-primary" onclick="submitApply('s3')" id="s3-apply-btn">Submit → +20 XP</button>
+      </div>
+      <div id="s3-apply-answer" class="model-answer">
+        <div class="ma-label">Model Answer</div>
+        <div class="code-block"><span class="kw">{</span>
+  <span class="key">"name"</span>: <span class="str">"create_branch"</span>,
+  <span class="key">"description"</span>: <span class="str">"Create a new git branch in a GitHub repository"</span>,
+  <span class="key">"inputSchema"</span>: <span class="kw">{</span>
+    <span class="key">"type"</span>: <span class="str">"object"</span>,
+    <span class="key">"properties"</span>: <span class="kw">{</span>
+      <span class="key">"repo"</span>: <span class="kw">{</span>
+        <span class="key">"type"</span>: <span class="str">"string"</span>,
+        <span class="key">"description"</span>: <span class="str">"Repository name (owner/repo)"</span>
+      <span class="kw">}</span>,
+      <span class="key">"branch_name"</span>: <span class="kw">{</span>
+        <span class="key">"type"</span>: <span class="str">"string"</span>,
+        <span class="key">"description"</span>: <span class="str">"Name for the new branch"</span>
+      <span class="kw">}</span>,
+      <span class="key">"from_branch"</span>: <span class="kw">{</span>
+        <span class="key">"type"</span>: <span class="str">"string"</span>,
+        <span class="key">"default"</span>: <span class="str">"main"</span>,
+        <span class="key">"description"</span>: <span class="str">"Source branch to branch from"</span>
+      <span class="kw">}</span>
+    <span class="kw">}</span>,
+    <span class="key">"required"</span>: [<span class="str">"repo"</span>, <span class="str">"branch_name"</span>]
+  <span class="kw">}</span>
+<span class="kw">}</span></div>
+        <p style="font-size:0.82rem;margin-top:8px;">Note: <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;background:var(--bg-raised);padding:2px 6px;border-radius:4px;">from_branch</code> is not in <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;background:var(--bg-raised);padding:2px 6px;border-radius:4px;">required</code> — the default handles it. The description tells Claude this is a branch-creation action, not a listing or reading tool.</p>
+      </div>
+    </div>
+
+    <!-- CE-04-B: Write a Real Tool Schema (Advanced Challenge) -->
+    <div id="ce-04-b" class="build-challenge">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span class="build-badge"><svg class="icon-lg" data-lucide="hammer" aria-hidden="true"></svg> Build Challenge</span>
+        <span class="ce-xp-badge">+30 XP Bonus</span>
+      </div>
+      <h3 style="margin:0 0 8px;color:var(--text);">Challenge CE-04-B: Design a Production Tool Schema</h3>
+      <p style="color:var(--text-muted);margin-bottom:16px;font-size:14px;">The apply task had you write a basic schema. This challenge is harder: you're building an MCP server for a project management tool, and you need a tool that lets Claude Code <strong>search for issues, filter by assignee and status, and return results in a structured format</strong>. Write the complete JSON tool schema.</p>
+
+      <div class="ce-requirements">
+        <strong style="color:var(--text);">Tool requirements — the schema must support:</strong>
+        <ul style="margin:8px 0 0;padding-left:20px;color:var(--text-muted);">
+          <li>Search query string (required)</li>
+          <li>Filter by assignee email (optional)</li>
+          <li>Filter by status (optional — must be an enum: "open", "in_progress", "closed")</li>
+          <li>Limit number of results (optional, with a sensible max)</li>
+          <li>All properties need <code>type</code> and <code>description</code> fields</li>
+          <li>Name must follow snake_case convention</li>
+        </ul>
+      </div>
+
+      <label for="ce-04-b-input" style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;">Your tool schema JSON:</label>
+      <textarea aria-label="Write your tool schema JSON" id="ce-04-b-input" placeholder='{&#10;  "name": "search_issues",&#10;  "description": "...",&#10;  "inputSchema": {&#10;    "type": "object",&#10;    "properties": {&#10;      "query": {&#10;        "type": "string",&#10;        "description": "..."&#10;      }&#10;    },&#10;    "required": ["query"]&#10;  }&#10;}' style="width:100%;min-height:260px;font-family:'Fira Code',monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;color:var(--text);resize:vertical;box-sizing:border-box;"></textarea>
+
+      <div id="ce-04-b-validation" style="display:none;margin-top:12px;padding:12px;border-radius:8px;font-size:13px;"></div>
+
+      <div class="ce-requirements" style="margin-top:0;">
+        <strong style="font-size:13px;">Auto-checker verifies:</strong>
+        <ul style="margin:8px 0 0;padding-left:20px;font-size:13px;color:var(--text-muted);">
+          <li>Name is snake_case (no spaces, no camelCase)</li>
+          <li>Description is a complete sentence (&gt;20 chars)</li>
+          <li>At least 4 properties defined (query + 3 filters)</li>
+          <li>Status property uses <code>"enum"</code> type</li>
+          <li>At least one property in <code>"required"</code> array</li>
+          <li>All properties have both <code>type</code> and <code>description</code></li>
+        </ul>
+      </div>
+
+      <button onclick="validateCE04B()" class="btn btn-primary" style="margin-top:16px;">Check Schema + Submit for +30 XP</button>
+
+      <div id="ce-04-b-model" class="ce-model-answer" style="display:none;">
+        <strong style="color:var(--secondary,#6366f1);"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Model Answer:</strong>
+        <pre class="code-block" style="margin-top:12px;">{
+  "name": "search_issues",
+  "description": "Search project management issues with optional filters for assignee and status, returning a structured list of matching issues.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "Full-text search query to match against issue titles and descriptions."
+      },
+      "assignee": {
+        "type": "string",
+        "description": "Filter results to issues assigned to this email address. Omit to return issues for all assignees."
+      },
+      "status": {
+        "type": "string",
+        "enum": ["open", "in_progress", "closed"],
+        "description": "Filter results by issue status. Omit to return issues of all statuses."
+      },
+      "limit": {
+        "type": "integer",
+        "description": "Maximum number of results to return. Defaults to 20, maximum 100.",
+        "minimum": 1,
+        "maximum": 100,
+        "default": 20
+      }
+    },
+    "required": ["query"]
+  }
+}</pre>
+        <div style="margin-top:16px;font-size:13px;color:var(--text-muted);">
+          <strong style="color:var(--text);">Key design decisions explained:</strong>
+          <ul style="margin:8px 0 0;padding-left:20px;">
+            <li>Only <code>query</code> is required — all filters are optional to maximize flexibility</li>
+            <li>Status uses <code>"enum"</code> to enforce valid values — prevents Claude from sending "active" or "done"</li>
+            <li>Limit has <code>minimum</code>, <code>maximum</code>, and <code>default</code> — protects the server from unbounded queries</li>
+            <li>Assignee is a string (not an ID) — strings are easier for Claude to infer from context</li>
+          </ul>
+        </div>
+        <div style="margin-top:16px; padding:12px 16px; background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.15); border-radius:8px; font-size:13px;">
+          <span style="color:#a78bfa; font-weight:600;">Ready for more?</span>
+          <span style="color:#94a3b8;"> This exercise prepares you for </span>
+          <a href="/challenges#mission-22-issue-to-pr-pipeline-using-linear-or-github-mcp-" style="color:#a78bfa; text-decoration:underline;">Mission 2.2 — Issue-to-PR Pipeline</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="s3-gate-msg" class="success-banner" role="status">
+      <svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Schema mastered! Section 4 is now unlocked.
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 4: MCP in the PRAO Loop
+  ═══════════════════════════════════════════════ -->
+  <section class="section" id="s4" data-section="4" style="position:relative;">
+    <div class="lock-overlay" id="lock-s4" aria-live="polite">
+      <span class="lock-icon"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></span>
+      <p>Complete the previous section to unlock — submit the S3 schema challenge.</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-badge">S4</div>
+      <div>
+        <div class="section-title">MCP in the PRAO Loop</div>
+        <div class="section-subtitle">How MCP tool calls fit into the agentic cycle</div>
+      </div>
+    </div>
+
+    <div class="callback-card">
+      <span class="cb-icon"><svg class="icon" data-lucide="refresh-cw" aria-hidden="true"></svg></span>
+      <div>
+        <div class="cb-label">Callback · Lab 01 S1 — PRAO Loop</div>
+        <div class="cb-text">From Lab 01: the PRAO loop — Perceive → Reason → Act → Observe. MCP operations map exactly onto this loop. Click each step below to see how.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><svg class="icon-lg" data-lucide="repeat" aria-hidden="true"></svg> Interactive PRAO Trace — MCP Tool Call</h2>
+      <p style="font-size:0.82rem;">Click each step to expand the detail. Each step maps to a PRAO phase.</p>
+
+      <div class="prao-steps" id="prao-steps">
+        <div class="prao-step" role="button" tabindex="0" aria-label="Step 1 Perceive — click to expand" onclick="togglePrao(this)" onkeydown="if(event.key==='Enter'||event.key===' '){togglePrao(this)}">
+          <div class="prao-badge prao-P">P</div>
+          <div>
+            <div class="prao-step-title">Step 1 — Perceive</div>
+            <div class="prao-step-body">Claude reads your <code style="font-family:'JetBrains Mono',monospace;font-size:0.9em;">mcpServers</code> config and the tool schemas from each server at session start. It now knows: "I have a <code style="font-family:'JetBrains Mono',monospace;font-size:0.9em;">get_overdue_tasks</code> tool that can query issues by assignee."</div>
+          </div>
+        </div>
+        <div class="prao-step" role="button" tabindex="0" aria-label="Step 2 Reason — click to expand" onclick="togglePrao(this)" onkeydown="if(event.key==='Enter'||event.key===' '){togglePrao(this)}">
+          <div class="prao-badge prao-R">R</div>
+          <div>
+            <div class="prao-step-title">Step 2 — Reason</div>
+            <div class="prao-step-body">Claude decides: "The user wants overdue tasks. I have a <code style="font-family:'JetBrains Mono',monospace;font-size:0.9em;">get_overdue_tasks</code> tool. Its description matches the goal. The user mentioned 'alice' — that maps to the <code style="font-family:'JetBrains Mono',monospace;font-size:0.9em;">assignee</code> parameter. I should call it."</div>
+          </div>
+        </div>
+        <div class="prao-step" role="button" tabindex="0" aria-label="Step 3 Act — click to expand" onclick="togglePrao(this)" onkeydown="if(event.key==='Enter'||event.key===' '){togglePrao(this)}">
+          <div class="prao-badge prao-A">A</div>
+          <div>
+            <div class="prao-step-title">Step 3 — Act</div>
+            <div class="prao-step-body">Claude sends the tool call: <code style="font-family:'JetBrains Mono',monospace;font-size:0.9em;">{ "tool": "get_overdue_tasks", "args": { "assignee": "alice", "limit": 10 } }</code>. The MCP server receives this and executes the database query.</div>
+          </div>
+        </div>
+        <div class="prao-step" role="button" tabindex="0" aria-label="Step 4 Observe — click to expand" onclick="togglePrao(this)" onkeydown="if(event.key==='Enter'||event.key===' '){togglePrao(this)}">
+          <div class="prao-badge prao-O">O</div>
+          <div>
+            <div class="prao-step-title">Step 4 — Observe</div>
+            <div class="prao-step-body">MCP server executes the query and returns: <code style="font-family:'JetBrains Mono',monospace;font-size:0.9em;">[{id: 'LIN-42', title: 'Fix auth bug', due: '2025-03-01'}, ...]</code>. Claude receives this result in its context window as the observation.</div>
+          </div>
+        </div>
+        <div class="prao-step" role="button" tabindex="0" aria-label="Step 5 Reason Again — click to expand" onclick="togglePrao(this)" onkeydown="if(event.key==='Enter'||event.key===' '){togglePrao(this)}">
+          <div class="prao-badge prao-R">R</div>
+          <div>
+            <div class="prao-step-title">Step 5 — Reason Again</div>
+            <div class="prao-step-body">Claude incorporates the result into its response: "Alice has 3 overdue tasks. LIN-42 (Fix auth bug) is most urgent at 14 days overdue. Shall I open it in Linear?" The loop completes — or begins again if another action is needed.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-card">
+      This is why MCP matters for agentic systems. It's not just "Claude calling APIs" — it's Claude autonomously deciding WHICH tools to call, WHEN, based on what it's trying to accomplish. The schema is the interface; the PRAO loop is the engine.
+    </div>
+
+    <hr class="divider" />
+
+    <h2><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Knowledge Checks</h2>
+    <p>Answer at least <strong>2 out of 3</strong> correctly to unlock the Capstone Challenge.</p>
+
+    <div id="kcheck-container"></div>
+
+    <div id="kcheck-score" style="font-size:0.9rem;color:var(--text-muted);margin-bottom:12px;"></div>
+
+    <div id="s4-gate-msg" class="success-banner" role="status">
+      <svg class="icon-lg" data-lucide="party-popper" aria-hidden="true"></svg> Knowledge checks passed! Section 5 unlocked.
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 5: Capstone Challenge
+  ═══════════════════════════════════════════════ -->
+  <section class="section" id="s5" data-section="5" style="position:relative;">
+    <div class="lock-overlay" id="lock-s5" aria-live="polite">
+      <span class="lock-icon"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></span>
+      <p>Complete the previous section to unlock — pass 2/3 knowledge checks in S4.</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-badge" style="background:linear-gradient(135deg,var(--warning),var(--danger));font-size:1rem;"><svg class="icon-lg" data-lucide="swords" aria-hidden="true"></svg></div>
+      <div>
+        <div class="section-title">Capstone Challenge</div>
+        <div class="section-subtitle">Design a complete MCP architecture — 100 XP</div>
+      </div>
+    </div>
+
+    <div class="card" style="border-color:rgba(245,158,11,0.3);">
+      <h3 style="color:var(--warning);"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> Scenario</h3>
+      <p>Your team wants Claude Code to help engineers with three daily tasks: <strong>querying the production database for debugging</strong>, <strong>posting updates to Slack</strong>, and <strong>managing GitHub issues</strong>. Design the complete MCP architecture.</p>
+    </div>
+
+    <div class="boss-section">
+      <div class="boss-field">
+        <div class="boss-field-label">1. How many MCP servers will you create? Why?</div>
+        <div class="boss-field-hint">Hint: think about separation of concerns and least privilege.</div>
+        <textarea
+          id="boss-1"
+          placeholder="e.g., '3 servers — one per system. This way a bug in the Slack server can't affect DB access...'"
+          rows="3"
+          aria-label="Answer: how many MCP servers"
+          oninput="saveBossField(1)"
+        ></textarea>
+      </div>
+
+      <div class="boss-field">
+        <div class="boss-field-label">2. List the Tools, Resources, and Prompts for each server</div>
+        <div class="boss-field-hint">Be specific — name the tools and their purpose.</div>
+        <textarea
+          id="boss-2"
+          placeholder="db-server: Tools: run_query(sql), get_schema(table), explain_query(sql)&#10;           Resources: db://tables/{name}&#10;slack-server: Tools: post_message(channel, text), list_channels()&#10;github-server: Tools: create_issue(...), search_issues(...), add_comment(...)"
+          rows="7"
+          aria-label="Answer: list tools resources prompts per server"
+          oninput="saveBossField(2)"
+        ></textarea>
+      </div>
+
+      <div class="boss-field">
+        <div class="boss-field-label">3. Write the complete mcpServers config block for all servers</div>
+        <div class="boss-field-hint">Use proper JSON with env var substitution.</div>
+        <textarea
+          id="boss-3"
+          placeholder='{ "mcpServers": { "db-server": { ... }, "slack-server": { ... }, "github-server": { ... } } }'
+          rows="10"
+          aria-label="Answer: write complete mcpServers config"
+          oninput="saveBossField(3)"
+        ></textarea>
+      </div>
+
+      <div class="boss-field">
+        <div class="boss-field-label">4. How will you pass credentials securely?</div>
+        <div class="boss-field-hint">e.g., DB_URL, SLACK_TOKEN, GITHUB_TOKEN</div>
+        <textarea
+          id="boss-4"
+          placeholder="e.g., 'Use ${VAR_NAME} syntax in the env block. Real values live in the shell environment or .env file, never hardcoded in settings.json...'"
+          rows="3"
+          aria-label="Answer: credential handling"
+          oninput="saveBossField(4)"
+        ></textarea>
+      </div>
+
+      <div class="boss-field">
+        <div class="boss-field-label">5. What happens if the database server goes offline while Claude is mid-task?</div>
+        <div class="boss-field-hint">Think about failure modes in an agentic loop.</div>
+        <textarea
+          id="boss-5"
+          placeholder="e.g., 'Claude will receive an error in the Observe phase. It should surface this to the user and try to continue with remaining servers...'"
+          rows="3"
+          aria-label="Answer: failure mode handling"
+          oninput="saveBossField(5)"
+        ></textarea>
+      </div>
+
+      <button class="btn btn-primary" id="boss-generate-btn" onclick="generateArchDoc()" style="display:none;margin-top:8px;">
+        Generate Architecture Document → +100 XP
+      </button>
+    </div>
+
+    <div id="arch-doc-output" class="arch-doc-output" role="region" aria-label="Generated architecture document"></div>
+
+    <div id="boss-download" style="display:none;margin-top:12px;">
+      <button class="btn btn-outline" onclick="downloadArchDoc()"><svg class="icon" data-lucide="download" aria-hidden="true"></svg> Download as .txt</button>
+    </div>
+
+    <div id="boss-model-answer" class="model-answer" style="margin-top:20px;">
+      <div class="ma-label">Reference Architecture</div>
+      <h4>Servers: 3 (db-server · slack-server · github-server)</h4>
+      <p style="font-size:0.85rem;"><strong>Separation of concerns</strong> — Each server has minimal permissions. A vulnerability in the Slack server cannot access the database. Servers can be versioned and deployed independently.</p>
+      <ul style="font-size:0.82rem;">
+        <li><strong>db-server</strong> — Tools: <code style="font-family:'JetBrains Mono',monospace;">run_query</code>, <code style="font-family:'JetBrains Mono',monospace;">get_schema</code>, <code style="font-family:'JetBrains Mono',monospace;">explain_query</code>; Resources: <code style="font-family:'JetBrains Mono',monospace;">db://tables/{name}</code></li>
+        <li><strong>slack-server</strong> — Tools: <code style="font-family:'JetBrains Mono',monospace;">post_message</code>, <code style="font-family:'JetBrains Mono',monospace;">list_channels</code>; Resources: <code style="font-family:'JetBrains Mono',monospace;">slack://channels</code></li>
+        <li><strong>github-server</strong> — Tools: <code style="font-family:'JetBrains Mono',monospace;">create_issue</code>, <code style="font-family:'JetBrains Mono',monospace;">search_issues</code>, <code style="font-family:'JetBrains Mono',monospace;">add_comment</code>; Resources: <code style="font-family:'JetBrains Mono',monospace;">github://repos/{owner}/{repo}</code></li>
+      </ul>
+      <p style="font-size:0.85rem;"><strong>Credentials:</strong> All via <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;">${VAR_NAME}</code> env substitution. Real values in shell environment or <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;">.env</code> — never hardcoded in <code style="font-family:'JetBrains Mono',monospace;font-size:0.85em;">settings.json</code>.</p>
+      <p style="font-size:0.85rem;"><strong>DB offline:</strong> Claude receives an error in the Observe phase. It attempts to continue the task using remaining servers, surfaces the error to the user with context, and does not silently fail or retry indefinitely.</p>
+    </div>
+
+    <!-- Connect forward -->
+    <div class="connect-forward" style="margin-top:32px; padding:20px 24px; background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2); border-left:3px solid #6366f1; border-radius:12px;">
+      <div style="font-size:13px; font-weight:700; color:#6366f1; letter-spacing:0.04em; text-transform:uppercase; margin-bottom:8px;">Up Next</div>
+      <div style="font-size:15px; font-weight:600; color:#f1f5f9; margin-bottom:6px;">Module 08 — Multi-Agent Systems</div>
+      <div style="font-size:13px; color:#94a3b8; margin-bottom:12px;">You'll learn to compose agents into coordinated pipelines.</div>
+      <a href="/raven-cargo-course/module/08" style="display:inline-flex; align-items:center; gap:6px; padding:8px 18px; background:#6366f1; color:white; border-radius:8px; font-size:13px; font-weight:600; text-decoration:none; transition:opacity 0.15s;">Continue to Module 08 →</a>
+    </div>
+
+    <div class="completion-card" style="margin-top:40px;">
+      <div style="font-size:2rem;margin-bottom:8px;"><svg class="icon-lg" data-lucide="graduation-cap" aria-hidden="true"></svg></div>
+      <h2>Lab 06 Complete!</h2>
+      <p>You've mastered MCP — the extensibility layer that transforms Claude Code from a capable assistant into a deeply integrated engineering tool.</p>
+      <p style="margin-top:8px;"><strong style="color:var(--accent);">Next: Module 08 — Multi-Agent Systems.</strong> You'll learn to compose agents into coordinated pipelines.</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
+        <a href="/raven-cargo-course/module/07" class="btn btn-outline" style="text-decoration:none;">← Back to Module 07</a>
+        <a href="/raven-cargo-course/module/08" class="btn btn-primary" style="text-decoration:none;">Continue to Module 08 →</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div id="xp-toast" role="status" aria-live="polite"></div>
+<div id="streak-toast" role="status" aria-live="polite"></div>
+
+<script>
+  // ══════════════════════════════════════════════
+  // STATE
+  // ══════════════════════════════════════════════
+
+  const STORAGE_KEYS = {
+    xp: 'lab-04-xp',
+    streak: 'lab-04-streak',
+    streakCount: 'lab-04-streak-count',
+    sections: 'lab-04-sections-unlocked',
+    archClicks: 'lab-04-arch-clicks',
+    matcherDone: 'lab-04-matcher-done',
+    kcheckScores: 'lab-04-kcheck-scores',
+    bossDone: 'lab-04-boss-done',
+  };
+
+  let xp = parseInt(localStorage.getItem(STORAGE_KEYS.xp) || '0');
+  let streak = parseInt(localStorage.getItem(STORAGE_KEYS.streak) || '0');
+  let streakCount = parseInt(localStorage.getItem(STORAGE_KEYS.streakCount) || '0');
+  let sectionsUnlocked = JSON.parse(localStorage.getItem(STORAGE_KEYS.sections) || '[0]');
+  let archClicks = JSON.parse(localStorage.getItem(STORAGE_KEYS.archClicks) || '[]');
+  let kcheckScores = JSON.parse(localStorage.getItem(STORAGE_KEYS.kcheckScores) || '{}');
+  let archDocContent = '';
+  let xpToastTimer = null;
+  let streakToastTimer = null;
+
+  let milestoneLevel = 0;
+  const MILESTONES = [
+    { section: 1, label: 'MCP Architecture' },
+    { section: 2, label: 'Server Connection' },
+    { section: 4, label: 'Primitives Mastered' },
+    { section: 5, label: 'Capstone Complete' }
+  ];
+
+  function getMilestoneLevel() {
+    let level = 0;
+    MILESTONES.forEach(function(m, idx) {
+      if (isSectionUnlocked(m.section)) level = idx + 1;
+    });
+    return level;
+  }
+
+  function updateMilestoneDisplay() {
+    const el = document.getElementById('milestone-display');
+    if (!el) return;
+    if (milestoneLevel === 0) {
+      el.textContent = 'Milestone: Not started';
+      return;
+    }
+    const entry = MILESTONES[milestoneLevel - 1];
+    el.textContent = 'Milestone ' + milestoneLevel + ': ' + entry.label;
+  }
+
+  function announceMilestone(level) {
+    const entry = MILESTONES[level - 1];
+    const toast = document.createElement('div');
+    toast.className = 'milestone-toast';
+    toast.textContent = 'Milestone reached: ' + entry.label;
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.remove(); }, 2200);
+  }
+
+  // ══════════════════════════════════════════════
+  // XP SYSTEM
+  // ══════════════════════════════════════════════
+
+  function awardXP(amount, reason) {
+    xp += amount;
+    localStorage.setItem(STORAGE_KEYS.xp, xp);
+    document.getElementById('xp-count').textContent = xp;
+    showXPToast(`+${amount} XP`);
+    updateProgressBar();
+  }
+
+  function showXPToast(msg) {
+    const toast = document.getElementById('xp-toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(xpToastTimer);
+    xpToastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+  }
+
+  function trackStreak(correct) {
+    if (correct) {
+      streakCount++;
+      localStorage.setItem(STORAGE_KEYS.streakCount, streakCount);
+      if (streakCount === 3) {
+        awardXP(25, 'streak-3');
+        showStreakToast('+3 Streak! Bonus 25 XP');
+      } else if (streakCount === 5) {
+        awardXP(50, 'streak-5');
+        showStreakToast('+5 Streak! Bonus 50 XP');
+      }
+    } else {
+      streakCount = 0;
+      localStorage.setItem(STORAGE_KEYS.streakCount, streakCount);
+    }
+  }
+
+  function showStreakToast(msg) {
+    const toast = document.getElementById('streak-toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(streakToastTimer);
+    streakToastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  // ══════════════════════════════════════════════
+  // SECTION UNLOCK
+  // ══════════════════════════════════════════════
+
+  function unlockSection(n) {
+    if (!sectionsUnlocked.includes(n)) {
+      sectionsUnlocked.push(n);
+      localStorage.setItem(STORAGE_KEYS.sections, JSON.stringify(sectionsUnlocked));
+    }
+    const lock = document.getElementById('lock-s' + n);
+    if (lock) lock.style.display = 'none';
+    updateNavDots();
+    const nextMilestoneLevel = getMilestoneLevel();
+    if (nextMilestoneLevel > milestoneLevel) {
+      milestoneLevel = nextMilestoneLevel;
+      updateMilestoneDisplay();
+      announceMilestone(milestoneLevel);
+    } else {
+      updateMilestoneDisplay();
+    }
+  }
+
+  function isSectionUnlocked(n) {
+    return sectionsUnlocked.includes(n);
+  }
+
+  function applySectionLocks() {
+    for (let i = 1; i <= 5; i++) {
+      const lock = document.getElementById('lock-s' + i);
+      if (lock) {
+        lock.style.display = isSectionUnlocked(i) ? 'none' : 'flex';
+      }
+    }
+  }
+
+  // ══════════════════════════════════════════════
+  // NAV DOTS
+  // ══════════════════════════════════════════════
+
+  function buildNavDots() {
+    const container = document.getElementById('nav-dots');
+    container.innerHTML = '';
+    for (let i = 0; i <= 5; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'nav-dot' + (isSectionUnlocked(i) ? '' : ' locked');
+      dot.textContent = 'S' + i;
+      dot.id = 'nav-dot-' + i;
+      dot.setAttribute('role', 'button');
+      dot.setAttribute('tabindex', isSectionUnlocked(i) ? '0' : '-1');
+      dot.setAttribute('aria-label', 'Jump to Section ' + i);
+      dot.onclick = () => { if (isSectionUnlocked(i)) scrollToSection(i); };
+      dot.onkeydown = (e) => { if ((e.key === 'Enter' || e.key === ' ') && isSectionUnlocked(i)) scrollToSection(i); };
+      container.appendChild(dot);
+    }
+  }
+
+  function updateNavDots() {
+    for (let i = 0; i <= 5; i++) {
+      const dot = document.getElementById('nav-dot-' + i);
+      if (!dot) continue;
+      if (isSectionUnlocked(i)) {
+        dot.classList.remove('locked');
+        dot.setAttribute('tabindex', '0');
+      }
+    }
+  }
+
+  function scrollToSection(n) {
+    document.getElementById('s' + n).scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // ══════════════════════════════════════════════
+  // PROGRESS BAR
+  // ══════════════════════════════════════════════
+
+  function updateProgressBar() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    document.getElementById('progress-bar').style.width = pct + '%';
+  }
+
+  window.addEventListener('scroll', () => {
+    updateProgressBar();
+    updateActiveNavDot();
+  }, { passive: true });
+
+  function updateActiveNavDot() {
+    const sections = document.querySelectorAll('.section');
+    let active = 0;
+    sections.forEach((s, i) => {
+      const rect = s.getBoundingClientRect();
+      if (rect.top <= 100) active = i;
+    });
+    document.querySelectorAll('.nav-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === active);
+    });
+  }
+
+  // ══════════════════════════════════════════════
+  // STORAGE HELPERS
+  // ══════════════════════════════════════════════
+
+  function saveToStorage(key, value) {
+    localStorage.setItem('lab-04-ta-' + key, value);
+  }
+
+  function restoreTextareas() {
+    const keys = ['s1-prediction','s2-prediction','s2-apply','s3-apply','boss-1','boss-2','boss-3','boss-4','boss-5'];
+    keys.forEach(k => {
+      const el = document.getElementById(k);
+      const val = localStorage.getItem('lab-04-ta-' + k);
+      if (el && val) el.value = val;
+    });
+  }
+
+  function saveBossField(n) {
+    const el = document.getElementById('boss-' + n);
+    if (el) saveToStorage('boss-' + n, el.value);
+    checkBossReady();
+  }
+
+  function checkBossReady() {
+    let allFilled = true;
+    for (let i = 1; i <= 5; i++) {
+      const el = document.getElementById('boss-' + i);
+      if (!el || el.value.trim().length < 10) { allFilled = false; break; }
+    }
+    const btn = document.getElementById('boss-generate-btn');
+    if (btn) btn.style.display = allFilled ? 'inline-flex' : 'none';
+  }
+
+  // ══════════════════════════════════════════════
+  // SECTION 0: ARCHITECTURE DIAGRAM
+  // ══════════════════════════════════════════════
+
+  function clickArchBox(id) {
+    const box = document.getElementById('arch-' + id);
+    if (!box) return;
+    box.classList.add('clicked');
+    if (!archClicks.includes(id)) {
+      archClicks.push(id);
+      localStorage.setItem(STORAGE_KEYS.archClicks, JSON.stringify(archClicks));
+    }
+    if (archClicks.length >= 3 && !isSectionUnlocked(1)) {
+      const msg = document.getElementById('arch-gate-msg');
+      if (msg) msg.classList.add('show');
+      unlockSection(1);
+      restoreS1State();
+    }
+  }
+
+  function restoreArchClicks() {
+    archClicks.forEach(id => {
+      const box = document.getElementById('arch-' + id);
+      if (box) box.classList.add('clicked');
+    });
+    if (archClicks.length >= 3) {
+      const msg = document.getElementById('arch-gate-msg');
+      if (msg) msg.classList.add('show');
+    }
+  }
+
+  // ══════════════════════════════════════════════
+  // PREDICTION SUBMIT
+  // ══════════════════════════════════════════════
+
+  function submitPrediction(section) {
+    const ta = document.getElementById(section + '-prediction');
+    const btn = document.getElementById(section + '-pred-btn');
+    if (!ta || !btn) return;
+    if (ta.value.trim().length < 3) {
+      ta.style.borderColor = 'var(--danger)';
+      setTimeout(() => ta.style.borderColor = '', 1200);
+      return;
+    }
+    const key = section + 'PredDone';
+    if (!localStorage.getItem(STORAGE_KEYS[key] || 'lab-04-' + section + '-pred')) {
+      awardXP(10, 'prediction');
+      localStorage.setItem('lab-04-' + section + '-pred', '1');
+    }
+    btn.textContent = 'Prediction recorded!';
+    btn.disabled = true;
+    ta.disabled = true;
+
+    if (section === 's1') {
+      document.getElementById('s1-reveal').style.display = 'block';
+      if (!matcherBuilt) buildMatcher();
+    }
+    if (section === 's2') {
+      document.getElementById('s2-reveal').style.display = 'block';
+      restoreS2State();
+    }
+  }
+
+  // ══════════════════════════════════════════════
+  // APPLY TASK SUBMIT
+  // ══════════════════════════════════════════════
+
+  function submitApply(section) {
+    const ta = document.getElementById(section + '-apply');
+    const btn = document.getElementById(section + '-apply-btn');
+    const answer = document.getElementById(section + '-apply-answer');
+    const gate = document.getElementById(section + '-gate-msg');
+    if (!ta || !btn) return;
+    if (ta.value.trim().length < 5) {
+      ta.style.borderColor = 'var(--danger)';
+      setTimeout(() => ta.style.borderColor = '', 1200);
+      return;
+    }
+    const doneKey = 'lab-04-' + section + '-apply-done';
+    if (!localStorage.getItem(doneKey)) {
+      awardXP(20, section + '-apply');
+      localStorage.setItem(doneKey, '1');
+    }
+    btn.textContent = 'Submitted! +20 XP awarded';
+    btn.disabled = true;
+    if (answer) answer.classList.add('show');
+
+    if (section === 's2' && !isSectionUnlocked(3)) {
+      if (gate) gate.classList.add('show');
+      unlockSection(3);
+      restoreS3State();
+    }
+    if (section === 's3' && !isSectionUnlocked(4)) {
+      if (gate) gate.classList.add('show');
+      unlockSection(4);
+      restoreS4State();
+    }
+  }
+
+  // ══════════════════════════════════════════════
+  // SECTION 1: PRIMITIVE MATCHER
+  // ══════════════════════════════════════════════
+
+  const SCENARIOS = [
+    { text: "Query your PostgreSQL database for overdue tasks", answer: "Tools", reason: "It's an action that requires computation — calling a function that runs SQL." },
+    { text: "Read the contents of a Confluence page by URL", answer: "Resources", reason: "URI-addressable data. Resources are perfect for documents accessible by URI." },
+    { text: "A pre-built template for asking Claude to review a PR", answer: "Prompts", reason: "Prompts are reusable instruction templates. This packages a common interaction pattern." },
+    { text: "Send a Slack message to #engineering", answer: "Tools", reason: "It's an action with a side effect — calling a function that posts to Slack." },
+    { text: "Access your company's runbook at runbook://incident/p1", answer: "Resources", reason: "URI-addressable — runbook://incident/p1 is a URI. Resources are perfect here." },
+    { text: "Run a GitHub Actions workflow", answer: "Tools", reason: "It's an action — triggering a workflow is a function call with side effects." },
+  ];
+
+  const PRIMITIVES = ['Tools', 'Resources', 'Prompts'];
+  let matcherState = {};
+  let matcherBuilt = false;
+  let matcherScrambled = [];
+
+  function buildMatcher() {
+    matcherBuilt = true;
+    matcherScrambled = [...SCENARIOS].sort(() => Math.random() - 0.5);
+    const container = document.getElementById('matcher-container');
+    container.innerHTML = '';
+    matcherState = {};
+    matcherScrambled.forEach((s, i) => {
+      const div = document.createElement('div');
+      div.className = 'matcher-item';
+      div.id = 'matcher-' + i;
+      div.innerHTML = `
+        <div class="matcher-scenario">${i + 1}. "${s.text}"</div>
+        <div class="matcher-btns">
+          ${PRIMITIVES.map(p => `<button class="matcher-btn" onclick="selectMatcher(${i},'${p}')" aria-label="Answer ${p} for scenario ${i+1}">${p}</button>`).join('')}
+        </div>
+        <div class="matcher-feedback" id="mf-${i}"></div>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  function selectMatcher(idx, choice) {
+    if (matcherState[idx] !== undefined) return; // already answered
+    const scenario = matcherScrambled[idx];
+    const correct = choice === scenario.answer;
+    matcherState[idx] = correct;
+
+    const item = document.getElementById('matcher-' + idx);
+    item.classList.add(correct ? 'correct' : 'wrong');
+
+    const btns = item.querySelectorAll('.matcher-btn');
+    btns.forEach(b => {
+      b.disabled = true;
+      if (b.textContent === choice) {
+        b.classList.add(correct ? 'selected-correct' : 'selected-wrong');
+      }
+      if (!correct && b.textContent === scenario.answer) {
+        b.classList.add('selected-correct');
+      }
+    });
+
+    const fb = document.getElementById('mf-' + idx);
+    fb.textContent = correct ? `✅ Correct! ${scenario.reason}` : `❌ This is a ${scenario.answer}. ${scenario.reason}`;
+    fb.className = 'matcher-feedback show ' + (correct ? 'ok' : 'bad');
+
+    trackStreak(correct);
+    if (correct) awardXP(5, 'matcher-item');
+
+    checkMatcherComplete();
+  }
+
+  function checkMatcherComplete() {
+    const answeredCount = Object.keys(matcherState).length;
+    if (answeredCount < SCENARIOS.length) return;
+
+    const correctCount = Object.values(matcherState).filter(Boolean).length;
+    const resultDiv = document.getElementById('matcher-result');
+    const scoreDiv = document.getElementById('matcher-score');
+    const retryBtn = document.getElementById('matcher-retry');
+    resultDiv.style.display = 'block';
+
+    if (correctCount >= 5) {
+      scoreDiv.innerHTML = `<span style="color:var(--success);font-weight:600;"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> ${correctCount}/6 correct — Primitives mastered!</span>`;
+      if (window.lucide) lucide.createIcons({ el: scoreDiv });
+      retryBtn.style.display = 'none';
+      if (!isSectionUnlocked(2)) {
+        awardXP(20, 'matcher-complete');
+        localStorage.setItem('lab-04-matcher-done', '1');
+        const gate = document.getElementById('s1-gate-msg');
+        if (gate) gate.classList.add('show');
+        unlockSection(2);
+        restoreS2State();
+      }
+    } else {
+      scoreDiv.innerHTML = `<span style="color:var(--danger);font-weight:600;"><svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> ${correctCount}/6 — Need 5 correct. Try again!</span>`;
+      if (window.lucide) lucide.createIcons({ el: scoreDiv });
+      retryBtn.style.display = 'inline-flex';
+    }
+  }
+
+  function retryMatcher() {
+    matcherState = {};
+    document.getElementById('matcher-result').style.display = 'none';
+    buildMatcher();
+  }
+
+  // ══════════════════════════════════════════════
+  // SCHEMA ANNOTATIONS
+  // ══════════════════════════════════════════════
+
+  function toggleAnnotation(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const isOpen = el.classList.contains('open');
+    document.querySelectorAll('.schema-annotation.open').forEach(a => a.classList.remove('open'));
+    if (!isOpen) el.classList.add('open');
+  }
+
+  // ══════════════════════════════════════════════
+  // PRAO STEPS
+  // ══════════════════════════════════════════════
+
+  function togglePrao(el) {
+    const wasActive = el.classList.contains('active');
+    document.querySelectorAll('.prao-step').forEach(s => s.classList.remove('active'));
+    if (!wasActive) el.classList.add('active');
+  }
+
+  // ══════════════════════════════════════════════
+  // SECTION 4: KNOWLEDGE CHECKS
+  // ══════════════════════════════════════════════
+
+  const KCHECKS = [
+    {
+      q: "A teammate says 'Let's expose our Confluence docs as an MCP Resource.' Is this the right primitive?",
+      options: [
+        { text: "Yes — Resources are for URI-addressable readable data", correct: true, feedback: "Correct! Resources are perfect for document content accessible by URI. Claude can read them without a function call." },
+        { text: "No — it should be a Tool because Claude needs to fetch it", correct: false, feedback: "Claude reads Resources too, without needing a function call. Resources are the ideal primitive for document content." },
+        { text: "No — it should be a Prompt", correct: false, feedback: "Prompts are templates for interactions, not data sources. Resources are what you want for document content." },
+      ]
+    },
+    {
+      q: "You find an old tutorial that configures MCP with 'transport: sse'. Should you follow it?",
+      options: [
+        { text: "Yes, SSE is the standard", correct: false, feedback: "SSE was deprecated in MCP spec 2025-03-26. New servers use Streamable HTTP for remote connections." },
+        { text: "No — SSE is deprecated, use Streamable HTTP for remote servers", correct: true, feedback: "Correct! SSE was deprecated March 26, 2025. Streamable HTTP is the current standard for remote MCP servers." },
+        { text: "SSE and Streamable HTTP are the same thing", correct: false, feedback: "They're different transports. SSE is deprecated; Streamable HTTP is the current standard for remote servers." },
+      ]
+    },
+    {
+      q: "Which field in a tool schema most directly influences when Claude decides to call that tool?",
+      options: [
+        { text: "name", correct: false, feedback: "The name is used in the function call, but Claude reads `description` to understand the tool's purpose and decide when to use it." },
+        { text: "inputSchema", correct: false, feedback: "The schema defines parameters, but `description` tells Claude what the tool is for and when it's appropriate." },
+        { text: "description", correct: true, feedback: "Correct! Claude's decision-making reads the description to match tool purpose against the current goal. Write it for Claude's reasoning." },
+      ]
+    },
+  ];
+
+  let kcheckAnswered = {};
+
+  function buildKChecks() {
+    const container = document.getElementById('kcheck-container');
+    container.innerHTML = '';
+    KCHECKS.forEach((kc, qi) => {
+      const div = document.createElement('div');
+      div.className = 'kcheck';
+      div.id = 'kcheck-' + qi;
+      const optHtml = kc.options.map((opt, oi) =>
+        `<button class="kcheck-opt" id="kopt-${qi}-${oi}" onclick="answerKCheck(${qi},${oi})" aria-label="Answer option ${oi+1} for question ${qi+1}">${opt.text}</button>`
+      ).join('');
+      div.innerHTML = `
+        <div class="kcheck-q">Q${qi+1}: ${kc.q}</div>
+        <div class="kcheck-options">${optHtml}</div>
+        <div class="kcheck-feedback" id="kf-${qi}"></div>
+      `;
+      container.appendChild(div);
+    });
+    restoreKCheckState();
+  }
+
+  function answerKCheck(qi, oi) {
+    if (kcheckAnswered[qi] !== undefined) return;
+    const opt = KCHECKS[qi].options[oi];
+    kcheckAnswered[qi] = oi;
+    kcheckScores[qi] = opt.correct;
+    localStorage.setItem(STORAGE_KEYS.kcheckScores, JSON.stringify(kcheckScores));
+
+    const btn = document.getElementById('kopt-' + qi + '-' + oi);
+    btn.classList.add(opt.correct ? 'correct' : 'wrong');
+
+    if (!opt.correct) {
+      const correctIdx = KCHECKS[qi].options.findIndex(o => o.correct);
+      document.getElementById('kopt-' + qi + '-' + correctIdx).classList.add('correct');
+    }
+
+    document.querySelectorAll(`#kcheck-${qi} .kcheck-opt`).forEach(b => b.disabled = true);
+
+    const fb = document.getElementById('kf-' + qi);
+    fb.textContent = (opt.correct ? '✅ ' : '❌ ') + opt.feedback;
+    fb.className = 'kcheck-feedback show ' + (opt.correct ? 'ok' : 'bad');
+
+    trackStreak(opt.correct);
+    if (opt.correct) {
+      awardXP(30, 'kcheck-' + qi);
+    }
+
+    evaluateKChecks();
+  }
+
+  function restoreKCheckState() {
+    Object.entries(kcheckScores).forEach(([qi, correct]) => {
+      kcheckAnswered[parseInt(qi)] = correct ? 0 : 1;
+      const qiNum = parseInt(qi);
+      const correctIdx = KCHECKS[qiNum].options.findIndex(o => o.correct);
+      if (correct) {
+        const btn = document.getElementById('kopt-' + qi + '-' + correctIdx);
+        if (btn) btn.classList.add('correct');
+      } else {
+        const firstWrong = KCHECKS[qiNum].options.findIndex(o => !o.correct);
+        const btn = document.getElementById('kopt-' + qi + '-' + firstWrong);
+        if (btn) btn.classList.add('wrong');
+        const correctBtn = document.getElementById('kopt-' + qi + '-' + correctIdx);
+        if (correctBtn) correctBtn.classList.add('correct');
+      }
+      document.querySelectorAll(`#kcheck-${qi} .kcheck-opt`).forEach(b => b.disabled = true);
+      const fb = document.getElementById('kf-' + qi);
+      if (fb) {
+        const optIdx = correct ? correctIdx : KCHECKS[qiNum].options.findIndex(o => !o.correct);
+        fb.textContent = (correct ? '✅ ' : '❌ ') + KCHECKS[qiNum].options[correct ? correctIdx : optIdx].feedback;
+        fb.className = 'kcheck-feedback show ' + (correct ? 'ok' : 'bad');
+      }
+    });
+    evaluateKChecks();
+  }
+
+  function evaluateKChecks() {
+    const answeredAll = Object.keys(kcheckAnswered).length >= KCHECKS.length;
+    const correctCount = Object.values(kcheckScores).filter(Boolean).length;
+    const scoreDiv = document.getElementById('kcheck-score');
+
+    if (scoreDiv && Object.keys(kcheckAnswered).length > 0) {
+      scoreDiv.textContent = `${correctCount}/${KCHECKS.length} correct`;
+      scoreDiv.style.color = correctCount >= 2 ? 'var(--success)' : 'var(--warning)';
+    }
+
+    if (correctCount >= 2 && !isSectionUnlocked(5)) {
+      const gate = document.getElementById('s4-gate-msg');
+      if (gate) gate.classList.add('show');
+      unlockSection(5);
+      restoreS5State();
+    }
+  }
+
+  // ══════════════════════════════════════════════
+  // BOSS CHALLENGE
+  // ══════════════════════════════════════════════
+
+  function generateArchDoc() {
+    const fields = [1,2,3,4,5].map(i => {
+      const el = document.getElementById('boss-' + i);
+      return el ? el.value.trim() : '';
+    });
+
+    const labels = [
+      'Server Architecture',
+      'Tools / Resources / Prompts',
+      'mcpServers Config',
+      'Credential Strategy',
+      'Failure Mode Handling'
+    ];
+
+    archDocContent = '════════════════════════════════════════\n';
+    archDocContent += '  MCP ARCHITECTURE DOCUMENT\n';
+    archDocContent += '  Generated: ' + new Date().toLocaleString() + '\n';
+    archDocContent += '════════════════════════════════════════\n\n';
+
+    labels.forEach((label, i) => {
+      archDocContent += `── ${label} ──\n`;
+      archDocContent += fields[i] + '\n\n';
+    });
+
+    archDocContent += '════════════════════════════════════════\n';
+    archDocContent += '  Lab 06 · MCP Server Explorer\n';
+    archDocContent += '  Agentic AI Engineering Course\n';
+    archDocContent += '════════════════════════════════════════\n';
+
+    const output = document.getElementById('arch-doc-output');
+    output.textContent = archDocContent;
+    output.classList.add('show');
+
+    const downloadDiv = document.getElementById('boss-download');
+    if (downloadDiv) downloadDiv.style.display = 'block';
+
+    const modelAnswer = document.getElementById('boss-model-answer');
+    if (modelAnswer) modelAnswer.classList.add('show');
+
+    const btn = document.getElementById('boss-generate-btn');
+    if (btn) { btn.textContent = 'Document Generated!'; btn.disabled = true; }
+
+    if (!localStorage.getItem('lab-04-boss-done')) {
+      awardXP(100, 'boss-challenge');
+      localStorage.setItem('lab-04-boss-done', '1');
+    }
+  }
+
+  function downloadArchDoc() {
+    const blob = new Blob([archDocContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'mcp-architecture-lab04.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // ══════════════════════════════════════════════
+  // RESTORE STATE ON LOAD
+  // ══════════════════════════════════════════════
+
+  function restoreS1State() {
+    if (!isSectionUnlocked(1)) return;
+    if (localStorage.getItem('lab-04-s1-pred')) {
+      const btn = document.getElementById('s1-pred-btn');
+      const ta = document.getElementById('s1-prediction');
+      if (btn) { btn.textContent = 'Prediction recorded!'; btn.disabled = true; }
+      if (ta) ta.disabled = true;
+      const reveal = document.getElementById('s1-reveal');
+      if (reveal) reveal.style.display = 'block';
+      if (!matcherBuilt) buildMatcher();
+    }
+    if (localStorage.getItem('lab-04-matcher-done')) {
+      const gate = document.getElementById('s1-gate-msg');
+      if (gate) gate.classList.add('show');
+    }
+  }
+
+  function restoreS2State() {
+    if (!isSectionUnlocked(2)) return;
+    if (localStorage.getItem('lab-04-s2-pred')) {
+      const btn = document.getElementById('s2-pred-btn');
+      const ta = document.getElementById('s2-prediction');
+      if (btn) { btn.textContent = 'Prediction recorded!'; btn.disabled = true; }
+      if (ta) ta.disabled = true;
+      const reveal = document.getElementById('s2-reveal');
+      if (reveal) reveal.style.display = 'block';
+    }
+    if (localStorage.getItem('lab-04-s2-apply-done')) {
+      const btn = document.getElementById('s2-apply-btn');
+      const answer = document.getElementById('s2-apply-answer');
+      if (btn) { btn.textContent = 'Submitted! +20 XP awarded'; btn.disabled = true; }
+      if (answer) answer.classList.add('show');
+      const gate = document.getElementById('s2-gate-msg');
+      if (gate) gate.classList.add('show');
+    }
+  }
+
+  function restoreS3State() {
+    if (!isSectionUnlocked(3)) return;
+    if (localStorage.getItem('lab-04-s3-apply-done')) {
+      const btn = document.getElementById('s3-apply-btn');
+      const answer = document.getElementById('s3-apply-answer');
+      if (btn) { btn.textContent = 'Submitted! +20 XP awarded'; btn.disabled = true; }
+      if (answer) answer.classList.add('show');
+      const gate = document.getElementById('s3-gate-msg');
+      if (gate) gate.classList.add('show');
+    }
+  }
+
+  function restoreS4State() {
+    if (!isSectionUnlocked(4)) return;
+    buildKChecks();
+  }
+
+  function restoreS5State() {
+    if (!isSectionUnlocked(5)) return;
+    checkBossReady();
+    if (localStorage.getItem('lab-04-boss-done')) {
+      const output = document.getElementById('arch-doc-output');
+      const downloadDiv = document.getElementById('boss-download');
+      const modelAnswer = document.getElementById('boss-model-answer');
+      const btn = document.getElementById('boss-generate-btn');
+      if (btn) { btn.textContent = 'Document Generated!'; btn.disabled = false; btn.style.display = 'inline-flex'; }
+      if (modelAnswer) modelAnswer.classList.add('show');
+    }
+  }
+
+  // ══════════════════════════════════════════════
+  // INIT
+  // ══════════════════════════════════════════════
+
+  function init() {
+    // Restore XP display
+    document.getElementById('xp-count').textContent = xp;
+
+    // Build nav
+    buildNavDots();
+
+    // Apply lock overlays
+    applySectionLocks();
+
+    // Restore textarea content
+    restoreTextareas();
+
+    // Restore section states
+    restoreArchClicks();
+    restoreS1State();
+    restoreS2State();
+    restoreS3State();
+    restoreS4State();
+    restoreS5State();
+
+    // Restore milestone display
+    milestoneLevel = getMilestoneLevel();
+    updateMilestoneDisplay();
+
+    // Initial progress bar
+    updateProgressBar();
+    updateActiveNavDot();
+
+    // Boss field listeners restore
+    checkBossReady();
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+
+  // ══════════════════════════════════════════════
+  // CE-04-B: WRITE A REAL TOOL SCHEMA
+  // ══════════════════════════════════════════════
+
+  function validateCE04B() {
+    var input = document.getElementById('ce-04-b-input').value.trim();
+    var validationDiv = document.getElementById('ce-04-b-validation');
+    validationDiv.style.display = 'block';
+
+    if (!input) {
+      validationDiv.style.background = '#fee2e2';
+      validationDiv.style.border = '1px solid #fca5a5';
+      validationDiv.innerHTML = '<svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Please write your schema first.';
+      if (window.lucide) lucide.createIcons({ el: validationDiv });
+      return;
+    }
+
+    var parsed;
+    try {
+      parsed = JSON.parse(input);
+    } catch(e) {
+      validationDiv.style.background = '#fee2e2';
+      validationDiv.style.border = '1px solid #fca5a5';
+      validationDiv.innerHTML = '<svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Invalid JSON: ' + e.message + '. Fix the syntax error and try again.';
+      if (window.lucide) lucide.createIcons({ el: validationDiv });
+      return;
+    }
+
+    var errors = [];
+    var warnings = [];
+
+    // Check name (snake_case)
+    if (!parsed.name) { errors.push('Missing "name" field'); }
+    else if (!/^[a-z][a-z0-9_]*$/.test(parsed.name)) { errors.push('"name" must be snake_case (lowercase, underscores only): got "' + parsed.name + '"'); }
+
+    // Check description
+    if (!parsed.description) { errors.push('Missing "description" field'); }
+    else if (parsed.description.length < 20) { errors.push('"description" is too short (need 20+ chars): got "' + parsed.description + '"'); }
+
+    // Check inputSchema
+    if (!parsed.inputSchema) { errors.push('Missing "inputSchema" field'); }
+    else {
+      var props = parsed.inputSchema.properties || {};
+      var propNames = Object.keys(props);
+
+      if (propNames.length < 4) { errors.push('Need at least 4 properties (query + 3 filters), found ' + propNames.length); }
+
+      // Check each property has type and description
+      propNames.forEach(function(pName) {
+        var p = props[pName];
+        if (!p.type && !p.enum) { errors.push('Property "' + pName + '" missing "type" field'); }
+        if (!p.description) { errors.push('Property "' + pName + '" missing "description" field'); }
+      });
+
+      // Check for enum on status-like field
+      var hasEnum = propNames.some(function(pName) { return props[pName].enum && Array.isArray(props[pName].enum); });
+      if (!hasEnum) { warnings.push('No enum property found — status filter should use "enum": ["open","in_progress","closed"]'); }
+
+      // Check required
+      if (!parsed.inputSchema.required || parsed.inputSchema.required.length === 0) {
+        errors.push('"required" array is missing or empty — at least one field should be required');
+      }
+    }
+
+    if (errors.length > 0) {
+      validationDiv.style.background = '#fee2e2';
+      validationDiv.style.border = '1px solid #fca5a5';
+      validationDiv.innerHTML = '<strong><svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Fix these issues:</strong><ul style="margin:8px 0 0;padding-left:20px;">' + errors.map(function(e) { return '<li>' + e + '</li>'; }).join('') + '</ul>';
+      if (window.lucide) lucide.createIcons({ el: validationDiv });
+      return;
+    }
+
+    // Passed validation
+    var msg = '<strong style="color:#166534;"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Schema valid! All checks passed.</strong>';
+    if (warnings.length > 0) {
+      msg += '<ul style="margin:8px 0 0;padding-left:20px;color:#92400e;">' + warnings.map(function(w) { return '<li><svg class="icon" data-lucide="triangle-alert" aria-hidden="true"></svg> ' + w + '</li>'; }).join('') + '</ul>';
+      if (window.lucide) lucide.createIcons();
+    }
+    validationDiv.style.background = '#f0fdf4';
+    validationDiv.style.border = '1px solid #86efac';
+    validationDiv.innerHTML = msg;
+
+    document.getElementById('ce-04-b-model').style.display = 'block';
+    document.getElementById('ce-04-b-model').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Award XP using the same mechanism as the rest of this lab
+    if (!localStorage.getItem('lab04_ce04b')) {
+      awardXP(30, 'ce-04-b');
+    }
+
+    localStorage.setItem('lab04_ce04b', JSON.stringify({ completed: true, input: input }));
+  }
+</script>
+
+  <!-- ─── Attribution Footer ─────────────────────────────────────────────── -->
+  <footer style="
+    margin-top: 80px;
+    padding: 32px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    text-align: center;
+    font-size: 12px;
+    color: #475569;
+    line-height: 1.8;
+  ">
+    <p>
+      &ldquo;Claude&rdquo; and &ldquo;Claude Code&rdquo; are trademarks of Anthropic, PBC.
+      This course is not affiliated with or endorsed by Anthropic.
+      All product names, logos, and trademarks are the property of their respective owners
+      and are referenced here for educational purposes only.
+    </p>
+    <p>
+      Fonts:
+      <a href="https://fonts.google.com/specimen/Inter" rel="noopener" style="color:#6366f1;">Inter</a>
+      and
+      <a href="https://fonts.google.com/specimen/JetBrains+Mono" rel="noopener" style="color:#6366f1;">JetBrains Mono</a>
+      via Google Fonts under the
+      <a href="https://scripts.sil.org/OFL" rel="noopener" style="color:#6366f1;">SIL Open Font License 1.1</a>.
+    </p>
+    <p>Course content &copy; 2026 Agentic AI Engineering Course. Educational use.</p>
+  </footer>
+
+<script>if (window.lucide) lucide.createIcons();</script>
+</body>
+</html>

@@ -1,0 +1,2072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 08 · Production Patterns | Agentic AI Engineering</title>
+  <link rel="stylesheet" href="/raven-cargo-course/assets/theme-toggle.css" />
+  <script src="/raven-cargo-course/assets/theme-toggle.js" defer></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <style>
+    /* ─── Design System ──────────────────────────────────────────── */
+    :root {
+      --bg-base:       #080d1a;
+      --bg-surface:    #0f1729;
+      --bg-raised:     #172035;
+      --bg-glass:      rgba(23,32,53,0.7);
+      --primary:       #6366f1;
+      --primary-glow:  rgba(99,102,241,0.25);
+      --secondary:     #8b5cf6;
+      --accent:        #06b6d4;
+      --accent-glow:   rgba(6,182,212,0.2);
+      --success:       #10b981;
+      --warning:       #f59e0b;
+      --danger:        #ef4444;
+      --text:          #f1f5f9;
+      --text-muted:    #94a3b8;
+      --text-dim:      #475569;
+      --border:        rgba(255,255,255,0.08);
+      --border-bright: rgba(99,102,241,0.4);
+      --radius:        16px;
+      --radius-sm:     8px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-base);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ─── Progress Bar ───────────────────────────────────────────── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 0%; transition: width 0.2s ease;
+      z-index: 1000;
+      box-shadow: 0 0 12px var(--primary);
+    }
+
+    /* ─── Nav ────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: 16px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      backdrop-filter: blur(20px);
+      background: rgba(8,13,26,0.8);
+      border-bottom: 1px solid var(--border);
+      z-index: 900;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text-muted); }
+    .nav-badge {
+      background: var(--primary); color: white;
+      padding: 3px 10px; border-radius: 100px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
+    }
+    .nav-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--bg-raised); border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+    .nav-dot.dot-locked  { background: var(--text-dim); }
+    .nav-dot.dot-active  { background: var(--primary); box-shadow: 0 0 8px var(--primary-glow); }
+    .nav-dot.dot-complete { background: var(--success); }
+
+    /* ─── Sections ───────────────────────────────────────────────── */
+    .section-block {
+      padding: 60px 0;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .section-block:last-child { border-bottom: none; }
+    .section-block.locked { user-select: none; min-height: 200px; }
+
+    /* ─── Typography ─────────────────────────────────────────────── */
+    .overline {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 12px;
+    }
+    h1 {
+      font-size: clamp(36px,5vw,60px); font-weight: 800;
+      line-height: 1.1; letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--text) 0%, var(--text-muted) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    h2 { font-size: clamp(22px,3vw,32px); font-weight: 700; letter-spacing: -0.02em; }
+    h3 { font-size: 18px; font-weight: 600; }
+    p  { color: var(--text-muted); }
+
+    /* ─── Cards ──────────────────────────────────────────────────── */
+    .card {
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      backdrop-filter: blur(10px);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .card:hover { border-color: var(--border-bright); box-shadow: 0 0 30px var(--primary-glow); }
+
+    .info-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .challenge-card {
+      background: rgba(245,158,11,0.06);
+      border: 1px solid rgba(245,158,11,0.3);
+      border-left: 3px solid var(--warning);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .check-card {
+      background: rgba(99,102,241,0.05);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .callback-card {
+      background: rgba(139,92,246,0.06);
+      border: 1px solid rgba(139,92,246,0.3);
+      border-left: 3px solid var(--secondary);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .insight-card {
+      background: rgba(16,185,129,0.06);
+      border: 1px solid rgba(16,185,129,0.3);
+      border-left: 3px solid var(--success);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: none;
+    }
+    .insight-card.revealed { display: block; animation: fadeIn 0.4s ease; }
+
+    .card-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 3px 10px;
+      border-radius: 4px; display: inline-block; margin-bottom: 12px;
+    }
+    .challenge-badge { background: rgba(245,158,11,0.15); color: var(--warning); }
+    .check-badge     { background: rgba(99,102,241,0.15); color: var(--primary); }
+    .callback-badge  { background: rgba(139,92,246,0.15); color: var(--secondary); }
+    .insight-badge   { background: rgba(16,185,129,0.15); color: var(--success); }
+    .info-badge      { background: rgba(6,182,212,0.15); color: var(--accent); }
+
+    /* ─── Code blocks ────────────────────────────────────────────── */
+    .code-block {
+      background: #0a0f1e;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px 24px;
+      font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+      font-size: 13px; line-height: 1.8;
+      overflow-x: auto; position: relative;
+      white-space: pre;
+    }
+    .code-block .comment  { color: #4b5563; }
+    .code-block .keyword  { color: #8b5cf6; }
+    .code-block .string   { color: #10b981; }
+    .code-block .fn       { color: #06b6d4; }
+    .code-block .cmd      { color: var(--warning); }
+    .code-block .key      { color: var(--accent); }
+    .code-block .val      { color: #f59e0b; }
+    .code-block .good     { color: var(--success); }
+    .code-block .bad      { color: var(--danger); }
+
+    /* ─── Buttons ────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border-radius: 10px;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      border: none; transition: all 0.2s; text-decoration: none;
+      font-family: inherit;
+    }
+    .btn-primary { background: var(--primary); color: white; box-shadow: 0 0 20px var(--primary-glow); }
+    .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 0 30px var(--primary-glow); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-ghost {
+      background: transparent; color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-amber   { background: var(--warning); color: #000; font-weight: 700; }
+    .btn-sm { padding: 8px 16px; font-size: 13px; }
+
+    /* ─── Textarea ───────────────────────────────────────────────── */
+    textarea {
+      width: 100%;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 14px; color: var(--text);
+      resize: vertical; min-height: 110px;
+      font-family: inherit; transition: border-color 0.2s;
+      line-height: 1.6;
+    }
+    textarea:focus { outline: none; border-color: var(--primary); }
+    .char-hint { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+    .char-ready { color: var(--success); }
+    label.field-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+
+    /* ─── Answer options ─────────────────────────────────────────── */
+    .answer-options { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+    .answer-option {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 18px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer; transition: all 0.2s;
+      font-size: 14px; color: var(--text-muted);
+      text-align: left; width: 100%;
+      font-family: inherit;
+    }
+    .answer-option:hover:not(.locked-opt) { border-color: var(--primary); color: var(--text); }
+    .answer-option.correct   { background: rgba(16,185,129,0.1); border-color: var(--success); color: var(--success); }
+    .answer-option.incorrect { background: rgba(239,68,68,0.1); border-color: var(--danger); color: #fca5a5; }
+    .answer-option.locked-opt { cursor: default; }
+    .opt-letter {
+      width: 24px; height: 24px; border-radius: 50%;
+      border: 2px solid currentColor;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+    }
+    .question-feedback {
+      margin-top: 12px; padding: 12px 16px;
+      border-radius: 8px; font-size: 14px; display: none;
+    }
+    .question-feedback.show { display: block; animation: fadeIn 0.3s; }
+    .fb-correct   { background: rgba(16,185,129,0.1); color: var(--success); border-left: 3px solid var(--success); }
+    .fb-incorrect { background: rgba(239,68,68,0.1); color: #fca5a5; border-left: 3px solid var(--danger); }
+
+    /* ─── Lock overlay ───────────────────────────────────────────── */
+    .lock-overlay {
+      position: absolute; inset: 0;
+      background: rgba(8,13,26,0.88);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      border-radius: var(--radius); z-index: 10;
+      gap: 12px;
+    }
+    .lock-overlay p { color: var(--text-muted); font-size: 14px; }
+
+    /* ─── XP / Streak ────────────────────────────────────────────── */
+    .xp-display {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 700; color: var(--warning);
+    }
+    .xp-toast {
+      position: fixed; top: 80px; right: 24px;
+      background: var(--warning); color: #000;
+      padding: 8px 16px; border-radius: 20px;
+      font-weight: 700; font-size: 13px;
+      animation: toastFade 2s forwards;
+      pointer-events: none; z-index: 9999;
+    }
+    @keyframes toastFade {
+      0%  { opacity:0; transform:translateY(-10px) }
+      20% { opacity:1; transform:translateY(0) }
+      80% { opacity:1 }
+      100%{ opacity:0; transform:translateY(-10px) }
+    }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+    .streak-display {
+      font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+    }
+    .streak-3 { background: rgba(245,158,11,0.15); color: var(--warning); }
+    .streak-5 { background: rgba(139,92,246,0.15); color: var(--secondary); }
+    .streak-7 { background: rgba(245,158,11,0.2);  color: gold; }
+
+    /* ─── Connect forward ────────────────────────────────────────── */
+    .connect-forward {
+      display: none; margin-top: 24px;
+      padding: 16px 20px;
+      background: rgba(6,182,212,0.06);
+      border: 1px solid rgba(6,182,212,0.2);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-sm);
+      font-size: 14px; color: var(--text-muted);
+    }
+    .connect-forward.show { display: block; animation: fadeIn 0.4s; }
+
+    /* ─── Rubric ─────────────────────────────────────────────────── */
+    .rubric { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; }
+    .rubric-level { padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-raised); }
+    .rubric-level-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+    .rubric-d { border-left: 3px solid gold; }
+    .rubric-d .rubric-level-label { color: gold; }
+    .rubric-p { border-left: 3px solid var(--primary); }
+    .rubric-p .rubric-level-label { color: var(--primary); }
+    .rubric-v { border-left: 3px solid var(--warning); }
+    .rubric-v .rubric-level-label { color: var(--warning); }
+    .rubric-b { border-left: 3px solid var(--text-dim); }
+    .rubric-b .rubric-level-label { color: var(--text-dim); }
+    .rubric-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+    /* ─── Pillar cards ───────────────────────────────────────────── */
+    .pillar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 16px; }
+    .pillar-card {
+      background: var(--bg-raised); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 20px;
+    }
+    .pillar-num {
+      font-size: 28px; font-weight: 800; line-height: 1;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 6px;
+    }
+    .pillar-label { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .pillar-desc  { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+    /* ─── Anti-pattern cards ─────────────────────────────────────── */
+    .antipattern-row {
+      display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;
+    }
+    .antipattern-bad {
+      background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25);
+      border-left: 3px solid var(--danger); border-radius: var(--radius-sm);
+      padding: 14px 18px; font-family: 'Fira Code', monospace; font-size: 13px; color: #fca5a5;
+    }
+    .antipattern-good {
+      background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.25);
+      border-left: 3px solid var(--success); border-radius: var(--radius-sm);
+      padding: 14px 18px; font-family: 'Fira Code', monospace; font-size: 13px; color: #6ee7b7;
+    }
+    .ap-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; font-family: inherit; }
+    .ap-label.bad  { color: var(--danger); }
+    .ap-label.good { color: var(--success); }
+    .ap-note { font-size: 12px; color: var(--text-muted); margin-top: 6px; font-family: inherit; }
+
+    /* ─── Secrets audit simulation ───────────────────────────────── */
+    .audit-item {
+      background: var(--bg-raised); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 16px 20px; margin-bottom: 10px;
+      cursor: pointer; transition: border-color 0.2s;
+    }
+    .audit-item:hover:not(.audited) { border-color: var(--primary); }
+    .audit-item.audited { pointer-events: none; }
+    .audit-code { font-family: 'Fira Code', monospace; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+    .audit-btns { display: flex; gap: 8px; }
+    .audit-result { margin-top: 10px; padding: 10px 14px; border-radius: 6px; font-size: 13px; display: none; }
+    .audit-result.show { display: block; animation: fadeIn 0.3s; }
+    .audit-exposed { background: rgba(239,68,68,0.1); color: #fca5a5; border-left: 3px solid var(--danger); }
+    .audit-safe    { background: rgba(16,185,129,0.1); color: #6ee7b7; border-left: 3px solid var(--success); }
+
+    /* ─── Cost calculator ────────────────────────────────────────── */
+    .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 600px) { .calc-grid { grid-template-columns: 1fr; } }
+    .calc-field { display: flex; flex-direction: column; gap: 8px; }
+    .calc-field label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+    .calc-field input[type=range] { accent-color: var(--primary); }
+    .calc-field .range-val { font-size: 14px; font-weight: 700; color: var(--warning); }
+    .calc-result {
+      margin-top: 20px; padding: 20px 24px;
+      background: var(--bg-raised); border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+    .calc-result .result-line { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+    .calc-result .result-line:last-child { border-bottom: none; font-weight: 700; color: var(--warning); }
+    .calc-formula { font-family: 'Fira Code', monospace; font-size: 12px; color: var(--text-dim); margin-top: 12px; line-height: 1.8; }
+
+    /* ─── Log display ────────────────────────────────────────────── */
+    .log-block {
+      background: #04080f; border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 20px; font-family: 'Fira Code', monospace; font-size: 12px; line-height: 1.9;
+      overflow-x: auto;
+    }
+    .log-key  { color: var(--accent); }
+    .log-str  { color: #10b981; }
+    .log-num  { color: #f59e0b; }
+    .log-punc { color: var(--text-dim); }
+
+    /* ─── Objectives card ────────────────────────────────────────── */
+    .objectives-card {
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-left: 3px solid var(--primary);
+      border-radius: var(--radius); padding: 24px;
+      text-align: left; margin-top: 32px;
+      font-size: 14px; color: var(--text-muted);
+    }
+    .objectives-card ul { padding-left: 20px; margin-top: 10px; }
+    .objectives-card li { margin-bottom: 6px; }
+
+    .milestone-display {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: rgba(6,182,212,0.08);
+      border: 1px solid rgba(6,182,212,0.25);
+      border-radius: 999px;
+      padding: 4px 10px;
+      white-space: nowrap;
+    }
+    .milestone-toast {
+      position: fixed; top: 120px; right: 24px;
+      background: var(--accent); color: #02131a;
+      padding: 8px 14px; border-radius: 20px;
+      font-weight: 700; font-size: 12px;
+      animation: toastFade 2s forwards;
+      pointer-events: none; z-index: 9999;
+    }
+
+    /* ─── Screen reader only ──────────────────────────────────────── */
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap;
+    }
+
+    /* ─── Utility ────────────────────────────────────────────────── */
+    .mt-4  { margin-top: 16px; }
+    .mt-6  { margin-top: 24px; }
+    .mt-8  { margin-top: 32px; }
+    .mb-4  { margin-bottom: 16px; }
+    .gap-3 { gap: 12px; }
+    .flex  { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .gap-2 { gap: 8px; }
+    .w-full { width: 100%; }
+    .text-sm { font-size: 13px; }
+    .text-xs { font-size: 11px; }
+    .font-mono { font-family: 'Fira Code', monospace; }
+    code {
+      font-family: 'Fira Code', monospace; font-size: 12px;
+      background: rgba(0,0,0,0.35); padding: 2px 6px; border-radius: 4px; color: var(--warning);
+    }
+    /* ─── Build Challenge Exercises ──────────────────────────── */
+    .build-challenge {
+      margin-top: 32px;
+      background: rgba(139,92,246,0.06);
+      border: 1px solid rgba(139,92,246,0.3);
+      border-top: 3px solid var(--secondary);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+    .build-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 4px 14px;
+      border-radius: 20px; display: inline-block;
+      background: var(--secondary); color: #fff;
+    }
+    .ce-xp-badge {
+      font-size: 12px; font-weight: 600; color: var(--secondary);
+      background: rgba(139,92,246,0.12); padding: 4px 12px; border-radius: 20px;
+    }
+    .btn-secondary {
+      background: var(--secondary); color: #fff;
+      box-shadow: 0 0 16px rgba(139,92,246,0.25);
+    }
+    .btn-secondary:hover { transform: translateY(-2px); box-shadow: 0 0 28px rgba(139,92,246,0.4); }
+    .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .ce-requirements {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 16px;
+      margin-bottom: 16px; font-size: 13px; color: var(--text-muted);
+    }
+    .ce-model-answer {
+      margin-top: 20px; padding: 20px;
+      background: var(--bg); border: 1px solid rgba(139,92,246,0.35);
+      border-left: 3px solid var(--secondary);
+      border-radius: var(--radius-sm);
+    }
+
+    /* ── Icon System (Lucide) ─────────────────────────────── */
+    .icon { width:16px; height:16px; display:inline-block; vertical-align:-2px; stroke-width:2; flex-shrink:0; }
+    .icon-lg { width:20px; height:20px; vertical-align:-4px; }
+    .icon-sm { width:14px; height:14px; vertical-align:-2px; }
+    .badge-label .icon, .badge-label .icon-lg { margin-right:4px; }
+    .quiz-feedback .icon { margin-right:3px; }
+
+    /* ─── Responsive: Tablet ───────────────────────────────── */
+    @media (max-width: 768px) {
+      body { padding: 0; }
+      .section-block { padding: 20px 16px; }
+      h2 { font-size: 20px; }
+      nav { padding: 8px 16px; flex-wrap: wrap; gap: 8px; }
+      .nav-brand { font-size: 12px; }
+      .code-block { font-size: 12px; padding: 14px 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .log-block { font-size: 11px; padding: 14px 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      code { font-size: 11px; }
+      .card, .info-card, .challenge-card, .check-card,
+      .callback-card, .insight-card, .build-challenge { padding: 16px; }
+      .objectives-card { padding: 18px 16px; }
+      textarea { min-height: 100px; font-size: 14px; }
+      .pillar-grid { grid-template-columns: 1fr; }
+      .rubric { grid-template-columns: 1fr; gap: 8px; }
+      .antipattern-bad, .antipattern-good { font-size: 12px; padding: 12px 14px; }
+      .audit-item { padding: 14px 16px; }
+      .audit-btns { flex-wrap: wrap; }
+      .xp-display { font-size: 12px; }
+      .milestone-display { font-size: 10px; padding: 3px 8px; }
+      .data-table { font-size: 12px; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .level-buttons { gap: 6px; }
+      .level-btn { padding: 6px 10px; font-size: 11px; }
+    }
+
+    /* ─── Responsive: Mobile ───────────────────────────────── */
+    @media (max-width: 480px) {
+      .section-block { padding: 16px 12px; }
+      h2 { font-size: 18px; }
+      nav { padding: 6px 12px; }
+      .card, .info-card, .challenge-card, .check-card,
+      .callback-card, .insight-card, .build-challenge { padding: 12px; }
+      .code-block { font-size: 11px; padding: 12px; }
+      .log-block { font-size: 10px; padding: 12px; }
+      .objectives-card { max-width: 100%; padding: 14px 12px; }
+      .pillar-card { padding: 14px; }
+      .pillar-num { font-size: 22px; }
+      .calc-result { padding: 14px 16px; }
+      .calc-result .result-line { font-size: 12px; }
+      .answer-option { padding: 10px 14px; font-size: 13px; }
+      .streak-display, .milestone-display { display: none !important; }
+    }
+  
+    pre { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    /* Focus-visible for keyboard navigation */
+    :focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    button:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+</style>
+  <link rel="stylesheet" href="/raven-cargo-course/assets/raven-labs.css" />
+  <link rel="stylesheet" href="/raven-cargo-course/assets/raven-course.css" />
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div id="progress-bar"></div>
+
+<!-- Navigation -->
+<nav>
+  <div class="nav-brand">
+    <span class="nav-badge">Day 3</span>
+    <span>Lab 08 · Production Patterns</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:20px;">
+    <div class="xp-display" aria-live="polite" aria-label="Experience points">
+      <span><svg class="icon" data-lucide="zap" aria-hidden="true"></svg></span><span id="xp-value">0</span><span style="font-size:11px;color:var(--text-muted)">XP</span>
+    </div>
+    <div id="streak-display" class="streak-display" style="display:none;"></div>
+    <div id="milestone-display" class="milestone-display" aria-live="polite" aria-label="Current milestone">Milestone: Not started</div>
+    <div style="display:flex;gap:6px;" id="nav-dots" aria-label="Lab progress" role="navigation"></div>
+  </div>
+</nav>
+
+<div id="lab-onboarding-tip" role="note" style="max-width:860px;margin:14px auto 0;padding:10px 14px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:10px;font-size:12px;color:var(--muted);">Tip: fill the section action in each block to earn XP, and use nav dots as progress signals (locked = not available yet, active = current section, complete = finished).</div>
+
+<main>
+
+<!-- Hero -->
+<div style="padding:120px 32px 60px;max-width:900px;margin:0 auto;text-align:center;">
+  <div class="overline">Day 3 · Lab 08 · Session 2</div>
+  <h1>Production Patterns</h1>
+  <p style="font-size:18px;max-width:620px;margin:16px auto 0;">
+    Your agentic workflow works on your laptop. Now it needs to work safely, affordably, and visibly — at organizational scale.
+  </p>
+  <div class="objectives-card">
+    <strong>After this lab you will be able to:</strong>
+    <ul>
+      <li>Configure <code>settings.json</code> permission scoping to enforce least-privilege for any Claude Code agent</li>
+      <li>Apply secrets management patterns that keep credentials out of prompts, logs, and version control</li>
+      <li>Estimate token cost for agentic workflows and identify the highest-leverage optimization levers</li>
+      <li>Design structured observability so any agent session can be replayed and debugged from logs alone</li>
+    </ul>
+  </div>
+  <div style="display:flex;gap:16px;justify-content:center;margin-top:32px;flex-wrap:wrap;">
+    <a href="/raven-cargo-course/lab/07" class="btn btn-ghost btn-sm">← Lab 07</a>
+    <a href="/raven-cargo-course/lab/09" class="btn btn-ghost btn-sm">Lab 09 (Capstone) →</a>
+  </div>
+</div>
+
+<!-- Sections -->
+<div id="lab-sections" style="max-width:900px;margin:0 auto;padding:0 32px 120px;">
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 0 — The Production Gap (Concept Introduction)
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-block" id="section-0">
+    <div class="overline">Section 0 · Concept Introduction</div>
+    <h2 style="margin-bottom:16px;">The Production Gap</h2>
+    <p style="margin-bottom:24px;">
+      You've built an agentic workflow that works on your laptop. Before shipping it, three questions:
+      <em>What can it touch? What can it spend? What can you see when it fails?</em>
+    </p>
+
+    <!-- Callback card: prao-loop -->
+    <div class="callback-card mt-4" role="note" aria-label="Concept callback: PRAO Loop">
+      <div class="card-badge callback-badge"><svg class="icon" data-lucide="link" aria-hidden="true"></svg> CALLBACK</div>
+      <p><strong>PRAO Loop</strong> — first introduced in <a href="/raven-cargo-course/lab/01#section-old-new" style="color:var(--secondary);">Lab 01, Section 1</a></p>
+      <p class="mt-4" style="font-size:13px;">Perceive → Reason → Act → Observe — the four-phase agentic execution cycle.</p>
+      <p class="mt-4" style="font-size:13px;color:var(--text);">
+        <strong>Production controls operate on each PRAO phase:</strong> Safety constrains Act, Cost constrains Reason depth, Observability captures every phase for audit.
+      </p>
+    </div>
+
+    <!-- Three pillars -->
+    <div class="info-card mt-6">
+      <div class="card-badge info-badge"><svg class="icon" data-lucide="clipboard" aria-hidden="true"></svg> INFO</div>
+      <h3 style="margin-bottom:16px;">The Three Production Pillars</h3>
+      <div class="pillar-grid">
+        <div class="pillar-card">
+          <div class="pillar-num">1</div>
+          <div class="pillar-label">Safety</div>
+          <div class="pillar-desc">Scope what the agent can access and act on. Permissions and sandboxing limit blast radius when things go wrong — and things always go wrong eventually.</div>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-num">2</div>
+          <div class="pillar-label">Cost</div>
+          <div class="pillar-desc">Understand and control token spend before it surprises you. Agentic workflows compound token use — one poorly scoped task can read hundreds of files.</div>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-num">3</div>
+          <div class="pillar-label">Observability</div>
+          <div class="pillar-desc">Know what happened, when, and why — especially when it fails. Without structured logs, debugging a 2am agent failure is pure guesswork.</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary mt-6" onclick="completeSection0()" id="s0-continue">
+      Continue to Permission Scoping →
+    </button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 1 — Permission Scoping (Prediction Challenge)
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-1" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete the section above to unlock</p>
+    </div>
+
+    <div class="overline">Section 1 · Prediction Challenge</div>
+    <h2 style="margin-bottom:16px;">Permission Scoping with settings.json</h2>
+    <p style="margin-bottom:24px;">
+      Claude Code's permission system uses an allow/deny approach in <code>settings.json</code>.
+      Before seeing how it works, commit to a prediction.
+    </p>
+
+    <!-- Predict -->
+    <div class="challenge-card">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> CHALLENGE — Predict</div>
+      <p style="margin-bottom:12px;font-size:14px;">
+        What dimensions would you want to control per-tool? Think about the kinds of operations an agent might perform and which ones concern you most. Write your prediction.
+      </p>
+      <label for="s1-predict" class="sr-only">Write your prediction about permission dimensions</label>
+      <textarea aria-label="e.g. which files it can write to, which shell commands it ca" id="s1-predict"
+        aria-describedby="s1-predict-hint"
+        oninput="checkPredict('s1-predict','s1-reveal-btn',15)"
+        placeholder="e.g. which files it can write to, which shell commands it can run..."
+        style="min-height:90px;"></textarea>
+      <span id="s1-predict-hint" class="char-hint" aria-live="polite">15 characters to activate reveal</span>
+      <div style="margin-top:12px;">
+        <button id="s1-reveal-btn" class="btn btn-amber" disabled onclick="revealSection1()" aria-label="Reveal the settings.json permission model">
+          Reveal Permission Model
+        </button>
+      </div>
+    </div>
+
+    <!-- Reveal (hidden until prediction) -->
+    <div id="s1-reveal" style="display:none;">
+      <div class="info-card mt-6">
+        <div class="card-badge info-badge"><svg class="icon" data-lucide="clipboard" aria-hidden="true"></svg> The settings.json Permission Model</div>
+        <p style="margin-bottom:16px;font-size:14px;">
+          Permissions live in <code>.claude/settings.json</code> (project level) or <code>~/.claude/settings.json</code> (global).
+          Project-level settings override global for that project.
+        </p>
+        <div class="code-block"><span class="punc">{</span>
+  <span class="key">"permissions"</span><span class="punc">: {</span>
+    <span class="key">"allow"</span><span class="punc">: [</span>
+      <span class="string">"Read"</span><span class="punc">,</span>          <span class="comment">// allow all reads (no path restriction)</span>
+      <span class="string">"Write(src/**)"</span><span class="punc">,</span>    <span class="comment">// allow writes only inside src/</span>
+      <span class="string">"Bash(git *)"</span><span class="punc">,</span>      <span class="comment">// allow any git subcommand</span>
+      <span class="string">"Bash(npm test)"</span>    <span class="comment">// allow exactly this command</span>
+    <span class="punc">],</span>
+    <span class="key">"deny"</span><span class="punc">: [</span>
+      <span class="string">"Bash(rm *)"</span><span class="punc">,</span>       <span class="comment">// deny all rm commands</span>
+      <span class="string">"Bash(curl *)"</span><span class="punc">,</span>     <span class="comment">// deny outbound HTTP from shell</span>
+      <span class="string">"Write(/etc/**)"</span><span class="punc">,</span>   <span class="comment">// deny writes to system dirs</span>
+      <span class="string">"Write(*.env)"</span>      <span class="comment">// deny writing to any .env file</span>
+    <span class="punc">]</span>
+  <span class="punc">}</span>
+<span class="punc">}</span></div>
+        <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--text-muted);">
+          <div><strong style="color:var(--text);">Three levels:</strong></div>
+          <div>1. <code>~/.claude/settings.json</code> — global defaults for all projects</div>
+          <div>2. <code>.claude/settings.json</code> — project-specific; overrides global for this repo</div>
+          <div>3. Inline approval prompts — runtime override for one-off operations</div>
+        </div>
+      </div>
+
+      <!-- Apply -->
+      <div class="challenge-card mt-6">
+        <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> CHALLENGE — Apply</div>
+        <p style="margin-bottom:12px;font-size:14px;">
+          Write the complete <code>permissions</code> block for a CI/CD agent that should:
+          read any file, run tests with <code>npm test</code>, commit with <code>git commit</code> and <code>git push</code>,
+          but <strong>never</strong> write to production config files (<code>*.prod.*</code>, <code>.env*</code>) or run <code>curl</code>/<code>wget</code>.
+        </p>
+        <label for="s1-apply" class="sr-only">Write the permissions block for the CI/CD agent</label>
+        <textarea aria-label="Write the permissions block for the CI/CD agent" id="s1-apply"
+          aria-describedby="s1-apply-hint"
+          oninput="checkApply('s1-apply','s1-apply-btn',40)"
+          placeholder='{ "permissions": { "allow": [...], "deny": [...] } }'
+          style="min-height:140px;font-family:monospace;"></textarea>
+        <span id="s1-apply-hint" class="char-hint" aria-live="polite">40 characters to continue</span>
+        <div style="margin-top:12px;">
+          <button id="s1-apply-btn" class="btn btn-primary" disabled onclick="showS1ApplyFeedback()" aria-label="Submit permissions block answer">
+            Submit Answer
+          </button>
+        </div>
+        <div id="s1-apply-feedback" style="display:none;" class="mt-4"></div>
+      </div>
+
+      <!-- CE-08-A: Permission Model Design (Build Challenge) -->
+<div class="build-challenge" id="ce-08-a">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+    <span class="build-badge"><svg class="icon-lg" data-lucide="hammer" aria-hidden="true"></svg> Build Challenge</span>
+    <span class="ce-xp-badge">+30 XP Bonus</span>
+  </div>
+  <h3 style="margin:0 0 8px;color:var(--text);">Challenge CE-08-A: Write Production Permission Models</h3>
+  <p style="color:var(--text-muted);margin-bottom:16px;font-size:14px;">Real production agents need precise permission models — not "allow everything" but not "block everything" either. Write the complete <code>settings.json</code> permissions block for each scenario below. Every prohibited action needs an explicit <code>deny</code> entry.</p>
+
+  <div style="display:grid;gap:20px;">
+    <!-- Scenario 1 -->
+    <div class="ce-requirements" style="margin-bottom:0;">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+        <span style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;">SCENARIO 1</span>
+        <strong style="font-size:14px;color:var(--text);">CI Test Runner</strong>
+      </div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">"A CI agent that reads source code, runs tests, and reports results. Should <strong>never write files, commit, or push</strong>."</p>
+      <label style="font-weight:600;font-size:12px;display:block;margin-bottom:4px;color:var(--text);">Your settings.json "permissions" block:</label>
+      <textarea aria-label="Write permissions for CI agent scenario" id="ce-08-a-s1" placeholder='{"allow": [...], "deny": [...]}' style="width:100%;min-height:120px;font-family:&apos;Fira Code&apos;,monospace;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;resize:vertical;"></textarea>
+    </div>
+
+    <!-- Scenario 2 -->
+    <div class="ce-requirements" style="margin-bottom:0;">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+        <span style="background:#dcfce7;color:#166534;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;">SCENARIO 2</span>
+        <strong style="font-size:14px;color:var(--text);">Documentation Agent</strong>
+      </div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">"Reads source files and writes to <code>/docs/</code> only. Can run linters but not tests. Must <strong>not touch any .env files</strong>."</p>
+      <label style="font-weight:600;font-size:12px;display:block;margin-bottom:4px;color:var(--text);">Your settings.json "permissions" block:</label>
+      <textarea aria-label="Write permissions for docs generator agent scenario" id="ce-08-a-s2" placeholder='{"allow": [...], "deny": [...]}' style="width:100%;min-height:120px;font-family:&apos;Fira Code&apos;,monospace;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;resize:vertical;"></textarea>
+    </div>
+
+    <!-- Scenario 3 -->
+    <div class="ce-requirements" style="margin-bottom:0;">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+        <span style="background:#fef3c7;color:#92400e;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;">SCENARIO 3</span>
+        <strong style="font-size:14px;color:var(--text);">Production Monitor</strong>
+      </div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">"Reads logs and queries a read-only database. <strong>Must never write anything, execute shell commands, or access source code.</strong>"</p>
+      <label style="font-weight:600;font-size:12px;display:block;margin-bottom:4px;color:var(--text);">Your settings.json "permissions" block:</label>
+      <textarea aria-label="Write permissions for production monitor agent scenario" id="ce-08-a-s3" placeholder='{"allow": [...], "deny": [...]}' style="width:100%;min-height:120px;font-family:&apos;Fira Code&apos;,monospace;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;resize:vertical;"></textarea>
+    </div>
+  </div>
+
+  <div class="ce-requirements" style="margin-top:20px;">
+    <strong style="font-size:13px;">Validation rules — your submission will be checked for:</strong>
+    <ul style="margin:8px 0 0;padding-left:20px;font-size:13px;color:var(--text-muted);">
+      <li>Valid JSON with both "allow" and "deny" arrays</li>
+      <li>Scenario 1: deny must include Write, Edit, Bash(git commit), Bash(git push)</li>
+      <li>Scenario 2: allow Write must be scoped to docs/ only — not Bash(*)</li>
+      <li>Scenario 3: deny must include Bash and Write — read-only operations only</li>
+      <li>No scenario uses <code>Bash(*)</code> in allow — that's a security red flag</li>
+    </ul>
+  </div>
+
+  <button onclick="submitCE08A()" class="btn btn-secondary" style="margin-top:16px;">Validate + Submit for +30 XP</button>
+
+  <div id="ce-08-a-result" style="display:none;margin-top:12px;padding:12px;border-radius:8px;font-size:13px;"></div>
+
+  <div id="ce-08-a-model" class="ce-model-answer" style="display:none;">
+    <strong style="color:var(--secondary,#6366f1);"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Model Answers:</strong>
+    <div style="margin-top:12px;">
+      <p style="font-weight:600;margin-bottom:6px;color:var(--text);">Scenario 1 — CI Test Runner:</p>
+      <pre class="code-block" style="margin-top:8px;">{
+  "allow": [
+    "Read",
+    "Bash(npm test)",
+    "Bash(npm run test:*)",
+    "Bash(jest *)",
+    "Bash(pytest *)"
+  ],
+  "deny": [
+    "Write",
+    "Edit",
+    "MultiEdit",
+    "Bash(git commit*)",
+    "Bash(git push*)",
+    "Bash(rm *)",
+    "Bash(sudo *)"
+  ]
+}</pre>
+      <p style="font-weight:600;margin:16px 0 6px;color:var(--text);">Scenario 2 — Documentation Agent:</p>
+      <pre class="code-block" style="margin-top:8px;">{
+  "allow": [
+    "Read",
+    "Write(docs/*)",
+    "Edit(docs/*)",
+    "Bash(eslint *)",
+    "Bash(prettier --check *)"
+  ],
+  "deny": [
+    "Write(.env*)",
+    "Edit(.env*)",
+    "Read(.env*)",
+    "Bash(npm test*)",
+    "Bash(jest*)",
+    "Bash(git push*)",
+    "Bash(git commit*)"
+  ]
+}</pre>
+      <p style="font-weight:600;margin:16px 0 6px;color:var(--text);">Scenario 3 — Production Monitor:</p>
+      <pre class="code-block" style="margin-top:8px;">{
+  "allow": [
+    "Read(logs/*)",
+    "mcp__database__query_readonly"
+  ],
+  "deny": [
+    "Write",
+    "Edit",
+    "MultiEdit",
+    "Bash",
+    "Read(src/*)",
+    "Read(.env*)"
+  ]
+}</pre>
+    </div>
+    <div style="margin-top:16px;font-size:13px;color:var(--text-muted);">
+      <strong style="color:var(--text);">Key principle:</strong> Deny lists should be <em>specific to what you've identified as dangerous</em> for each scenario — not a generic list. The CI runner doesn't need to deny Read because that's fine; it needs to deny the specific destructive operations (write, commit, push).
+    </div>
+    <div style="margin-top:16px; padding:12px 16px; background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.15); border-radius:8px; font-size:13px;">
+      <span style="color:#a78bfa; font-weight:600;">Ready for more?</span>
+      <span style="color:#94a3b8;"> This exercise prepares you for </span>
+      <a href="/challenges#mission-31-build-a-developer-productivity-toolkit-" style="color:#a78bfa; text-decoration:underline;">Mission 3.1 — Developer Productivity Toolkit</a>
+    </div>
+  </div>
+</div>
+
+      <!-- Knowledge Check Q1 -->
+      <div class="check-card mt-6" id="s1-qc">
+        <div class="card-badge check-badge">✓ KNOWLEDGE CHECK</div>
+        <p style="font-size:14px;font-weight:600;margin-bottom:4px;">
+          A student sandbox agent should read any file and write only to a <code>sandbox/</code> directory. Which config is correct?
+        </p>
+        <div class="answer-options" id="s1-opts">
+          <button class="answer-option" onclick="answerQ('s1',0)" aria-label="Option A">
+            <div class="opt-letter">A</div>
+            <div><code>{"allow": ["Read", "Write"], "deny": []}</code></div>
+          </button>
+          <button class="answer-option" onclick="answerQ('s1',1)" aria-label="Option B">
+            <div class="opt-letter">B</div>
+            <div><code>{"allow": ["Read", "Write(sandbox/**)"], "deny": ["Write"]}</code></div>
+          </button>
+          <button class="answer-option" onclick="answerQ('s1',2)" aria-label="Option C">
+            <div class="opt-letter">C</div>
+            <div><code>{"allow": ["Read"], "deny": ["Write(sandbox/**)"]} </code></div>
+          </button>
+          <button class="answer-option" onclick="answerQ('s1',3)" aria-label="Option D">
+            <div class="opt-letter">D</div>
+            <div><code>{"allow": ["Read", "Write(**)"], "deny": ["Write(production/**)"]} </code></div>
+          </button>
+        </div>
+        <div id="s1-feedback" class="question-feedback"></div>
+      </div>
+
+      <div id="s1-connect" class="connect-forward">
+        <strong style="color:var(--accent);">Next:</strong> Permissions keep the agent in bounds. But what about the secrets it needs to operate? Broad permission scoping and sloppy secret handling are the two most common production failures.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 2 — Secrets Management (Concept + Simulation)
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-2" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete the section above to unlock</p>
+    </div>
+
+    <div class="overline">Section 2 · Concept Introduction + Simulation</div>
+    <h2 style="margin-bottom:16px;">Secrets Management</h2>
+    <p style="margin-bottom:24px;">
+      Secrets passed through Claude Code prompts become part of the context window — and potentially part of logs, traces, and outputs.
+      <strong style="color:var(--danger);">Never inject secrets through prompts.</strong>
+    </p>
+
+    <!-- Anti-patterns and fixes -->
+    <div class="info-card">
+      <div class="card-badge info-badge"><svg class="icon" data-lucide="clipboard" aria-hidden="true"></svg> Three Secrets Anti-Patterns and Their Fixes</div>
+
+      <div class="antipattern-row mt-4">
+        <div class="ap-label bad"><svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Anti-Pattern 1 — Secret in prompt</div>
+        <div class="antipattern-bad">claude -p "Use API key sk-abc123 to call the OpenAI API"</div>
+        <div class="ap-note">The key is now in prompt history, logs, and potentially the model's output.</div>
+        <div class="ap-label good" style="margin-top:8px;"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Fix — Secret in environment</div>
+        <div class="antipattern-good">export OPENAI_API_KEY=sk-abc123
+claude -p "Call the OpenAI API using the key in OPENAI_API_KEY"</div>
+        <div class="ap-note">Claude Code reads environment variables; the key value never enters the prompt.</div>
+      </div>
+
+      <div class="antipattern-row">
+        <div class="ap-label bad"><svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Anti-Pattern 2 — Secret hardcoded in CLAUDE.md</div>
+        <div class="antipattern-bad"><!-- CLAUDE.md -->
+API_KEY: sk_live_abc123realkeyhere</div>
+        <div class="ap-note">CLAUDE.md is committed to version control. Every key becomes repo history forever.</div>
+        <div class="ap-label good" style="margin-top:8px;"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Fix — Reference the env var name, not the value</div>
+        <div class="antipattern-good"><!-- CLAUDE.md -->
+API keys are in environment variables. See .env.example for names.</div>
+      </div>
+
+      <div class="antipattern-row">
+        <div class="ap-label bad"><svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Anti-Pattern 3 — Inline secret in MCP config (committed)</div>
+        <div class="antipattern-bad">{ "env": { "API_KEY": "sk-real-key-here" } }</div>
+        <div class="ap-note">MCP server configs in the repo expose secrets to anyone with repo access.</div>
+        <div class="ap-label good" style="margin-top:8px;"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Fix — Environment variable substitution</div>
+        <div class="antipattern-good">{ "env": { "API_KEY": "${INTERNAL_API_KEY}" } }</div>
+        <div class="ap-note">The actual value lives in CI secrets or a local .env (gitignored). The config is safe to commit.</div>
+      </div>
+    </div>
+
+    <!-- Simulation: Secrets Audit -->
+    <div class="challenge-card mt-6">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> SIMULATION — Secrets Audit</div>
+      <p style="margin-bottom:16px;font-size:14px;">
+        Review each configuration or prompt below. Flag it as <strong>EXPOSED</strong> or <strong>SAFE</strong>.
+        You get immediate feedback on each choice.
+      </p>
+      <div id="audit-items">
+
+        <div class="audit-item" id="audit-0">
+          <div class="ap-label" style="font-size:10px;color:var(--text-dim);margin-bottom:6px;">EXAMPLE 1 — CLI prompt</div>
+          <div class="audit-code">claude -p "Update the DB schema. DB_URL=postgres://admin:hunter2@prod.db/myapp"</div>
+          <div class="audit-btns">
+            <button class="btn btn-sm" style="background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);" onclick="auditAnswer(0,'exposed')" aria-label="Mark example 1 as exposed">EXPOSED</button>
+            <button class="btn btn-sm" style="background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.3);" onclick="auditAnswer(0,'safe')" aria-label="Mark example 1 as safe">SAFE</button>
+          </div>
+          <div class="audit-result" id="audit-0-result"></div>
+        </div>
+
+        <div class="audit-item" id="audit-1">
+          <div class="ap-label" style="font-size:10px;color:var(--text-dim);margin-bottom:6px;">EXAMPLE 2 — CLI prompt</div>
+          <div class="audit-code">claude -p "Update the DB schema using the connection string in DB_URL"</div>
+          <div class="audit-btns">
+            <button class="btn btn-sm" style="background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);" onclick="auditAnswer(1,'exposed')" aria-label="Mark example 2 as exposed">EXPOSED</button>
+            <button class="btn btn-sm" style="background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.3);" onclick="auditAnswer(1,'safe')" aria-label="Mark example 2 as safe">SAFE</button>
+          </div>
+          <div class="audit-result" id="audit-1-result"></div>
+        </div>
+
+        <div class="audit-item" id="audit-2">
+          <div class="ap-label" style="font-size:10px;color:var(--text-dim);margin-bottom:6px;">EXAMPLE 3 — CLAUDE.md contents</div>
+          <div class="audit-code">STRIPE_KEY: sk_live_abc123realkey</div>
+          <div class="audit-btns">
+            <button class="btn btn-sm" style="background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);" onclick="auditAnswer(2,'exposed')" aria-label="Mark example 3 as exposed">EXPOSED</button>
+            <button class="btn btn-sm" style="background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.3);" onclick="auditAnswer(2,'safe')" aria-label="Mark example 3 as safe">SAFE</button>
+          </div>
+          <div class="audit-result" id="audit-2-result"></div>
+        </div>
+
+        <div class="audit-item" id="audit-3">
+          <div class="ap-label" style="font-size:10px;color:var(--text-dim);margin-bottom:6px;">EXAMPLE 4 — MCP server config</div>
+          <div class="audit-code">{ "env": { "API_KEY": "${INTERNAL_API_KEY}" } }</div>
+          <div class="audit-btns">
+            <button class="btn btn-sm" style="background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);" onclick="auditAnswer(3,'exposed')" aria-label="Mark example 4 as exposed">EXPOSED</button>
+            <button class="btn btn-sm" style="background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.3);" onclick="auditAnswer(3,'safe')" aria-label="Mark example 4 as safe">SAFE</button>
+          </div>
+          <div class="audit-result" id="audit-3-result"></div>
+        </div>
+
+        <div class="audit-item" id="audit-4">
+          <div class="ap-label" style="font-size:10px;color:var(--text-dim);margin-bottom:6px;">EXAMPLE 5 — Local .env file</div>
+          <div class="audit-code"># .env (listed in .gitignore)
+DATABASE_URL=postgres://admin:realpass@localhost/myapp
+STRIPE_KEY=sk_live_abc123</div>
+          <div class="audit-btns">
+            <button class="btn btn-sm" style="background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);" onclick="auditAnswer(4,'exposed')" aria-label="Mark example 5 as exposed">EXPOSED</button>
+            <button class="btn btn-sm" style="background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.3);" onclick="auditAnswer(4,'safe')" aria-label="Mark example 5 as safe">SAFE</button>
+          </div>
+          <div class="audit-result" id="audit-4-result"></div>
+        </div>
+      </div>
+      <div id="audit-score" style="display:none;margin-top:16px;padding:14px 18px;border-radius:8px;background:var(--bg-raised);border:1px solid var(--border);font-size:14px;"></div>
+    </div>
+
+    <!-- Apply -->
+    <div class="challenge-card mt-6" id="s2-apply-card" style="display:none;">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> CHALLENGE — Apply</div>
+      <p style="margin-bottom:12px;font-size:14px;">
+        Your MCP server needs a <code>DATABASE_URL</code> and a <code>SLACK_WEBHOOK_URL</code>.
+        Write the complete <code>mcpServers</code> config entry showing how to pass these safely,
+        and explain what the developer must do locally to set them up.
+      </p>
+      <label for="s2-apply" class="sr-only">Write the MCP server config and setup instructions</label>
+      <textarea aria-label="Write MCP server config and setup instructions" id="s2-apply"
+        aria-describedby="s2-apply-hint"
+        oninput="checkApply('s2-apply','s2-apply-btn',40)"
+        placeholder='{ "mcpServers": { "my-server": { "env": { ... } } } }  +  setup steps...'
+        style="min-height:150px;"></textarea>
+      <span id="s2-apply-hint" class="char-hint" aria-live="polite">40 characters to continue</span>
+      <div style="margin-top:12px;">
+        <button id="s2-apply-btn" class="btn btn-primary" disabled onclick="completeSection2()" aria-label="Submit secrets management answer">
+          Submit &amp; Continue
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 3 — Cost Optimization (Workshop + Calculator)
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-3" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete the section above to unlock</p>
+    </div>
+
+    <div class="overline">Section 3 · Interactive Workshop</div>
+    <h2 style="margin-bottom:16px;">Cost Optimization</h2>
+    <p style="margin-bottom:24px;">
+      Token cost is the unit economics of agentic AI. Understanding where tokens go lets you optimize spend without sacrificing capability.
+    </p>
+
+    <!-- Four levers -->
+    <div class="info-card">
+      <div class="card-badge info-badge"><svg class="icon" data-lucide="clipboard" aria-hidden="true"></svg> Four Cost Levers</div>
+      <div style="display:flex;flex-direction:column;gap:16px;margin-top:16px;">
+        <div style="background:var(--bg-raised);border-radius:var(--radius-sm);padding:16px;border-left:3px solid var(--primary);">
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--primary);margin-bottom:6px;">Lever 1 — Context Window Management</div>
+          <p style="font-size:13px;">Every file you ask Claude to read consumes input tokens. Target reads — don't read entire codebases. <code>Read(src/api/routes.ts)</code> is cheaper than "read the whole project."</p>
+        </div>
+        <div style="background:var(--bg-raised);border-radius:var(--radius-sm);padding:16px;border-left:3px solid var(--accent);">
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin-bottom:6px;">Lever 2 — Task Scoping</div>
+          <p style="font-size:13px;"><code>claude -p</code> for single-shot tasks is cheaper than interactive sessions for scripted workflows. Avoid open-ended sessions when the task is well-defined.</p>
+        </div>
+        <div style="background:var(--bg-raised);border-radius:var(--radius-sm);padding:16px;border-left:3px solid var(--success);">
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--success);margin-bottom:6px;">Lever 3 — Model Selection</div>
+          <p style="font-size:13px;">Use the smallest capable model per task type. Formatting, classification, and simple extraction don't need Sonnet — Haiku-class models handle them at a fraction of the cost.</p>
+        </div>
+        <div style="background:var(--bg-raised);border-radius:var(--radius-sm);padding:16px;border-left:3px solid var(--warning);">
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--warning);margin-bottom:6px;">Lever 4 — Prompt Caching</div>
+          <p style="font-size:13px;">Stable system prompts and <code>CLAUDE.md</code> content can be cached. On repeated runs, cached content costs ~90% less. A 500-line CLAUDE.md read 100×/day is a significant caching target.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cost Calculator -->
+    <div class="info-card mt-6">
+      <div class="card-badge info-badge"><svg class="icon" data-lucide="calculator" aria-hidden="true"></svg> Cost Calculator</div>
+      <p style="margin-bottom:20px;font-size:13px;">
+        Adjust the sliders to model your workflow. Costs use Claude's published pricing: $3/MTok input, $15/MTok output.
+        The formula is shown so you understand the math.
+      </p>
+
+      <div class="calc-grid">
+        <div class="calc-field">
+          <label for="calc-files">Files read per task</label>
+          <input type="range" id="calc-files" min="1" max="100" value="10" oninput="updateCalc()" aria-label="Number of files read per task">
+          <span class="range-val" id="calc-files-val">10 files</span>
+        </div>
+        <div class="calc-field">
+          <label for="calc-complexity">Task complexity</label>
+          <input type="range" id="calc-complexity" min="1" max="3" value="2" step="1" oninput="updateCalc()" aria-label="Task complexity: 1 simple, 2 moderate, 3 complex">
+          <span class="range-val" id="calc-complexity-val">Moderate</span>
+        </div>
+        <div class="calc-field">
+          <label for="calc-turns">Conversation turns</label>
+          <input type="range" id="calc-turns" min="1" max="20" value="3" oninput="updateCalc()" aria-label="Number of conversation turns">
+          <span class="range-val" id="calc-turns-val">3 turns</span>
+        </div>
+        <div class="calc-field">
+          <label for="calc-runs">Runs per day</label>
+          <input type="range" id="calc-runs" min="1" max="200" value="10" oninput="updateCalc()" aria-label="Number of runs per day">
+          <span class="range-val" id="calc-runs-val">10 runs/day</span>
+        </div>
+      </div>
+
+      <div class="calc-result" id="calc-result" style="margin-top:20px;">
+        <div class="result-line"><span>Input tokens / run</span><span id="cr-input-per-run">—</span></div>
+        <div class="result-line"><span>Output tokens / run</span><span id="cr-output-per-run">—</span></div>
+        <div class="result-line"><span>Cost / run</span><span id="cr-cost-per-run">—</span></div>
+        <div class="result-line"><span>Cost / day</span><span id="cr-cost-per-day">—</span></div>
+        <div class="result-line"><span style="color:var(--warning);">Estimated monthly cost</span><span id="cr-cost-monthly">—</span></div>
+      </div>
+
+      <div class="calc-formula" id="calc-formula" style="margin-top:12px;"></div>
+    </div>
+
+    <!-- Knowledge Check Q2 -->
+    <div class="check-card mt-6">
+      <div class="card-badge check-badge">✓ KNOWLEDGE CHECK</div>
+      <p style="font-size:14px;font-weight:600;margin-bottom:4px;">
+        Which optimization has the HIGHEST impact on cost for a workflow that runs the same 500-line CLAUDE.md every session?
+      </p>
+      <div class="answer-options" id="s3-opts">
+        <button class="answer-option" onclick="answerQ('s3',0)" aria-label="Option A: Reducing output length">
+          <div class="opt-letter">A</div>
+          <div>Reducing output length</div>
+        </button>
+        <button class="answer-option" onclick="answerQ('s3',1)" aria-label="Option B: Prompt caching for CLAUDE.md">
+          <div class="opt-letter">B</div>
+          <div>Prompt caching for the stable CLAUDE.md content</div>
+        </button>
+        <button class="answer-option" onclick="answerQ('s3',2)" aria-label="Option C: Using claude -p instead of interactive mode">
+          <div class="opt-letter">C</div>
+          <div>Using <code>claude -p</code> instead of interactive mode</div>
+        </button>
+        <button class="answer-option" onclick="answerQ('s3',3)" aria-label="Option D: Reducing CLAUDE.md to 250 lines">
+          <div class="opt-letter">D</div>
+          <div>Reducing CLAUDE.md to 250 lines</div>
+        </button>
+      </div>
+      <div id="s3-feedback" class="question-feedback"></div>
+    </div>
+
+    <div id="s3-connect" class="connect-forward">
+      <strong style="color:var(--accent);">Next:</strong> You can control cost before it surprises you. But when the unexpected does happen — a 2am failure, a wrong file modified — you need observability to know exactly what the agent did.
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 4 — Observability (Concept + Apply)
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-4" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete the section above to unlock</p>
+    </div>
+
+    <div class="overline">Section 4 · Concept Introduction + Apply</div>
+    <h2 style="margin-bottom:16px;">Observability</h2>
+    <p style="margin-bottom:24px;">
+      When an agentic workflow fails in production at 2am, you have one question:
+      <em>what exactly did the agent do?</em> Without observability, you're guessing.
+    </p>
+
+    <!-- Three layers -->
+    <div class="info-card">
+      <div class="card-badge info-badge"><svg class="icon" data-lucide="clipboard" aria-hidden="true"></svg> Three Observability Layers</div>
+      <div style="display:flex;flex-direction:column;gap:16px;margin-top:16px;">
+        <div style="background:var(--bg-raised);border-radius:var(--radius-sm);padding:16px;border-left:3px solid var(--primary);">
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--primary);margin-bottom:6px;">Layer 1 — Structured Logging</div>
+          <p style="font-size:13px;">Log every tool call with timestamp, tool name, arguments, result, and duration. Use JSON format for queryability — structured logs can be filtered, aggregated, and searched with standard tooling.</p>
+        </div>
+        <div style="background:var(--bg-raised);border-radius:var(--radius-sm);padding:16px;border-left:3px solid var(--accent);">
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin-bottom:6px;">Layer 2 — Trace Correlation</div>
+          <p style="font-size:13px;">Assign a <code>trace_id</code> to each agent session. Every log entry carries the trace ID. Lets you reconstruct a complete session from scattered log lines across multiple files or services.</p>
+        </div>
+        <div style="background:var(--bg-raised);border-radius:var(--radius-sm);padding:16px;border-left:3px solid var(--success);">
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--success);margin-bottom:6px;">Layer 3 — Human Audit Trail</div>
+          <p style="font-size:13px;">For approval-gate workflows, log what was shown to the human and what they approved or rejected. This is the legal and compliance layer — it proves a human was in the loop.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Log example -->
+    <div class="info-card mt-6">
+      <div class="card-badge info-badge"><svg class="icon" data-lucide="clipboard" aria-hidden="true"></svg> Structured Log Entry — Example</div>
+      <p style="margin-bottom:12px;font-size:13px;">Every tool call produces one structured log entry. The <code>trace_id</code> links all entries for a session.</p>
+      <div class="log-block">
+<span class="log-punc">{</span>
+  <span class="log-key">"trace_id"</span><span class="log-punc">:    </span><span class="log-str">"ag-7f3a9c"</span><span class="log-punc">,</span>
+  <span class="log-key">"timestamp"</span><span class="log-punc">:   </span><span class="log-str">"2026-03-15T14:23:01Z"</span><span class="log-punc">,</span>
+  <span class="log-key">"tool"</span><span class="log-punc">:        </span><span class="log-str">"Write"</span><span class="log-punc">,</span>
+  <span class="log-key">"args"</span><span class="log-punc">: {</span>
+    <span class="log-key">"path"</span><span class="log-punc">:           </span><span class="log-str">"src/api/routes.ts"</span><span class="log-punc">,</span>
+    <span class="log-key">"content_length"</span><span class="log-punc">: </span><span class="log-num">847</span>
+  <span class="log-punc">},</span>
+  <span class="log-key">"duration_ms"</span><span class="log-punc">: </span><span class="log-num">234</span><span class="log-punc">,</span>
+  <span class="log-key">"status"</span><span class="log-punc">:      </span><span class="log-str">"success"</span><span class="log-punc">,</span>
+  <span class="log-key">"session_id"</span><span class="log-punc">:  </span><span class="log-str">"ses-4b2e1a"</span>
+<span class="log-punc">}</span></div>
+    </div>
+
+    <!-- Apply -->
+    <div class="challenge-card mt-6">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> CHALLENGE — Apply</div>
+      <p style="margin-bottom:12px;font-size:14px;">
+        An agent ran overnight and modified 14 files. In the morning, a test suite is failing.
+        You have the structured logs with trace_id <code>ag-7f3a9c</code>.
+        Walk through exactly how you'd use the logs to diagnose which file change broke which test.
+      </p>
+      <label for="s4-apply" class="sr-only">Describe how you would use structured logs to diagnose the failure</label>
+      <textarea aria-label="Walk through your diagnostic steps using the structured log" id="s4-apply"
+        aria-describedby="s4-apply-hint"
+        oninput="checkApply('s4-apply','s4-apply-btn',40)"
+        placeholder="Walk through your diagnostic steps using the structured log data..."
+        style="min-height:130px;"></textarea>
+      <span id="s4-apply-hint" class="char-hint" aria-live="polite">40 characters to continue</span>
+      <div style="margin-top:12px;">
+        <button id="s4-apply-btn" class="btn btn-primary" disabled onclick="showS4Insight()" aria-label="Submit observability apply answer">
+          Submit Answer
+        </button>
+      </div>
+    </div>
+
+    <!-- Insight card (hidden until apply) -->
+    <div class="insight-card mt-6" id="s4-insight">
+      <div class="card-badge insight-badge"><svg class="icon" data-lucide="lightbulb" aria-hidden="true"></svg> INSIGHT</div>
+      <p style="font-size:14px;">
+        <strong style="color:var(--success);">Structured logs answer "what happened". Traces answer "in what sequence".</strong>
+        Together they let you replay any agent session deterministically — the foundation of incident response for agentic systems.
+      </p>
+      <p class="mt-4" style="font-size:13px;">
+        The diagnostic flow: filter logs by <code>trace_id</code> → sort by <code>timestamp</code> → identify all <code>Write</code> tool calls
+        → cross-reference the modified files with the failing test paths → inspect the <code>args.content_length</code> and adjacent log entries
+        for the specific write that correlates with the first test failure.
+      </p>
+      <div style="margin-top:16px;">
+        <button class="btn btn-primary" onclick="completeSection4()" aria-label="Continue to synthesis section">
+          Continue to Synthesis →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 5 — Synthesis (Knowledge Checks)
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-5" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete the section above to unlock</p>
+    </div>
+
+    <div class="overline">Section 5 · Synthesis</div>
+    <h2 style="margin-bottom:16px;">Putting It All Together</h2>
+    <p style="margin-bottom:24px;">
+      Two final questions that integrate all three production pillars.
+    </p>
+
+    <!-- Q3 -->
+    <div class="check-card">
+      <div class="card-badge check-badge">✓ KNOWLEDGE CHECK — Q3</div>
+      <p style="font-size:14px;font-weight:600;margin-bottom:4px;">
+        A production agent has been given broad <code>Write(**)</code> permissions. Why is this a problem even if you trust the agent?
+      </p>
+      <div class="answer-options" id="s5a-opts">
+        <button class="answer-option" onclick="answerQ('s5a',0)" aria-label="Option A">
+          <div class="opt-letter">A</div>
+          <div>It will always write to wrong files</div>
+        </button>
+        <button class="answer-option" onclick="answerQ('s5a',1)" aria-label="Option B">
+          <div class="opt-letter">B</div>
+          <div>Broad permissions violate least privilege — the agent can cause damage in edge cases, under unexpected inputs, or if the system is compromised</div>
+        </button>
+        <button class="answer-option" onclick="answerQ('s5a',2)" aria-label="Option C">
+          <div class="opt-letter">C</div>
+          <div>Claude Code doesn't support <code>Write(**)</code></div>
+        </button>
+        <button class="answer-option" onclick="answerQ('s5a',3)" aria-label="Option D">
+          <div class="opt-letter">D</div>
+          <div>It increases token cost</div>
+        </button>
+      </div>
+      <div id="s5a-feedback" class="question-feedback"></div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="check-card mt-6" id="s5b-card" style="display:none;">
+      <div class="card-badge check-badge">✓ KNOWLEDGE CHECK — Q4</div>
+      <p style="font-size:14px;font-weight:600;margin-bottom:4px;">
+        Which observability artifact is MOST valuable for debugging a multi-step agent failure?
+      </p>
+      <div class="answer-options" id="s5b-opts">
+        <button class="answer-option" onclick="answerQ('s5b',0)" aria-label="Option A">
+          <div class="opt-letter">A</div>
+          <div>The final output the agent produced</div>
+        </button>
+        <button class="answer-option" onclick="answerQ('s5b',1)" aria-label="Option B">
+          <div class="opt-letter">B</div>
+          <div>A structured log trace with every tool call, its arguments, and its result in order</div>
+        </button>
+        <button class="answer-option" onclick="answerQ('s5b',2)" aria-label="Option C">
+          <div class="opt-letter">C</div>
+          <div>The system prompt used for the session</div>
+        </button>
+        <button class="answer-option" onclick="answerQ('s5b',3)" aria-label="Option D">
+          <div class="opt-letter">D</div>
+          <div>The total token count for the session</div>
+        </button>
+      </div>
+      <div id="s5b-feedback" class="question-feedback"></div>
+    </div>
+
+    <div id="s5-connect" class="connect-forward">
+      <strong style="color:var(--accent);">Capstone Challenge unlocked:</strong> You're ready to write a complete production deployment specification for a real-world agentic workflow.
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 6 — Capstone Challenge
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-6" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete all sections above to unlock</p>
+    </div>
+
+    <div class="overline">Capstone Challenge · Synthesis</div>
+    <h2 style="margin-bottom:8px;">Production Deployment Specification</h2>
+    <div style="margin-bottom:24px;padding:16px 20px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:var(--radius-sm);font-size:14px;color:var(--text-muted);">
+      <strong style="color:var(--warning);">Context:</strong> You're deploying an automated PR review agent to production.
+      It will run on every PR in your company's monorepo — 50+ PRs per day, touching 200+ files each.
+      The agent reads diffs, leaves review comments via GitHub API, and never merges or pushes directly.
+    </div>
+
+    <div class="challenge-card">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> BOSS CHALLENGE</div>
+      <p style="font-size:14px;margin-bottom:16px;">Write your complete production deployment specification covering all four areas:</p>
+      <ol style="font-size:14px;color:var(--text-muted);padding-left:20px;line-height:2;">
+        <li><strong style="color:var(--text);">settings.json permissions block</strong> — what can it read, write, execute?</li>
+        <li><strong style="color:var(--text);">Secrets handling</strong> — what secrets does it need and how are they passed safely?</li>
+        <li><strong style="color:var(--text);">Cost estimate reasoning</strong> — at 50 PRs/day, ~20 files per PR on average, what's your monthly estimate?</li>
+        <li><strong style="color:var(--text);">Observability design</strong> — what do you log, how do you alert on failures, what's your incident response entry?</li>
+      </ol>
+      <div style="margin-top:16px;">
+        <label for="boss-challenge" class="sr-only">Write your complete production deployment specification</label>
+        <textarea aria-label="1. Permissions: { &quot;allow&quot;: [...], &quot;deny&quot;: [...] } 2. Sec" id="boss-challenge"
+          aria-describedby="boss-hint"
+          oninput="checkApply('boss-challenge','boss-submit',80)"
+          placeholder="1. Permissions: { &quot;allow&quot;: [...], &quot;deny&quot;: [...] }&#10;2. Secrets: GITHUB_TOKEN in env var referenced as ${GITHUB_TOKEN} in MCP config...&#10;3. Cost: 50 PRs × 20 files × 2,000 tokens/file = ...&#10;4. Observability: JSON log per PR with trace_id, alert on error_rate > 5% ..."
+          style="min-height:220px;"></textarea>
+        <span id="boss-hint" class="char-hint" aria-live="polite">80 characters to submit</span>
+        <div style="margin-top:12px;">
+          <button id="boss-submit" class="btn btn-amber" disabled onclick="showBossAnswer()" aria-label="Submit boss challenge and reveal model answer">
+            Submit &amp; See Model Answer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Model Answer (hidden until submit) -->
+    <div id="boss-model" style="display:none;">
+      <div class="info-card mt-6">
+        <div class="card-badge info-badge"><svg class="icon" data-lucide="clipboard" aria-hidden="true"></svg> Model Answer</div>
+
+        <div style="margin-bottom:20px;">
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--primary);margin-bottom:8px;">1. Permissions — Read-only, safe git commands only</div>
+          <div class="code-block"><span class="punc">{</span>
+  <span class="key">"permissions"</span><span class="punc">: {</span>
+    <span class="key">"allow"</span><span class="punc">: [</span>
+      <span class="string">"Read"</span><span class="punc">,</span>              <span class="comment">// read any file (diff inspection)</span>
+      <span class="string">"Bash(git diff *)"</span><span class="punc">,</span>  <span class="comment">// read-only git operations</span>
+      <span class="string">"Bash(git log *)"</span>    <span class="comment">// read commit history</span>
+    <span class="punc">],</span>
+    <span class="key">"deny"</span><span class="punc">: [</span>
+      <span class="string">"Write"</span><span class="punc">,</span>             <span class="comment">// no file writes — review only</span>
+      <span class="string">"Bash(git push *)"</span><span class="punc">,</span>  <span class="comment">// cannot push anything</span>
+      <span class="string">"Bash(git merge *)"</span><span class="punc">,</span> <span class="comment">// cannot merge</span>
+      <span class="string">"Bash(rm *)"</span>         <span class="comment">// no deletions</span>
+    <span class="punc">]</span>
+  <span class="punc">}</span>
+<span class="punc">}</span></div>
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin-bottom:8px;">2. Secrets Handling</div>
+          <div class="code-block"><span class="comment">// MCP server config (safe to commit):</span>
+<span class="punc">{</span>
+  <span class="key">"mcpServers"</span><span class="punc">: {</span>
+    <span class="key">"github"</span><span class="punc">: {</span>
+      <span class="key">"env"</span><span class="punc">: {</span>
+        <span class="key">"GITHUB_TOKEN"</span><span class="punc">: </span><span class="string">"${GITHUB_TOKEN}"</span>
+      <span class="punc">}</span>
+    <span class="punc">}</span>
+  <span class="punc">}</span>
+<span class="punc">}</span>
+
+<span class="comment">// Developer setup: export GITHUB_TOKEN=ghp_... in ~/.zshrc or .env (gitignored)</span>
+<span class="comment">// CI: store in CI secrets vault; inject as environment variable at runtime</span>
+<span class="comment">// NEVER: pass token in -p prompt, CLAUDE.md, or any committed config</span></div>
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--success);margin-bottom:8px;">3. Cost Estimate</div>
+          <div style="background:var(--bg-raised);border-radius:var(--radius-sm);padding:16px;font-size:13px;color:var(--text-muted);line-height:2;">
+            <div>50 PRs/day × 20 files/PR × 2,000 tokens/file = <strong style="color:var(--text);">2,000,000 input tokens/day</strong></div>
+            <div>Reasoning per PR: ~3,000 tokens × 50 = <strong style="color:var(--text);">150,000 reasoning tokens/day</strong></div>
+            <div>Output (comments): ~500 tokens × 50 = <strong style="color:var(--text);">25,000 output tokens/day</strong></div>
+            <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
+              Input cost: 2.15M × $3/MTok = <strong style="color:var(--text);">$6.45/day</strong><br>
+              Output cost: 25K × $15/MTok = <strong style="color:var(--text);">$0.38/day</strong><br>
+              <strong style="color:var(--warning);">Total: ~$6.83/day → ~$205/month uncached</strong><br>
+              With prompt caching on the system prompt: <strong style="color:var(--success);">~$125/month (40% reduction)</strong>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--warning);margin-bottom:8px;">4. Observability Design</div>
+          <div style="background:var(--bg-raised);border-radius:var(--radius-sm);padding:16px;font-size:13px;color:var(--text-muted);line-height:1.9;">
+            <strong style="color:var(--text);">Log per PR:</strong> JSON with <code>trace_id</code>, PR number, files_checked, findings_count, duration_ms, status<br>
+            <strong style="color:var(--text);">Alert threshold:</strong> error_rate &gt; 5% in any 1-hour window → PagerDuty alert to on-call<br>
+            <strong style="color:var(--text);">Incident playbook entry:</strong>
+            <ol style="margin-top:8px;padding-left:20px;">
+              <li>Find failing PR's <code>trace_id</code> in the error alert</li>
+              <li>Filter structured logs by <code>trace_id</code>, sort by timestamp</li>
+              <li>Identify the tool call with <code>status: "error"</code></li>
+              <li>Check <code>args</code> on that entry — which file or API call failed?</li>
+              <li>Verify GitHub token validity if tool is the GitHub MCP call</li>
+              <li>Check rate limit headers in the log entry's result object</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <!-- Self-evaluation rubric -->
+      <div class="info-card mt-6">
+        <div class="card-badge info-badge"><svg class="icon" data-lucide="bar-chart-2" aria-hidden="true"></svg> Self-Evaluation Rubric</div>
+        <p style="font-size:13px;margin-bottom:16px;">Compare your answer to the model. Score yourself honestly.</p>
+        <div class="rubric">
+          <div class="rubric-level rubric-d">
+            <div class="rubric-level-label">Distinguished</div>
+            <div class="rubric-desc">All 4 components present. Permissions are read-only correctly (no Write). Cost math is shown with the multiplication. Observability has a specific alert threshold and numbered playbook steps.</div>
+          </div>
+          <div class="rubric-level rubric-p">
+            <div class="rubric-level-label">Proficient</div>
+            <div class="rubric-desc">3 of 4 components. Permissions restrict writes. Cost estimate shown even if rough. Observability mentions structured logging.</div>
+          </div>
+          <div class="rubric-level rubric-v">
+            <div class="rubric-level-label">Developing</div>
+            <div class="rubric-desc">2 of 4 components with specifics. Or all 4 present but permissions still allow Write, or cost is a guess with no math shown.</div>
+          </div>
+          <div class="rubric-level rubric-b">
+            <div class="rubric-level-label">Beginning</div>
+            <div class="rubric-desc">1 component or all answers vague / generic. No permission patterns shown. No cost reasoning.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:24px;">
+        <button class="btn btn-success" onclick="completeLab()" aria-label="Complete lab and see final score">
+          Complete Lab 08 →
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /lab-sections -->
+
+<!-- Completion Banner -->
+<div id="completion-banner" style="display:none;background:linear-gradient(135deg,var(--primary),var(--secondary));padding:60px 32px;text-align:center;margin-top:60px;">
+  <div style="font-size:48px;margin-bottom:16px;"><svg class="icon-lg" data-lucide="party-popper" aria-hidden="true"></svg></div>
+  <h2 style="font-size:32px;font-weight:800;margin-bottom:12px;">Lab 08 Complete!</h2>
+  <p style="color:rgba(255,255,255,0.8);margin-bottom:4px;">You can now safely scope, price, and instrument agentic workflows for production.</p>
+  <p style="color:rgba(255,255,255,0.8);margin-bottom:8px;">Final XP: <strong id="final-xp">0</strong></p>
+  <div style="display:flex;gap:16px;justify-content:center;margin-top:32px;flex-wrap:wrap;">
+    <button onclick="exportReflections()" class="btn" style="background:white;color:var(--primary);font-weight:700;">
+      Export Notes
+    </button>
+    <a href="/raven-cargo-course/lab/09" class="btn" style="text-decoration:none;background:rgba(255,255,255,0.15);color:white;font-weight:700;">
+      Continue to Lab 09 (Capstone) →
+    </a>
+  </div>
+</div>
+
+<script>
+/* ─── State ──────────────────────────────────────────────────── */
+const LAB_KEY = 'lab-08';
+const SECTION_COUNT = 7; // 0–6
+let xp = 0, streak = 0;
+let sectionComplete = new Array(SECTION_COUNT).fill(false);
+
+  let milestoneLevel = 0;
+  const MILESTONES = [
+    { section: 1, label: 'Threat Model' },
+    { section: 2, label: 'Permission Config' },
+    { section: 3, label: 'Injection Defense' },
+    { section: 4, label: 'Capstone Complete' }
+  ];
+
+  function getMilestoneLevel() {
+    let level = 0;
+    MILESTONES.forEach(function(m, idx) {
+      if (sectionComplete[m.section]) level = idx + 1;
+    });
+    return level;
+  }
+
+  function updateMilestoneDisplay() {
+    const el = document.getElementById('milestone-display');
+    if (!el) return;
+    if (milestoneLevel === 0) {
+      el.textContent = 'Milestone: Not started';
+      return;
+    }
+    const entry = MILESTONES[milestoneLevel - 1];
+    el.textContent = 'Milestone ' + milestoneLevel + ': ' + entry.label;
+  }
+
+  function announceMilestone(level) {
+    const entry = MILESTONES[level - 1];
+    const toast = document.createElement('div');
+    toast.className = 'milestone-toast';
+    toast.textContent = 'Milestone reached: ' + entry.label;
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.remove(); }, 2200);
+  }
+
+/* ─── XP ─────────────────────────────────────────────────────── */
+function awardXP(amount, reason) {
+  xp += amount;
+  localStorage.setItem(`${LAB_KEY}-xp`, xp.toString());
+  updateXPDisplay();
+  showXPToast(amount, reason);
+}
+
+function updateXPDisplay() {
+  document.getElementById('xp-value').textContent = xp;
+  const fe = document.getElementById('final-xp');
+  if (fe) fe.textContent = xp;
+}
+
+function showXPToast(amount, reason) {
+  const t = document.createElement('div');
+  t.className = 'xp-toast';
+  t.textContent = `+${amount} XP — ${reason}`;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2100);
+}
+
+/* ─── Streak ─────────────────────────────────────────────────── */
+function updateStreak(correct) {
+  if (correct) {
+    streak++;
+    const el = document.getElementById('streak-display');
+    if (streak >= 7) { el.style.display='block'; el.className='streak-display streak-7'; el.textContent=`${streak} streak`; if(streak===7||streak===10) awardXP(25,'streak bonus'); }
+    else if (streak >= 5) { el.style.display='block'; el.className='streak-display streak-5'; el.textContent=`${streak} streak`; if(streak===5) awardXP(25,'streak bonus'); }
+    else if (streak >= 3) { el.style.display='block'; el.className='streak-display streak-3'; el.textContent=`${streak} streak`; if(streak===3) awardXP(25,'streak bonus'); }
+  } else {
+    streak = 0;
+    document.getElementById('streak-display').style.display = 'none';
+  }
+}
+
+/* ─── Section unlock ─────────────────────────────────────────── */
+function markSectionComplete(idx) {
+  if (sectionComplete[idx]) return;
+  sectionComplete[idx] = true;
+  localStorage.setItem(`${LAB_KEY}-s${idx}`, '1');
+  checkSectionUnlock(idx + 1);
+  updateNavDots();
+  if (idx === SECTION_COUNT - 1) completeLab();
+    const nextMilestoneLevel = getMilestoneLevel();
+    if (nextMilestoneLevel > milestoneLevel) {
+      milestoneLevel = nextMilestoneLevel;
+      updateMilestoneDisplay();
+      announceMilestone(milestoneLevel);
+    } else {
+      updateMilestoneDisplay();
+    }
+}
+
+function checkSectionUnlock(idx) {
+  if (idx >= SECTION_COUNT) return;
+  const sec = document.getElementById(`section-${idx}`);
+  if (!sec) return;
+  const allPrior = sectionComplete.slice(0, idx).every(Boolean);
+  if (allPrior) {
+    sec.classList.remove('locked');
+    const ov = sec.querySelector('.lock-overlay');
+    if (ov) ov.remove();
+  }
+}
+
+/* ─── Prediction gate ────────────────────────────────────────── */
+let xpAwardedPredict = {};
+function checkPredict(taId, btnId, min) {
+  const ta = document.getElementById(taId);
+  const btn = document.getElementById(btnId);
+  const hint = document.getElementById(taId + '-hint');
+  const rem = Math.max(0, min - ta.value.trim().length);
+  if (hint) hint.textContent = rem > 0 ? `${rem} more characters to activate reveal` : '✓ Ready to reveal';
+  if (hint) hint.className = 'char-hint' + (rem === 0 ? ' char-ready' : '');
+  btn.disabled = rem > 0;
+  if (rem === 0 && !xpAwardedPredict[taId]) { xpAwardedPredict[taId] = true; awardXP(10, 'prediction committed'); }
+  saveReflection(taId, ta.value);
+}
+
+/* ─── Apply gate ─────────────────────────────────────────────── */
+let xpAwardedApply = {};
+function checkApply(taId, btnId, min) {
+  const ta = document.getElementById(taId);
+  const btn = document.getElementById(btnId);
+  const hint = document.getElementById(taId + '-hint');
+  const rem = Math.max(0, min - ta.value.trim().length);
+  if (hint) hint.textContent = rem > 0 ? `${rem} more characters to continue` : '✓ Ready';
+  if (hint) hint.className = 'char-hint' + (rem === 0 ? ' char-ready' : '');
+  btn.disabled = rem > 0;
+  if (rem === 0 && !xpAwardedApply[taId]) { xpAwardedApply[taId] = true; awardXP(20, 'apply completed'); }
+  saveReflection(taId, ta.value);
+}
+
+/* ─── Persistence ────────────────────────────────────────────── */
+function saveReflection(key, value) {
+  localStorage.setItem(`${LAB_KEY}-${key}`, value);
+}
+
+function loadAllReflections() {
+  document.querySelectorAll('textarea[id]').forEach(ta => {
+    const saved = localStorage.getItem(`${LAB_KEY}-${ta.id}`);
+    if (saved) { ta.value = saved; }
+  });
+  for (let i = 0; i < SECTION_COUNT; i++) {
+    if (localStorage.getItem(`${LAB_KEY}-s${i}`) === '1') sectionComplete[i] = true;
+  }
+  xp = parseInt(localStorage.getItem(`${LAB_KEY}-xp`) || '0');
+  updateXPDisplay();
+  for (let i = 0; i < SECTION_COUNT; i++) checkSectionUnlock(i);
+  updateNavDots();
+  // Restore any revealed state
+  restoreRevealedState();
+}
+
+function restoreRevealedState() {
+  // S1 reveal
+  if (sectionComplete[0] && localStorage.getItem(`${LAB_KEY}-s1-predict-done`) === '1') {
+    document.getElementById('s1-reveal').style.display = 'block';
+  }
+  // S4 insight
+  if (sectionComplete[3] && localStorage.getItem(`${LAB_KEY}-s4-insight`) === '1') {
+    document.getElementById('s4-insight').classList.add('revealed');
+  }
+  // Boss model
+  if (sectionComplete[5] && localStorage.getItem(`${LAB_KEY}-boss-submitted`) === '1') {
+    document.getElementById('boss-model').style.display = 'block';
+  }
+  // S2 apply card
+  if (localStorage.getItem(`${LAB_KEY}-audit-done`) === '1') {
+    document.getElementById('s2-apply-card').style.display = 'block';
+  }
+  // S5b card
+  if (localStorage.getItem(`${LAB_KEY}-s5a-done`) === '1') {
+    document.getElementById('s5b-card').style.display = 'block';
+  }
+  // Re-trigger button states for loaded textareas
+  document.querySelectorAll('textarea[id]').forEach(ta => {
+    if (!ta.value) return;
+    const oninput = ta.getAttribute('oninput');
+    if (oninput) ta.dispatchEvent(new Event('input'));
+  });
+}
+
+/* ─── Export ─────────────────────────────────────────────────── */
+function exportReflections() {
+  let content = `Lab 08: Production Patterns — ${new Date().toLocaleDateString()}\nXP Earned: ${xp}\n\n`;
+  document.querySelectorAll('textarea[id]').forEach(ta => {
+    if (ta.value.trim()) content += `[${ta.id}]\n${ta.value.trim()}\n\n`;
+  });
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `${LAB_KEY}-reflections.txt`;
+  document.body.appendChild(a); a.click();
+  URL.revokeObjectURL(url); document.body.removeChild(a);
+}
+
+/* ─── Nav Dots ───────────────────────────────────────────────── */
+function updateNavDots() {
+  const container = document.getElementById('nav-dots');
+  if (!container) return;
+  if (!container.children.length) {
+    for (let i = 0; i < SECTION_COUNT; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'nav-dot';
+      dot.setAttribute('aria-label', `Section ${i + 1}`);
+      container.appendChild(dot);
+    }
+  }
+  [...container.children].forEach((dot, i) => {
+    dot.classList.remove('dot-locked', 'dot-active', 'dot-complete');
+    if (sectionComplete[i]) dot.classList.add('dot-complete');
+    else if (i === sectionComplete.indexOf(false)) dot.classList.add('dot-active');
+    else dot.classList.add('dot-locked');
+  });
+}
+
+/* ─── Scroll Progress ────────────────────────────────────────── */
+window.addEventListener('scroll', () => {
+  const d = document.documentElement;
+  const pct = (d.scrollTop / (d.scrollHeight - d.clientHeight)) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+});
+
+/* ─── Completion ─────────────────────────────────────────────── */
+function completeLab() {
+  if (!sectionComplete[SECTION_COUNT - 1]) {
+    markSectionComplete(SECTION_COUNT - 1);
+  }
+  awardXP(100, 'lab complete!');
+  const banner = document.getElementById('completion-banner');
+  banner.style.display = 'block';
+  banner.scrollIntoView({ behavior: 'smooth' });
+  localStorage.setItem(`${LAB_KEY}-complete`, Date.now().toString());
+  updateNavDots();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION-SPECIFIC HANDLERS
+═══════════════════════════════════════════════════════════════ */
+
+/* ─── S0 ─────────────────────────────────────────────────────── */
+function completeSection0() {
+  markSectionComplete(0);
+  document.getElementById('s0-continue').textContent = '✓ Completed';
+  document.getElementById('s0-continue').disabled = true;
+  awardXP(20, 'section 0 complete');
+}
+
+/* ─── S1 ─────────────────────────────────────────────────────── */
+function revealSection1() {
+  document.getElementById('s1-reveal').style.display = 'block';
+  document.getElementById('s1-reveal-btn').disabled = true;
+  document.getElementById('s1-reveal-btn').textContent = '✓ Revealed';
+  localStorage.setItem(`${LAB_KEY}-s1-predict-done`, '1');
+  document.getElementById('s1-reveal').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function showS1ApplyFeedback() {
+  const fb = document.getElementById('s1-apply-feedback');
+  fb.style.display = 'block';
+  fb.innerHTML = `<div class="question-feedback show fb-correct">
+    <strong>Good work.</strong> A complete CI/CD permissions block looks like:<br><br>
+    <code style="font-size:12px;white-space:pre;">{ "permissions": {
+  "allow": ["Read", "Bash(npm test)", "Bash(git commit *)", "Bash(git push *)"],
+  "deny":  ["Write(*.prod.*)", "Write(.env*)", "Bash(curl *)", "Bash(wget *)"]
+}}</code>
+    <br><br>Key: allow specific operations you need; deny by pattern to protect sensitive files.
+  </div>`;
+  awardXP(20, 'S1 apply complete');
+  // Enable the knowledge check
+  document.getElementById('s1-qc').scrollIntoView({ behavior: 'smooth' });
+}
+
+/* Knowledge check answers */
+const QUESTIONS = {
+  's1': {
+    correct: 1,
+    feedback: [
+      'This allows writes everywhere — no path restriction. The student agent could write to production files, config dirs, or any other location.',
+      'Allow targeted write to sandbox/, deny all other writes. Read is unrestricted. The deny overrides the broad allow for any non-sandbox path.',
+      'This denies writes to sandbox/ — the opposite of what\'s needed. And it doesn\'t explicitly allow the sandbox writes.',
+      'This allows writes everywhere except production/ — insufficient. The student might write to src/, config/, or any other sensitive directory.'
+    ],
+    afterComplete: () => {
+      document.getElementById('s1-connect').classList.add('show');
+      setTimeout(() => { markSectionComplete(1); awardXP(20, 'section 1 complete'); }, 600);
+    }
+  },
+  's3': {
+    correct: 1,
+    feedback: [
+      'Output is typically ~20% of token cost. CLAUDE.md appears on every run — that\'s the bigger lever. Reducing output helps but doesn\'t address the repeat-read cost.',
+      'Prompt caching dramatically reduces cost for content that appears on every run. A 500-line CLAUDE.md read 100×/day is a significant caching target — caching eliminates ~90% of that cost on repeated runs.',
+      'Using -p helps for single-shot scripted tasks but doesn\'t address the CLAUDE.md re-read cost, which happens regardless of interactive vs. non-interactive mode.',
+      'Shorter CLAUDE.md is better but reducing by half is less impactful than caching — caching eliminates the cost almost entirely on repeated runs regardless of file length.'
+    ],
+    afterComplete: () => {
+      document.getElementById('s3-connect').classList.add('show');
+      setTimeout(() => { markSectionComplete(3); awardXP(20, 'section 3 complete'); }, 600);
+    }
+  },
+  's5a': {
+    correct: 1,
+    feedback: [
+      'Trust and scope are different concerns. A trusted agent with broad permissions is still a security and reliability risk — accidents happen, prompts can be manipulated, and edge cases trigger unexpected behavior.',
+      'Least privilege limits blast radius. An agent that can only write to src/ cannot accidentally corrupt config files, even under adversarial inputs or prompt injection. Trust is irrelevant to scope.',
+      'Write(**) is valid in settings.json — the point is that it\'s inadvisable, not that it\'s unsupported. The permission evaluates to "allow writes to any path."',
+      'Permission scope doesn\'t affect token cost. It affects safety and blast radius — completely unrelated dimensions.'
+    ],
+    afterComplete: () => {
+      document.getElementById('s5b-card').style.display = 'block';
+      localStorage.setItem(`${LAB_KEY}-s5a-done`, '1');
+      document.getElementById('s5b-card').scrollIntoView({ behavior: 'smooth' });
+    }
+  },
+  's5b': {
+    correct: 1,
+    feedback: [
+      'The final output shows the result, not the path. You need the trace to understand which step failed and why — the output only tells you what went wrong, not where in the sequence.',
+      'A complete tool call trace lets you replay the agent\'s actions step by step, identifying exactly which tool call produced the wrong result or returned an error. This is the artifact that enables deterministic debugging.',
+      'The system prompt tells you what the agent was instructed to do, not what it actually did. Intention and execution diverge — that\'s precisely the problem you\'re debugging.',
+      'Token count is a cost metric, not a debugging artifact. It tells you how much the session cost, not which specific action caused the failure.'
+    ],
+    afterComplete: () => {
+      document.getElementById('s5-connect').classList.add('show');
+      setTimeout(() => { markSectionComplete(5); awardXP(20, 'section 5 complete'); }, 600);
+    }
+  }
+};
+
+let answeredQuestions = {};
+let questionAttempts = {};
+
+function answerQ(qId, optIdx) {
+  if (answeredQuestions[qId]) return; // already answered correctly
+
+  const q = QUESTIONS[qId];
+  const opts = document.querySelectorAll(`#${qId}-opts .answer-option`);
+  const fb = document.getElementById(`${qId}-feedback`);
+
+  questionAttempts[qId] = (questionAttempts[qId] || 0) + 1;
+  const attempt = questionAttempts[qId];
+
+  if (optIdx === q.correct) {
+    opts[optIdx].classList.add('correct');
+    opts.forEach(o => o.classList.add('locked-opt'));
+    fb.className = 'question-feedback show fb-correct';
+    fb.textContent = q.feedback[optIdx];
+
+    const xpAmt = attempt === 1 ? 30 : attempt === 2 ? 15 : 5;
+    const reason = attempt === 1 ? 'correct — first try!' : attempt === 2 ? 'correct — second try' : 'correct';
+    awardXP(xpAmt, reason);
+    updateStreak(true);
+    answeredQuestions[qId] = true;
+    localStorage.setItem(`${LAB_KEY}-q-${qId}`, '1');
+
+    if (q.afterComplete) q.afterComplete();
+  } else {
+    opts[optIdx].classList.add('incorrect');
+    opts[optIdx].classList.add('locked-opt');
+    fb.className = 'question-feedback show fb-incorrect';
+    fb.textContent = q.feedback[optIdx];
+    updateStreak(false);
+  }
+}
+
+/* ─── S2 Audit Simulation ────────────────────────────────────── */
+const AUDIT_ANSWERS = ['exposed', 'safe', 'exposed', 'safe', 'safe'];
+const AUDIT_FEEDBACK = [
+  { label: 'EXPOSED', msg: 'The DB password is in plaintext in the prompt. It\'s now in prompt history, logs, and the model\'s context window.' },
+  { label: 'SAFE', msg: 'The prompt references the env var name, not its value. The actual connection string never enters the prompt.' },
+  { label: 'EXPOSED', msg: 'CLAUDE.md is typically committed to version control. A real Stripe key here becomes repo history permanently.' },
+  { label: 'SAFE', msg: 'The MCP config uses ${INTERNAL_API_KEY} substitution. The actual value is injected at runtime from environment — safe to commit.' },
+  { label: 'SAFE', msg: 'A .env file with real keys is the correct pattern — provided it\'s in .gitignore. The secrets stay local and out of version control.' }
+];
+
+let auditCount = 0;
+let auditCorrect = 0;
+
+function auditAnswer(idx, answer) {
+  const item = document.getElementById(`audit-${idx}`);
+  const result = document.getElementById(`audit-${idx}-result`);
+  const correct = answer === AUDIT_ANSWERS[idx];
+
+  item.classList.add('audited');
+  result.classList.add('show');
+
+  if (correct) {
+    result.className = 'audit-result show audit-safe';
+    result.innerHTML = `<strong style="color:var(--success);">✓ ${AUDIT_FEEDBACK[idx].label}</strong> — ${AUDIT_FEEDBACK[idx].msg}`;
+    auditCorrect++;
+    awardXP(5, `audit ${idx + 1} correct`);
+  } else {
+    result.className = 'audit-result show audit-exposed';
+    const correctLabel = AUDIT_ANSWERS[idx].toUpperCase();
+    result.innerHTML = `<strong style="color:var(--danger);">✗ This is ${correctLabel}</strong> — ${AUDIT_FEEDBACK[idx].msg}`;
+  }
+
+  auditCount++;
+  if (auditCount === 5) {
+    const scoreEl = document.getElementById('audit-score');
+    scoreEl.style.display = 'block';
+    scoreEl.innerHTML = `<strong>Audit complete: ${auditCorrect}/5 correct.</strong> ${auditCorrect >= 4 ? 'Strong security instincts.' : 'Review the anti-patterns above before moving on.'} <br><br>Now apply what you know to a real config.`;
+    localStorage.setItem(`${LAB_KEY}-audit-done`, '1');
+    document.getElementById('s2-apply-card').style.display = 'block';
+    document.getElementById('s2-apply-card').scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+function completeSection2() {
+  markSectionComplete(2);
+  awardXP(20, 'section 2 complete');
+  // Scroll to section 3
+  setTimeout(() => document.getElementById('section-3').scrollIntoView({ behavior: 'smooth' }), 300);
+}
+
+/* ─── S3 Cost Calculator ─────────────────────────────────────── */
+function updateCalc() {
+  const files      = parseInt(document.getElementById('calc-files').value);
+  const complexity = parseInt(document.getElementById('calc-complexity').value);
+  const turns      = parseInt(document.getElementById('calc-turns').value);
+  const runs       = parseInt(document.getElementById('calc-runs').value);
+
+  const complexLabels = { 1: 'Simple', 2: 'Moderate', 3: 'Complex' };
+  const reasoningTokens = { 1: 1000, 2: 4000, 3: 8000 };
+
+  document.getElementById('calc-files-val').textContent      = `${files} file${files > 1 ? 's' : ''}`;
+  document.getElementById('calc-complexity-val').textContent = complexLabels[complexity];
+  document.getElementById('calc-turns-val').textContent      = `${turns} turn${turns > 1 ? 's' : ''}`;
+  document.getElementById('calc-runs-val').textContent       = `${runs} run${runs > 1 ? 's' : ''}/day`;
+
+  const tokensPerFile   = 2000;
+  const outputPerTurn   = 500;
+  const inputPerRun     = (files * tokensPerFile) + (turns * reasoningTokens[complexity]);
+  const outputPerRun    = turns * outputPerTurn;
+
+  const inputCostPerMTok  = 3.00;
+  const outputCostPerMTok = 15.00;
+
+  const costPerRun   = (inputPerRun / 1e6) * inputCostPerMTok + (outputPerRun / 1e6) * outputCostPerMTok;
+  const costPerDay   = costPerRun * runs;
+  const costPerMonth = costPerDay * 30;
+
+  function fmt(n) { return n >= 1000 ? (n / 1000).toFixed(1) + 'K' : n.toString(); }
+  function fmtUSD(n) { return n < 0.01 ? '<$0.01' : '$' + n.toFixed(2); }
+
+  document.getElementById('cr-input-per-run').textContent  = fmt(inputPerRun) + ' tokens';
+  document.getElementById('cr-output-per-run').textContent = fmt(outputPerRun) + ' tokens';
+  document.getElementById('cr-cost-per-run').textContent   = fmtUSD(costPerRun);
+  document.getElementById('cr-cost-per-day').textContent   = fmtUSD(costPerDay);
+  document.getElementById('cr-cost-monthly').textContent   = fmtUSD(costPerMonth);
+
+  document.getElementById('calc-formula').innerHTML =
+    `Formula: (${files} files × 2,000 tok/file) + (${turns} turns × ${reasoningTokens[complexity]} reasoning tok) = ${fmt(inputPerRun)} input\n` +
+    `${turns} turns × 500 tok output = ${fmt(outputPerRun)} output\n` +
+    `Cost = (${fmt(inputPerRun)} ÷ 1M × $3) + (${fmt(outputPerRun)} ÷ 1M × $15) = ${fmtUSD(costPerRun)}/run\n` +
+    `${fmtUSD(costPerRun)} × ${runs} runs/day × 30 days = ${fmtUSD(costPerMonth)}/month`;
+}
+
+/* ─── S4 Insight + Complete ──────────────────────────────────── */
+function showS4Insight() {
+  const insight = document.getElementById('s4-insight');
+  insight.classList.add('revealed');
+  localStorage.setItem(`${LAB_KEY}-s4-insight`, '1');
+  insight.scrollIntoView({ behavior: 'smooth' });
+}
+
+function completeSection4() {
+  markSectionComplete(4);
+  awardXP(20, 'section 4 complete');
+  setTimeout(() => document.getElementById('section-5').scrollIntoView({ behavior: 'smooth' }), 300);
+}
+
+/* ─── Boss ───────────────────────────────────────────────────── */
+function showBossAnswer() {
+  document.getElementById('boss-model').style.display = 'block';
+  localStorage.setItem(`${LAB_KEY}-boss-submitted`, '1');
+  awardXP(50, 'boss challenge submitted!');
+  document.getElementById('boss-model').scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ─── CE-08-A: Permission Model Design ──────────────────────── */
+function submitCE08A() {
+  var s1 = document.getElementById('ce-08-a-s1').value.trim();
+  var s2 = document.getElementById('ce-08-a-s2').value.trim();
+  var s3 = document.getElementById('ce-08-a-s3').value.trim();
+  var resultDiv = document.getElementById('ce-08-a-result');
+  resultDiv.style.display = 'block';
+
+  if (!s1 || !s2 || !s3) {
+    resultDiv.style.background = '#fee2e2';
+    resultDiv.style.border = '1px solid #fca5a5';
+    resultDiv.innerHTML = '<svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Please fill in all three scenarios before submitting.';
+    if (window.lucide) lucide.createIcons();
+    return;
+  }
+
+  var errors = [];
+
+  [['Scenario 1', s1], ['Scenario 2', s2], ['Scenario 3', s3]].forEach(function(pair) {
+    var name = pair[0], val = pair[1];
+    try {
+      var p = JSON.parse(val);
+      if (!p.allow || !Array.isArray(p.allow)) errors.push(name + ': missing "allow" array');
+      if (!p.deny || !Array.isArray(p.deny)) errors.push(name + ': missing "deny" array');
+      // Check for dangerous broad allow
+      if (p.allow && p.allow.some(function(a) { return a === 'Bash(*)' || a === 'Bash'; })) {
+        errors.push(name + ': "Bash(*)" or bare "Bash" in allow is too broad — scope it to specific commands');
+      }
+    } catch(e) {
+      errors.push(name + ': invalid JSON — ' + e.message);
+    }
+  });
+
+  if (errors.length > 0) {
+    resultDiv.style.background = '#fee2e2';
+    resultDiv.style.border = '1px solid #fca5a5';
+    resultDiv.innerHTML = '<strong>Fix these issues:</strong><ul style="margin:8px 0 0;padding-left:20px;">' + errors.map(function(e) { return '<li>' + e + '</li>'; }).join('') + '</ul>';
+    return;
+  }
+
+  resultDiv.style.background = '#f0fdf4';
+  resultDiv.style.border = '1px solid #86efac';
+  resultDiv.innerHTML = '<svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> All three scenarios have valid JSON permission structures. Review the model answers to compare approaches.';
+  if (window.lucide) lucide.createIcons();
+
+  document.getElementById('ce-08-a-model').style.display = 'block';
+  document.getElementById('ce-08-a-model').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Award XP
+  if (typeof addXP === 'function') addXP(30);
+  else if (typeof awardXP === 'function') awardXP(30, 'CE-08-A: permission models');
+
+  localStorage.setItem('lab08_ce08a', JSON.stringify({ completed: true, s1: s1, s2: s2, s3: s3 }));
+}
+
+/* ─── Init ───────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  loadAllReflections();
+  updateCalc();
+  // Restore answered questions
+  Object.keys(QUESTIONS).forEach(qId => {
+    if (localStorage.getItem(`${LAB_KEY}-q-${qId}`) === '1') {
+      answeredQuestions[qId] = true;
+    }
+  });
+    milestoneLevel = getMilestoneLevel();
+    updateMilestoneDisplay();
+});
+</script>
+
+  <!-- ─── Attribution Footer ─────────────────────────────────────────────── -->
+</main>
+
+  <footer style="
+    margin-top: 80px;
+    padding: 32px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    text-align: center;
+    font-size: 12px;
+    color: #475569;
+    line-height: 1.8;
+  ">
+    <p>
+      &ldquo;Claude&rdquo; and &ldquo;Claude Code&rdquo; are trademarks of Anthropic, PBC.
+      This course is not affiliated with or endorsed by Anthropic.
+      All product names, logos, and trademarks are the property of their respective owners
+      and are referenced here for educational purposes only.
+    </p>
+    <p>
+      Fonts:
+      <a href="https://fonts.google.com/specimen/Inter" rel="noopener" style="color:#6366f1;">Inter</a>
+      and
+      <a href="https://fonts.google.com/specimen/JetBrains+Mono" rel="noopener" style="color:#6366f1;">JetBrains Mono</a>
+      via Google Fonts under the
+      <a href="https://scripts.sil.org/OFL" rel="noopener" style="color:#6366f1;">SIL Open Font License 1.1</a>.
+    </p>
+    <p>Course content &copy; 2026 Agentic AI Engineering Course. Educational use.</p>
+  </footer>
+
+<script src="/raven-cargo-course/assets/lab-progression-bridge.js"></script>
+<script>if (window.lucide) lucide.createIcons();</script>
+</body>
+</html>

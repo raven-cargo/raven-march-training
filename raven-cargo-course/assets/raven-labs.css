@@ -1,0 +1,73 @@
+body {
+  background:
+    radial-gradient(circle at top left, rgba(199, 216, 185, 0.04), transparent 30%),
+    radial-gradient(circle at top right, rgba(61, 85, 104, 0.10), transparent 28%),
+    linear-gradient(180deg, #0a0f1c, #080d1a) !important;
+}
+
+nav,
+.progress-nav,
+.top-nav,
+.lab-nav {
+  backdrop-filter: blur(10px);
+}
+
+.hero,
+.hero-card,
+.objective-card,
+.completion-callout,
+.completion-banner,
+.section,
+.section-block,
+.lab-card,
+.tool-card,
+.pattern-card,
+.checkpoint-card,
+.reflection-box,
+.completion-card {
+  box-shadow: none !important;
+}
+
+.completion-callout,
+#completion-banner,
+.connect-forward {
+  border-color: rgba(199, 216, 185, 0.18) !important;
+}
+
+.connect-forward {
+  background: rgba(61, 85, 104, 0.26) !important;
+  border-left-color: var(--camel) !important;
+}
+
+.connect-forward a,
+#completion-banner a,
+.completion-callout a {
+  background: rgba(199, 216, 185, 0.16) !important;
+  color: var(--cream) !important;
+}
+
+.milestone-display,
+.xp-counter,
+.nav-xp {
+  color: var(--cream) !important;
+}
+
+/* Temporary course-wide ungating during rapid iteration */
+.section-locked,
+.section-block.locked,
+.section.locked {
+  opacity: 1 !important;
+  filter: none !important;
+  pointer-events: auto !important;
+  user-select: auto !important;
+}
+
+.lock-overlay,
+.section-lock-overlay,
+[id$="-lock-overlay"] {
+  display: none !important;
+}
+
+.section-block.locked {
+  min-height: 0 !important;
+}

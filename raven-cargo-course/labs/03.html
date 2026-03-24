@@ -1,0 +1,2142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 04 · Agentic Reasoning | Agentic AI Engineering</title>
+  <link rel="stylesheet" href="/raven-cargo-course/assets/theme-toggle.css" />
+  <script src="/raven-cargo-course/assets/theme-toggle.js" defer></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <style>
+    /* ─── Design System ──────────────────────────────────────────── */
+    :root {
+      --bg-base:    #080d1a;
+      --bg-surface: #0f1729;
+      --bg-raised:  #172035;
+      --bg-glass:   rgba(23, 32, 53, 0.7);
+      --primary:    #6366f1;
+      --primary-glow: rgba(99,102,241,0.25);
+      --secondary:  #8b5cf6;
+      --accent:     #06b6d4;
+      --accent-glow: rgba(6,182,212,0.2);
+      --success:    #10b981;
+      --warning:    #f59e0b;
+      --danger:     #ef4444;
+      --text:       #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim:   #475569;
+      --border:     rgba(255,255,255,0.08);
+      --border-bright: rgba(99,102,241,0.4);
+      --radius:     16px;
+      --radius-sm:  8px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-base);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ─── Progress Bar ───────────────────────────────────────────── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 0%; transition: width 0.2s ease;
+      z-index: 1000;
+      box-shadow: 0 0 12px var(--primary);
+    }
+
+    /* ─── Nav ────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: 16px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      backdrop-filter: blur(20px);
+      background: rgba(8,13,26,0.8);
+      border-bottom: 1px solid var(--border);
+      z-index: 900;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text-muted); }
+    .nav-badge {
+      background: var(--primary); color: white;
+      padding: 3px 10px; border-radius: 100px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
+    }
+    .nav-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--bg-raised); border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+    .nav-dot.dot-locked   { background: var(--text-dim); }
+    .nav-dot.dot-active   { background: var(--primary); box-shadow: 0 0 8px var(--primary-glow); }
+    .nav-dot.dot-complete { background: var(--success); }
+
+    /* ─── Section Blocks ─────────────────────────────────────────── */
+    .section-block {
+      padding: 60px 0;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .section-block:last-child { border-bottom: none; }
+    .section-block.locked { user-select: none; min-height: 200px; }
+
+    /* ─── Typography ─────────────────────────────────────────────── */
+    .overline {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 12px;
+    }
+    h1 {
+      font-size: clamp(36px,5vw,60px); font-weight: 800;
+      line-height: 1.1; letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--text) 0%, var(--text-muted) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    h2 { font-size: clamp(22px,3vw,32px); font-weight: 700; letter-spacing: -0.02em; }
+    h3 { font-size: 18px; font-weight: 600; }
+    p  { color: var(--text-muted); }
+
+    /* ─── Cards ──────────────────────────────────────────────────── */
+    .card {
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      backdrop-filter: blur(10px);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .card:hover { border-color: var(--border-bright); box-shadow: 0 0 30px var(--primary-glow); }
+
+    .info-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .challenge-card {
+      background: rgba(245,158,11,0.06);
+      border: 1px solid rgba(245,158,11,0.3);
+      border-left: 3px solid var(--warning);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .check-card {
+      background: rgba(99,102,241,0.05);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .callback-card {
+      background: rgba(139,92,246,0.06);
+      border: 1px solid rgba(139,92,246,0.3);
+      border-left: 3px solid var(--secondary);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .insight-card {
+      background: rgba(16,185,129,0.06);
+      border: 1px solid rgba(16,185,129,0.3);
+      border-left: 3px solid var(--success);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: none;
+    }
+    .insight-card.revealed { display: block; animation: fadeIn 0.4s ease; }
+
+    .card-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 3px 10px;
+      border-radius: 4px; display: inline-block; margin-bottom: 12px;
+    }
+    .challenge-badge { background: rgba(245,158,11,0.15); color: var(--warning); }
+    .check-badge     { background: rgba(99,102,241,0.15); color: var(--primary); }
+    .callback-badge  { background: rgba(139,92,246,0.15); color: var(--secondary); }
+    .insight-badge   { background: rgba(16,185,129,0.15); color: var(--success); }
+
+    /* ─── Code / Trace blocks ────────────────────────────────────── */
+    .code-block {
+      background: #0a0f1e;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px 24px;
+      font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+      font-size: 13px; line-height: 1.8;
+      overflow-x: auto; position: relative;
+    }
+    .code-block .comment  { color: #4b5563; }
+    .code-block .keyword  { color: #8b5cf6; }
+    .code-block .string   { color: #10b981; }
+    .code-block .fn       { color: #06b6d4; }
+    .code-block .cmd      { color: var(--warning); }
+
+    /* Internal monologue / chain-of-thought trace styling */
+    .thought-trace {
+      background: rgba(10,6,26,0.9);
+      border: 1px solid rgba(139,92,246,0.2);
+      border-left: 3px solid var(--secondary);
+      border-radius: var(--radius-sm);
+      padding: 20px 24px;
+      font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+      font-size: 13px; line-height: 1.9;
+      overflow-x: auto;
+    }
+    .thought-line { color: #a78bfa; font-style: italic; display: block; margin-bottom: 4px; }
+    .thought-tool { color: var(--accent); font-style: normal; font-weight: 600; display: block; margin-bottom: 4px; }
+    .thought-result { color: var(--success); font-style: normal; display: block; margin-bottom: 4px; }
+    .thought-decision { color: var(--warning); font-style: italic; font-weight: 600; display: block; margin-bottom: 4px; }
+
+    /* Extended thinking block (purple-tinted) */
+    .extended-thinking {
+      background: rgba(88,28,220,0.07);
+      border: 1px solid rgba(139,92,246,0.25);
+      border-radius: var(--radius-sm);
+      padding: 20px 24px;
+      font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+      font-size: 13px; line-height: 1.9; font-style: italic;
+      color: #c4b5fd;
+    }
+    .extended-thinking .et-label {
+      display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--secondary); font-style: normal;
+      background: rgba(139,92,246,0.15); padding: 2px 8px; border-radius: 4px;
+      margin-bottom: 12px;
+    }
+
+    /* Trace output */
+    .trace-output {
+      background: #04080f;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px; font-family: 'Fira Code', monospace;
+      font-size: 13px; min-height: 200px;
+    }
+    .trace-line { display: flex; gap: 10px; margin-bottom: 12px; cursor: pointer; }
+    .trace-line:hover .trace-text { color: var(--text); }
+    .trace-tag {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+      padding: 3px 8px; border-radius: 4px;
+      height: fit-content; white-space: nowrap; flex-shrink: 0; margin-top: 2px;
+    }
+    .tag-think  { background: rgba(139,92,246,0.2); color: #8b5cf6; }
+    .tag-tool   { background: rgba(6,182,212,0.2);  color: #06b6d4; }
+    .tag-result { background: rgba(16,185,129,0.2); color: #10b981; }
+    .tag-resp   { background: rgba(99,102,241,0.2); color: #6366f1; }
+    .tag-warn   { background: rgba(239,68,68,0.2);  color: var(--danger); }
+    .trace-text { color: var(--text-muted); line-height: 1.6; flex: 1; }
+    .trace-expand {
+      margin-left: 72px; margin-top: 4px; margin-bottom: 10px;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px; font-size: 12px; color: var(--text-muted);
+      display: none;
+    }
+    .trace-expand.open { display: block; animation: fadeIn 0.2s; }
+    .trace-expand strong { color: var(--accent); }
+
+    /* ─── Buttons ────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border-radius: 10px;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      border: none; transition: all 0.2s; text-decoration: none;
+    }
+    .btn-primary { background: var(--primary); color: white; box-shadow: 0 0 20px var(--primary-glow); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 30px var(--primary-glow); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-ghost {
+      background: transparent; color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-amber   { background: var(--warning); color: #000; font-weight: 700; }
+
+    /* ─── Textarea / Inputs ──────────────────────────────────────── */
+    textarea {
+      width: 100%;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 14px; color: var(--text);
+      resize: vertical; min-height: 110px;
+      font-family: inherit; transition: border-color 0.2s;
+      line-height: 1.6;
+    }
+    textarea:focus { outline: none; border-color: var(--primary); }
+    .char-hint { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+    .char-ready { color: var(--success); }
+    label.field-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+
+    /* ─── Answer options ─────────────────────────────────────────── */
+    .answer-options { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+    .answer-option {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 18px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer; transition: all 0.2s;
+      font-size: 14px; color: var(--text-muted);
+      text-align: left; width: 100%;
+    }
+    .answer-option:hover:not(.locked-opt) { border-color: var(--primary); color: var(--text); }
+    .answer-option.correct   { background: rgba(16,185,129,0.1); border-color: var(--success); color: var(--success); }
+    .answer-option.incorrect { background: rgba(239,68,68,0.1);  border-color: var(--danger);  color: #fca5a5; }
+    .answer-option.locked-opt { cursor: default; }
+    .opt-letter {
+      width: 24px; height: 24px; border-radius: 50%;
+      border: 2px solid currentColor;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+    }
+    .question-feedback {
+      margin-top: 12px; padding: 12px 16px;
+      border-radius: 8px; font-size: 14px; display: none;
+    }
+    .question-feedback.show { display: block; animation: fadeIn 0.3s; }
+    .fb-correct   { background: rgba(16,185,129,0.1); color: var(--success); border-left: 3px solid var(--success); }
+    .fb-incorrect { background: rgba(239,68,68,0.1);  color: #fca5a5;       border-left: 3px solid var(--danger); }
+
+    /* ─── Tool pattern cards ─────────────────────────────────────── */
+    .pattern-card {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 18px 20px;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .pattern-card:hover { border-color: var(--accent); box-shadow: 0 0 16px var(--accent-glow); }
+    .pattern-card.open  { border-color: var(--accent); }
+    .pattern-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+    .pattern-seq  { font-family: 'Fira Code', monospace; font-size: 12px; color: var(--accent); margin-bottom: 8px; }
+    .pattern-detail { display: none; margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px; }
+    .pattern-detail.open { display: block; animation: fadeIn 0.2s; }
+    .pattern-good { color: var(--success); font-size: 13px; margin-bottom: 4px; }
+    .pattern-bad  { color: var(--danger);  font-size: 13px; }
+    .pattern-when { color: var(--text-muted); font-size: 13px; margin-bottom: 8px; }
+
+    /* ─── Intervention trainer ───────────────────────────────────── */
+    .intervention-item {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 18px 20px;
+      margin-bottom: 14px;
+    }
+    .intervention-q { font-size: 14px; color: var(--text); margin-bottom: 12px; font-style: italic; }
+    .intervention-q::before { content: '"'; }
+    .intervention-q::after  { content: '"'; }
+    .intervention-options { display: flex; gap: 10px; flex-wrap: wrap; }
+    .intervention-opt {
+      padding: 8px 16px; border-radius: 8px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      border: 1px solid var(--border); background: var(--bg-surface);
+      color: var(--text-muted); transition: all 0.2s;
+    }
+    .intervention-opt:hover { border-color: var(--primary); color: var(--text); }
+    .intervention-opt.correct   { background: rgba(16,185,129,0.1); border-color: var(--success); color: var(--success); }
+    .intervention-opt.wrong     { background: rgba(239,68,68,0.1);  border-color: var(--danger);  color: #fca5a5; }
+    .intervention-opt.locked    { cursor: default; }
+    .intervention-fb { margin-top: 10px; font-size: 13px; color: var(--text-muted); display: none; }
+    .intervention-fb.show { display: block; animation: fadeIn 0.2s; }
+
+    /* ─── Table ──────────────────────────────────────────────────── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 16px; }
+    .data-table th {
+      text-align: left; padding: 10px 14px;
+      background: var(--bg-raised); color: var(--text-muted);
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--text-muted); vertical-align: top; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table td:first-child { color: var(--text); font-weight: 600; }
+    .data-table td:nth-child(2) { color: var(--success); }
+    .data-table code { font-family: 'Fira Code', monospace; font-size: 12px; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; color: var(--warning); }
+    .check-yes { color: var(--success); font-weight: 700; }
+    .check-no  { color: var(--danger);  font-weight: 700; }
+
+    /* ─── Rubric ─────────────────────────────────────────────────── */
+    .rubric { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; }
+    .rubric-level { padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-raised); }
+    .rubric-level-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+    .rubric-d { border-left: 3px solid gold; }
+    .rubric-d .rubric-level-label { color: gold; }
+    .rubric-p { border-left: 3px solid var(--primary); }
+    .rubric-p .rubric-level-label { color: var(--primary); }
+    .rubric-v { border-left: 3px solid var(--warning); }
+    .rubric-v .rubric-level-label { color: var(--warning); }
+    .rubric-b { border-left: 3px solid var(--text-dim); }
+    .rubric-b .rubric-level-label { color: var(--text-dim); }
+    .rubric-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+    /* ─── Connect forward ────────────────────────────────────────── */
+    .connect-forward {
+      display: none; margin-top: 24px;
+      padding: 16px 20px;
+      background: rgba(6,182,212,0.06);
+      border: 1px solid rgba(6,182,212,0.2);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-sm);
+      font-size: 14px; color: var(--text-muted);
+    }
+    .connect-forward.show { display: block; animation: fadeIn 0.4s; }
+    .connect-forward strong { color: var(--accent); }
+
+    /* ─── Model answer ───────────────────────────────────────────── */
+    .model-answer {
+      display: none; margin-top: 20px;
+      background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.2);
+      border-radius: var(--radius); padding: 24px;
+    }
+    .model-answer.show { display: block; animation: fadeIn 0.4s; }
+    .model-answer h4 { color: var(--success); margin-bottom: 16px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* ─── Lock overlay ───────────────────────────────────────────── */
+    .lock-overlay {
+      position: absolute; inset: 0;
+      background: rgba(8,13,26,0.88);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      border-radius: var(--radius); z-index: 10;
+      gap: 12px;
+    }
+    .lock-overlay p { color: var(--text-muted); font-size: 14px; }
+
+    /* ─── XP / Streak ────────────────────────────────────────────── */
+    .xp-display {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 700; color: var(--warning);
+    }
+    .xp-toast {
+      position: fixed; top: 80px; right: 24px;
+      background: var(--warning); color: #000;
+      padding: 8px 16px; border-radius: 20px;
+      font-weight: 700; font-size: 13px;
+      animation: toastFade 2s forwards;
+      pointer-events: none; z-index: 9999;
+    }
+    @keyframes toastFade {
+      0%  { opacity:0; transform:translateY(-10px) }
+      20% { opacity:1; transform:translateY(0) }
+      80% { opacity:1 }
+      100%{ opacity:0; transform:translateY(-10px) }
+    }
+    .streak-display { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+    .streak-3 { background: rgba(245,158,11,0.15); color: var(--warning); }
+    .streak-5 { background: rgba(139,92,246,0.15); color: var(--secondary); }
+    .streak-7 { background: rgba(245,158,11,0.2);  color: gold; }
+
+    /* ─── Section header ─────────────────────────────────────────── */
+    .section-header { margin-bottom: 32px; }
+    .section-num { font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+
+    /* ─── Objectives card ────────────────────────────────────────── */
+    .objectives-card {
+      background: rgba(99,102,241,0.06); border: 1px solid rgba(99,102,241,0.2);
+      border-radius: var(--radius); padding: 24px; margin-top: 32px; text-align: left;
+    }
+    .objectives-card ul { padding-left: 20px; margin-top: 10px; }
+    .objectives-card li { color: var(--text-muted); font-size: 14px; margin-bottom: 6px; }
+
+    /* ─── Before/After comparison ────────────────────────────────── */
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+    .compare-panel {
+      background: var(--bg-raised); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 18px;
+    }
+    .compare-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
+    .compare-label.black-box { color: var(--danger); }
+    .compare-label.transparent { color: var(--success); }
+    .compare-text { font-family: 'Fira Code', monospace; font-size: 12px; color: var(--text-muted); line-height: 1.7; }
+    .compare-text .layer { display: block; margin-bottom: 6px; padding: 6px 10px; border-radius: 6px; }
+    .layer-think  { background: rgba(139,92,246,0.1); color: #c4b5fd; }
+    .layer-tool   { background: rgba(6,182,212,0.1);  color: #67e8f9; }
+    .layer-resp   { background: rgba(16,185,129,0.1); color: #6ee7b7; }
+
+    /* ─── Layer explainer cards ──────────────────────────────────── */
+    .layers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 16px; }
+    .layer-card {
+      padding: 18px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+      background: var(--bg-raised);
+    }
+    .layer-card-num { font-size: 22px; font-weight: 800; line-height: 1; margin-bottom: 6px; }
+    .layer-card-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .layer-card-desc  { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+    .lc-think { border-left: 3px solid var(--secondary); }
+    .lc-think .layer-card-num { color: var(--secondary); }
+    .lc-tool  { border-left: 3px solid var(--accent); }
+    .lc-tool  .layer-card-num { color: var(--accent); }
+    .lc-resp  { border-left: 3px solid var(--success); }
+    .lc-resp  .layer-card-num { color: var(--success); }
+
+    /* ─── Nav lab links ──────────────────────────────────────────── */
+    .lab-nav { display: flex; gap: 12px; margin-top: 40px; flex-wrap: wrap; }
+
+    /* ─── Utilities ──────────────────────────────────────────────── */
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .mt-16 { margin-top: 16px; }
+    .mt-24 { margin-top: 24px; }
+    .mt-32 { margin-top: 32px; }
+    .mb-16 { margin-bottom: 16px; }
+    .flex-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    strong.accent  { color: var(--accent); }
+    strong.success { color: var(--success); }
+    strong.warning { color: var(--warning); }
+    strong.danger  { color: var(--danger); }
+
+    @media (max-width: 768px) {
+      nav { padding: 12px 16px; }
+      .compare-grid { grid-template-columns: 1fr; }
+      .layers-grid  { grid-template-columns: 1fr; }
+      .rubric { grid-template-columns: 1fr 1fr; }
+    }
+    .milestone-display {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: rgba(6,182,212,0.08);
+      border: 1px solid rgba(6,182,212,0.25);
+      border-radius: 999px;
+      padding: 4px 10px;
+      white-space: nowrap;
+    }
+    .milestone-toast {
+      position: fixed; top: 120px; right: 24px;
+      background: var(--accent); color: #02131a;
+      padding: 8px 14px; border-radius: 20px;
+      font-weight: 700; font-size: 12px;
+      animation: toastFade 2s forwards;
+      pointer-events: none; z-index: 9999;
+    }
+    /* ─── Build Challenge Exercises ──────────────────────────── */
+    .build-challenge {
+      margin-top: 32px;
+      background: rgba(139,92,246,0.06);
+      border: 1px solid rgba(139,92,246,0.3);
+      border-top: 3px solid var(--secondary);
+      border-radius: 12px;
+      padding: 28px;
+    }
+    .build-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 4px 14px;
+      border-radius: 20px; display: inline-block;
+      background: var(--secondary); color: #fff;
+    }
+    .ce-xp-badge {
+      font-size: 12px; font-weight: 600; color: var(--secondary);
+      background: rgba(139,92,246,0.12); padding: 4px 12px; border-radius: 20px;
+    }
+    .btn-secondary {
+      background: var(--secondary); color: #fff;
+      box-shadow: 0 0 16px rgba(139,92,246,0.25);
+    }
+    .btn-secondary:hover { transform: translateY(-2px); box-shadow: 0 0 28px rgba(139,92,246,0.4); }
+    .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .ce-requirements {
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px;
+      margin-bottom: 16px; font-size: 13px; color: var(--text-muted);
+    }
+    .ce-model-answer {
+      margin-top: 20px; padding: 20px;
+      background: var(--bg-surface); border: 1px solid rgba(139,92,246,0.35);
+      border-left: 3px solid var(--secondary);
+      border-radius: 8px;
+    }
+    /* ── Icon System (Lucide) ─────────────────────────────── */
+    .icon { width:16px; height:16px; display:inline-block; vertical-align:-2px; stroke-width:2; flex-shrink:0; }
+    .icon-lg { width:20px; height:20px; vertical-align:-4px; }
+    .icon-sm { width:14px; height:14px; vertical-align:-2px; }
+    .badge-label .icon, .badge-label .icon-lg { margin-right:4px; }
+    .quiz-feedback .icon { margin-right:3px; }
+  
+    pre { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    /* Focus-visible for keyboard navigation */
+    :focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    button:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+</style>
+  <link rel="stylesheet" href="/raven-cargo-course/assets/raven-labs.css" />
+  <link rel="stylesheet" href="/raven-cargo-course/assets/raven-course.css" />
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- Navigation -->
+<nav>
+  <div class="nav-brand">
+    <span class="nav-badge">Day 1</span>
+    <span>Lab 04 · Agentic Reasoning</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <div class="xp-display" aria-live="polite" aria-label="Experience points">
+      <span><svg class="icon" data-lucide="zap" aria-hidden="true"></svg></span><span id="xp-value">0</span><span style="font-size:11px;color:var(--text-muted);">XP</span>
+    </div>
+    <div id="streak-display" class="streak-display" style="display:none;" aria-live="polite"></div>
+    <div id="milestone-display" class="milestone-display" aria-live="polite" aria-label="Current milestone">Milestone: Not started</div>
+    <div id="nav-dots" style="display:flex;gap:6px;" aria-label="Lab progress" role="list"></div>
+  </div>
+</nav>
+
+<div id="lab-onboarding-tip" role="note" style="max-width:860px;margin:14px auto 0;padding:10px 14px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:10px;font-size:12px;color:var(--muted);">Tip: fill the section action in each block to earn XP, and use nav dots as progress signals (locked = not available yet, active = current section, complete = finished).</div>
+
+<main>
+
+<!-- Hero -->
+<div style="padding:110px 32px 52px;max-width:860px;margin:0 auto;text-align:center;">
+  <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-bottom:14px;">Day 1 · Lab 04</div>
+  <h1>Agentic Reasoning</h1>
+  <p style="font-size:17px;max-width:600px;margin:20px auto 0;">
+    You run a task. Claude responds. But what happened in between? Most engineers treat this as a black box. Today you open it.
+  </p>
+  <div class="objectives-card" role="note" aria-label="Learning objectives">
+    <strong>After this lab you will be able to:</strong>
+    <ul>
+      <li>Read a chain-of-thought trace and identify the reasoning step that produced a specific decision</li>
+      <li>Interpret tool call sequences as execution plans and diagnose anomalies in them</li>
+      <li>Categorize agent clarification requests and respond to each type appropriately</li>
+      <li>Explain what extended thinking mode reveals and when to use it</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Lab Sections -->
+<div id="lab-sections" style="max-width:860px;margin:0 auto;padding:0 32px 120px;">
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 0 — The Black Box Problem
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="section-block" id="section-0">
+    <div class="section-header">
+      <div class="section-num">Section 0</div>
+      <h2>The Black Box Problem</h2>
+    </div>
+
+    <div class="info-card mb-16">
+      <p style="color:var(--text);font-size:15px;margin-bottom:12px;">
+        Every agent response has three layers. Most engineers only ever see the last one.
+      </p>
+      <div class="layers-grid">
+        <div class="layer-card lc-think">
+          <div class="layer-card-num">1</div>
+          <div class="layer-card-title">Thinking</div>
+          <div class="layer-card-desc">Internal scratchpad. What the agent considers — hypotheses, constraints, trade-offs. Visible only in extended thinking mode.</div>
+        </div>
+        <div class="layer-card lc-tool">
+          <div class="layer-card-num">2</div>
+          <div class="layer-card-title">Tool Calls</div>
+          <div class="layer-card-desc">Concrete actions — Read, Write, Bash, Search. These are the Act phase made visible. Each call has inputs and outputs.</div>
+        </div>
+        <div class="layer-card lc-resp">
+          <div class="layer-card-num">3</div>
+          <div class="layer-card-title">Response</div>
+          <div class="layer-card-desc">Synthesis. What the agent reports back. This is the only layer most people see — without context, it looks like magic.</div>
+        </div>
+      </div>
+    </div>
+
+    <p style="margin-bottom:16px;font-size:14px;">The same task, two views:</p>
+    <div class="compare-grid mb-16">
+      <div class="compare-panel">
+        <div class="compare-label black-box">Black Box View</div>
+        <div class="compare-text">
+          <span class="layer" style="background:rgba(239,68,68,0.06);color:var(--text-muted);">
+            <strong style="color:var(--warning)">INPUT:</strong> "Refactor the auth module"
+          </span>
+          <span class="layer" style="background:rgba(239,68,68,0.06);color:var(--text-muted);margin-top:24px;">
+            <strong style="color:var(--warning)">OUTPUT:</strong> "I've refactored src/auth/index.ts — separated concerns into AuthService, TokenManager, and UserValidator."
+          </span>
+          <p style="font-size:11px;color:var(--danger);margin-top:12px;">Why didn't it rename the exported class? No idea.</p>
+        </div>
+      </div>
+      <div class="compare-panel">
+        <div class="compare-label transparent">Transparent Trace</div>
+        <div class="compare-text">
+          <span class="layer layer-think">THINK: Let me understand the current structure first...</span>
+          <span class="layer layer-tool">TOOL: Read("src/auth/index.ts")</span>
+          <span class="layer layer-think">THINK: Tightly coupled. Separate concerns. But — renaming the export would be a breaking change.</span>
+          <span class="layer layer-tool">TOOL: Write("src/auth/index.ts", refactored)</span>
+          <span class="layer layer-resp">RESPONSE: Refactored. Public API unchanged.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALLBACK: prao-loop -->
+    <div class="callback-card mb-16" role="note" aria-label="Concept callback: PRAO Loop">
+      <div class="card-badge callback-badge"><svg class="icon" data-lucide="link" aria-hidden="true"></svg> CALLBACK</div>
+      <p><strong>PRAO Loop</strong> — first introduced in <a href="/raven-cargo-course/lab/01#section-old-new" style="color:var(--secondary);">Lab 01, Section 1</a></p>
+      <p class="mt-16" style="font-size:14px;">Each of the three layers maps to a PRAO phase: <strong style="color:#c4b5fd;">Thinking = Reason</strong>, <strong style="color:var(--accent);">Tool Calls = Act</strong>, <strong style="color:var(--success);">Response = Observe reporting back</strong>. The black box problem is a transparency problem — you were watching Act and Response but couldn't see Reason.</p>
+    </div>
+
+    <div style="margin-top:24px;">
+      <button class="btn btn-primary" onclick="completeSection0()" id="s0-btn">
+        Open the box — continue →
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 1 — Reading a Chain-of-Thought
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-1" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete the section above to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Section 1</div>
+      <h2>Reading a Chain-of-Thought</h2>
+    </div>
+
+    <!-- Prediction -->
+    <div class="challenge-card mb-16">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> CHALLENGE — Predict</div>
+      <p style="font-size:14px;color:var(--text);margin-bottom:12px;">
+        Here's the beginning of Claude's thinking trace:
+      </p>
+      <div class="thought-trace mb-16">
+        <span class="thought-line">"The user wants to refactor the authentication module. Let me first understand what the current structure looks like before deciding on an approach..."</span>
+      </div>
+      <label for="s1-predict" class="field-label">What will the agent do <em>next</em>? Write your prediction.</label>
+      <textarea aria-label="I think the agent will" id="s1-predict" rows="4" placeholder="I think the agent will..." oninput="checkPrediction('s1-predict','s1-reveal-btn',15)" aria-describedby="s1-predict-hint"></textarea>
+      <div id="s1-predict-hint" class="char-hint">15 characters to activate reveal</div>
+      <div style="margin-top:14px;">
+        <button class="btn btn-primary" id="s1-reveal-btn" disabled onclick="revealS1Trace()" aria-label="Reveal full chain-of-thought trace">
+          Reveal trace →
+        </button>
+      </div>
+    </div>
+
+    <!-- Revealed trace -->
+    <div id="s1-trace" style="display:none;">
+      <div class="info-card mb-16">
+        <p style="color:var(--text-muted);font-size:13px;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;">Full 8-step thinking trace</p>
+        <div class="thought-trace">
+          <span class="thought-line">The user wants to refactor the authentication module.</span>
+          <span class="thought-line">Let me first understand what the current structure looks like.</span>
+          <span class="thought-tool">→ Read("src/auth/index.ts") [TOOL CALL]</span>
+          <span class="thought-result">Found: 3 classes, 2 mixins, no interface definitions. 847 lines.</span>
+          <span class="thought-line">This is tightly coupled. I should separate concerns: AuthService, TokenManager, UserValidator.</span>
+          <span class="thought-decision">But I shouldn't rename the exported class — that would be a breaking change.</span>
+          <span class="thought-line">I'll refactor internals only, keep public API identical.</span>
+          <span class="thought-tool">→ Write("src/auth/index.ts", refactored content) [TOOL CALL]</span>
+        </div>
+      </div>
+
+      <!-- Apply -->
+      <div class="challenge-card mb-16">
+        <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
+        <label for="s1-apply" class="field-label">What did the agent's reasoning accomplish that a direct action would have missed? What constraint did it discover mid-thought?</label>
+        <textarea aria-label="The reasoning accomplished" id="s1-apply" rows="5" placeholder="The reasoning accomplished..." oninput="checkApply('s1-apply','s1-apply-btn',40,'s1-insight')" aria-describedby="s1-apply-hint"></textarea>
+        <div id="s1-apply-hint" class="char-hint">40 characters to submit</div>
+        <div style="margin-top:14px;">
+          <button class="btn btn-primary" id="s1-apply-btn" disabled onclick="submitApply('s1-apply','s1-apply-btn',40,'s1-insight','s1-kc')" aria-label="Submit apply response">
+            Submit →
+          </button>
+        </div>
+      </div>
+
+      <!-- Insight (hidden until apply) -->
+      <div class="insight-card" id="s1-insight" aria-live="polite">
+        <div class="card-badge insight-badge"><svg class="icon" data-lucide="lightbulb" aria-hidden="true"></svg> INSIGHT</div>
+        <p style="color:var(--text);font-size:14px;">
+          The thinking phase isn't just planning. It's the agent applying constraints it <em>discovered during reasoning</em> — "shouldn't rename exported class" came from the agent's understanding of API stability principles, not the original prompt. Without the trace, you'd see the output and wonder why it didn't rename things. The trace shows you the <strong style="color:var(--accent);">why</strong>.
+        </p>
+      </div>
+
+      <!-- Knowledge Check Q1 -->
+      <div class="check-card mt-24" id="s1-kc" style="display:none;">
+        <div class="card-badge check-badge">✓ CHECK — Q1 of 5</div>
+        <p style="color:var(--text);font-size:15px;font-weight:600;margin-bottom:4px;">In the trace above, what triggered the decision NOT to rename the exported class?</p>
+        <div class="answer-options" role="group" aria-label="Answer options for question 1">
+          <button class="answer-option" onclick="answerQ('q1','A',false,'q1-fb','A constraint in the original prompt — The prompt didn\'t mention this. Claude discovered it during Reason — breaking changes are a general principle the agent applied independently.')">
+            <span class="opt-letter">A</span>
+            <span>A constraint in the original prompt</span>
+          </button>
+          <button class="answer-option" onclick="answerQ('q1','B',true,'q1-fb','CORRECT — The thinking trace shows mid-reasoning constraint discovery. This is Reason working correctly — identifying a constraint the human didn\'t spell out.')">
+            <span class="opt-letter">B</span>
+            <span>The agent reasoned it would be a breaking change during the thinking phase</span>
+          </button>
+          <button class="answer-option" onclick="answerQ('q1','C',false,'q1-fb','No such file was read. The constraint came from the agent\'s own reasoning about API stability — not from any configuration file.')">
+            <span class="opt-letter">C</span>
+            <span>The agent read a config file that said not to rename</span>
+          </button>
+          <button class="answer-option" onclick="answerQ('q1','D',false,'q1-fb','No clarification was requested. The agent resolved the ambiguity internally through reasoning — which is exactly what a well-calibrated agent does with clear-enough context.')">
+            <span class="opt-letter">D</span>
+            <span>The agent asked the user before proceeding</span>
+          </button>
+        </div>
+        <div id="q1-fb" class="question-feedback" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 2 — Tool Call Sequences
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-2" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete the section above to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Section 2</div>
+      <h2>Tool Call Sequences</h2>
+    </div>
+
+    <p style="margin-bottom:20px;font-size:15px;">
+      Tool calls are the Act phase made visible. A sequence of tool calls is an execution plan. You can read it like a recipe — click each pattern to expand its signature.
+    </p>
+
+    <!-- 5 pattern cards -->
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px;" id="patterns-list">
+
+      <div class="pattern-card" role="button" tabindex="0" aria-expanded="false" onclick="togglePattern(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();togglePattern(this);}">
+        <div class="pattern-name">1. Read → Think → Write <span style="color:var(--success);font-size:12px;">✓ Healthy</span></div>
+        <div class="pattern-seq">Read() → Think → Write()</div>
+        <div class="pattern-detail">
+          <div class="pattern-when"><strong style="color:var(--text);">When:</strong> Single-file change where the agent needs to understand before modifying.</div>
+          <div class="pattern-good">✓ Good: One read, one focused write. Clean and purposeful.</div>
+          <div class="pattern-bad"><svg class="icon" data-lucide="triangle-alert" aria-hidden="true"></svg> Red flag: If you see Read → Write with no Think, the agent may be acting without reasoning.</div>
+        </div>
+      </div>
+
+      <div class="pattern-card" role="button" tabindex="0" aria-expanded="false" onclick="togglePattern(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();togglePattern(this);}">
+        <div class="pattern-name">2. Read × N → Think → Write × N <span style="color:var(--warning);font-size:12px;"><svg class="icon-sm" data-lucide="triangle-alert" aria-hidden="true"></svg> Watch scope</span></div>
+        <div class="pattern-seq">Read() → Read() → Read() → Think → Write() → Write()</div>
+        <div class="pattern-detail">
+          <div class="pattern-when"><strong style="color:var(--text);">When:</strong> Multi-file refactor — agent gathers context across multiple files before making coordinated changes.</div>
+          <div class="pattern-good">✓ Good: Reads cluster before writes. Agent built a complete picture first.</div>
+          <div class="pattern-bad"><svg class="icon" data-lucide="triangle-alert" aria-hidden="true"></svg> Red flag: Writes appearing before all reads are done — agent is acting on incomplete context.</div>
+        </div>
+      </div>
+
+      <div class="pattern-card" role="button" tabindex="0" aria-expanded="false" onclick="togglePattern(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();togglePattern(this);}">
+        <div class="pattern-name">3. Bash → Bash → Bash <span style="color:var(--warning);font-size:12px;"><svg class="icon-sm" data-lucide="triangle-alert" aria-hidden="true"></svg> May signal confusion</span></div>
+        <div class="pattern-seq">Bash() → Bash() → Bash() → ...</div>
+        <div class="pattern-detail">
+          <div class="pattern-when"><strong style="color:var(--text);">When:</strong> Iterative shell exploration — agent is searching for something or trying different approaches.</div>
+          <div class="pattern-good">✓ Good: Each Bash call builds on the last with a clear hypothesis (grep → find → cat pattern).</div>
+          <div class="pattern-bad"><svg class="icon" data-lucide="triangle-alert" aria-hidden="true"></svg> Red flag: Same or similar Bash commands repeating with no Write afterward — agent is stuck exploring.</div>
+        </div>
+      </div>
+
+      <div class="pattern-card" role="button" tabindex="0" aria-expanded="false" onclick="togglePattern(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();togglePattern(this);}">
+        <div class="pattern-name">4. Read → Write → Read <span style="color:var(--success);font-size:12px;">✓ Observe working</span></div>
+        <div class="pattern-seq">Read() → Write() → Read()</div>
+        <div class="pattern-detail">
+          <div class="pattern-when"><strong style="color:var(--text);">When:</strong> Act then Observe — the agent is verifying that its write had the intended effect.</div>
+          <div class="pattern-good">✓ Good: The post-write Read is the Observe phase completing the PRAO cycle. This is healthy self-correction.</div>
+          <div class="pattern-bad"><svg class="icon" data-lucide="triangle-alert" aria-hidden="true"></svg> Red flag: There is no red flag here — this is the pattern working correctly.</div>
+        </div>
+      </div>
+
+      <div class="pattern-card" role="button" tabindex="0" aria-expanded="false" onclick="togglePattern(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();togglePattern(this);}">
+        <div class="pattern-name">5. Think → Think → Think → (no tool call) <span style="color:var(--danger);font-size:12px;">✗ Analysis paralysis</span></div>
+        <div class="pattern-seq">Think → Think → Think → [stalled]</div>
+        <div class="pattern-detail">
+          <div class="pattern-when"><strong style="color:var(--text);">When:</strong> Agent is in Reason but cannot commit to an Act — usually because the goal is ambiguous or scope is too wide.</div>
+          <div class="pattern-good">Intervention: Add a concrete starting point. "Start by reading src/auth/index.ts" breaks the paralysis.</div>
+          <div class="pattern-bad">✗ If left alone: Agent may produce a vague response that summarizes its uncertainty rather than taking action.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Predict on a sequence -->
+    <div class="challenge-card mb-16">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> CHALLENGE — Predict</div>
+      <p style="font-size:14px;color:var(--text);margin-bottom:10px;">You see this sequence in a trace:</p>
+      <div class="code-block mb-16">
+        <span class="fn">Bash</span>(<span class="string">'grep -r fetchUser src/'</span>)<br>
+        → <span class="fn">Read</span>(<span class="string">'src/api/users.ts'</span>)<br>
+        → <span class="fn">Read</span>(<span class="string">'src/auth/middleware.ts'</span>)<br>
+        → Think<br>
+        → <span class="fn">Write</span>(<span class="string">'src/api/users.ts'</span>)
+      </div>
+      <label for="s2-predict" class="field-label">What is the agent building toward? What pattern from above does this match?</label>
+      <textarea aria-label="The agent is" id="s2-predict" rows="4" placeholder="The agent is..." oninput="checkPrediction('s2-predict','s2-reveal-btn',15)" aria-describedby="s2-predict-hint"></textarea>
+      <div id="s2-predict-hint" class="char-hint">15 characters to activate reveal</div>
+      <div style="margin-top:14px;">
+        <button class="btn btn-primary" id="s2-reveal-btn" disabled onclick="revealS2()" aria-label="Reveal explanation">
+          Reveal →
+        </button>
+      </div>
+    </div>
+
+    <!-- Revealed explanation -->
+    <div id="s2-reveal" style="display:none;">
+      <div class="info-card mb-16">
+        <p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;">Trace explanation</p>
+        <p style="font-size:14px;">This is a <strong style="color:var(--accent);">dependency-tracing pattern</strong>: Bash finds all usages of <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;color:var(--warning);">fetchUser</code>, Read gathers context from each affected file, Think synthesizes the full impact, then Write makes a surgical, context-aware change. The agent knew it couldn't safely edit <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;color:var(--warning);">users.ts</code> without understanding how the middleware uses the same function.</p>
+      </div>
+
+      <!-- Apply -->
+      <div class="challenge-card mb-16">
+        <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
+        <label for="s2-apply" class="field-label">You see Bash → Bash → Bash → Bash in a trace with no Write calls afterward. What would you do next, and what's your diagnosis?</label>
+        <textarea aria-label="My diagnosis is" id="s2-apply" rows="5" placeholder="My diagnosis is..." oninput="checkApply('s2-apply','s2-apply-btn',40,'','')" aria-describedby="s2-apply-hint"></textarea>
+        <div id="s2-apply-hint" class="char-hint">40 characters to submit</div>
+        <div style="margin-top:14px;">
+          <button class="btn btn-primary" id="s2-apply-btn" disabled onclick="submitApplyNoInsight('s2-apply','s2-apply-btn',40,'s2-kc')" aria-label="Submit apply response">
+            Submit →
+          </button>
+        </div>
+      </div>
+
+      <!-- Knowledge Check Q2 -->
+      <div class="check-card mt-24" id="s2-kc" style="display:none;">
+        <div class="card-badge check-badge">✓ CHECK — Q2 of 5</div>
+        <p style="color:var(--text);font-size:15px;font-weight:600;margin-bottom:4px;">You see: Read('config.yaml') → Think → Read('config.yaml') → Think → Read('config.yaml'). What's happening?</p>
+        <div class="answer-options" role="group" aria-label="Answer options for question 2">
+          <button class="answer-option" onclick="answerQ('q2','A',false,'q2-fb','Reading the same file three times is not careful verification. Verification uses Read <em>after</em> a Write. This is the same file before any action — a loop, not thoroughness.')">
+            <span class="opt-letter">A</span>
+            <span>The agent is verifying its understanding carefully</span>
+          </button>
+          <button class="answer-option" onclick="answerQ('q2','B',true,'q2-fb','CORRECT — Repeated reads of the same file without action indicates the agent is stuck. The task scope or context is insufficient for it to commit to an Act. Adding more context or narrowing the scope breaks the loop.')">
+            <span class="opt-letter">B</span>
+            <span>The agent is confused and looping — a clarifying intervention is needed</span>
+          </button>
+          <button class="answer-option" onclick="answerQ('q2','C',false,'q2-fb','Observe comes after Act. No Write has occurred, so there\'s nothing to observe yet. This pattern is stuck in the Perceive/Reason cycle — Act never started.')">
+            <span class="opt-letter">C</span>
+            <span>This is the Observe phase running multiple checks</span>
+          </button>
+          <button class="answer-option" onclick="answerQ('q2','D',false,'q2-fb','Read() reads the current state of a file. There is no version comparison — it\'s the same file three times. The agent is not doing version control; it is looping.')">
+            <span class="opt-letter">D</span>
+            <span>The agent is comparing different versions of the file</span>
+          </button>
+        </div>
+        <div id="q2-fb" class="question-feedback" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 3 — When Agents Ask for Help
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-3" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete the section above to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Section 3</div>
+      <h2>When Agents Ask for Help</h2>
+    </div>
+
+    <div class="info-card mb-16">
+      <p style="font-size:15px;color:var(--text);margin-bottom:16px;">
+        A clarification request is not a failure. It's the agent being honest about uncertainty rather than guessing. Train yourself to celebrate it — an agent that guesses under ambiguity is far more dangerous than one that asks.
+      </p>
+      <p style="font-size:13px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">Three types of clarification requests:</p>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="background:var(--bg-raised);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--radius-sm);padding:16px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;">1. Scope Clarification</div>
+          <p style="font-size:14px;color:var(--text);font-style:italic;margin-bottom:6px;">"Should I apply this change to all files or just the one you mentioned?"</p>
+          <p style="font-size:13px;color:var(--text-muted);">Signal: Your prompt had ambiguous scope. The agent found multiple valid interpretations.</p>
+          <p style="font-size:13px;color:var(--warning);margin-top:4px;">Response: Narrow the scope explicitly. "Just src/routes/users.ts"</p>
+        </div>
+        <div style="background:var(--bg-raised);border:1px solid var(--border);border-left:3px solid var(--danger);border-radius:var(--radius-sm);padding:16px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--danger);margin-bottom:6px;">2. Authority Clarification</div>
+          <p style="font-size:14px;color:var(--text);font-style:italic;margin-bottom:6px;">"This will delete 847 lines. Should I proceed?"</p>
+          <p style="font-size:13px;color:var(--text-muted);">Signal: Agent correctly checking before an irreversible action. This is safe behavior, not weakness.</p>
+          <p style="font-size:13px;color:var(--warning);margin-top:4px;">Response: Answer yes/no. Don't provide new context — just confirm or abort.</p>
+        </div>
+        <div style="background:var(--bg-raised);border:1px solid var(--border);border-left:3px solid var(--secondary);border-radius:var(--radius-sm);padding:16px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--secondary);margin-bottom:6px;">3. Context Clarification</div>
+          <p style="font-size:14px;color:var(--text);font-style:italic;margin-bottom:6px;">"I found two functions named processPayment. Which should I modify?"</p>
+          <p style="font-size:13px;color:var(--text-muted);">Signal: Multiple matches — agent needs disambiguation. The prompt lacked specificity.</p>
+          <p style="font-size:13px;color:var(--warning);margin-top:4px;">Response: Provide file path + function signature. Then add it to CLAUDE.md.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Intervention Trainer -->
+    <div style="margin-bottom:24px;">
+      <p style="font-size:13px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;">Intervention Trainer — categorize each agent response:</p>
+
+      <div class="intervention-item" id="int-1">
+        <div class="intervention-q">Which database should I connect to — the one in .env.local or .env.production?</div>
+        <div class="intervention-options" role="group" aria-label="How to respond to agent question 1">
+          <button class="intervention-opt" onclick="scoreIntervention(1,'answer',false)" aria-label="Answer the question">Answer the question</button>
+          <button class="intervention-opt" onclick="scoreIntervention(1,'context',true)" aria-label="Provide context">Provide context</button>
+          <button class="intervention-opt" onclick="scoreIntervention(1,'narrow',false)" aria-label="Narrow the scope">Narrow the scope</button>
+        </div>
+        <div class="intervention-fb" id="int-1-fb">Context — this is a context clarification. The agent found two valid config files and can't know which environment applies. Provide the context: "Use .env.local for this run." Then add the rule to CLAUDE.md.</div>
+      </div>
+
+      <div class="intervention-item" id="int-2">
+        <div class="intervention-q">Should I also update the test files?</div>
+        <div class="intervention-options" role="group" aria-label="How to respond to agent question 2">
+          <button class="intervention-opt" onclick="scoreIntervention(2,'answer',true)" aria-label="Answer the question">Answer the question</button>
+          <button class="intervention-opt" onclick="scoreIntervention(2,'context',false)" aria-label="Provide context">Provide context</button>
+          <button class="intervention-opt" onclick="scoreIntervention(2,'narrow',false)" aria-label="Narrow the scope">Narrow the scope</button>
+        </div>
+        <div class="intervention-fb" id="int-2-fb">Answer the question — this is a scope clarification with a yes/no answer. The agent found scope ambiguity and is asking for authority. Say yes or no. Don't add new context — just confirm the scope.</div>
+      </div>
+
+      <div class="intervention-item" id="int-3">
+        <div class="intervention-q">I found 14 files with TODO comments. Should I fix all of them?</div>
+        <div class="intervention-options" role="group" aria-label="How to respond to agent question 3">
+          <button class="intervention-opt" onclick="scoreIntervention(3,'answer',false)" aria-label="Answer the question">Answer the question</button>
+          <button class="intervention-opt" onclick="scoreIntervention(3,'context',false)" aria-label="Provide context">Provide context</button>
+          <button class="intervention-opt" onclick="scoreIntervention(3,'narrow',true)" aria-label="Narrow the scope">Narrow the scope</button>
+        </div>
+        <div class="intervention-fb" id="int-3-fb">Narrow the scope — 14 files is too broad. The agent is surfacing scope explosion. Pick the 2-3 most critical TODOs and narrow: "Fix only the TODOs in src/api/ — skip tests and docs."</div>
+      </div>
+
+      <div class="intervention-item" id="int-4">
+        <div class="intervention-q">This change will modify the public API signature. Is that intended?</div>
+        <div class="intervention-options" role="group" aria-label="How to respond to agent question 4">
+          <button class="intervention-opt" onclick="scoreIntervention(4,'answer',true)" aria-label="Answer the question">Answer the question</button>
+          <button class="intervention-opt" onclick="scoreIntervention(4,'context',false)" aria-label="Provide context">Provide context</button>
+          <button class="intervention-opt" onclick="scoreIntervention(4,'narrow',false)" aria-label="Narrow the scope">Narrow the scope</button>
+        </div>
+        <div class="intervention-fb" id="int-4-fb">Answer the question — this is an authority clarification about an irreversible action. The agent is correctly checking before a breaking change. Answer yes or no. This is the agent being safe, not confused.</div>
+      </div>
+
+      <div class="intervention-item" id="int-5">
+        <div class="intervention-q">Which error handling strategy do you prefer — return null or throw?</div>
+        <div class="intervention-options" role="group" aria-label="How to respond to agent question 5">
+          <button class="intervention-opt" onclick="scoreIntervention(5,'answer',false)" aria-label="Answer the question">Answer the question</button>
+          <button class="intervention-opt" onclick="scoreIntervention(5,'context',true)" aria-label="Provide context">Provide context</button>
+          <button class="intervention-opt" onclick="scoreIntervention(5,'narrow',false)" aria-label="Narrow the scope">Narrow the scope</button>
+        </div>
+        <div class="intervention-fb" id="int-5-fb">Provide context — and then add it to CLAUDE.md. This is a preference question that will recur across sessions. "We throw typed errors: throw new AuthError('message'). Add this to CLAUDE.md so future sessions don't need to ask."</div>
+      </div>
+    </div>
+
+    <!-- Knowledge Check Q3 -->
+    <div class="check-card mt-24" id="s3-kc" style="display:none;">
+      <div class="card-badge check-badge">✓ CHECK — Q3 of 5</div>
+      <p style="color:var(--text);font-size:15px;font-weight:600;margin-bottom:4px;">Claude responds: "I found 3 functions named authenticate(). Which should I modify?" What's the right response?</p>
+      <div class="answer-options" role="group" aria-label="Answer options for question 3">
+        <button class="answer-option" onclick="answerQ('q3','A',false,'q3-fb','Never delegate ambiguity resolution to the agent when you know the answer. You\'ll get a probabilistic guess. Provide the specific disambiguation yourself.')">
+          <span class="opt-letter">A</span>
+          <span>Tell Claude to pick the most likely one</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q3','B',false,'q3-fb','You don\'t need to restart. The conversation context is preserved across turns. Answer the question in the next message — the agent will continue from where it stopped.')">
+          <span class="opt-letter">B</span>
+          <span>Restart with a more specific prompt</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q3','C',true,'q3-fb','CORRECT — Direct, specific disambiguation. \"The authenticate() in src/auth/service.ts that takes a JWT token.\" The agent will continue from here with no context loss.')">
+          <span class="opt-letter">C</span>
+          <span>Answer with the specific file path and function signature</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q3','D',false,'q3-fb','Scope expansion during ambiguity is how unintended changes happen. The agent found 3 functions for a reason — they serve different purposes. Disambiguate, don\'t expand.')">
+          <span class="opt-letter">D</span>
+          <span>Say "all three" to be safe</span>
+        </button>
+      </div>
+      <div id="q3-fb" class="question-feedback" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 4 — Extended Thinking Mode
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-4" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete the section above to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Section 4</div>
+      <h2>Extended Thinking Mode</h2>
+    </div>
+
+    <div class="info-card mb-16">
+      <p style="font-size:15px;color:var(--text);margin-bottom:16px;">
+        Extended thinking is a model-level API parameter available in Claude 3.7 Sonnet. It gives the model a scratchpad it works through before responding — and makes that scratchpad visible to you. This is where the agent reasons through complex problems explicitly.
+      </p>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Use case</th>
+            <th>Extended thinking?</th>
+            <th>Why</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Complex architecture decisions</td>
+            <td class="check-yes">✓ Yes</td>
+            <td>Agent explores trade-offs explicitly — you can audit the reasoning</td>
+          </tr>
+          <tr>
+            <td>Debugging multi-file failures</td>
+            <td class="check-yes">✓ Yes</td>
+            <td>Trace shows which hypothesis the agent tested and why it chose the fix it did</td>
+          </tr>
+          <tr>
+            <td>Simple file edits</td>
+            <td class="check-no">✗ No</td>
+            <td>Overhead with no benefit — standard mode is faster and equally effective</td>
+          </tr>
+          <tr>
+            <td>Boilerplate generation</td>
+            <td class="check-no">✗ No</td>
+            <td>No real reasoning required — mechanical task, no trade-offs to surface</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="font-size:14px;margin-bottom:12px;">An annotated extended thinking excerpt — notice how the agent surfaces an ambiguity it resolved:</p>
+    <div class="extended-thinking mb-16">
+      <span class="et-label">thinking</span><br>
+      The user wants to migrate from REST to GraphQL. Let me consider the implications:<br><br>
+      1. All existing clients use REST endpoints — breaking change for external consumers.<br>
+      2. Internal services might be easier to migrate — check what uses the API.<br>
+      3. Could run both in parallel during transition (Apollo Federation approach).<br>
+      4. The user said 'migrate' not 'add alongside' — but parallel is safer.<br><br>
+      <span style="color:var(--warning);font-style:normal;font-weight:600;">Recommendation: Propose parallel running first, ask if that's acceptable.</span>
+    </div>
+
+    <!-- Apply -->
+    <div class="challenge-card mb-16">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
+      <label for="s4-apply" class="field-label">What does this thinking trace reveal about how the agent handled an ambiguity in the word 'migrate'? What would have happened without extended thinking?</label>
+      <textarea aria-label="The trace reveals" id="s4-apply" rows="5" placeholder="The trace reveals..." oninput="checkApply('s4-apply','s4-apply-btn',40,'s4-insight','s4-kc-wrapper')" aria-describedby="s4-apply-hint"></textarea>
+      <div id="s4-apply-hint" class="char-hint">40 characters to submit</div>
+      <div style="margin-top:14px;">
+        <button class="btn btn-primary" id="s4-apply-btn" disabled onclick="submitApply('s4-apply','s4-apply-btn',40,'s4-insight','s4-kc-wrapper')" aria-label="Submit apply response">
+          Submit →
+        </button>
+      </div>
+    </div>
+
+    <!-- CALLBACK: gccf-pattern -->
+    <div class="callback-card mb-16" role="note" aria-label="Concept callback: GCCF Pattern">
+      <div class="card-badge callback-badge"><svg class="icon" data-lucide="link" aria-hidden="true"></svg> CALLBACK</div>
+      <p><strong>GCCF Pattern</strong> — first introduced in <a href="/raven-cargo-course/lab/02#section-1" style="color:var(--secondary);">Lab 02, Section 1</a></p>
+      <p class="mt-16" style="font-size:14px;">The agent's thinking trace revealed an ambiguity in the <strong style="color:var(--accent);">Goal</strong> component. A more precise GCCF prompt — "migrate AND deprecate REST by Q3" vs "add GraphQL alongside REST" — would have eliminated the uncertainty before thinking began. The trace shows you where your prompt fell short.</p>
+    </div>
+
+    <!-- Insight -->
+    <div class="insight-card" id="s4-insight" aria-live="polite">
+      <div class="card-badge insight-badge"><svg class="icon" data-lucide="lightbulb" aria-hidden="true"></svg> INSIGHT</div>
+      <p style="color:var(--text);font-size:14px;">
+        Extended thinking makes implicit reasoning explicit. The agent would have made the same internal decision without extended thinking — you just wouldn't have seen it. <strong style="color:var(--accent);">Extended thinking is an observation tool, not a reasoning enhancer.</strong> Use it when you need to audit decisions, not when you want better decisions.
+      </p>
+    </div>
+
+    <div id="s4-kc-wrapper" style="display:none;">
+      <!-- No additional KC in section 4 — KCs 4 and 5 are in section 5 -->
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 5 — Synthesis
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-5" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete the section above to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Section 5</div>
+      <h2>Synthesis</h2>
+    </div>
+
+    <p style="margin-bottom:24px;font-size:15px;">Two final checks to confirm your mental model of agent traces and extended thinking.</p>
+
+    <!-- Knowledge Check Q4 -->
+    <div class="check-card mb-24">
+      <div class="card-badge check-badge">✓ CHECK — Q4 of 5</div>
+      <p style="color:var(--text);font-size:15px;font-weight:600;margin-bottom:4px;">You're reviewing a trace and see: Think → Read → Think → Read → Think → Write. What's the healthiest interpretation?</p>
+      <div class="answer-options" role="group" aria-label="Answer options for question 4">
+        <button class="answer-option" onclick="answerQ('q4','A',false,'q4-fb','Multiple think-read cycles can indicate thoroughness, not inefficiency. Look at <em>what</em> it was reading. Different files read in alternation with thinking is normal for complex changes.')">
+          <span class="opt-letter">A</span>
+          <span>The agent is inefficient and should be prompted more specifically</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q4','B',true,'q4-fb','CORRECT — Think-Read alternation is normal for complex changes. The agent is building a mental model before committing to a Write. Different files being read with reasoning in between is exploration, not repetition.')">
+          <span class="opt-letter">B</span>
+          <span>The agent is doing dependency tracing — reading related files to understand context before acting</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q4','C',false,'q4-fb','Loops read the <em>same</em> file repeatedly. This pattern shows alternation between Thinking and Reading — potentially different files each time. Exploration is not the same as looping.')">
+          <span class="opt-letter">C</span>
+          <span>The agent is stuck in a loop</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q4','D',false,'q4-fb','Observe follows Act. These reads precede any Write. They are Perceive (gathering) with Reason (thinking) interleaved — standard multi-file exploration before committing to action.')">
+          <span class="opt-letter">D</span>
+          <span>The Observe phase is running before Act</span>
+        </button>
+      </div>
+      <div id="q4-fb" class="question-feedback" aria-live="polite"></div>
+    </div>
+
+    <!-- Knowledge Check Q5 -->
+    <div class="check-card" id="s5-q5">
+      <div class="card-badge check-badge">✓ CHECK — Q5 of 5</div>
+      <p style="color:var(--text);font-size:15px;font-weight:600;margin-bottom:4px;">Which situation warrants turning on extended thinking mode?</p>
+      <div class="answer-options" role="group" aria-label="Answer options for question 5">
+        <button class="answer-option" onclick="answerQ('q5','A',false,'q5-fb','Simple, mechanical task. No complex trade-offs. Extended thinking adds latency with no reasoning benefit — standard mode handles route additions without deliberation.')">
+          <span class="opt-letter">A</span>
+          <span>Adding a new route to an existing Express.js API</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q5','B',true,'q5-fb','CORRECT — Architecture decisions involve trade-offs, constraints, and context the agent should reason through explicitly. Extended thinking makes that reasoning auditable — you can verify the agent considered your constraints before committing.')">
+          <span class="opt-letter">B</span>
+          <span>Deciding whether to use event sourcing vs. CQRS for a new payment service</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q5','C',false,'q5-fb','No reasoning required. Typo correction is the simplest possible Act — identify the character, replace it. Extended thinking would be using a sledgehammer on a thumbtack.')">
+          <span class="opt-letter">C</span>
+          <span>Fixing a typo in a README</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q5','D',false,'q5-fb','Tool execution, not reasoning. Listing files is a mechanical Bash call. Extended thinking is for decisions with trade-offs, not for mechanics with deterministic outputs.')">
+          <span class="opt-letter">D</span>
+          <span>Running a bash script to list files</span>
+        </button>
+      </div>
+      <div id="q5-fb" class="question-feedback" aria-live="polite"></div>
+    </div>
+
+    <!-- CE-03-D: Issue Navigation Exercise -->
+    <div class="build-challenge" id="ce-03-d">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span class="build-badge"><svg class="icon-lg" data-lucide="hammer" aria-hidden="true"></svg> Build Challenge</span>
+        <span class="ce-xp-badge">+30 XP Bonus</span>
+      </div>
+      <h3 style="margin:0 0 8px;color:var(--text);">Challenge CE-03-D: Issue Navigation Exercise</h3>
+      <p style="color:var(--text-muted);margin-bottom:16px;font-size:14px;">You've learned how Claude thinks through tool calls. Now apply it to a real-world scenario: a bug report has just arrived. Walk through exactly how Claude Code would approach it, step by step.</p>
+
+      <div class="ce-requirements" style="margin-bottom:20px;">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+          <span style="background:#fee2e2;color:#991b1b;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;">BUG REPORT #1247</span>
+          <strong style="font-size:14px;color:var(--text);">API returns 500 on user login after recent deploy</strong>
+        </div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.6;">
+          <p><strong>Description:</strong> Users are getting 500 Internal Server Error when trying to log in. This started after yesterday's deploy (commit a3f2d8c). Auth worked fine before the deploy.</p>
+          <p style="margin-top:8px;"><strong>Steps to reproduce:</strong></p>
+          <ol style="padding-left:20px;margin-top:4px;">
+            <li>POST /api/auth/login with valid credentials</li>
+            <li>Receive 500 error instead of 200 + JWT token</li>
+          </ol>
+          <p style="margin-top:8px;"><strong>Environment:</strong> Production. Node.js API. Auth handled in <code>src/api/routes/auth.ts</code>. Database is PostgreSQL via Prisma.</p>
+          <p style="margin-top:8px;"><strong>Relevant code changed in a3f2d8c:</strong> "Refactor user model to add profile fields"</p>
+          <p style="margin-top:12px;"><strong>auth.ts route (broken, as of a3f2d8c):</strong></p>
+          <pre class="code-block" style="margin-top:6px;font-size:11px;white-space:pre-wrap;">// src/api/routes/auth.ts (simplified)
+router.post('/login', async (req, res) =&gt; {
+  const { email, password } = req.body;
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true, email: true, passwordHash: true, profile: true }
+  });
+  if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+  const valid = await bcrypt.compare(password, user.passwordHash);
+  if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
+  const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
+  res.json({ token, user: { id: user.id, email: user.email } });
+});</pre>
+          <p style="margin-top:12px;"><strong>Prisma schema diff (from a3f2d8c):</strong></p>
+          <pre class="code-block" style="margin-top:6px;font-size:11px;white-space:pre-wrap;"><span style="color:#f87171;">- model User {
+-   id           String @id @default(uuid())
+-   email        String @unique
+-   passwordHash String
+- }</span>
+<span style="color:#4ade80;">+ model User {
++   id           String  @id @default(uuid())
++   email        String  @unique
++   passwordHash String
++   profile      Profile @relation(fields: [profileId], references: [id])
++   profileId    String  @unique
++ }</span></pre>
+          <p style="font-size:11px;color:var(--text-muted);margin-top:6px;"><svg class="icon" data-lucide="triangle-alert" aria-hidden="true"></svg> Error in production logs: <code>PrismaClientKnownRequestError: Unknown field `profile` for select statement on model User</code></p>
+        </div>
+      </div>
+
+      <div style="display:grid;gap:16px;">
+        <div>
+          <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">1. First 3 tool calls — what should Claude Code do first?</label>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Write exact tool calls: which tool, which arguments, in which order. Don't start with "read everything" — be surgical.</p>
+          <textarea aria-label="Tool call 1: Bash(" id="ce-03-d-q1" placeholder="Write your first three tool calls in order. Include tool name and arguments for each call." style="width:100%;min-height:120px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+        </div>
+
+        <div>
+          <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">2. PRAO annotation — label each of your 3 tool calls</label>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">For each tool call, identify its PRAO phase and explain why it belongs there.</p>
+          <textarea aria-label="Tool call 1: P (Plan) — deciding what information we need be" id="ce-03-d-q2" placeholder="Label each of your three tool calls with a PRAO phase and explain your reasoning." style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+        </div>
+
+        <div>
+          <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">3. Hypothesize the root cause</label>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Based on the issue description: "Refactor user model to add profile fields" caused 500 on login. What's the most likely root cause?</p>
+          <textarea aria-label="Most likely: the user model schema changed (added non-nullab" id="ce-03-d-q3" placeholder="Describe your root-cause hypothesis and the evidence you would gather to confirm it." style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+        </div>
+
+        <div>
+          <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">4. Write the fix prompt</label>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Write the GCCF-structured prompt you'd give Claude Code to implement the fix.</p>
+          <textarea aria-label="Goal: Fix the 500 error on POST /api/auth/login caused by th" id="ce-03-d-q4" placeholder="Write a full GCCF prompt with Goal, Context, Constraints, and required output format." style="width:100%;min-height:120px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+        </div>
+
+        <div>
+          <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">5. Write the PR description Claude Code should generate</label>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">After Claude fixes the bug, what should the PR description say? Include: what changed, why, how to verify.</p>
+          <textarea aria-label="## Fix: Resolve 500 on /api/auth/login after user model refa" id="ce-03-d-q5" placeholder="Draft a PR description with sections for problem, root cause, fix, and verification steps." style="width:100%;min-height:120px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+        </div>
+      </div>
+
+      <div class="ce-requirements" style="margin-top:20px;">
+        <strong style="font-size:13px;">What you're demonstrating:</strong>
+        <ul style="margin:8px 0 0;padding-left:20px;font-size:13px;color:var(--text-muted);">
+          <li>Tool call precision — not "read everything," but the right 3 files in the right order</li>
+          <li>PRAO awareness — knowing which phase each tool call serves</li>
+          <li>Root cause reasoning — forming a hypothesis from limited information</li>
+          <li>GCCF prompting — structured fix instructions that don't leave room for the agent to wander</li>
+          <li>PR communication — translating agent work into human-readable context</li>
+        </ul>
+      </div>
+
+      <button onclick="submitCE03D()" class="btn btn-secondary" style="margin-top:16px;">Submit for +30 XP</button>
+
+      <div id="ce-03-d-model" class="ce-model-answer" style="display:none;">
+        <strong style="color:var(--secondary,#6366f1);"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Model Answer:</strong>
+        <div style="font-size:13px;color:var(--text);margin-top:12px;display:grid;gap:14px;">
+          <div>
+            <strong>Tool calls:</strong>
+            <ol style="padding-left:20px;margin-top:6px;color:var(--text-muted);">
+              <li><code>Bash('git show a3f2d8c --stat')</code> — reveals exactly which files changed in the breaking commit</li>
+              <li><code>Bash('git show a3f2d8c -- prisma/schema.prisma')</code> — shows the Prisma schema diff</li>
+              <li><code>Read('src/api/routes/auth.ts')</code> — read the auth route to see how it queries the user</li>
+            </ol>
+          </div>
+          <div>
+            <strong>Root cause:</strong>
+            <p style="color:var(--text-muted);margin-top:6px;">Most likely: Prisma schema was updated (added non-nullable profile fields) but either (a) the database migration wasn't applied to production, or (b) <code>npx prisma generate</code> wasn't run, so the Prisma client's TypeScript types are out of sync with the schema. The auth route fails when it tries to select or insert a user with the new fields.</p>
+          </div>
+          <div>
+            <strong>GCCF fix prompt:</strong>
+            <p style="color:var(--text-muted);margin-top:6px;font-style:italic;">"Goal: Fix the 500 on POST /api/auth/login by resolving the Prisma schema mismatch from commit a3f2d8c. Context: The commit added profile fields. Prod DB may not have the migration applied. Prisma client may not be regenerated. Constraints: Do not change auth logic — only fix data layer. Show migration status first before applying anything. Format: Explain what you'll check, what you find, and what you'll change before you change it."</p>
+          </div>
+        </div>
+        <div style="margin-top:16px; padding:12px 16px; background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.15); border-radius:8px; font-size:13px;">
+          <span style="color:#a78bfa; font-weight:600;">Ready for more?</span>
+          <span style="color:#94a3b8;"> This exercise prepares you for </span>
+          <a href="/challenges#mission-21-codebase-archaeology---understand-before-touching-" style="color:#a78bfa; text-decoration:underline;">Mission 2.1 — Codebase Archaeology</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 6 — Capstone Challenge
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-6" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete all sections above to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Capstone Challenge</div>
+      <h2>Diagnose a Real Trace</h2>
+    </div>
+
+    <p style="font-size:15px;margin-bottom:20px;">Here's a real agent trace. It shows something going wrong. Your job is to diagnose it and write the intervention.</p>
+
+    <div class="trace-output mb-16" aria-label="Agent execution trace">
+      <div class="trace-line">
+        <span class="trace-tag tag-think">THINK</span>
+        <span class="trace-text">I need to add authentication to the API endpoints</span>
+      </div>
+      <div class="trace-line">
+        <span class="trace-tag tag-tool">TOOL</span>
+        <span class="trace-text">Read("src/routes/users.ts")</span>
+      </div>
+      <div class="trace-line">
+        <span class="trace-tag tag-result">RESULT</span>
+        <span class="trace-text">Found 4 endpoints: GET /users, POST /users, GET /users/:id, DELETE /users/:id</span>
+      </div>
+      <div class="trace-line">
+        <span class="trace-tag tag-think">THINK</span>
+        <span class="trace-text">I'll add JWT authentication middleware to all endpoints</span>
+      </div>
+      <div class="trace-line">
+        <span class="trace-tag tag-tool">TOOL</span>
+        <span class="trace-text">Write("src/routes/users.ts", [adds requireAuth() to all 4 endpoints])</span>
+      </div>
+      <div class="trace-line">
+        <span class="trace-tag tag-think">THINK</span>
+        <span class="trace-text">Done. Let me verify by reading the file</span>
+      </div>
+      <div class="trace-line">
+        <span class="trace-tag tag-tool">TOOL</span>
+        <span class="trace-text">Read("src/routes/users.ts")</span>
+      </div>
+      <div class="trace-line">
+        <span class="trace-tag tag-result">RESULT</span>
+        <span class="trace-text">File updated. All 4 endpoints now require authentication.</span>
+      </div>
+      <div class="trace-line">
+        <span class="trace-tag tag-warn">THINK</span>
+        <span class="trace-text">Wait — POST /users is the registration endpoint. It shouldn't require auth.</span>
+      </div>
+      <div class="trace-line">
+        <span class="trace-tag tag-tool">TOOL</span>
+        <span class="trace-text">Write("src/routes/users.ts", [removes requireAuth() from POST /users])</span>
+      </div>
+      <div class="trace-line">
+        <span class="trace-tag tag-warn">THINK</span>
+        <span class="trace-text">Actually, what about GET /users — should that be public too? The prompt said 'add authentication' but didn't specify which endpoints</span>
+      </div>
+      <div class="trace-line">
+        <span class="trace-tag tag-tool">TOOL</span>
+        <span class="trace-text">Read("src/routes/users.ts")</span>
+      </div>
+      <div class="trace-line">
+        <span class="trace-tag tag-warn">THINK</span>
+        <span class="trace-text">I'm unsure about GET /users. Let me check if there's any documentation...</span>
+      </div>
+      <div class="trace-line">
+        <span class="trace-tag tag-tool">TOOL</span>
+        <span class="trace-text">Read("README.md") ...</span>
+      </div>
+    </div>
+
+    <!-- Capstone Challenge textarea -->
+    <div class="challenge-card mb-16">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> BOSS CHALLENGE</div>
+      <p style="font-size:14px;color:var(--text);margin-bottom:16px;">Write your complete diagnosis and intervention. Address all four parts:</p>
+      <ol style="color:var(--text-muted);font-size:14px;padding-left:20px;margin-bottom:16px;line-height:2;">
+        <li>At what point did the agent's uncertainty become visible?</li>
+        <li>What was missing from the original prompt that caused this?</li>
+        <li>Write the improved GCCF prompt that would have prevented this.</li>
+        <li>What CLAUDE.md entry would document this API's auth rules for future sessions?</li>
+      </ol>
+      <label for="boss-challenge" class="field-label">Your diagnosis and intervention:</label>
+      <textarea aria-label="1. Uncertainty became visible when" id="boss-challenge" rows="10" placeholder="1. Uncertainty became visible when..." oninput="checkApply('boss-challenge','boss-submit-btn',80,'',''); saveBoss()" aria-describedby="boss-hint"></textarea>
+      <div id="boss-hint" class="char-hint">80 characters to submit</div>
+      <div style="margin-top:14px;">
+        <button class="btn btn-amber" id="boss-submit-btn" disabled onclick="submitBoss()" aria-label="Submit boss challenge">
+          Submit &amp; reveal model answer →
+        </button>
+      </div>
+    </div>
+
+    <!-- Model Answer -->
+    <div class="model-answer" id="boss-model">
+      <h4>Model Answer</h4>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div>
+          <p style="color:var(--accent);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">1. When uncertainty became visible</p>
+          <p style="font-size:14px;">After the first Write — "Wait — POST /users is registration, shouldn't require auth." The agent acted before resolving a constraint it discovered mid-execution. The prompt said "add authentication" without specifying which endpoints are public.</p>
+        </div>
+        <div>
+          <p style="color:var(--accent);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">2. What was missing</p>
+          <p style="font-size:14px;">The Constraints component of the GCCF prompt. No specification of which endpoints should be public vs. protected. "Add authentication" is a goal without constraints — the agent had to guess, and guessed wrong.</p>
+        </div>
+        <div>
+          <p style="color:var(--accent);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">3. Improved GCCF Prompt</p>
+          <div class="code-block" style="margin-top:8px;">
+<span class="comment">Goal:</span> In src/routes/users.ts, add requireAuth() middleware to specific endpoints<br>
+<span class="comment">Context:</span> JWT-based auth; requireAuth middleware already imported<br>
+<span class="comment">Constraints:</span> POST /users (registration) and GET /users (public directory) must<br>
+            remain unauthenticated. GET /users/:id and DELETE /users/:id require auth.<br>
+            Do not modify endpoint logic — only add/remove middleware calls.<br>
+<span class="comment">Format:</span> Show the modified file with inline comments marking each change
+          </div>
+        </div>
+        <div>
+          <p style="color:var(--accent);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">4. CLAUDE.md Entry</p>
+          <div class="code-block" style="margin-top:8px;">
+<span class="comment">## API Authentication Rules — /users routes</span><br>
+Public (no auth): POST /users (registration), GET /users (public directory)<br>
+Protected (requireAuth): GET /users/:id, DELETE /users/:id<br>
+Middleware: requireAuth() — JWT validation, already imported in routes files
+          </div>
+        </div>
+      </div>
+
+      <!-- Self-evaluation rubric -->
+      <div style="margin-top:24px;">
+        <p style="font-size:13px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">Self-evaluation — how did you do?</p>
+        <div class="rubric">
+          <div class="rubric-level rubric-d">
+            <div class="rubric-level-label">Distinguished</div>
+            <div class="rubric-desc">All 4 components present. GCCF lists specific endpoint names. CLAUDE.md entry is reusable across future sessions. Uncertainty pinpointed to the exact trace line.</div>
+          </div>
+          <div class="rubric-level rubric-p">
+            <div class="rubric-level-label">Proficient</div>
+            <div class="rubric-desc">3 components present. GCCF goal is measurable. Missing CLAUDE.md entry or GCCF lacks specificity on endpoint names.</div>
+          </div>
+          <div class="rubric-level rubric-v">
+            <div class="rubric-level-label">Developing</div>
+            <div class="rubric-desc">2 components. Diagnosis correct but prompt improvement is vague ("be more specific"). CLAUDE.md entry absent.</div>
+          </div>
+          <div class="rubric-level rubric-b">
+            <div class="rubric-level-label">Beginning</div>
+            <div class="rubric-desc">1 component or responses are generic ("the prompt needed more detail"). No specific GCCF or CLAUDE.md entry written.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:24px;">
+        <button class="btn btn-success" onclick="completeLab()" id="complete-btn">
+          Mark lab complete &amp; claim XP →
+        </button>
+      </div>
+    </div>
+
+    <!-- Lab Nav -->
+    <div class="lab-nav">
+      <a href="/raven-cargo-course/lab/03" class="btn btn-ghost">← Lab 03</a>
+      <a href="/raven-cargo-course/lab/05" class="btn btn-ghost" id="next-lab-link" style="display:none;">Lab 05 →</a>
+    </div>
+  </div>
+
+</div><!-- /lab-sections -->
+
+<!-- Completion Banner -->
+<div id="completion-banner" style="display:none;background:linear-gradient(135deg,var(--primary),var(--secondary));padding:60px 32px;text-align:center;margin-top:60px;">
+  <div style="font-size:48px;margin-bottom:16px;"><svg class="icon-lg" data-lucide="party-popper" aria-hidden="true"></svg></div>
+  <h2 style="font-size:32px;font-weight:800;margin-bottom:12px;">Lab 04 Complete!</h2>
+  <p style="color:rgba(255,255,255,0.8);margin-bottom:8px;">You can now read agent traces, diagnose tool call anomalies, respond to clarification requests, and know when extended thinking earns its latency cost.</p>
+  <p style="color:rgba(255,255,255,0.8);margin-bottom:24px;">Final XP: <strong id="final-xp">0</strong></p>
+  <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+    <button onclick="exportReflections()" class="btn" style="background:white;color:var(--primary);font-weight:700;">
+      Export Notes
+    </button>
+    <a href="/raven-cargo-course/lab/05" class="btn" style="text-decoration:none;background:rgba(255,255,255,0.15);color:white;font-weight:700;">
+      Continue to Lab 05 →
+    </a>
+  </div>
+</div>
+
+<script>
+
+    /* ─── Safe localStorage wrappers ─── */
+    function safeSave(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+    function safeLoad(k,d){try{const v=localStorage.getItem(k);return v==null?d:v}catch(e){return d}}
+/* ─── State ───────────────────────────────────────────────── */
+const LAB_KEY      = 'lab-03';
+const SECTION_COUNT = 7; // sections 0-6
+let xp = 0, streak = 0;
+let sectionComplete = new Array(SECTION_COUNT).fill(false);
+
+  let milestoneLevel = 0;
+  const MILESTONES = [
+    { section: 1, label: 'Trace Reading' },
+    { section: 3, label: 'Loop Pattern' },
+    { section: 4, label: 'Extended Thinking' },
+    { section: 6, label: 'Capstone Complete' }
+  ];
+
+  function getMilestoneLevel() {
+    let level = 0;
+    MILESTONES.forEach(function(m, idx) {
+      if (sectionComplete[m.section]) level = idx + 1;
+    });
+    return level;
+  }
+
+  function updateMilestoneDisplay() {
+    const el = document.getElementById('milestone-display');
+    if (!el) return;
+    if (milestoneLevel === 0) {
+      el.textContent = 'Milestone: Not started';
+      return;
+    }
+    const entry = MILESTONES[milestoneLevel - 1];
+    el.textContent = 'Milestone ' + milestoneLevel + ': ' + entry.label;
+  }
+
+  function announceMilestone(level) {
+    const entry = MILESTONES[level - 1];
+    const toast = document.createElement('div');
+    toast.className = 'milestone-toast';
+    toast.textContent = 'Milestone reached: ' + entry.label;
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.remove(); }, 2200);
+  }
+
+// Track question attempts
+const qAttempts = { q1:0, q2:0, q3:0, q4:0, q5:0 };
+const qAnswered  = { q1:false, q2:false, q3:false, q4:false, q5:false };
+
+// Track intervention trainer
+let interventionScore = 0;
+const interventionAnswered = { 1:false, 2:false, 3:false, 4:false, 5:false };
+
+// Track which reveals have been awarded XP to avoid double-awarding
+const xpAwarded = {};
+
+/* ─── CONCEPT REGISTRY ────────────────────────────────────── */
+const CONCEPT_REGISTRY = {
+  'prao-loop': {
+    label: 'PRAO Loop',
+    origin: 'Lab 01, Section 1',
+    originHref: '/raven-cargo-course/lab/01#section-old-new',
+    brief: 'Perceive → Reason → Act → Observe — the four-phase agentic execution cycle'
+  },
+  'gccf-pattern': {
+    label: 'GCCF Pattern',
+    origin: 'Lab 02, Section 1',
+    originHref: '/raven-cargo-course/lab/02#section-1',
+    brief: 'Goal + Context + Constraints + Format — structured prompt anatomy for agent tasks'
+  },
+  'claude-md': {
+    label: 'CLAUDE.md',
+    origin: 'Lab 01, Section 4',
+    originHref: '/raven-cargo-course/lab/01#section-commands',
+    brief: 'Persistent context file — briefing document you write once, agent reads every session'
+  },
+  'chain-of-thought': {
+    label: 'Chain-of-Thought Trace',
+    origin: 'Lab 04, Section 1',
+    originHref: '/raven-cargo-course/lab/03#section-1',
+    brief: 'The agent\'s internal reasoning sequence — shows how conclusions are reached, not just what they are'
+  }
+};
+
+/* ─── XP System ───────────────────────────────────────────── */
+function awardXP(amount, reason) {
+  xp += amount;
+  safeSave(`${LAB_KEY}-xp`, xp.toString());
+  updateXPDisplay();
+  showXPToast(amount, reason);
+}
+
+function awardXPOnce(key, amount, reason) {
+  if (!xpAwarded[key]) {
+    xpAwarded[key] = true;
+    awardXP(amount, reason);
+  }
+}
+
+function updateXPDisplay() {
+  document.getElementById('xp-value').textContent = xp;
+  const fe = document.getElementById('final-xp');
+  if (fe) fe.textContent = xp;
+}
+
+function showXPToast(amount, reason) {
+  const toast = document.createElement('div');
+  toast.className = 'xp-toast';
+  toast.setAttribute('aria-live', 'polite');
+  toast.textContent = `+${amount} XP — ${reason}`;
+  document.body.appendChild(toast);
+  setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 2100);
+}
+
+/* ─── Streak System ───────────────────────────────────────── */
+function updateStreak(correct) {
+  if (correct) {
+    streak++;
+    const el = document.getElementById('streak-display');
+    if (streak >= 7) {
+      el.style.display = 'block';
+      el.className = 'streak-display streak-7';
+      el.textContent = `${streak} streak`;
+      awardXPOnce(`streak-${streak}`, 25, 'streak bonus');
+    } else if (streak >= 5) {
+      el.style.display = 'block';
+      el.className = 'streak-display streak-5';
+      el.textContent = `${streak} streak`;
+      awardXPOnce(`streak-${streak}`, 25, 'streak bonus');
+    } else if (streak >= 3) {
+      el.style.display = 'block';
+      el.className = 'streak-display streak-3';
+      el.textContent = `${streak} streak`;
+      awardXPOnce(`streak-${streak}`, 25, 'streak bonus');
+    }
+  } else {
+    streak = 0;
+    document.getElementById('streak-display').style.display = 'none';
+  }
+}
+
+/* ─── Section Unlock ──────────────────────────────────────── */
+function markSectionComplete(idx) {
+  if (sectionComplete[idx]) return;
+  sectionComplete[idx] = true;
+  safeSave(`${LAB_KEY}-s${idx}`, '1');
+  checkSectionUnlock(idx + 1);
+  updateNavDots();
+  if (idx === SECTION_COUNT - 1) {
+    completeLab();
+    return;
+  }
+    const nextMilestoneLevel = getMilestoneLevel();
+    if (nextMilestoneLevel > milestoneLevel) {
+      milestoneLevel = nextMilestoneLevel;
+      updateMilestoneDisplay();
+      announceMilestone(milestoneLevel);
+    } else {
+      updateMilestoneDisplay();
+    }
+}
+
+function checkSectionUnlock(idx) {
+  if (idx >= SECTION_COUNT) return;
+  const section = document.getElementById(`section-${idx}`);
+  if (!section) return;
+  const allPriorDone = sectionComplete.slice(0, idx).every(Boolean);
+  if (allPriorDone) {
+    section.classList.remove('locked');
+    const overlay = section.querySelector('.lock-overlay');
+    if (overlay) overlay.parentNode.removeChild(overlay);
+  }
+}
+
+/* ─── Prediction Gate ─────────────────────────────────────── */
+function checkPrediction(taId, btnId, minChars) {
+  const ta  = document.getElementById(taId);
+  const btn = document.getElementById(btnId);
+  const hint = document.getElementById(taId + '-hint');
+  const remaining = Math.max(0, minChars - ta.value.trim().length);
+  if (hint) hint.textContent = remaining > 0 ? `${remaining} more characters to activate reveal` : '✓ Ready to reveal';
+  if (hint && remaining === 0) hint.classList.add('char-ready'); else if (hint) hint.classList.remove('char-ready');
+  btn.disabled = remaining > 0;
+  if (remaining === 0) awardXPOnce(`pred-${taId}`, 10, 'prediction committed');
+  saveReflection(taId, ta.value);
+}
+
+function checkApply(taId, btnId, minChars, insightId, kcId) {
+  const ta  = document.getElementById(taId);
+  const btn = document.getElementById(btnId);
+  const hint = document.getElementById(taId + '-hint');
+  const remaining = Math.max(0, minChars - ta.value.trim().length);
+  if (hint) hint.textContent = remaining > 0 ? `${remaining} more characters to submit` : '✓ Ready to submit';
+  if (hint && remaining === 0) hint.classList.add('char-ready'); else if (hint) hint.classList.remove('char-ready');
+  btn.disabled = remaining > 0;
+  saveReflection(taId, ta.value);
+}
+
+/* ─── Apply Submit ────────────────────────────────────────── */
+function submitApply(taId, btnId, minChars, insightId, kcId) {
+  const ta = document.getElementById(taId);
+  if (ta.value.trim().length < minChars) return;
+  document.getElementById(btnId).disabled = true;
+  document.getElementById(btnId).textContent = 'Submitted ✓';
+  awardXPOnce(`apply-${taId}`, 20, 'apply completed');
+  if (insightId) {
+    const insight = document.getElementById(insightId);
+    if (insight) insight.classList.add('revealed');
+  }
+  if (kcId) {
+    const kc = document.getElementById(kcId);
+    if (kc) { kc.style.display = 'block'; kc.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+  }
+  saveReflection(taId, ta.value);
+}
+
+function submitApplyNoInsight(taId, btnId, minChars, kcId) {
+  submitApply(taId, btnId, minChars, '', kcId);
+}
+
+/* ─── Section 0 ───────────────────────────────────────────── */
+function completeSection0() {
+  const btn = document.getElementById('s0-btn');
+  btn.disabled = true;
+  btn.textContent = 'Complete ✓';
+  awardXPOnce('s0', 10, 'section unlocked');
+  markSectionComplete(0);
+  document.getElementById('section-1').scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ─── Section 1 reveals ───────────────────────────────────── */
+function revealS1Trace() {
+  document.getElementById('s1-trace').style.display = 'block';
+  document.getElementById('s1-reveal-btn').disabled = true;
+  document.getElementById('s1-reveal-btn').textContent = 'Revealed ✓';
+  awardXPOnce('sim-s1', 15, 'trace revealed');
+  document.getElementById('s1-trace').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* ─── Section 2 reveals ───────────────────────────────────── */
+function revealS2() {
+  document.getElementById('s2-reveal').style.display = 'block';
+  document.getElementById('s2-reveal-btn').disabled = true;
+  document.getElementById('s2-reveal-btn').textContent = 'Revealed ✓';
+  awardXPOnce('sim-s2', 15, 'sequence revealed');
+  document.getElementById('s2-reveal').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* ─── Pattern card toggle ─────────────────────────────────── */
+function togglePattern(card) {
+  const detail = card.querySelector('.pattern-detail');
+  const isOpen = detail.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.pattern-detail').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.pattern-card').forEach(c => { c.classList.remove('open'); c.setAttribute('aria-expanded','false'); });
+  if (!isOpen) {
+    detail.classList.add('open');
+    card.classList.add('open');
+    card.setAttribute('aria-expanded', 'true');
+  }
+}
+
+/* ─── Intervention Trainer ────────────────────────────────── */
+function scoreIntervention(num, choice, correct) {
+  if (interventionAnswered[num]) return;
+  interventionAnswered[num] = true;
+
+  const item = document.getElementById(`int-${num}`);
+  const opts = item.querySelectorAll('.intervention-opt');
+  const fb   = document.getElementById(`int-${num}-fb`);
+
+  opts.forEach(o => {
+    o.classList.add('locked');
+    o.setAttribute('aria-disabled', 'true');
+  });
+
+  // Find which button was clicked
+  const clickedLabel = { answer: 'Answer the question', context: 'Provide context', narrow: 'Narrow the scope' }[choice];
+  opts.forEach(o => {
+    if (o.textContent.trim() === clickedLabel) {
+      o.classList.add(correct ? 'correct' : 'wrong');
+    }
+  });
+
+  fb.classList.add('show');
+
+  if (correct) {
+    interventionScore++;
+    updateStreak(true);
+    awardXPOnce(`int-${num}`, 5, 'intervention correct');
+  } else {
+    updateStreak(false);
+  }
+
+  // Check if all 5 done
+  const allDone = Object.values(interventionAnswered).every(Boolean);
+  if (allDone) {
+    setTimeout(() => {
+      const kc = document.getElementById('s3-kc');
+      if (kc) { kc.style.display = 'block'; kc.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+      awardXPOnce('intervention-done', 15, 'intervention trainer done');
+    }, 600);
+  }
+}
+
+/* ─── Answer a Knowledge Check ────────────────────────────── */
+function answerQ(qId, choice, isCorrect, fbId, feedbackText) {
+  if (qAnswered[qId]) return;
+  qAttempts[qId]++;
+
+  const fb = document.getElementById(fbId);
+  // Find all options in this question's container
+  const fbEl = document.getElementById(fbId);
+  const container = fbEl ? fbEl.closest('.check-card') : null;
+  if (!container) return;
+
+  const opts = container.querySelectorAll('.answer-option');
+
+  if (isCorrect) {
+    qAnswered[qId] = true;
+    // Lock all options, mark clicked correct
+    opts.forEach(o => {
+      o.classList.add('locked-opt');
+      o.setAttribute('aria-disabled', 'true');
+      if (o.querySelector('.opt-letter') && o.querySelector('.opt-letter').textContent.trim() === choice) {
+        o.classList.add('correct');
+      }
+    });
+    fb.className = 'question-feedback fb-correct show';
+    fb.innerHTML = feedbackText;
+
+    // XP
+    const xpMap = { 1: 30, 2: 15, 3: 5 };
+    const xpAmt = xpMap[qAttempts[qId]] || 5;
+    const reason = qAttempts[qId] === 1 ? 'first try!' : qAttempts[qId] === 2 ? 'second try' : 'third try';
+    awardXPOnce(`${qId}-correct`, xpAmt, reason);
+    updateStreak(true);
+
+    // After Q answers, check if section can advance
+    setTimeout(() => checkSectionAdvance(qId), 800);
+
+  } else {
+    // Mark clicked wrong
+    opts.forEach(o => {
+      if (o.querySelector('.opt-letter') && o.querySelector('.opt-letter').textContent.trim() === choice) {
+        o.classList.add('incorrect');
+        setTimeout(() => o.classList.remove('incorrect'), 1500);
+      }
+    });
+    fb.className = 'question-feedback fb-incorrect show';
+    fb.innerHTML = feedbackText;
+    updateStreak(false);
+  }
+}
+
+function checkSectionAdvance(qId) {
+  // Map questions to sections
+  const qToSection = { q1: 1, q2: 2, q3: 3, q4: 5, q5: 5 };
+  const secIdx = qToSection[qId];
+  if (!secIdx) return;
+
+  if (secIdx === 1 && qAnswered.q1) markSectionComplete(1);
+  if (secIdx === 2 && qAnswered.q2) markSectionComplete(2);
+  if (secIdx === 3 && qAnswered.q3) markSectionComplete(3);
+  if (secIdx === 5 && qAnswered.q4 && qAnswered.q5) markSectionComplete(5);
+}
+
+/* ─── Section 4 special flow ──────────────────────────────── */
+// Section 4 completes after Apply is submitted (no KC of its own)
+const _origSubmitApply = submitApply;
+function submitApplyAndCheckS4(taId, btnId, minChars, insightId, kcId) {
+  _origSubmitApply(taId, btnId, minChars, insightId, kcId);
+  if (taId === 's4-apply') {
+    setTimeout(() => markSectionComplete(4), 800);
+  }
+}
+
+/* ─── Capstone Challenge ──────────────────────────────────────── */
+function saveBoss() {
+  const ta = document.getElementById('boss-challenge');
+  if (ta) saveReflection('boss-challenge', ta.value);
+  // update button state
+  const btn = document.getElementById('boss-submit-btn');
+  const remaining = Math.max(0, 80 - ta.value.trim().length);
+  const hint = document.getElementById('boss-hint');
+  if (hint) hint.textContent = remaining > 0 ? `${remaining} more characters to submit` : '✓ Ready to submit';
+  if (hint && remaining === 0) hint.classList.add('char-ready'); else if (hint) hint.classList.remove('char-ready');
+  btn.disabled = remaining > 0;
+}
+
+function submitBoss() {
+  const ta = document.getElementById('boss-challenge');
+  if (!ta || ta.value.trim().length < 80) return;
+  document.getElementById('boss-submit-btn').disabled = true;
+  document.getElementById('boss-submit-btn').textContent = 'Submitted ✓';
+  awardXPOnce('boss', 50, 'boss challenge!');
+  const model = document.getElementById('boss-model');
+  model.classList.add('show');
+  model.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  saveReflection('boss-challenge', ta.value);
+}
+
+/* ─── Lab Complete ────────────────────────────────────────── */
+function completeLab() {
+  if (!sectionComplete[6]) {
+    markSectionComplete(6);
+    return;
+  }
+  awardXPOnce('lab-complete', 100, 'lab complete!');
+  const banner = document.getElementById('completion-banner');
+  banner.style.display = 'block';
+  banner.scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('final-xp').textContent = xp;
+  document.getElementById('next-lab-link').style.display = 'inline-flex';
+  safeSave(`${LAB_KEY}-complete`, Date.now().toString());
+  updateNavDots();
+}
+
+/* ─── Persistence ─────────────────────────────────────────── */
+function saveReflection(key, value) {
+  safeSave(`${LAB_KEY}-${key}`, value);
+}
+
+function loadAllReflections() {
+  document.querySelectorAll('textarea[id]').forEach(ta => {
+    const saved = safeLoad(`${LAB_KEY}-${ta.id}`);
+    if (saved) ta.value = saved;
+  });
+
+  for (let i = 0; i < SECTION_COUNT; i++) {
+    if (safeLoad(`${LAB_KEY}-s${i}`) === '1') sectionComplete[i] = true;
+  }
+
+  xp = parseInt(safeLoad(`${LAB_KEY}-xp`) || '0');
+  updateXPDisplay();
+
+  // Restore section states
+  for (let i = 0; i < SECTION_COUNT; i++) checkSectionUnlock(i);
+  updateNavDots();
+
+  // Restore UI state for sections that were complete
+  if (sectionComplete[0]) {
+    const btn = document.getElementById('s0-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Complete ✓'; }
+  }
+
+  // Restore prediction gates
+  ['s1-predict','s2-predict'].forEach(id => {
+    const ta = document.getElementById(id);
+    const btnId = id.replace('-predict', '-reveal-btn');
+    if (ta && ta.value.trim().length >= 15) {
+      const btn = document.getElementById(btnId);
+      if (btn) btn.disabled = false;
+    }
+  });
+
+  // Restore boss hint
+  const bossTa = document.getElementById('boss-challenge');
+  if (bossTa && bossTa.value.trim().length >= 80) {
+    const btn = document.getElementById('boss-submit-btn');
+    if (btn) btn.disabled = false;
+  }
+
+  // Restore apply buttons
+  ['s1-apply','s2-apply','s4-apply'].forEach(id => {
+    const ta = document.getElementById(id);
+    const btnId = id + '-btn';
+    if (ta && ta.value.trim().length >= 40) {
+      const btn = document.getElementById(btnId);
+      if (btn) btn.disabled = false;
+    }
+  });
+
+  // Show completion banner if complete
+  if (safeLoad(`${LAB_KEY}-complete`)) {
+    document.getElementById('completion-banner').style.display = 'block';
+    document.getElementById('next-lab-link').style.display = 'inline-flex';
+  }
+}
+
+function exportReflections() {
+  let content = `Lab 04: Agentic Reasoning — ${new Date().toLocaleDateString()}\nXP Earned: ${xp}\n\n`;
+  document.querySelectorAll('textarea[id]').forEach(ta => {
+    if (ta.value.trim()) content += `[${ta.id}]\n${ta.value.trim()}\n\n`;
+  });
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${LAB_KEY}-reflections.txt`;
+  document.body.appendChild(a);
+  a.click();
+  URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+}
+
+/* ─── Navigation Dots ─────────────────────────────────────── */
+function updateNavDots() {
+  const container = document.getElementById('nav-dots');
+  if (!container) return;
+  if (!container.children.length) {
+    for (let i = 0; i < SECTION_COUNT; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'nav-dot';
+      dot.setAttribute('role', 'listitem');
+      dot.setAttribute('aria-label', `Section ${i + 1}`);
+      container.appendChild(dot);
+    }
+  }
+  const firstIncomplete = sectionComplete.indexOf(false);
+  [...container.children].forEach((dot, i) => {
+    dot.classList.remove('dot-locked', 'dot-active', 'dot-complete');
+    if (sectionComplete[i]) {
+      dot.classList.add('dot-complete');
+      dot.setAttribute('aria-label', `Section ${i + 1}: Complete`);
+    } else if (i === firstIncomplete) {
+      dot.classList.add('dot-active');
+      dot.setAttribute('aria-label', `Section ${i + 1}: Current`);
+    } else {
+      dot.classList.add('dot-locked');
+      dot.setAttribute('aria-label', `Section ${i + 1}: Locked`);
+    }
+  });
+}
+
+/* ─── Scroll Progress ─────────────────────────────────────── */
+window.addEventListener('scroll', () => {
+  const d = document.documentElement;
+  const pct = d.scrollHeight - d.clientHeight > 0
+    ? (d.scrollTop / (d.scrollHeight - d.clientHeight)) * 100
+    : 0;
+  document.getElementById('progress-bar').style.width = pct + '%';
+});
+
+/* ─── CE-03-D: Issue Navigation Exercise ─────────────────── */
+function submitCE03D() {
+  var fields = ['ce-03-d-q1','ce-03-d-q2','ce-03-d-q3','ce-03-d-q4','ce-03-d-q5'];
+  var values = fields.map(function(id) { return document.getElementById(id) ? document.getElementById(id).value.trim() : ''; });
+
+  var empty = values.filter(function(v) { return v.length < 20; });
+  if (empty.length > 0) {
+    alert('Please complete all 5 parts of the exercise before submitting. ' + empty.length + ' field(s) are too short.');
+    return;
+  }
+
+  document.getElementById('ce-03-d-model').style.display = 'block';
+  document.getElementById('ce-03-d-model').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  awardXP(30, 'Issue Navigation Challenge');
+
+  safeSave('lab03_ce03d', JSON.stringify({
+    completed: true,
+    q1: values[0], q2: values[1], q3: values[2], q4: values[3], q5: values[4]
+  }));
+}
+
+/* ─── Wire up section 4 submit to also complete section 4 ─── */
+document.addEventListener('DOMContentLoaded', () => {
+  loadAllReflections();
+    milestoneLevel = getMilestoneLevel();
+    updateMilestoneDisplay();
+
+  // Monkey-patch the s4 apply button to also mark section 4 complete
+  const s4btn = document.getElementById('s4-apply-btn');
+  if (s4btn) {
+    const originalClick = s4btn.getAttribute('onclick');
+    s4btn.setAttribute('onclick', '');
+    s4btn.addEventListener('click', () => {
+      const ta = document.getElementById('s4-apply');
+      if (!ta || ta.value.trim().length < 40) return;
+      s4btn.disabled = true;
+      s4btn.textContent = 'Submitted ✓';
+      awardXPOnce('apply-s4-apply', 20, 'apply completed');
+      const insight = document.getElementById('s4-insight');
+      if (insight) insight.classList.add('revealed');
+      saveReflection('s4-apply', ta.value);
+      setTimeout(() => markSectionComplete(4), 800);
+    });
+  }
+});
+</script>
+
+  <!-- ─── Attribution Footer ─────────────────────────────────────────────── -->
+</main>
+
+  <footer style="
+    margin-top: 80px;
+    padding: 32px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    text-align: center;
+    font-size: 12px;
+    color: #475569;
+    line-height: 1.8;
+  ">
+    <p>
+      &ldquo;Claude&rdquo; and &ldquo;Claude Code&rdquo; are trademarks of Anthropic, PBC.
+      This course is not affiliated with or endorsed by Anthropic.
+      All product names, logos, and trademarks are the property of their respective owners
+      and are referenced here for educational purposes only.
+    </p>
+    <p>
+      Fonts:
+      <a href="https://fonts.google.com/specimen/Inter" rel="noopener" style="color:#6366f1;">Inter</a>
+      and
+      <a href="https://fonts.google.com/specimen/JetBrains+Mono" rel="noopener" style="color:#6366f1;">JetBrains Mono</a>
+      via Google Fonts under the
+      <a href="https://scripts.sil.org/OFL" rel="noopener" style="color:#6366f1;">SIL Open Font License 1.1</a>.
+    </p>
+    <p>Course content &copy; 2026 Agentic AI Engineering Course. Educational use.</p>
+  </footer>
+
+<script src="/raven-cargo-course/assets/lab-progression-bridge.js"></script>
+<script>if (window.lucide) lucide.createIcons();</script>
+</body>
+</html>

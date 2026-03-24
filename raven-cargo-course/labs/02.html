@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 02 · First Agent Conversation | Agentic AI Engineering</title>
+  <link rel="stylesheet" href="/raven-cargo-course/assets/theme-toggle.css" />
+  <script src="/raven-cargo-course/assets/theme-toggle.js" defer></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <style>
+    /* ─── Design System ──────────────────────────────────────────── */
+    :root {
+      --bg-base:    #080d1a;
+      --bg-surface: #0f1729;
+      --bg-raised:  #172035;
+      --bg-glass:   rgba(23, 32, 53, 0.7);
+      --primary:    #6366f1;
+      --primary-glow: rgba(99,102,241,0.25);
+      --secondary:  #8b5cf6;
+      --accent:     #06b6d4;
+      --accent-glow: rgba(6,182,212,0.2);
+      --success:    #10b981;
+      --warning:    #f59e0b;
+      --danger:     #ef4444;
+      --text:       #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim:   #475569;
+      --border:     rgba(255,255,255,0.08);
+      --border-bright: rgba(99,102,241,0.4);
+      --radius:     16px;
+      --radius-sm:  8px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-base);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ─── Progress Bar ───────────────────────────────────────────── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 0%; transition: width 0.2s ease;
+      z-index: 1000;
+      box-shadow: 0 0 12px var(--primary);
+    }
+
+    /* ─── Nav ────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: 16px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      backdrop-filter: blur(20px);
+      background: rgba(8,13,26,0.8);
+      border-bottom: 1px solid var(--border);
+      z-index: 900;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text-muted); }
+    .nav-badge {
+      background: var(--primary); color: white;
+      padding: 3px 10px; border-radius: 100px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
+    }
+    .nav-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--bg-raised); border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+    .nav-dot.dot-locked  { background: var(--text-dim); }
+    .nav-dot.dot-active  { background: var(--primary); box-shadow: 0 0 8px var(--primary-glow); }
+    .nav-dot.dot-complete { background: var(--success); }
+
+    /* ─── Sections ───────────────────────────────────────────────── */
+    .section-block {
+      padding: 60px 0;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .section-block:last-child { border-bottom: none; }
+    .section-block.locked { user-select: none; min-height: 200px; }
+
+    /* ─── Typography ─────────────────────────────────────────────── */
+    .overline {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 12px;
+    }
+    h1 {
+      font-size: clamp(36px,5vw,60px); font-weight: 800;
+      line-height: 1.1; letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--text) 0%, var(--text-muted) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    h2 { font-size: clamp(22px,3vw,32px); font-weight: 700; letter-spacing: -0.02em; }
+    h3 { font-size: 18px; font-weight: 600; }
+    p  { color: var(--text-muted); }
+
+    /* ─── Cards ──────────────────────────────────────────────────── */
+    .card {
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      backdrop-filter: blur(10px);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .card:hover { border-color: var(--border-bright); box-shadow: 0 0 30px var(--primary-glow); }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px; width: 100%;
+    }
+
+    /* Card type: info */
+    .info-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    /* Card type: challenge (amber) */
+    .challenge-card {
+      background: rgba(245,158,11,0.06);
+      border: 1px solid rgba(245,158,11,0.3);
+      border-left: 3px solid var(--warning);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    /* Card type: check (indigo) */
+    .check-card {
+      background: rgba(99,102,241,0.05);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    /* Card type: callback (purple) */
+    .callback-card {
+      background: rgba(139,92,246,0.06);
+      border: 1px solid rgba(139,92,246,0.3);
+      border-left: 3px solid var(--secondary);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    /* Card type: insight (green, hidden until apply complete) */
+    .insight-card {
+      background: rgba(16,185,129,0.06);
+      border: 1px solid rgba(16,185,129,0.3);
+      border-left: 3px solid var(--success);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: none;
+    }
+    .insight-card.revealed { display: block; animation: fadeIn 0.4s ease; }
+
+    /* Card badges */
+    .card-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 3px 10px;
+      border-radius: 4px; display: inline-block; margin-bottom: 12px;
+    }
+    .challenge-badge { background: rgba(245,158,11,0.15); color: var(--warning); }
+    .check-badge     { background: rgba(99,102,241,0.15); color: var(--primary); }
+    .callback-badge  { background: rgba(139,92,246,0.15); color: var(--secondary); }
+    .insight-badge   { background: rgba(16,185,129,0.15); color: var(--success); }
+
+    /* ─── Code blocks ────────────────────────────────────────────── */
+    .code-block {
+      background: #0a0f1e;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px 24px;
+      font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+      font-size: 13px; line-height: 1.8;
+      overflow-x: auto; position: relative;
+    }
+    .code-block .comment  { color: #4b5563; }
+    .code-block .keyword  { color: #8b5cf6; }
+    .code-block .string   { color: #10b981; }
+    .code-block .fn       { color: #06b6d4; }
+    .code-block .cmd      { color: var(--warning); }
+
+    /* ─── Buttons ────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border-radius: 10px;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      border: none; transition: all 0.2s; text-decoration: none;
+    }
+    .btn-primary { background: var(--primary); color: white; box-shadow: 0 0 20px var(--primary-glow); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 30px var(--primary-glow); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-ghost {
+      background: transparent; color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-amber   { background: var(--warning); color: #000; font-weight: 700; }
+
+    /* ─── Textarea / Inputs ──────────────────────────────────────── */
+    textarea {
+      width: 100%;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 14px; color: var(--text);
+      resize: vertical; min-height: 110px;
+      font-family: inherit; transition: border-color 0.2s;
+      line-height: 1.6;
+    }
+    textarea:focus { outline: none; border-color: var(--primary); }
+
+    .char-hint { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+    .char-ready { color: var(--success); }
+
+    label.field-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+
+    /* ─── Answer options ─────────────────────────────────────────── */
+    .answer-options { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+    .answer-option {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 18px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer; transition: all 0.2s;
+      font-size: 14px; color: var(--text-muted);
+      text-align: left; width: 100%;
+    }
+    .answer-option:hover:not(.locked-opt) { border-color: var(--primary); color: var(--text); }
+    .answer-option.correct  { background: rgba(16,185,129,0.1); border-color: var(--success); color: var(--success); }
+    .answer-option.incorrect { background: rgba(239,68,68,0.1); border-color: var(--danger); color: #fca5a5; }
+    .answer-option.locked-opt { cursor: default; }
+    .opt-letter {
+      width: 24px; height: 24px; border-radius: 50%;
+      border: 2px solid currentColor;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+    }
+    .question-feedback {
+      margin-top: 12px; padding: 12px 16px;
+      border-radius: 8px; font-size: 14px; display: none;
+    }
+    .question-feedback.show { display: block; animation: fadeIn 0.3s; }
+    .fb-correct   { background: rgba(16,185,129,0.1); color: var(--success); border-left: 3px solid var(--success); }
+    .fb-incorrect { background: rgba(239,68,68,0.1); color: #fca5a5; border-left: 3px solid var(--danger); }
+
+    /* ─── Trace / Simulation ─────────────────────────────────────── */
+    .trace-output {
+      background: #04080f;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px; font-family: 'Fira Code', monospace;
+      font-size: 13px; min-height: 200px;
+    }
+    .trace-line { display: flex; gap: 10px; margin-bottom: 12px; cursor: pointer; }
+    .trace-line:hover .trace-text { color: var(--text); }
+    .trace-tag {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+      padding: 3px 8px; border-radius: 4px;
+      height: fit-content; white-space: nowrap; flex-shrink: 0; margin-top: 2px;
+    }
+    .tag-think  { background: rgba(139,92,246,0.2); color: #8b5cf6; }
+    .tag-tool   { background: rgba(6,182,212,0.2);  color: #06b6d4; }
+    .tag-result { background: rgba(16,185,129,0.2); color: #10b981; }
+    .tag-resp   { background: rgba(99,102,241,0.2); color: #6366f1; }
+    .trace-text { color: var(--text-muted); line-height: 1.6; flex: 1; }
+    .trace-expand {
+      margin-left: 72px; margin-top: 4px; margin-bottom: 10px;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px; font-size: 12px; color: var(--text-muted);
+      display: none;
+    }
+    .trace-expand.open { display: block; animation: fadeIn 0.2s; }
+    .trace-expand strong { color: var(--accent); }
+
+    /* ─── Table ──────────────────────────────────────────────────── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .data-table th {
+      text-align: left; padding: 10px 14px;
+      background: var(--bg-raised); color: var(--text-muted);
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--text-muted); vertical-align: top; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table td:first-child { color: var(--text); font-weight: 600; }
+    .data-table code { font-family: 'Fira Code', monospace; font-size: 12px; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; color: var(--warning); }
+
+    /* ─── GCCF anatomy ───────────────────────────────────────────── */
+    .gccf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .gccf-item {
+      background: var(--bg-raised); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 18px;
+    }
+    .gccf-letter {
+      font-size: 28px; font-weight: 800; line-height: 1;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 4px;
+    }
+    .gccf-label { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .gccf-desc  { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+    .gccf-example { font-size: 11px; color: var(--accent); font-style: italic; margin-top: 8px; line-height: 1.5; }
+
+    /* ─── Bad-prompt cards ───────────────────────────────────────── */
+    .bad-prompt-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .bad-prompt-card {
+      background: rgba(239,68,68,0.04); border: 1px solid rgba(239,68,68,0.2);
+      border-left: 3px solid var(--danger); border-radius: var(--radius);
+      padding: 20px;
+    }
+    .bad-prompt-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--danger); margin-bottom: 10px; }
+    .bad-prompt-cmd   { font-family: 'Fira Code', monospace; font-size: 12px; color: var(--warning); background: rgba(0,0,0,0.3); padding: 8px 10px; border-radius: 6px; margin-bottom: 10px; }
+    .bad-prompt-arrow { color: var(--text-dim); font-size: 12px; margin-bottom: 6px; }
+    .bad-prompt-out   { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; }
+    .bad-prompt-diag  { font-size: 11px; color: var(--danger); font-weight: 600; }
+
+    /* ─── Threading modes ────────────────────────────────────────── */
+    .threading-modes { display: flex; flex-direction: column; gap: 16px; }
+    .thread-mode {
+      background: var(--bg-raised); border: 1px solid var(--border);
+      border-left: 3px solid var(--primary); border-radius: var(--radius-sm); padding: 18px;
+    }
+    .thread-mode-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 6px; }
+    .thread-mode h4 { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+
+    /* ─── Rubric ─────────────────────────────────────────────────── */
+    .rubric { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; }
+    .rubric-level {
+      padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+      background: var(--bg-raised);
+    }
+    .rubric-level-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+    .rubric-d { border-left: 3px solid gold; }
+    .rubric-d .rubric-level-label { color: gold; }
+    .rubric-p { border-left: 3px solid var(--primary); }
+    .rubric-p .rubric-level-label { color: var(--primary); }
+    .rubric-v { border-left: 3px solid var(--warning); }
+    .rubric-v .rubric-level-label { color: var(--warning); }
+    .rubric-b { border-left: 3px solid var(--text-dim); }
+    .rubric-b .rubric-level-label { color: var(--text-dim); }
+    .rubric-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+    /* ─── Lock overlay ───────────────────────────────────────────── */
+    .lock-overlay {
+      position: absolute; inset: 0;
+      background: rgba(8,13,26,0.88);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      border-radius: var(--radius); z-index: 10;
+      gap: 12px;
+    }
+    .lock-overlay p { color: var(--text-muted); font-size: 14px; }
+
+    /* ─── XP / Streak ────────────────────────────────────────────── */
+    .xp-display {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 700; color: var(--warning);
+    }
+    .xp-toast {
+      position: fixed; top: 80px; right: 24px;
+      background: var(--warning); color: #000;
+      padding: 8px 16px; border-radius: 20px;
+      font-weight: 700; font-size: 13px;
+      animation: toastFade 2s forwards;
+      pointer-events: none; z-index: 9999;
+    }
+    @keyframes toastFade {
+      0%  { opacity:0; transform:translateY(-10px) }
+      20% { opacity:1; transform:translateY(0) }
+      80% { opacity:1 }
+      100%{ opacity:0; transform:translateY(-10px) }
+    }
+    .streak-display {
+      font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+    }
+    .streak-3 { background: rgba(245,158,11,0.15); color: var(--warning); }
+    .streak-5 { background: rgba(139,92,246,0.15); color: var(--secondary); }
+    .streak-7 { background: rgba(245,158,11,0.2);  color: gold; }
+    .milestone-display {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: rgba(6,182,212,0.08);
+      border: 1px solid rgba(6,182,212,0.25);
+      border-radius: 999px;
+      padding: 4px 10px;
+      white-space: nowrap;
+    }
+    .milestone-toast {
+      position: fixed; top: 120px; right: 24px;
+      background: var(--accent); color: #02131a;
+      padding: 8px 14px; border-radius: 20px;
+      font-weight: 700; font-size: 12px;
+      animation: toastFade 2s forwards;
+      pointer-events: none; z-index: 9999;
+    }
+
+    /* ─── Connect forward ────────────────────────────────────────── */
+    .connect-forward {
+      display: none; margin-top: 24px;
+      padding: 16px 20px;
+      background: rgba(6,182,212,0.06);
+      border: 1px solid rgba(6,182,212,0.2);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-sm);
+      font-size: 14px; color: var(--text-muted);
+    }
+    .connect-forward.show { display: block; animation: fadeIn 0.4s; }
+    .connect-forward strong { color: var(--accent); }
+
+    /* ─── Section header ─────────────────────────────────────────── */
+    .section-header { margin-bottom: 32px; }
+    .section-num {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+    }
+
+    /* ─── Model answer ───────────────────────────────────────────── */
+    .model-answer {
+      display: none; margin-top: 20px;
+      background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.2);
+      border-radius: var(--radius); padding: 24px;
+    }
+    .model-answer.show { display: block; animation: fadeIn 0.4s; }
+    .model-answer h4 { color: var(--success); margin-bottom: 16px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* ─── Error sim ──────────────────────────────────────────────── */
+    .error-sim-step {
+      display: flex; gap: 12px; margin-bottom: 10px;
+      padding: 12px; border: 1px solid var(--border); border-radius: 8px;
+      cursor: pointer; transition: border-color 0.2s;
+    }
+    .error-sim-step:hover { border-color: var(--primary); }
+    .error-sim-tag {
+      font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px;
+      white-space: nowrap; height: fit-content; margin-top: 2px;
+    }
+    .tag-error  { background: rgba(239,68,68,0.2); color: var(--danger); }
+    .tag-user   { background: rgba(245,158,11,0.2); color: var(--warning); }
+    .tag-fix    { background: rgba(16,185,129,0.2); color: var(--success); }
+    .error-sim-detail { display: none; margin-top: 8px; font-size: 12px; color: var(--text-muted); padding-left: 76px; }
+    .error-sim-detail.open { display: block; }
+
+    /* ─── Objectives card ────────────────────────────────────────── */
+    .objectives-card {
+      background: rgba(99,102,241,0.06); border: 1px solid rgba(99,102,241,0.2);
+      border-radius: var(--radius); padding: 24px; margin-top: 32px;
+      text-align: left;
+    }
+    .objectives-card ul { padding-left: 20px; margin-top: 10px; }
+    .objectives-card li { color: var(--text-muted); font-size: 14px; margin-bottom: 6px; }
+
+    /* ─── Nav prev/next ──────────────────────────────────────────── */
+    .lab-nav { display: flex; gap: 12px; margin-top: 40px; flex-wrap: wrap; }
+
+    /* ─── Utilities ──────────────────────────────────────────────── */
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .mt-16 { margin-top: 16px; }
+    .mt-24 { margin-top: 24px; }
+    .mt-32 { margin-top: 32px; }
+    .mb-16 { margin-bottom: 16px; }
+    .flex-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .gap-12 { gap: 12px; }
+    strong.accent { color: var(--accent); }
+    strong.success { color: var(--success); }
+    strong.warning { color: var(--warning); }
+
+    @media (max-width: 768px) {
+      nav { padding: 12px 16px; }
+      .gccf-grid { grid-template-columns: 1fr; }
+      .bad-prompt-cards { grid-template-columns: 1fr; }
+      .rubric { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ── Icon System (Lucide) ─────────────────────────────── */
+    .icon { width:16px; height:16px; display:inline-block; vertical-align:-2px; stroke-width:2; flex-shrink:0; }
+    .icon-lg { width:20px; height:20px; vertical-align:-4px; }
+    .icon-sm { width:14px; height:14px; vertical-align:-2px; }
+    .badge-label .icon, .badge-label .icon-lg { margin-right:4px; }
+    .quiz-feedback .icon { margin-right:3px; }
+    /* Focus-visible for keyboard navigation */
+    :focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    button:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+  </style>
+  <link rel="stylesheet" href="/raven-cargo-course/assets/raven-labs.css" />
+  <link rel="stylesheet" href="/raven-cargo-course/assets/raven-course.css" />
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- Navigation -->
+<nav>
+  <div class="nav-brand">
+    <span class="nav-badge">Day 1</span>
+    <span>Lab 02 · First Agent Conversation</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <div class="xp-display" aria-live="polite" aria-label="Experience points">
+      <svg class="icon" data-lucide="zap" aria-hidden="true"></svg><span id="xp-value">0</span><span style="font-size:11px;color:var(--text-muted);">XP</span>
+    </div>
+    <div id="streak-display" class="streak-display" style="display:none;" aria-live="polite"></div>
+    <div id="milestone-display" class="milestone-display" aria-live="polite" aria-label="Current milestone">Milestone: Not started</div>
+    <div id="nav-dots" style="display:flex;gap:6px;" aria-label="Lab progress" role="list"></div>
+  </div>
+</nav>
+
+<div id="lab-onboarding-tip" role="note" style="max-width:860px;margin:14px auto 0;padding:10px 14px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:10px;font-size:12px;color:var(--muted);">Tip: fill the section action in each block to earn XP, and use nav dots as progress signals (locked = not available yet, active = current section, complete = finished).</div>
+
+<main>
+
+<!-- Hero -->
+<div style="padding:110px 32px 52px;max-width:860px;margin:0 auto;text-align:center;">
+  <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-bottom:14px;">Day 1 · Lab 02</div>
+  <h1>First Agent Conversation</h1>
+  <p style="font-size:17px;max-width:580px;margin:20px auto 0;">
+    Why do some prompts produce exactly what you needed — and others send Claude to the wrong file entirely? The answer is upstream from the output.
+  </p>
+  <div class="objectives-card" role="note" aria-label="Learning objectives">
+    <strong style="color:var(--text);">After this lab you will be able to:</strong>
+    <ul>
+      <li>Apply the GCCF pattern (Goal + Context + Constraints + Format) to write effective Claude Code prompts</li>
+      <li>Interpret Claude Code output — distinguish tool calls from error states by PRAO phase</li>
+      <li>Diagnose a prompt failure by mapping it to the phase where Perceive broke down</li>
+      <li>Construct CLAUDE.md entries that persist project context across sessions</li>
+    </ul>
+  </div>
+  <div class="lab-nav" style="justify-content:center;">
+    <a href="/raven-cargo-course/lab/01" class="btn btn-ghost" style="font-size:13px;">← Lab 01: The Paradigm Shift</a>
+    <a href="/raven-cargo-course/lab/03" class="btn btn-ghost" style="font-size:13px;">Lab 03: Prompt Workshop →</a>
+  </div>
+</div>
+
+<!-- Sections container -->
+<div id="lab-sections" style="max-width:860px;margin:0 auto;padding:0 32px 100px;">
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 0: Why Prompts Fail
+  ═══════════════════════════════════════════════════════════════════ -->
+  <div class="section-block" id="section-0">
+    <div class="section-header">
+      <div class="section-num">Section 0</div>
+      <h2>Why Prompts Fail</h2>
+      <p style="margin-top:8px;">Every bad output traces to a specific failure point in the PRAO loop. Let's find them.</p>
+    </div>
+
+    <!-- Callback card: prao-loop -->
+    <div class="callback-card" role="note" aria-label="Concept callback: PRAO Loop">
+      <div class="card-badge callback-badge"><svg class="icon" data-lucide="link" aria-hidden="true"></svg> CALLBACK</div>
+      <p><strong>PRAO Loop</strong> — first introduced in <a href="/raven-cargo-course/lab/01#section-old-new" style="color:var(--secondary);">Lab 01, Section 1</a></p>
+      <p style="margin-top:8px;" class="callback-brief">Perceive → Reason → Act → Observe — the four-phase agentic execution cycle. Every agent response starts with Perceive. If Perceive gathers bad data, Reason works from flawed input, Act executes the wrong plan, and Observe confirms the wrong result.</p>
+      <p style="margin-top:8px;">Notice how it appears below: each bad prompt breaks at a specific PRAO phase.</p>
+    </div>
+
+    <!-- Bad prompt examples -->
+    <div class="mt-32">
+      <h3 style="margin-bottom:16px;">Three prompts. Three failures. Three different phases.</h3>
+      <div class="bad-prompt-cards">
+        <div class="bad-prompt-card">
+          <div class="bad-prompt-label">Example 1 — Perceive Fails</div>
+          <div class="bad-prompt-cmd">claude -p "fix my code"</div>
+          <div class="bad-prompt-arrow">↓ Output</div>
+          <div class="bad-prompt-out">Claude edits <code style="font-family:monospace;font-size:11px;color:var(--warning);">README.md</code> instead of your broken function</div>
+          <div class="bad-prompt-diag"><svg class="icon" data-lucide="triangle-alert" aria-hidden="true"></svg> Perceive had no file context. It guessed.</div>
+        </div>
+        <div class="bad-prompt-card">
+          <div class="bad-prompt-label">Example 2 — Reason Fails</div>
+          <div class="bad-prompt-cmd">claude -p "improve this"</div>
+          <div class="bad-prompt-arrow">↓ Output</div>
+          <div class="bad-prompt-out">Claude renames variables and reformats the file — none of which you needed</div>
+          <div class="bad-prompt-diag"><svg class="icon" data-lucide="triangle-alert" aria-hidden="true"></svg> Reason had no goal to guide it. "Improve" is undefined.</div>
+        </div>
+        <div class="bad-prompt-card">
+          <div class="bad-prompt-label">Example 3 — Both Fail</div>
+          <div class="bad-prompt-cmd">claude -p "add tests"</div>
+          <div class="bad-prompt-arrow">↓ Output</div>
+          <div class="bad-prompt-out">Claude writes test functions with zero assertions — they all pass trivially</div>
+          <div class="bad-prompt-diag"><svg class="icon" data-lucide="triangle-alert" aria-hidden="true"></svg> Perceive: no file. Reason: no definition of "test". Both upstream phases failed.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-card mt-32" role="note">
+      <strong style="color:var(--accent);">The root cause is always upstream.</strong>
+      <p style="margin-top:10px;">The quality of Perceive determines everything. The agent can only reason about what it gathered. The fix is always upstream — at the point where Perceive received insufficient context. You cannot patch a bad output; you must fix the prompt that created it.</p>
+    </div>
+
+    <!-- Connect forward -->
+    <div class="connect-forward show" id="cf-s0">
+      <strong>→ Connect Forward:</strong> The GCCF pattern is a recipe for feeding Perceive correctly. Let's build it.
+    </div>
+
+    <div style="margin-top:28px;">
+      <button class="btn btn-primary" onclick="completeSection(0)" id="btn-s0-continue" aria-label="Continue to Section 1">
+        Continue →
+      </button>
+    </div>
+  </div><!-- /section-0 -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 1: The GCCF Pattern
+  ═══════════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-1" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete Section 0 to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Section 1</div>
+      <h2>The GCCF Pattern</h2>
+      <p style="margin-top:8px;">Before you see the pattern — commit to what you already think.</p>
+    </div>
+
+    <!-- Prediction challenge -->
+    <div class="challenge-card" id="s1-predict-card">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> CHALLENGE</div>
+      <h3 style="margin-bottom:12px;">Your prediction</h3>
+      <p style="margin-bottom:16px;font-size:14px;">Before seeing the GCCF pattern, write what you think a "complete" prompt needs to contain. What information must be in a prompt to give Claude Code everything it needs?</p>
+      <label class="sr-only" for="s1-predict">Write your prediction about complete prompts</label>
+      <textarea aria-label="A complete prompt needs" id="s1-predict"
+        aria-describedby="s1-predict-hint"
+        oninput="checkMinChars('s1-predict','s1-reveal-btn',15,'s1-predict-hint'); saveReflection('s1-predict', this.value);"
+        placeholder="A complete prompt needs..."></textarea>
+      <span id="s1-predict-hint" class="char-hint" aria-live="polite">15 characters to activate reveal</span>
+      <div style="margin-top:14px;">
+        <button class="btn btn-amber" id="s1-reveal-btn" disabled
+          onclick="revealGCCF()"
+          aria-label="Reveal the GCCF pattern">
+          Reveal GCCF Pattern
+        </button>
+      </div>
+    </div>
+
+    <!-- GCCF anatomy (hidden until reveal) -->
+    <div id="s1-gccf" style="display:none;" class="mt-32">
+      <h3 style="margin-bottom:20px;">The GCCF Anatomy</h3>
+      <div class="gccf-grid">
+        <div class="gccf-item">
+          <div class="gccf-letter">G</div>
+          <div class="gccf-label">Goal</div>
+          <div class="gccf-desc">What exactly to produce. Not "improve this" — a specific, measurable outcome.</div>
+          <div class="gccf-example">"Add TypeScript return types to all exported functions in src/utils.ts"</div>
+        </div>
+        <div class="gccf-item">
+          <div class="gccf-letter">C</div>
+          <div class="gccf-label">Context</div>
+          <div class="gccf-desc">What the agent needs to know first. File paths, project setup, existing patterns.</div>
+          <div class="gccf-example">"This is a Node.js 20 project using strict TypeScript. The file uses ES modules."</div>
+        </div>
+        <div class="gccf-item">
+          <div class="gccf-letter">C</div>
+          <div class="gccf-label">Constraints</div>
+          <div class="gccf-desc">What NOT to do. Guard rails that prevent over-engineering or scope creep.</div>
+          <div class="gccf-example">"Don't rename variables. Don't change function signatures. Keep changes minimal."</div>
+        </div>
+        <div class="gccf-item">
+          <div class="gccf-letter">F</div>
+          <div class="gccf-label">Format</div>
+          <div class="gccf-desc">How to structure the output. Prevents Claude from choosing an inconvenient form.</div>
+          <div class="gccf-example">"Show the complete modified file, not a diff. Include a summary of changes made."</div>
+        </div>
+      </div>
+      <div class="info-card mt-24" role="note">
+        <strong style="color:var(--accent);">Why GCCF maps directly to PRAO:</strong>
+        <p style="margin-top:8px;">Goal + Context + Constraints all feed <strong>Perceive</strong> — they define what the agent gathers and what to ignore. Format shapes how <strong>Act</strong> packages the result. A GCCF prompt doesn't just describe a task — it pre-loads the agent's perception with the right signal.</p>
+      </div>
+    </div>
+
+    <!-- Apply exercise (visible after reveal) -->
+    <div id="s1-apply" style="display:none;" class="mt-32">
+      <div class="challenge-card">
+        <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
+        <h3 style="margin-bottom:12px;">Write a GCCF prompt</h3>
+        <div class="info-card mb-16" style="margin-bottom:16px;" role="note">
+          <strong>Scenario:</strong> You need Claude Code to add comprehensive JSDoc comments to a Python Flask API file at <code style="font-family:monospace;font-size:12px;color:var(--warning);">api/routes.py</code>. The project uses Google-style docstrings. You don't want Claude to change any business logic or rename anything.
+        </div>
+        <label class="sr-only" for="s1-apply-text">Write your GCCF prompt for the Flask API scenario</label>
+        <textarea aria-label="Write your GCCF prompt here. Include Goal, Context, Constrai" id="s1-apply-text"
+          aria-describedby="s1-apply-hint"
+          oninput="checkMinChars('s1-apply-text','s1-apply-btn',40,'s1-apply-hint'); saveReflection('s1-apply-text', this.value);"
+          placeholder="Write your GCCF prompt here. Include Goal, Context, Constraints, and Format..."></textarea>
+        <span id="s1-apply-hint" class="char-hint" aria-live="polite">40 characters to submit</span>
+        <div style="margin-top:14px;">
+          <button class="btn btn-primary" id="s1-apply-btn" disabled
+            onclick="submitS1Apply()"
+            aria-label="Submit your GCCF prompt">
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Insight card (post-apply) -->
+    <div class="insight-card mt-24" id="s1-insight" role="note" aria-label="Insight: GCCF as a Perceive filter">
+      <div class="card-badge insight-badge"><svg class="icon" data-lucide="lightbulb" aria-hidden="true"></svg> INSIGHT</div>
+      <p><strong>Every word either helps or hurts Perceive.</strong> GCCF is a filter — Goal tells Claude <em>what</em>, Context tells it <em>where/why</em>, Constraints tell it <em>what not to do</em>, Format tells it <em>how to package the result</em>. Notice how eliminating ambiguous words forces you to be specific. Specificity is what Perceive needs.</p>
+    </div>
+
+    <!-- Connect forward -->
+    <div class="connect-forward" id="cf-s1">
+      <strong>→ Connect Forward:</strong> Now let's watch what happens when Claude actually runs a GCCF prompt — step by step through its internal trace.
+    </div>
+  </div><!-- /section-1 -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 2: Reading Output (Interactive Simulation)
+  ═══════════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-2" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete Section 1 to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Section 2</div>
+      <h2>Reading Output</h2>
+      <p style="margin-top:8px;">Every line Claude produces maps to a PRAO phase. Learn to read the trace.</p>
+    </div>
+
+    <!-- Predict -->
+    <div class="challenge-card" id="s2-predict-card">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> CHALLENGE</div>
+      <h3 style="margin-bottom:12px;">Predict before you run</h3>
+      <p style="margin-bottom:16px;font-size:14px;">Here's the first line of a Claude Code response to the JSDoc prompt:<br><br>
+        <code style="font-family:monospace;font-size:13px;color:var(--warning);background:rgba(0,0,0,0.3);padding:6px 10px;border-radius:4px;display:inline-block;">I'll start by reading the current state of api/routes.py</code><br><br>
+        What PRAO phase is this?</p>
+      <label class="sr-only" for="s2-predict">Identify the PRAO phase of this output line</label>
+      <textarea aria-label="This is the __ phase because" id="s2-predict"
+        aria-describedby="s2-predict-hint"
+        oninput="checkMinChars('s2-predict','s2-run-btn',15,'s2-predict-hint'); saveReflection('s2-predict', this.value);"
+        placeholder="This is the __ phase because..."></textarea>
+      <span id="s2-predict-hint" class="char-hint" aria-live="polite">15 characters to run simulation</span>
+      <div style="margin-top:14px;">
+        <button class="btn btn-amber" id="s2-run-btn" disabled
+          onclick="runSimulation()"
+          aria-label="Run the Claude Code simulation">
+          Run Simulation
+        </button>
+      </div>
+    </div>
+
+    <!-- Simulation output (hidden until run) -->
+    <div id="s2-sim" style="display:none;" class="mt-32">
+      <h3 style="margin-bottom:16px;">Annotated Execution Trace</h3>
+      <p style="font-size:13px;margin-bottom:16px;">Click any step to see the PRAO explanation.</p>
+      <div class="trace-output" id="s2-trace-output" aria-label="Simulation trace"></div>
+    </div>
+
+    <!-- Apply (visible after simulation) -->
+    <div id="s2-apply" style="display:none;" class="mt-32">
+      <div class="challenge-card">
+        <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
+        <h3 style="margin-bottom:12px;">Map the trace to PRAO phases</h3>
+        <p style="margin-bottom:16px;font-size:14px;">Map each of the 5 trace steps to its PRAO phase (P / R / A / O). Explain your reasoning for at least two of them.</p>
+        <label class="sr-only" for="s2-apply-text">Map trace steps to PRAO phases</label>
+        <textarea aria-label="Step 1 (THINK) → P because... Step 2 (TOOL CALL) → A because" id="s2-apply-text"
+          aria-describedby="s2-apply-hint"
+          oninput="checkMinChars('s2-apply-text','s2-apply-btn',40,'s2-apply-hint'); saveReflection('s2-apply-text', this.value);"
+          placeholder="Step 1 (THINK) → P because...&#10;Step 2 (TOOL CALL) → A because..."></textarea>
+        <span id="s2-apply-hint" class="char-hint" aria-live="polite">40 characters to submit</span>
+        <div style="margin-top:14px;">
+          <button class="btn btn-primary" id="s2-apply-btn" disabled
+            onclick="submitS2Apply()"
+            aria-label="Submit trace mapping">
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Knowledge Check Q1 -->
+    <div id="s2-kc" style="display:none;" class="mt-32">
+      <div class="check-card" id="kc-q1">
+        <div class="card-badge check-badge">✓ CHECK</div>
+        <div class="question-text">The trace says <code style="font-family:monospace;color:var(--warning);">Found 12 functions, 0 with JSDoc comments</code>. Which PRAO phase produced this line?</div>
+        <div class="answer-options" id="q1-options">
+          <button class="answer-option" onclick="answerQ1(0)" aria-label="Option A: Perceive">
+            <span class="opt-letter">A</span>
+            <span>Perceive — reading the file to discover what exists</span>
+          </button>
+          <button class="answer-option" onclick="answerQ1(1)" aria-label="Option B: Reason">
+            <span class="opt-letter">B</span>
+            <span>Reason — planning the approach for the modifications</span>
+          </button>
+          <button class="answer-option" onclick="answerQ1(2)" aria-label="Option C: Act">
+            <span class="opt-letter">C</span>
+            <span>Act — executing the change to add comments</span>
+          </button>
+          <button class="answer-option" onclick="answerQ1(3)" aria-label="Option D: Observe">
+            <span class="opt-letter">D</span>
+            <span>Observe — verifying the result after modifications</span>
+          </button>
+        </div>
+        <div id="q1-feedback" class="question-feedback"></div>
+      </div>
+    </div>
+
+    <!-- Connect forward -->
+    <div class="connect-forward" id="cf-s2">
+      <strong>→ Connect Forward:</strong> Successful traces are satisfying to read. Error traces are more informative — they show exactly where the pipeline broke. Let's explore what goes wrong.
+    </div>
+  </div><!-- /section-2 -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 3: When Things Go Wrong
+  ═══════════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-3" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete Section 2 to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Section 3</div>
+      <h2>When Things Go Wrong</h2>
+      <p style="margin-top:8px;">Three error signatures. Each has a distinct cause and a specific fix.</p>
+    </div>
+
+    <!-- Error reference table -->
+    <div class="info-card" role="note">
+      <strong style="color:var(--accent);">Quick Reference — Error Signatures</strong>
+      <div style="overflow-x:auto;margin-top:16px;">
+        <table class="data-table">
+          <thead>
+            <tr><th>Error</th><th>Signature</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Permission denied</td>
+              <td><code>Error: Permission denied for tool: Write</code></td>
+              <td>Add the tool to the <code>allow</code> list in <code>settings.json</code></td>
+            </tr>
+            <tr>
+              <td>No context — confusion</td>
+              <td>Claude asks clarifying questions about the target</td>
+              <td>Add file paths and project context to the prompt (fix the Context in GCCF)</td>
+            </tr>
+            <tr>
+              <td>Tool timeout</td>
+              <td>Task times out after 30s</td>
+              <td>Reduce scope; use <code>claude -p</code> for focused subtasks on specific files</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Error recovery simulation -->
+    <div class="mt-32">
+      <h3 style="margin-bottom:16px;">Error Recovery Trace</h3>
+      <p style="font-size:13px;margin-bottom:16px;color:var(--text-muted);">Click each step to see what's happening and why.</p>
+      <div id="s3-error-sim">
+        <div class="error-sim-step" onclick="toggleErrorStep(0)" role="button" tabindex="0" aria-label="Step 1: Claude attempts write" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleErrorStep(0);}">
+          <span class="error-sim-tag tag-tool">TOOL CALL</span>
+          <span style="font-size:13px;color:var(--text-muted);">Write("api/routes.py", updated_content)</span>
+        </div>
+        <div class="error-sim-detail" id="err-step-0">
+          <strong style="color:var(--accent);">Act phase:</strong> Claude attempts to write the updated file. This is correct behavior — it has a plan and is executing it.
+        </div>
+
+        <div class="error-sim-step" onclick="toggleErrorStep(1)" role="button" tabindex="0" aria-label="Step 2: Permission denied error" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleErrorStep(1);}">
+          <span class="error-sim-tag tag-error">ERROR</span>
+          <span style="font-size:13px;color:var(--danger);">Permission denied for tool: Write on path api/routes.py</span>
+        </div>
+        <div class="error-sim-detail" id="err-step-1">
+          <strong style="color:var(--accent);">Observe phase:</strong> Claude sees the error. The Write tool is not in the allow list in <code>settings.json</code>. This is a configuration issue, not a prompt issue.
+        </div>
+
+        <div class="error-sim-step" onclick="toggleErrorStep(2)" role="button" tabindex="0" aria-label="Step 3: Claude reports the problem" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleErrorStep(2);}">
+          <span class="error-sim-tag tag-resp">RESPONSE</span>
+          <span style="font-size:13px;color:var(--text-muted);">I can't write to api/routes.py — the Write tool isn't in your allow list. Add it to settings.json to proceed.</span>
+        </div>
+        <div class="error-sim-detail" id="err-step-2">
+          <strong style="color:var(--accent);">Observe phase continues:</strong> Claude reports precisely what failed and how to fix it. This is the agent being helpful — it's surfacing the exact action you need to take.
+        </div>
+
+        <div class="error-sim-step" onclick="toggleErrorStep(3)" role="button" tabindex="0" aria-label="Step 4: You add Write tool to allow list" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleErrorStep(3);}">
+          <span class="error-sim-tag tag-user">YOU</span>
+          <span style="font-size:13px;color:var(--text-muted);">Added Write to settings.json allow list. Please continue.</span>
+        </div>
+        <div class="error-sim-detail" id="err-step-3">
+          <strong style="color:var(--accent);">Your action:</strong> You update <code>settings.json</code> to include <code>"Write"</code> in the <code>allow</code> array, then tell Claude to continue. The conversation context is preserved — Claude doesn't need to re-read the file.
+        </div>
+
+        <div class="error-sim-step" onclick="toggleErrorStep(4)" role="button" tabindex="0" aria-label="Step 5: Claude successfully writes the file" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleErrorStep(4);}">
+          <span class="error-sim-tag tag-fix">SUCCESS</span>
+          <span style="font-size:13px;color:var(--success);">Write("api/routes.py") → 247 lines written. JSDoc added to all 12 functions.</span>
+        </div>
+        <div class="error-sim-detail" id="err-step-4">
+          <strong style="color:var(--accent);">Act completes, Observe confirms:</strong> The write succeeded. Claude then verifies: 12 functions targeted, 12 functions updated. The PRAO loop completed successfully after you resolved the configuration issue.
+        </div>
+      </div>
+    </div>
+
+    <!-- Knowledge Check Q2 -->
+    <div class="check-card mt-32" id="kc-q2">
+      <div class="card-badge check-badge">✓ CHECK</div>
+      <div class="question-text">Claude responds to your task with <em>"Which file would you like me to modify?"</em> — even though you thought your request was clear. What's the root cause?</div>
+      <div class="answer-options" id="q2-options">
+        <button class="answer-option" onclick="answerQ2(0)" aria-label="Option A: Task too complex">
+          <span class="opt-letter">A</span>
+          <span>The task is too complex for Claude to handle without clarification</span>
+        </button>
+        <button class="answer-option" onclick="answerQ2(1)" aria-label="Option B: No context in prompt">
+          <span class="opt-letter">B</span>
+          <span>Your prompt didn't specify Context — Claude is completing its Perceive phase by asking</span>
+        </button>
+        <button class="answer-option" onclick="answerQ2(2)" aria-label="Option C: Restart needed">
+          <span class="opt-letter">C</span>
+          <span>You need to restart and use a completely different approach</span>
+        </button>
+        <button class="answer-option" onclick="answerQ2(3)" aria-label="Option D: Claude bug">
+          <span class="opt-letter">D</span>
+          <span>There's a bug in Claude's understanding of the request</span>
+        </button>
+      </div>
+      <div id="q2-feedback" class="question-feedback"></div>
+    </div>
+
+    <!-- Apply -->
+    <div id="s3-apply" style="display:none;" class="mt-32">
+      <div class="challenge-card">
+        <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
+        <h3 style="margin-bottom:12px;">Rewrite the broken prompt</h3>
+        <div class="info-card mb-16" style="margin-bottom:16px;" role="note">
+          <strong>Bad prompt:</strong> <code style="font-family:monospace;font-size:12px;color:var(--warning);">claude -p "update the config"</code><br>
+          <strong style="margin-top:8px;display:block;">Poor Results:</strong> Claude asks "Which config file? Which environment? What should I update?"<br><br>
+          Rewrite this as a proper GCCF prompt that prevents this confusion entirely.
+        </div>
+        <label class="sr-only" for="s3-apply-text">Rewrite the broken prompt as a GCCF prompt</label>
+        <textarea aria-label="In config/production.json," id="s3-apply-text"
+          aria-describedby="s3-apply-hint"
+          oninput="checkMinChars('s3-apply-text','s3-apply-btn',40,'s3-apply-hint'); saveReflection('s3-apply-text', this.value);"
+          placeholder="In config/production.json, ..."></textarea>
+        <span id="s3-apply-hint" class="char-hint" aria-live="polite">40 characters to submit</span>
+        <div style="margin-top:14px;">
+          <button class="btn btn-primary" id="s3-apply-btn" disabled
+            onclick="submitS3Apply()"
+            aria-label="Submit rewritten prompt">
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connect forward -->
+    <div class="connect-forward" id="cf-s3">
+      <strong>→ Connect Forward:</strong> Errors within a session are easy to fix — you're still in the same conversation. The harder problem is context that doesn't survive between sessions. That's what threading solves.
+    </div>
+  </div><!-- /section-3 -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 4: Conversation Threading
+  ═══════════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-4" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete Section 3 to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Section 4</div>
+      <h2>Conversation Threading</h2>
+      <p style="margin-top:8px;">Claude has no memory between separate invocations. Here's how to work with that — not against it.</p>
+    </div>
+
+    <!-- Frame card -->
+    <div class="info-card" role="note">
+      <strong style="color:var(--accent);">Three modes of memory:</strong>
+      <p style="margin-top:10px;font-size:14px;">Within one <code style="font-family:monospace;font-size:12px;">claude</code> session: context accumulates line by line. Between sessions: it disappears entirely — unless you write it down somewhere Claude will read next time. That somewhere is CLAUDE.md.</p>
+    </div>
+
+    <!-- Callback: claude-md -->
+    <div class="callback-card mt-24" role="note" aria-label="Concept callback: CLAUDE.md">
+      <div class="card-badge callback-badge"><svg class="icon" data-lucide="link" aria-hidden="true"></svg> CALLBACK</div>
+      <p><strong>CLAUDE.md</strong> — first introduced in <a href="/raven-cargo-course/lab/01#section-commands" style="color:var(--secondary);">Lab 01, Section 4</a></p>
+      <p style="margin-top:8px;" class="callback-brief">Persistent context file — a briefing document you write once, that Claude reads at the start of every session. Here it solves the "explain again" problem: instead of re-explaining your project conventions each run, you write them to CLAUDE.md and they are automatically part of every agent's Perceive phase.</p>
+    </div>
+
+    <!-- Threading modes -->
+    <div class="threading-modes mt-32">
+      <div class="thread-mode">
+        <div class="thread-mode-label">Mode 1 — Stateless</div>
+        <h4>Single-shot with <code style="font-family:monospace;font-size:13px;">claude -p</code></h4>
+        <div class="code-block">
+<span class="comment"># Each invocation is independent — no prior context</span>
+<span class="cmd">claude -p "Add error handling to fetchUser in src/api.ts"</span>
+<span class="comment"># Done. Next run starts fresh.</span>
+<span class="cmd">claude -p "Add error handling to fetchOrders in src/api.ts"</span>
+<span class="comment"># Does NOT know about the previous run's changes</span></div>
+        <p style="font-size:13px;margin-top:10px;color:var(--text-muted);">Use when: focused, self-contained tasks where prior context doesn't matter.</p>
+      </div>
+
+      <div class="thread-mode" style="border-left-color:var(--accent);">
+        <div class="thread-mode-label">Mode 2 — Accumulating Context</div>
+        <h4>Interactive session</h4>
+        <div class="code-block">
+<span class="cmd">claude</span>
+<span class="comment"># &gt; Add error handling to fetchUser</span>
+<span class="comment"># Claude does it, sees the result</span>
+<span class="comment"># &gt; Now apply the same pattern to fetchOrders</span>
+<span class="comment"># Claude knows what pattern it just used — applies it consistently</span></div>
+        <p style="font-size:13px;margin-top:10px;color:var(--text-muted);">Use when: tasks build on each other and you need the agent to maintain consistency within a session.</p>
+      </div>
+
+      <div class="thread-mode" style="border-left-color:var(--success);">
+        <div class="thread-mode-label">Mode 3 — Persistent via CLAUDE.md</div>
+        <h4>Cross-session context</h4>
+        <div class="code-block">
+<span class="comment"># CLAUDE.md contains:</span>
+<span class="comment"># "This codebase uses Result&lt;T,E&gt; for error types — never throws"</span>
+<span class="comment"># "All async functions must have JSDoc with @throws documented"</span>
+
+<span class="cmd">claude -p "Add error handling to fetchUser"</span>
+<span class="comment"># Knows Result&lt;T,E&gt; pattern — uses it without being told</span>
+
+<span class="comment"># Next week, new session:</span>
+<span class="cmd">claude -p "Add error handling to fetchOrders"</span>
+<span class="comment"># Still knows Result&lt;T,E&gt; — CLAUDE.md persists across restarts</span></div>
+        <p style="font-size:13px;margin-top:10px;color:var(--text-muted);">Use when: project conventions, architecture decisions, or team patterns need to be consistent across all runs.</p>
+      </div>
+    </div>
+
+    <!-- Knowledge Check Q3 -->
+    <div class="check-card mt-32" id="kc-q3">
+      <div class="card-badge check-badge">✓ CHECK</div>
+      <div class="question-text">You've explained your project's naming convention in three separate <code style="font-family:monospace;color:var(--warning);">claude</code> sessions. Each time you start fresh, you have to explain it again. What's the right fix?</div>
+      <div class="answer-options" id="q3-options">
+        <button class="answer-option" onclick="answerQ3(0)" aria-label="Option A: Repeat in every prompt">
+          <span class="opt-letter">A</span>
+          <span>Repeat the naming convention in every <code style="font-family:monospace;font-size:12px;">-p</code> prompt you write</span>
+        </button>
+        <button class="answer-option" onclick="answerQ3(1)" aria-label="Option B: Add to CLAUDE.md">
+          <span class="opt-letter">B</span>
+          <span>Add the naming convention to CLAUDE.md — Claude reads it at the start of every session</span>
+        </button>
+        <button class="answer-option" onclick="answerQ3(2)" aria-label="Option C: Use a different tool">
+          <span class="opt-letter">C</span>
+          <span>Switch to a different AI tool that has persistent memory built in</span>
+        </button>
+        <button class="answer-option" onclick="answerQ3(3)" aria-label="Option D: Keep all in one session">
+          <span class="opt-letter">D</span>
+          <span>Keep all your work in one single long session so context never resets</span>
+        </button>
+      </div>
+      <div id="q3-feedback" class="question-feedback"></div>
+    </div>
+
+    <!-- Apply -->
+    <div id="s4-apply" style="display:none;" class="mt-32">
+      <div class="challenge-card">
+        <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
+        <h3 style="margin-bottom:12px;">Write a CLAUDE.md entry</h3>
+        <div class="info-card mb-16" style="margin-bottom:16px;" role="note">
+          <strong>Project:</strong> A Python FastAPI backend that uses Pydantic v2 models, PostgreSQL with SQLAlchemy 2.0 async, and the convention that all endpoints return <code style="font-family:monospace;font-size:12px;color:var(--warning);">ApiResponse[T]</code> wrapper types.<br><br>
+          Write a CLAUDE.md entry that captures what this agent needs to know every session.
+        </div>
+        <label class="sr-only" for="s4-apply-text">Write a CLAUDE.md entry for this project</label>
+        <textarea aria-label="## Project Context This is a Python FastAPI backend...  ## C" id="s4-apply-text"
+          aria-describedby="s4-apply-hint"
+          oninput="checkMinChars('s4-apply-text','s4-apply-btn',40,'s4-apply-hint'); saveReflection('s4-apply-text', this.value);"
+          placeholder="## Project Context&#10;This is a Python FastAPI backend...&#10;&#10;## Conventions&#10;- All endpoints return ApiResponse[T]..."></textarea>
+        <span id="s4-apply-hint" class="char-hint" aria-live="polite">40 characters to submit</span>
+        <div style="margin-top:14px;">
+          <button class="btn btn-primary" id="s4-apply-btn" disabled
+            onclick="submitS4Apply()"
+            aria-label="Submit CLAUDE.md entry">
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connect forward -->
+    <div class="connect-forward" id="cf-s4">
+      <strong>→ Connect Forward:</strong> You now have all three tools — GCCF prompts, trace reading, and CLAUDE.md. Section 5 tests whether you can apply them together under time pressure.
+    </div>
+  </div><!-- /section-4 -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 5: Synthesis Check
+  ═══════════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-5" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete Section 4 to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Section 5</div>
+      <h2>Synthesis Check</h2>
+      <p style="margin-top:8px;">Two questions. Both require applying the full mental model — not recalling definitions.</p>
+    </div>
+
+    <!-- Knowledge Check Q4 -->
+    <div class="check-card" id="kc-q4">
+      <div class="card-badge check-badge">✓ CHECK</div>
+      <div class="question-text">You run <code style="font-family:monospace;color:var(--warning);">claude -p "Fix the authentication bug"</code>. Claude edits the wrong file entirely. Which PRAO phase failed first?</div>
+      <div class="answer-options" id="q4-options">
+        <button class="answer-option" onclick="answerQ4(0)" aria-label="Option A: Perceive">
+          <span class="opt-letter">A</span>
+          <span>Perceive — the prompt gave no file or module context, so the agent guessed</span>
+        </button>
+        <button class="answer-option" onclick="answerQ4(1)" aria-label="Option B: Reason">
+          <span class="opt-letter">B</span>
+          <span>Reason — Claude chose the wrong fix strategy for the bug</span>
+        </button>
+        <button class="answer-option" onclick="answerQ4(2)" aria-label="Option C: Act">
+          <span class="opt-letter">C</span>
+          <span>Act — the edit itself was executed incorrectly</span>
+        </button>
+        <button class="answer-option" onclick="answerQ4(3)" aria-label="Option D: Observe">
+          <span class="opt-letter">D</span>
+          <span>Observe — Claude should have verified the file was correct before saving</span>
+        </button>
+      </div>
+      <div id="q4-feedback" class="question-feedback"></div>
+    </div>
+
+    <!-- Knowledge Check Q5 -->
+    <div class="check-card mt-32" id="kc-q5" style="display:none;">
+      <div class="card-badge check-badge">✓ CHECK</div>
+      <div class="question-text">Which of these is a correctly structured GCCF prompt?</div>
+      <div class="answer-options" id="q5-options">
+        <button class="answer-option" onclick="answerQ5(0)" aria-label="Option A: Add TypeScript types to my project">
+          <span class="opt-letter">A</span>
+          <span>"Add TypeScript types to my project"</span>
+        </button>
+        <button class="answer-option" onclick="answerQ5(1)" aria-label="Option B: Specific GCCF prompt">
+          <span class="opt-letter">B</span>
+          <span>"In src/utils.ts, add TypeScript return types to all exported functions. Project uses strict mode. Do not change function signatures. Show the complete modified file."</span>
+        </button>
+        <button class="answer-option" onclick="answerQ5(2)" aria-label="Option C: Look at my code and make it better">
+          <span class="opt-letter">C</span>
+          <span>"Look at my code and make it better"</span>
+        </button>
+        <button class="answer-option" onclick="answerQ5(3)" aria-label="Option D: Fix the bug">
+          <span class="opt-letter">D</span>
+          <span>"Fix the bug"</span>
+        </button>
+      </div>
+      <div id="q5-feedback" class="question-feedback"></div>
+    </div>
+
+    <!-- Connect forward -->
+    <div class="connect-forward" id="cf-s5">
+      <strong>→ Connect Forward:</strong> Final test. You've built all the component skills — now synthesize them under real pressure. The Capstone Challenge is unlocked.
+    </div>
+  </div><!-- /section-5 -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 6: Capstone Challenge
+  ═══════════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-6" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete all 5 sections above to unlock the Capstone Challenge</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Capstone Challenge</div>
+      <h2 style="background:linear-gradient(135deg,var(--warning),var(--danger));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+        10 Minutes Before the Demo
+      </h2>
+    </div>
+
+    <div class="info-card" role="note" style="border-left-color:var(--warning);">
+      <strong style="color:var(--warning);">⏱ Scenario</strong>
+      <p style="margin-top:10px;font-size:14px;">You've just inherited a codebase. A demo is in 10 minutes. The client expects a working async API layer with comprehensive error handling — currently it has none. You have Claude Code. Write your complete interaction plan now.</p>
+    </div>
+
+    <div class="challenge-card mt-24">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> CAPSTONE CHALLENGE</div>
+      <h3 style="margin-bottom:12px;">Write your complete interaction plan</h3>
+      <p style="font-size:14px;margin-bottom:20px;">Your response must address all four components:</p>
+      <ol style="font-size:14px;color:var(--text-muted);padding-left:20px;margin-bottom:20px;line-height:2;">
+        <li>The <strong style="color:var(--text);">exact GCCF prompt</strong> you'd send to Claude Code</li>
+        <li>One <strong style="color:var(--text);">CLAUDE.md entry</strong> you'd write before running it</li>
+        <li>One <strong style="color:var(--text);">error you'd expect</strong> and your response to it</li>
+        <li>How you'd <strong style="color:var(--text);">verify the output</strong> is correct before the demo</li>
+      </ol>
+      <label class="sr-only" for="boss-challenge">Write your complete interaction plan for the Capstone Challenge</label>
+      <textarea aria-label="1. GCCF prompt: In src/api/routes.py, wrap all async endpoin" id="boss-challenge"
+        aria-describedby="boss-hint"
+        oninput="checkMinChars('boss-challenge','boss-submit-btn',80,'boss-hint'); saveReflection('boss-challenge', this.value);"
+        placeholder="1. GCCF prompt: In src/api/routes.py, wrap all async endpoint functions...&#10;&#10;2. CLAUDE.md entry: ## Error Handling Convention...&#10;&#10;3. Expected error: Permission denied → ...&#10;&#10;4. Verification: claude -p 'List all functions in src/api/routes.py that still lack try/except...'"
+        style="min-height:200px;"></textarea>
+      <span id="boss-hint" class="char-hint" aria-live="polite">80 characters to submit</span>
+      <div style="margin-top:16px;">
+        <button class="btn btn-primary" id="boss-submit-btn" disabled
+          onclick="submitBoss()"
+          aria-label="Submit Capstone Challenge response">
+          Submit Capstone
+        </button>
+      </div>
+    </div>
+
+    <!-- Model Answer (revealed post-submit) -->
+    <div class="model-answer" id="boss-model-answer" aria-label="Model answer">
+      <h4>Model Answer</h4>
+      <div class="code-block" style="margin-bottom:16px;">
+<span class="comment">1. GCCF PROMPT:</span>
+<span class="string">"In src/api/routes.py, wrap all async endpoint functions in</span>
+<span class="string"> try/except blocks returning ApiError(status=500, message=str(e)).</span>
+<span class="string"> Context: FastAPI project, Pydantic v2, all endpoints return ApiResponse[T].</span>
+<span class="string"> Constraints: don't add logging (handled by middleware), keep existing</span>
+<span class="string"> return types. Format: show each modified function with before/after."</span>
+
+<span class="comment">2. CLAUDE.md ENTRY:</span>
+<span class="string">## Error Handling Convention</span>
+<span class="string">Endpoints return ApiResponse[T] | ApiError; never raise; catch at boundary.</span>
+<span class="string">ApiError signature: ApiError(status: int, message: str)</span>
+
+<span class="comment">3. EXPECTED ERROR + RESPONSE:</span>
+<span class="fn">Permission denied for tool: Write on src/api/routes.py</span>
+<span class="keyword">→ Fix: Add "Write" to allow list in settings.json, then: "Please continue."</span>
+
+<span class="comment">4. VERIFICATION:</span>
+<span class="cmd">claude -p "List all async functions in src/api/routes.py</span>
+<span class="cmd">          that still lack try/except blocks"</span>
+<span class="comment"># Expected output: empty list (all functions covered)</span></div>
+
+      <!-- Self-evaluation rubric -->
+      <h4 style="margin-bottom:12px;">Self-Evaluation Rubric</h4>
+      <div class="rubric">
+        <div class="rubric-level rubric-d">
+          <div class="rubric-level-label">Distinguished</div>
+          <div class="rubric-desc">All 4 components present. GCCF is specific and measurable. Error scenario is realistic and recovery is concrete.</div>
+        </div>
+        <div class="rubric-level rubric-p">
+          <div class="rubric-level-label">Proficient</div>
+          <div class="rubric-desc">3 of 4 components present. Goals are measurable. CLAUDE.md entry or verification step may be missing.</div>
+        </div>
+        <div class="rubric-level rubric-v">
+          <div class="rubric-level-label">Developing</div>
+          <div class="rubric-desc">2 components present. GCCF prompt may exist but lacks Constraints or Format.</div>
+        </div>
+        <div class="rubric-level rubric-b">
+          <div class="rubric-level-label">Beginning</div>
+          <div class="rubric-desc">1 component or entirely vague responses. Plan would not be actionable in a real scenario.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connect forward -->
+    <div class="connect-forward" id="cf-s6">
+      <strong>→ Up Next:</strong> Lab 03 — Prompt Workshop. You'll turn the prompting patterns from this lab into a more structured extraction workflow with clearer constraints and outputs.
+    </div>
+  </div><!-- /section-6 -->
+
+</div><!-- /lab-sections -->
+
+<!-- Completion Banner -->
+<div id="completion-banner" style="display:none;background:linear-gradient(135deg,var(--primary),var(--secondary));padding:60px 32px;text-align:center;margin-top:60px;">
+  <div style="font-size:48px;margin-bottom:16px;"><svg class="icon-lg" data-lucide="party-popper" aria-hidden="true"></svg></div>
+  <h2 style="font-size:32px;font-weight:800;margin-bottom:12px;">Lab 02 Complete!</h2>
+  <p style="color:rgba(255,255,255,0.8);margin-bottom:8px;">You can write GCCF prompts, read agent traces, and persist context with CLAUDE.md.</p>
+  <p style="color:rgba(255,255,255,0.8);">Final XP: <strong id="final-xp">0</strong></p>
+  <div style="display:flex;gap:16px;justify-content:center;margin-top:32px;flex-wrap:wrap;">
+    <button onclick="exportReflections()" class="btn" style="background:white;color:var(--primary);font-weight:700;">
+      Export Notes (.txt)
+    </button>
+    <a href="/raven-cargo-course/lab/03" class="btn" style="background:rgba(255,255,255,0.15);color:white;font-weight:700;">
+      Continue to Lab 03 →
+    </a>
+  </div>
+</div>
+
+<script>
+
+    /* ─── Safe localStorage wrappers ─── */
+    function safeSave(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+    function safeLoad(k,d){try{const v=localStorage.getItem(k);return v==null?d:v}catch(e){return d}}
+  /* ─── State ──────────────────────────────────────────────────── */
+  const LAB_KEY = 'lab-02';
+  const SECTION_COUNT = 7; // sections 0–6
+  let xp = 0, streak = 0;
+  let sectionComplete = new Array(SECTION_COUNT).fill(false);
+  let milestoneLevel = 0;
+  let q1Tries = 0, q2Tries = 0, q3Tries = 0, q4Tries = 0, q5Tries = 0;
+  let q1Done = false, q2Done = false, q3Done = false, q4Done = false, q5Done = false;
+  let simRun = false;
+  const MILESTONES = [
+    { section: 1, label: 'Prompt Structure' },
+    { section: 3, label: 'Error Diagnosis' },
+    { section: 5, label: 'Conversation Design' },
+    { section: 6, label: 'Capstone Complete' }
+  ];
+
+  /* ─── Concept Registry ───────────────────────────────────────── */
+  const CONCEPT_REGISTRY = {
+    'prao-loop': {
+      label: 'PRAO Loop',
+      origin: 'Lab 01, Section 1',
+      originHref: '/raven-cargo-course/lab/01#section-old-new',
+      brief: 'Perceive → Reason → Act → Observe — the four-phase agentic execution cycle'
+    },
+    'gccf-pattern': {
+      label: 'GCCF Prompt Pattern',
+      origin: 'Lab 02, Section 1',
+      originHref: '/raven-cargo-course/lab/02#section-1',
+      brief: 'Goal (what to produce) + Context (what agent needs to know) + Constraints (what not to do) + Format (output shape)'
+    },
+    'claude-md': {
+      label: 'CLAUDE.md',
+      origin: 'Lab 01, Section 4',
+      originHref: '/raven-cargo-course/lab/01#section-commands',
+      brief: 'Persistent context file — briefing document you write once, agent reads every session'
+    },
+    'mcp-primitive': {
+      label: 'MCP Primitives',
+      origin: 'Lab 05, Section 1',
+      originHref: '/raven-cargo-course/lab/05#s1',
+      brief: 'Tools (actions), Resources (data), Prompts (templates) — three things MCP servers expose'
+    }
+  };
+
+  /* ─── XP System ──────────────────────────────────────────────── */
+  function awardXP(amount, reason) {
+    xp += amount;
+    safeSave(LAB_KEY + '-xp', xp.toString());
+    updateXPDisplay();
+    showXPToast(amount, reason);
+  }
+
+  function updateXPDisplay() {
+    document.getElementById('xp-value').textContent = xp;
+    const fxp = document.getElementById('final-xp');
+    if (fxp) fxp.textContent = xp;
+  }
+
+  function showXPToast(amount, reason) {
+    const toast = document.createElement('div');
+    toast.className = 'xp-toast';
+    toast.textContent = '+' + amount + ' XP — ' + reason;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2200);
+  }
+
+  function getMilestoneLevel() {
+    let level = 0;
+    MILESTONES.forEach((m, idx) => {
+      if (sectionComplete[m.section]) level = idx + 1;
+    });
+    return level;
+  }
+
+  function updateMilestoneDisplay() {
+    const el = document.getElementById('milestone-display');
+    if (!el) return;
+    if (milestoneLevel === 0) {
+      el.textContent = 'Milestone: Not started';
+      return;
+    }
+    const entry = MILESTONES[milestoneLevel - 1];
+    el.textContent = 'Milestone ' + milestoneLevel + ': ' + entry.label;
+  }
+
+  function announceMilestone(level) {
+    if (level <= 0) return;
+    const entry = MILESTONES[level - 1];
+    if (!entry) return;
+    const toast = document.createElement('div');
+    toast.className = 'milestone-toast';
+    toast.textContent = 'Milestone reached: ' + entry.label;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2200);
+  }
+
+  /* ─── Streak System ──────────────────────────────────────────── */
+  const streakThresholdsHit = { 3: false, 5: false, 7: false };
+
+  function updateStreak(correct) {
+    if (correct) {
+      streak++;
+      const el = document.getElementById('streak-display');
+      el.style.display = 'block';
+      if (streak >= 7) {
+        el.className = 'streak-display streak-7';
+        el.textContent = streak + ' streak — excellent consistency';
+        if (!streakThresholdsHit[7]) { streakThresholdsHit[7] = true; awardXP(25, 'streak bonus'); }
+      } else if (streak >= 5) {
+        el.className = 'streak-display streak-5';
+        el.textContent = streak + ' streak — strong consistency';
+        if (!streakThresholdsHit[5]) { streakThresholdsHit[5] = true; awardXP(25, 'streak bonus'); }
+      } else if (streak >= 3) {
+        el.className = 'streak-display streak-3';
+        el.textContent = streak + ' streak — steady progress';
+        if (!streakThresholdsHit[3]) { streakThresholdsHit[3] = true; awardXP(25, 'streak bonus'); }
+      }
+    } else {
+      streak = 0;
+      document.getElementById('streak-display').style.display = 'none';
+    }
+  }
+
+  /* ─── Persistence ────────────────────────────────────────────── */
+  function saveReflection(key, value) {
+    safeSave(LAB_KEY + '-' + key, value);
+  }
+
+  function loadAllReflections() {
+    document.querySelectorAll('textarea[id]').forEach(ta => {
+      const saved = safeLoad(LAB_KEY + '-' + ta.id);
+      if (saved) ta.value = saved;
+    });
+    for (let i = 0; i < SECTION_COUNT; i++) {
+      if (safeLoad(LAB_KEY + '-s' + i) === '1') sectionComplete[i] = true;
+    }
+    xp = parseInt(safeLoad(LAB_KEY + '-xp') || '0');
+    updateXPDisplay();
+    for (let i = 0; i < SECTION_COUNT; i++) checkSectionUnlock(i);
+    updateNavDots();
+    milestoneLevel = getMilestoneLevel();
+    updateMilestoneDisplay();
+
+    // Restore char hints for textareas that have saved content
+    ['s1-predict','s1-apply-text','s2-predict','s2-apply-text','s3-apply-text','s4-apply-text','boss-challenge'].forEach(id => {
+      const ta = document.getElementById(id);
+      if (!ta) return;
+      const minMap = { 's1-predict': 15, 's1-apply-text': 40, 's2-predict': 15, 's2-apply-text': 40, 's3-apply-text': 40, 's4-apply-text': 40, 'boss-challenge': 80 };
+      const btnMap = { 's1-predict': 's1-reveal-btn', 's1-apply-text': 's1-apply-btn', 's2-predict': 's2-run-btn', 's2-apply-text': 's2-apply-btn', 's3-apply-text': 's3-apply-btn', 's4-apply-text': 's4-apply-btn', 'boss-challenge': 'boss-submit-btn' };
+      if (ta.value.trim().length >= minMap[id]) {
+        const btn = document.getElementById(btnMap[id]);
+        if (btn) btn.disabled = false;
+        const hint = document.getElementById(id + '-hint');
+        if (hint) { hint.textContent = '✓ Ready'; hint.className = 'char-hint char-ready'; }
+      }
+    });
+
+    // Restore section-specific UI states
+    if (sectionComplete[0]) { /* Section 0 always shows */ }
+    if (sectionComplete[1]) {
+      const gccf = document.getElementById('s1-gccf');
+      const apply = document.getElementById('s1-apply');
+      if (gccf) gccf.style.display = 'block';
+      if (apply) apply.style.display = 'block';
+      document.getElementById('s1-insight').classList.add('revealed');
+      document.getElementById('cf-s1').classList.add('show');
+    }
+    if (sectionComplete[2]) {
+      if (!simRun) { runSimulationSilent(); }
+      document.getElementById('s2-apply').style.display = 'block';
+      document.getElementById('s2-kc').style.display = 'block';
+      document.getElementById('cf-s2').classList.add('show');
+    }
+    if (sectionComplete[3]) {
+      document.getElementById('s3-apply').style.display = 'block';
+      document.getElementById('cf-s3').classList.add('show');
+    }
+    if (sectionComplete[4]) {
+      document.getElementById('s4-apply').style.display = 'block';
+      document.getElementById('cf-s4').classList.add('show');
+    }
+    if (sectionComplete[5]) {
+      document.getElementById('kc-q5').style.display = 'block';
+      document.getElementById('cf-s5').classList.add('show');
+    }
+    if (sectionComplete[6]) {
+      document.getElementById('boss-model-answer').classList.add('show');
+      document.getElementById('cf-s6').classList.add('show');
+      document.getElementById('completion-banner').style.display = 'block';
+    }
+  }
+
+  function exportReflections() {
+    let content = 'Lab 02: First Agent Conversation — ' + new Date().toLocaleDateString() + '\n';
+    content += 'XP Earned: ' + xp + '\n\n';
+    document.querySelectorAll('textarea[id]').forEach(ta => {
+      if (ta.value.trim()) content += '[' + ta.id + ']\n' + ta.value.trim() + '\n\n';
+    });
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = LAB_KEY + '-reflections.txt';
+    document.body.appendChild(a); a.click();
+    URL.revokeObjectURL(url); document.body.removeChild(a);
+  }
+
+  /* ─── Character gate ─────────────────────────────────────────── */
+  const xpAwardedFor = {};
+
+  function checkMinChars(taId, btnId, min, hintId) {
+    const ta = document.getElementById(taId);
+    const btn = document.getElementById(btnId);
+    const hint = document.getElementById(hintId);
+    const len = ta.value.trim().length;
+    const remaining = Math.max(0, min - len);
+    if (remaining > 0) {
+      if (hint) { hint.textContent = remaining + ' more characters to activate'; hint.className = 'char-hint'; }
+      btn.disabled = true;
+    } else {
+      if (hint) { hint.textContent = '✓ Ready'; hint.className = 'char-hint char-ready'; }
+      btn.disabled = false;
+      if (!xpAwardedFor[taId]) {
+        xpAwardedFor[taId] = true;
+        const isPrediction = (min === 15);
+        awardXP(isPrediction ? 10 : 20, isPrediction ? 'prediction committed' : 'apply exercise submitted');
+      }
+    }
+  }
+
+  /* ─── Section unlock ─────────────────────────────────────────── */
+  function markSectionComplete(idx) {
+    if (sectionComplete[idx]) return;
+    sectionComplete[idx] = true;
+    safeSave(LAB_KEY + '-s' + idx, '1');
+    checkSectionUnlock(idx + 1);
+    updateNavDots();
+    const nextMilestoneLevel = getMilestoneLevel();
+    if (nextMilestoneLevel > milestoneLevel) {
+      milestoneLevel = nextMilestoneLevel;
+      updateMilestoneDisplay();
+      announceMilestone(milestoneLevel);
+    } else {
+      updateMilestoneDisplay();
+    }
+    if (idx === SECTION_COUNT - 1) completeLab();
+  }
+
+  function checkSectionUnlock(idx) {
+    if (idx >= SECTION_COUNT) return;
+    const section = document.getElementById('section-' + idx);
+    if (!section) return;
+    const allPriorDone = idx === 0 || sectionComplete.slice(0, idx).every(Boolean);
+    if (allPriorDone) {
+      section.classList.remove('locked');
+      const overlay = section.querySelector('.lock-overlay');
+      if (overlay) overlay.style.display = 'none';
+    }
+  }
+
+  function completeLab() {
+    awardXP(100, 'lab complete!');
+    const banner = document.getElementById('completion-banner');
+    banner.style.display = 'block';
+    banner.scrollIntoView({ behavior: 'smooth' });
+    safeSave(LAB_KEY + '-complete', Date.now().toString());
+  }
+
+  /* ─── Navigation dots ────────────────────────────────────────── */
+  function updateNavDots() {
+    const container = document.getElementById('nav-dots');
+    if (!container) return;
+    if (container.children.length === 0) {
+      for (let i = 0; i < SECTION_COUNT; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'nav-dot dot-locked';
+        dot.setAttribute('role', 'listitem');
+        dot.setAttribute('aria-label', 'Section ' + (i + 1));
+        container.appendChild(dot);
+      }
+    }
+    const dots = container.querySelectorAll('.nav-dot');
+    const firstIncomplete = sectionComplete.indexOf(false);
+    dots.forEach((dot, i) => {
+      dot.classList.remove('dot-locked', 'dot-active', 'dot-complete');
+      if (sectionComplete[i]) {
+        dot.classList.add('dot-complete');
+        dot.setAttribute('aria-label', 'Section ' + (i + 1) + ': Complete');
+      } else if (i === firstIncomplete) {
+        dot.classList.add('dot-active');
+        dot.setAttribute('aria-label', 'Section ' + (i + 1) + ': Current');
+      } else {
+        dot.classList.add('dot-locked');
+        dot.setAttribute('aria-label', 'Section ' + (i + 1) + ': Locked');
+      }
+    });
+  }
+
+  /* ─── Scroll progress ────────────────────────────────────────── */
+  window.addEventListener('scroll', () => {
+    const d = document.documentElement;
+    const pct = (d.scrollTop / (d.scrollHeight - d.clientHeight)) * 100;
+    document.getElementById('progress-bar').style.width = pct + '%';
+  });
+
+  /* ─── Section 0: complete on Continue ───────────────────────── */
+  function completeSection(idx) {
+    markSectionComplete(idx);
+    const nextSection = document.getElementById('section-' + (idx + 1));
+    if (nextSection) setTimeout(() => nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+  }
+
+  /* ─── Section 1: GCCF reveal + apply ────────────────────────── */
+  function revealGCCF() {
+    document.getElementById('s1-gccf').style.display = 'block';
+    document.getElementById('s1-apply').style.display = 'block';
+    document.getElementById('s1-predict-card').style.borderColor = 'rgba(16,185,129,0.3)';
+    awardXP(15, 'simulation run');
+    document.getElementById('s1-gccf').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function submitS1Apply() {
+    const val = document.getElementById('s1-apply-text').value.trim();
+    if (val.length < 40) return;
+    document.getElementById('s1-insight').classList.add('revealed');
+    document.getElementById('cf-s1').classList.add('show');
+    document.getElementById('s1-apply-btn').disabled = true;
+    document.getElementById('s1-apply-btn').textContent = '✓ Submitted';
+    markSectionComplete(1);
+    document.getElementById('s1-insight').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* ─── Section 2: Simulation ──────────────────────────────────── */
+  const TRACE_STEPS = [
+    {
+      tag: 'think', tagLabel: 'THINK',
+      text: 'I need to read the file first to understand the current structure and which functions lack JSDoc.',
+      prao: 'Perceive', praoColor: 'var(--accent)',
+      explain: '<strong>Perceive phase:</strong> Before acting, Claude announces its intent to gather information. "I need to read" = the transition from Reason planning to Perceive execution. This line is the agent making explicit what it\'s about to perceive.'
+    },
+    {
+      tag: 'tool', tagLabel: 'TOOL CALL',
+      text: 'Read("api/routes.py")',
+      prao: 'Perceive', praoColor: 'var(--accent)',
+      explain: '<strong>Perceive phase:</strong> The Read tool call IS the Perceive action. The agent is gathering raw data — the file contents — before any reasoning about what to do with it can occur. No file read = no informed action.'
+    },
+    {
+      tag: 'result', tagLabel: 'TOOL RESULT',
+      text: 'Found 12 functions, 0 with JSDoc comments. File is 247 lines.',
+      prao: 'Perceive → Reason', praoColor: 'var(--accent)',
+      explain: '<strong>Perceive output → Reason input:</strong> The tool result is the conclusion of Perceive — the agent now KNOWS what exists. "12 functions, 0 with JSDoc" is structured data that Reason will use to form a plan. This line marks the boundary between phases.'
+    },
+    {
+      tag: 'think', tagLabel: 'THINK',
+      text: 'I\'ll add JSDoc to all 12 functions following the Google-style docstring format specified in the constraint.',
+      prao: 'Reason', praoColor: 'var(--secondary)',
+      explain: '<strong>Reason phase:</strong> The agent is now forming a plan using what it perceived. "I\'ll add JSDoc to all 12" is a decision, not a reading. "Following the Google-style format" shows it recalled the Constraints from the GCCF prompt. This is pure reasoning — no tools called yet.'
+    },
+    {
+      tag: 'resp', tagLabel: 'RESPONSE',
+      text: 'Here\'s the updated api/routes.py with JSDoc comments on all 12 functions...',
+      prao: 'Act + Observe', praoColor: 'var(--success)',
+      explain: '<strong>Act → Observe phase:</strong> Claude has executed the write (Act) and is now presenting the result (Observe). The phrase "Here\'s the updated" signals completion — the action happened and the agent is surfacing the output for your review. Observe in Claude Code often manifests as the final summary response.'
+    }
+  ];
+
+  function buildTraceLine(step, idx) {
+    const tagClass = { think: 'tag-think', tool: 'tag-tool', result: 'tag-result', resp: 'tag-resp' }[step.tag];
+    return `
+      <div class="trace-line" onclick="toggleTrace(${idx})" role="button" tabindex="0"
+           aria-label="Trace step ${idx + 1}: ${step.tagLabel}"
+           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleTrace(${idx});}">
+        <span class="trace-tag ${tagClass}">${step.tagLabel}</span>
+        <span class="trace-text">${step.text}</span>
+      </div>
+      <div class="trace-expand" id="trace-expand-${idx}" role="note" aria-label="Explanation for step ${idx + 1}">
+        <strong style="color:var(--accent);">PRAO Phase: ${step.prao}</strong><br><br>
+        ${step.explain}
+      </div>`;
+  }
+
+  function toggleTrace(idx) {
+    const el = document.getElementById('trace-expand-' + idx);
+    el.classList.toggle('open');
+  }
+
+  function runSimulation() {
+    if (simRun) return;
+    simRun = true;
+    awardXP(15, 'simulation run');
+    const container = document.getElementById('s2-trace-output');
+    container.innerHTML = '';
+    TRACE_STEPS.forEach((step, idx) => {
+      setTimeout(() => {
+        container.innerHTML += buildTraceLine(step, idx);
+      }, idx * 350);
+    });
+    setTimeout(() => {
+      document.getElementById('s2-sim').style.display = 'block';
+      document.getElementById('s2-apply').style.display = 'block';
+      document.getElementById('s2-sim').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+  }
+
+  function runSimulationSilent() {
+    simRun = true;
+    const container = document.getElementById('s2-trace-output');
+    if (!container) return;
+    container.innerHTML = '';
+    TRACE_STEPS.forEach((step, idx) => {
+      container.innerHTML += buildTraceLine(step, idx);
+    });
+    document.getElementById('s2-sim').style.display = 'block';
+  }
+
+  function submitS2Apply() {
+    const val = document.getElementById('s2-apply-text').value.trim();
+    if (val.length < 40) return;
+    document.getElementById('s2-kc').style.display = 'block';
+    document.getElementById('s2-apply-btn').disabled = true;
+    document.getElementById('s2-apply-btn').textContent = '✓ Submitted';
+    document.getElementById('s2-kc').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* ─── Knowledge Check helpers ────────────────────────────────── */
+  function lockOptions(containerId) {
+    document.querySelectorAll('#' + containerId + ' .answer-option').forEach(btn => {
+      btn.classList.add('locked-opt');
+      btn.onclick = null;
+    });
+  }
+
+  function showFeedback(fbId, isCorrect, message) {
+    const fb = document.getElementById(fbId);
+    fb.innerHTML = (isCorrect ? '✓ CORRECT — ' : '✗ ') + message;
+    fb.className = 'question-feedback show ' + (isCorrect ? 'fb-correct' : 'fb-incorrect');
+  }
+
+  function calcXP(tries) {
+    return tries === 1 ? 30 : tries === 2 ? 15 : 5;
+  }
+
+  /* ─── Q1: Trace phase ────────────────────────────────────────── */
+  function answerQ1(choice) {
+    if (q1Done) return;
+    q1Tries++;
+    const options = document.querySelectorAll('#q1-options .answer-option');
+    if (choice === 0) {
+      q1Done = true;
+      options[0].classList.add('correct');
+      lockOptions('q1-options');
+      showFeedback('q1-feedback', true, 'Perceive is the information-gathering phase. Reading a file, finding functions, counting what exists — all Perceive. The TOOL RESULT line reports what was found — that is the output of Perceive.');
+      const earned = calcXP(q1Tries);
+      awardXP(earned, 'correct — ' + (q1Tries === 1 ? 'first try!' : q1Tries === 2 ? 'second try' : 'third try'));
+      updateStreak(true);
+      document.getElementById('cf-s2').classList.add('show');
+      markSectionComplete(2);
+    } else {
+      options[choice].classList.add('incorrect');
+      updateStreak(false);
+      const msgs = [
+        '',
+        'Reason happens AFTER reading. Reason uses what Perceive found to form a plan. This line IS the finding — it comes from the Read tool call, which is Perceive.',
+        'Act writes or modifies things. This line reports a read result. No action has occurred yet — the agent is still gathering information.',
+        'Observe happens after Act completes. No action has been taken at this step. The agent is still in the information-gathering phase.'
+      ];
+      showFeedback('q1-feedback', false, msgs[choice]);
+      if (q1Tries >= 3) {
+        q1Done = true;
+        options[0].classList.add('correct');
+        lockOptions('q1-options');
+        awardXP(5, 'correct on third try');
+        updateStreak(false);
+        document.getElementById('cf-s2').classList.add('show');
+        markSectionComplete(2);
+      }
+    }
+  }
+
+  /* ─── Section 3: Error sim + Q2 + Apply ─────────────────────── */
+  function toggleErrorStep(idx) {
+    const el = document.getElementById('err-step-' + idx);
+    el.classList.toggle('open');
+  }
+
+  function answerQ2(choice) {
+    if (q2Done) return;
+    q2Tries++;
+    const options = document.querySelectorAll('#q2-options .answer-option');
+    if (choice === 1) {
+      q2Done = true;
+      options[1].classList.add('correct');
+      lockOptions('q2-options');
+      showFeedback('q2-feedback', true, 'When Perceive has insufficient context, the agent asks rather than guessing. This is correct agent behavior — a clarification request is the agent being honest that it cannot safely proceed without knowing the target file. Answer the question and the conversation continues.');
+      const earned = calcXP(q2Tries);
+      awardXP(earned, 'correct — ' + (q2Tries === 1 ? 'first try!' : q2Tries === 2 ? 'second try' : 'third try'));
+      updateStreak(true);
+      document.getElementById('s3-apply').style.display = 'block';
+      document.getElementById('s3-apply').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else {
+      options[choice].classList.add('incorrect');
+      updateStreak(false);
+      const msgs = [
+        'Complexity does not equal confusion. Claude can handle complex tasks — it needs context to locate the right target, not a simpler task.',
+        '',
+        'Just answer the question in the same conversation turn. The conversation continues from where it left off. You do not need to restart.',
+        'Clarification requests are a feature, not a bug. An agent that guesses at ambiguous context would be more dangerous than one that asks.'
+      ];
+      showFeedback('q2-feedback', false, msgs[choice]);
+      if (q2Tries >= 3) {
+        q2Done = true;
+        options[1].classList.add('correct');
+        lockOptions('q2-options');
+        awardXP(5, 'correct on third try');
+        document.getElementById('s3-apply').style.display = 'block';
+      }
+    }
+  }
+
+  function submitS3Apply() {
+    const val = document.getElementById('s3-apply-text').value.trim();
+    if (val.length < 40) return;
+    document.getElementById('s3-apply-btn').disabled = true;
+    document.getElementById('s3-apply-btn').textContent = '✓ Submitted';
+    document.getElementById('cf-s3').classList.add('show');
+    markSectionComplete(3);
+  }
+
+  /* ─── Section 4: Q3 + Apply ──────────────────────────────────── */
+  function answerQ3(choice) {
+    if (q3Done) return;
+    q3Tries++;
+    const options = document.querySelectorAll('#q3-options .answer-option');
+    if (choice === 1) {
+      q3Done = true;
+      options[1].classList.add('correct');
+      lockOptions('q3-options');
+      showFeedback('q3-feedback', true, 'CLAUDE.md is read at the start of every session. Write the naming convention once, benefit in every future run. This is the correct architectural solution — put persistent knowledge where the agent will always find it.');
+      const earned = calcXP(q3Tries);
+      awardXP(earned, 'correct — ' + (q3Tries === 1 ? 'first try!' : q3Tries === 2 ? 'second try' : 'third try'));
+      updateStreak(true);
+      document.getElementById('s4-apply').style.display = 'block';
+      document.getElementById('s4-apply').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else {
+      options[choice].classList.add('incorrect');
+      updateStreak(false);
+      const msgs = [
+        'This scales to zero. Every new task requires repeating the convention, and you will eventually miss it or write it inconsistently.',
+        '',
+        'The problem is context persistence architecture, not the tool. CLAUDE.md IS the memory system — it is the right solution regardless of tool choice.',
+        'Sessions end when you close your terminal or restart. CLAUDE.md persists across machine restarts, OS updates, and months of inactivity.'
+      ];
+      showFeedback('q3-feedback', false, msgs[choice]);
+      if (q3Tries >= 3) {
+        q3Done = true;
+        options[1].classList.add('correct');
+        lockOptions('q3-options');
+        awardXP(5, 'correct on third try');
+        document.getElementById('s4-apply').style.display = 'block';
+      }
+    }
+  }
+
+  function submitS4Apply() {
+    const val = document.getElementById('s4-apply-text').value.trim();
+    if (val.length < 40) return;
+    document.getElementById('s4-apply-btn').disabled = true;
+    document.getElementById('s4-apply-btn').textContent = '✓ Submitted';
+    document.getElementById('cf-s4').classList.add('show');
+    markSectionComplete(4);
+  }
+
+  /* ─── Section 5: Q4 + Q5 ─────────────────────────────────────── */
+  function answerQ4(choice) {
+    if (q4Done) return;
+    q4Tries++;
+    const options = document.querySelectorAll('#q4-options .answer-option');
+    if (choice === 0) {
+      q4Done = true;
+      options[0].classList.add('correct');
+      lockOptions('q4-options');
+      showFeedback('q4-feedback', true, 'Without a file path, module name, or symptom description, Perceive cannot locate the bug. It guesses — and guesses wrong. The fix is always upstream: add file context, error message, or function name to the prompt.');
+      const earned = calcXP(q4Tries);
+      awardXP(earned, 'correct — ' + (q4Tries === 1 ? 'first try!' : q4Tries === 2 ? 'second try' : 'third try'));
+      updateStreak(true);
+      document.getElementById('kc-q5').style.display = 'block';
+      document.getElementById('kc-q5').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else {
+      options[choice].classList.add('incorrect');
+      updateStreak(false);
+      const msgs = [
+        '',
+        'Reason can only work with what Perceive gathered. If Perceive found the wrong file, Reason reasoned correctly about the wrong file. The root cause is upstream — in Perceive.',
+        'The act followed from the reasoning, which followed from the perception. The chain of errors started at Perceive. Fixing Act without fixing Perceive means the next run will make the same mistake.',
+        'Observe happens after Act. By the time Observe runs, the wrong file has already been edited. The problem began in Perceive, before any action was taken.'
+      ];
+      showFeedback('q4-feedback', false, msgs[choice]);
+      if (q4Tries >= 3) {
+        q4Done = true;
+        options[0].classList.add('correct');
+        lockOptions('q4-options');
+        awardXP(5, 'correct on third try');
+        document.getElementById('kc-q5').style.display = 'block';
+      }
+    }
+  }
+
+  function answerQ5(choice) {
+    if (q5Done) return;
+    q5Tries++;
+    const options = document.querySelectorAll('#q5-options .answer-option');
+    if (choice === 1) {
+      q5Done = true;
+      options[1].classList.add('correct');
+      lockOptions('q5-options');
+      showFeedback('q5-feedback', true, 'Goal (add return types to all exported functions), Context (src/utils.ts, strict mode project), Constraints (don\'t change signatures), Format (complete modified file). All four components present and specific enough to act on without clarification.');
+      const earned = calcXP(q5Tries);
+      awardXP(earned, 'correct — ' + (q5Tries === 1 ? 'first try!' : q5Tries === 2 ? 'second try' : 'third try'));
+      updateStreak(true);
+      document.getElementById('cf-s5').classList.add('show');
+      markSectionComplete(5);
+    } else {
+      options[choice].classList.add('incorrect');
+      updateStreak(false);
+      const msgs = [
+        'Missing Context (which files?), Constraints (preserve existing patterns?), and Format (show diff or complete file?). Perceive has no target.',
+        '',
+        'No Goal, no Context, no Constraints, no Format. Perceive has nothing to work with. "Better" is undefined — the agent will guess at all four dimensions.',
+        'No file, no bug description, no expected behavior, no output format. This is maximally ambiguous. Every word here fails to help Perceive.'
+      ];
+      showFeedback('q5-feedback', false, msgs[choice]);
+      if (q5Tries >= 3) {
+        q5Done = true;
+        options[1].classList.add('correct');
+        lockOptions('q5-options');
+        awardXP(5, 'correct on third try');
+        document.getElementById('cf-s5').classList.add('show');
+        markSectionComplete(5);
+      }
+    }
+  }
+
+  /* ─── Capstone Challenge ─────────────────────────────────────── */
+  function submitBoss() {
+    const val = document.getElementById('boss-challenge').value.trim();
+    if (val.length < 80) return;
+    awardXP(50, 'Capstone Challenge complete!');
+    document.getElementById('boss-submit-btn').disabled = true;
+    document.getElementById('boss-submit-btn').textContent = '✓ Capstone Submitted';
+    document.getElementById('boss-model-answer').classList.add('show');
+    document.getElementById('cf-s6').classList.add('show');
+    document.getElementById('boss-model-answer').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    markSectionComplete(6);
+  }
+
+  /* ─── Init ───────────────────────────────────────────────────── */
+  document.addEventListener('DOMContentLoaded', () => {
+    updateNavDots();
+    loadAllReflections();
+  });
+</script>
+
+  <!-- ─── Attribution Footer ─────────────────────────────────────────────── -->
+</main>
+
+  <footer style="
+    margin-top: 80px;
+    padding: 32px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    text-align: center;
+    font-size: 12px;
+    color: #475569;
+    line-height: 1.8;
+  ">
+    <p>
+      &ldquo;Claude&rdquo; and &ldquo;Claude Code&rdquo; are trademarks of Anthropic, PBC.
+      This course is not affiliated with or endorsed by Anthropic.
+      All product names, logos, and trademarks are the property of their respective owners
+      and are referenced here for educational purposes only.
+    </p>
+    <p>
+      Fonts:
+      <a href="https://fonts.google.com/specimen/Inter" rel="noopener" style="color:#6366f1;">Inter</a>
+      and
+      <a href="https://fonts.google.com/specimen/JetBrains+Mono" rel="noopener" style="color:#6366f1;">JetBrains Mono</a>
+      via Google Fonts under the
+      <a href="https://scripts.sil.org/OFL" rel="noopener" style="color:#6366f1;">SIL Open Font License 1.1</a>.
+    </p>
+    <p>Course content &copy; 2026 Agentic AI Engineering Course. Educational use.</p>
+  </footer>
+
+<script src="/raven-cargo-course/assets/lab-progression-bridge.js"></script>
+<script>if (window.lucide) lucide.createIcons();</script>
+</body>
+</html>

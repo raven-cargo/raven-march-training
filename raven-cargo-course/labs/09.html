@@ -1,0 +1,2140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 09 · Capstone Build | Agentic AI Engineering</title>
+  <link rel="stylesheet" href="/raven-cargo-course/assets/theme-toggle.css" />
+  <script src="/raven-cargo-course/assets/theme-toggle.js" defer></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <style>
+    /* ─── Design System ──────────────────────────────────────────── */
+    :root {
+      --bg-base:       #080d1a;
+      --bg-surface:    #0f1729;
+      --bg-raised:     #172035;
+      --bg-glass:      rgba(23,32,53,0.7);
+      --primary:       #6366f1;
+      --primary-glow:  rgba(99,102,241,0.25);
+      --secondary:     #8b5cf6;
+      --accent:        #06b6d4;
+      --accent-glow:   rgba(6,182,212,0.2);
+      --success:       #10b981;
+      --warning:       #f59e0b;
+      --danger:        #ef4444;
+      --text:          #f1f5f9;
+      --text-muted:    #94a3b8;
+      --text-dim:      #475569;
+      --border:        rgba(255,255,255,0.08);
+      --border-bright: rgba(99,102,241,0.4);
+      --radius:        16px;
+      --radius-sm:     8px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-base);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ─── Progress Bar ───────────────────────────────────────────── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 0%; transition: width 0.2s ease;
+      z-index: 1000;
+      box-shadow: 0 0 12px var(--primary);
+    }
+
+    /* ─── Nav ────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: 16px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      backdrop-filter: blur(20px);
+      background: rgba(8,13,26,0.8);
+      border-bottom: 1px solid var(--border);
+      z-index: 900;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text-muted); }
+    .nav-badge {
+      background: var(--primary); color: white;
+      padding: 3px 10px; border-radius: 100px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
+    }
+    .nav-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--bg-raised); border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+    .nav-dot.dot-locked   { background: var(--text-dim); }
+    .nav-dot.dot-active   { background: var(--primary); box-shadow: 0 0 8px var(--primary-glow); }
+    .nav-dot.dot-complete { background: var(--success); }
+
+    /* ─── Sections ───────────────────────────────────────────────── */
+    .section-block {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .section-block:last-child { border-bottom: none; }
+    .section-block.locked { user-select: none; min-height: 240px; }
+
+    /* ─── Typography ─────────────────────────────────────────────── */
+    .overline {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 12px;
+    }
+    h1 {
+      font-size: clamp(36px,5vw,60px); font-weight: 800;
+      line-height: 1.1; letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--text) 0%, var(--text-muted) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    h2 { font-size: clamp(22px,3vw,32px); font-weight: 700; letter-spacing: -0.02em; }
+    h3 { font-size: 18px; font-weight: 600; }
+    p  { color: var(--text-muted); }
+
+    /* ─── Cards ──────────────────────────────────────────────────── */
+    .card {
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      backdrop-filter: blur(10px);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .card:hover { border-color: var(--border-bright); box-shadow: 0 0 30px var(--primary-glow); }
+
+    .info-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .challenge-card {
+      background: rgba(245,158,11,0.06);
+      border: 1px solid rgba(245,158,11,0.3);
+      border-left: 3px solid var(--warning);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .callback-card {
+      background: rgba(139,92,246,0.06);
+      border: 1px solid rgba(139,92,246,0.3);
+      border-left: 3px solid var(--secondary);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .insight-card {
+      background: rgba(16,185,129,0.06);
+      border: 1px solid rgba(16,185,129,0.3);
+      border-left: 3px solid var(--success);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: none;
+    }
+    .insight-card.revealed { display: block; animation: fadeIn 0.4s ease; }
+
+    .card-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 3px 10px;
+      border-radius: 4px; display: inline-block; margin-bottom: 12px;
+    }
+    .challenge-badge { background: rgba(245,158,11,0.15); color: var(--warning); }
+    .callback-badge  { background: rgba(139,92,246,0.15); color: var(--secondary); }
+    .insight-badge   { background: rgba(16,185,129,0.15); color: var(--success); }
+
+    /* ─── Buttons ────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border-radius: 10px;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      border: none; transition: all 0.2s; text-decoration: none;
+    }
+    .btn-primary { background: var(--primary); color: white; box-shadow: 0 0 20px var(--primary-glow); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 30px var(--primary-glow); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-accent  { background: var(--accent); color: #000; font-weight: 700; }
+
+    /* ─── Textarea ───────────────────────────────────────────────── */
+    textarea {
+      width: 100%;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 14px; color: var(--text);
+      resize: vertical; min-height: 120px;
+      font-family: inherit; transition: border-color 0.2s;
+      line-height: 1.6;
+    }
+    textarea:focus { outline: none; border-color: var(--primary); }
+    .char-hint { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+    .char-ready { color: var(--success); }
+    label.field-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+
+    /* ─── Problem picker ─────────────────────────────────────────── */
+    .problem-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin: 24px 0; }
+    .problem-option {
+      background: var(--bg-raised);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+    .problem-option:hover { border-color: var(--primary); box-shadow: 0 0 20px var(--primary-glow); }
+    .problem-option.selected { border-color: var(--accent); background: rgba(6,182,212,0.06); }
+    .problem-option-num { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 6px; }
+    .problem-option-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .problem-option-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+    /* ─── Pipeline component grid ────────────────────────────────── */
+    .pipeline-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 20px 0; }
+    .pipeline-step {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      position: relative;
+    }
+    .pipeline-step-num {
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--primary); margin-bottom: 6px;
+    }
+    .pipeline-step h4 { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+    .pipeline-step p { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+    .pipeline-step .pipe-example { font-size: 11px; color: var(--accent); font-style: italic; margin-top: 8px; line-height: 1.4; }
+
+    /* ─── Review rubric ──────────────────────────────────────────── */
+    .review-dimension {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+    .dim-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
+    .dim-title { font-size: 15px; font-weight: 700; }
+    .dim-weight { font-size: 12px; color: var(--text-muted); background: var(--bg-raised); padding: 4px 10px; border-radius: 20px; }
+    .level-buttons { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .level-btn {
+      padding: 8px 14px; border-radius: 8px;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      border: 2px solid var(--border);
+      background: var(--bg-raised); color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .level-btn:hover { border-color: var(--primary); color: var(--text); }
+    .level-btn.selected-d { border-color: gold; background: rgba(255,215,0,0.1); color: gold; }
+    .level-btn.selected-p { border-color: var(--primary); background: rgba(99,102,241,0.1); color: var(--primary); }
+    .level-btn.selected-v { border-color: var(--warning); background: rgba(245,158,11,0.1); color: var(--warning); }
+    .level-btn.selected-b { border-color: var(--text-dim); background: rgba(71,85,105,0.2); color: var(--text-dim); }
+    .level-anchor { font-size: 12px; color: var(--text-muted); margin-top: 10px; padding: 10px; background: var(--bg-raised); border-radius: 8px; display: none; }
+    .level-anchor.show { display: block; animation: fadeIn 0.3s; }
+
+    /* ─── Score summary ──────────────────────────────────────────── */
+    .score-summary {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-top: 24px;
+      display: none;
+    }
+    .score-summary.show { display: block; animation: fadeIn 0.4s; }
+    .score-bar-wrap { margin: 6px 0; }
+    .score-bar-label { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: flex; justify-content: space-between; }
+    .score-bar { height: 8px; background: var(--bg-raised); border-radius: 4px; overflow: hidden; }
+    .score-bar-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+    .fill-gold { background: linear-gradient(90deg, gold, #fbbf24); }
+    .fill-primary { background: linear-gradient(90deg, var(--primary), var(--accent)); }
+    .fill-warn { background: linear-gradient(90deg, var(--warning), #fb923c); }
+    .fill-dim { background: var(--text-dim); }
+
+    /* ─── Final deliverable display ──────────────────────────────── */
+    .deliverable-display {
+      background: #04080f;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+      font-size: 13px; line-height: 1.8;
+      white-space: pre-wrap;
+      color: var(--text-muted);
+      max-height: 600px;
+      overflow-y: auto;
+      margin: 20px 0;
+    }
+    .deliverable-display .doc-section-header { color: var(--accent); font-weight: 700; }
+    .deliverable-display .doc-content { color: var(--text-muted); }
+
+    /* ─── What's next cards ──────────────────────────────────────── */
+    .next-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 24px 0; }
+    .next-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .next-card-icon { font-size: 28px; margin-bottom: 12px; }
+    .next-card-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+    .next-card-desc { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.5; }
+
+    /* ─── Production gates ───────────────────────────────────────── */
+    .gate-list { display: flex; flex-direction: column; gap: 14px; margin: 20px 0; }
+    .gate-item {
+      display: flex; gap: 16px; align-items: flex-start;
+      background: var(--bg-raised); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 16px;
+    }
+    .gate-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(99,102,241,0.15);
+      color: var(--primary); font-weight: 700; font-size: 13px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .gate-item h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .gate-item p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+    /* ─── Code block ─────────────────────────────────────────────── */
+    .code-block {
+      background: #04080f;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 18px 22px;
+      font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+      font-size: 13px; line-height: 1.8;
+      overflow-x: auto; position: relative;
+      margin: 14px 0;
+    }
+    .code-block .comment { color: #4b5563; }
+    .code-block .keyword { color: #8b5cf6; }
+    .code-block .string  { color: #10b981; }
+    .code-block .fn      { color: #06b6d4; }
+    .code-block .key     { color: var(--warning); }
+
+    /* ─── Connect forward ────────────────────────────────────────── */
+    .connect-forward {
+      display: none; margin-top: 24px; padding: 16px 20px;
+      background: rgba(6,182,212,0.06); border: 1px solid rgba(6,182,212,0.2);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-sm); font-size: 14px; color: var(--text-muted);
+    }
+    .connect-forward.show { display: block; animation: fadeIn 0.4s; }
+    .connect-forward strong { color: var(--accent); }
+
+    /* ─── Section header ─────────────────────────────────────────── */
+    .section-header { margin-bottom: 32px; }
+    .section-num {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+    }
+
+    /* ─── Objectives card ────────────────────────────────────────── */
+    .objectives-card {
+      background: rgba(99,102,241,0.06); border: 1px solid rgba(99,102,241,0.2);
+      border-radius: var(--radius); padding: 24px; margin-top: 32px; text-align: left;
+    }
+    .objectives-card ul { padding-left: 20px; margin-top: 10px; }
+    .objectives-card li { color: var(--text-muted); font-size: 14px; margin-bottom: 6px; }
+
+    /* ─── XP / Streak / Toast ────────────────────────────────────── */
+    .xp-display { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--warning); }
+    .xp-toast {
+      position: fixed; top: 80px; right: 24px;
+      background: var(--warning); color: #000;
+      padding: 8px 16px; border-radius: 20px;
+      font-weight: 700; font-size: 13px;
+      animation: toastFade 2s forwards; pointer-events: none; z-index: 9999;
+    }
+    @keyframes toastFade {
+      0%  { opacity:0; transform:translateY(-10px) }
+      20% { opacity:1; transform:translateY(0) }
+      80% { opacity:1 }
+      100%{ opacity:0; transform:translateY(-10px) }
+    }
+    .streak-display { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+    .streak-3 { background: rgba(245,158,11,0.15); color: var(--warning); }
+    .streak-5 { background: rgba(139,92,246,0.15); color: var(--secondary); }
+    .streak-7 { background: rgba(245,158,11,0.2);  color: gold; }
+
+    /* ─── Lock overlay ───────────────────────────────────────────── */
+    .lock-overlay {
+      position: absolute; inset: 0;
+      background: rgba(8,13,26,0.88);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      border-radius: var(--radius); z-index: 10; gap: 12px;
+    }
+    .lock-overlay p { color: var(--text-muted); font-size: 14px; }
+
+    /* ─── Utilities ──────────────────────────────────────────────── */
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+    .mt-16 { margin-top: 16px; }
+    .mt-24 { margin-top: 24px; }
+    .mt-32 { margin-top: 32px; }
+    .mb-16 { margin-bottom: 16px; }
+    .flex-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    strong.accent  { color: var(--accent); }
+    strong.success { color: var(--success); }
+    strong.warning { color: var(--warning); }
+
+    /* ─── Course completion banner ───────────────────────────────── */
+    #course-completion-banner {
+      display: none;
+      background: linear-gradient(135deg, #0f1729 0%, #1a1040 50%, #0f1729 100%);
+      border-top: 1px solid rgba(139,92,246,0.3);
+      padding: 80px 32px;
+      text-align: center;
+      margin-top: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    #course-completion-banner::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(99,102,241,0.15) 0%, transparent 60%);
+    }
+    .course-complete-inner { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; }
+    .course-complete-emoji { font-size: 64px; margin-bottom: 20px; display: block; }
+    .course-complete-headline { font-size: clamp(28px,4vw,48px); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 16px; }
+    .course-complete-sub { font-size: 18px; color: rgba(255,255,255,0.7); margin-bottom: 8px; }
+    .course-xp-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3);
+      padding: 10px 24px; border-radius: 100px;
+      font-size: 16px; font-weight: 700; color: var(--warning);
+      margin: 24px auto;
+    }
+    .course-stat-row { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin: 28px 0; }
+    .course-stat { text-align: center; }
+    .course-stat-value { font-size: 32px; font-weight: 800; color: var(--text); line-height: 1; }
+    .course-stat-label { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .course-final-quote {
+      font-size: 16px; font-style: italic; color: rgba(255,255,255,0.6);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 32px; margin-top: 40px;
+      max-width: 560px; margin-left: auto; margin-right: auto;
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 12px 16px; }
+      .problem-options { grid-template-columns: 1fr; }
+      .pipeline-grid { grid-template-columns: 1fr; }
+      .next-cards { grid-template-columns: 1fr; }
+    }
+    .milestone-display {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: rgba(6,182,212,0.08);
+      border: 1px solid rgba(6,182,212,0.25);
+      border-radius: 999px;
+      padding: 4px 10px;
+      white-space: nowrap;
+    }
+    .milestone-toast {
+      position: fixed; top: 120px; right: 24px;
+      background: var(--accent); color: #02131a;
+      padding: 8px 14px; border-radius: 20px;
+      font-weight: 700; font-size: 12px;
+      animation: toastFade 2s forwards;
+      pointer-events: none; z-index: 9999;
+    }
+
+    /* ─── Build Challenge Exercises ──────────────────────────── */
+    .build-challenge {
+      margin-top: 32px;
+      background: rgba(139,92,246,0.06);
+      border: 1px solid rgba(139,92,246,0.3);
+      border-top: 3px solid var(--secondary);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+    .build-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 4px 14px;
+      border-radius: 20px; display: inline-block;
+      background: var(--secondary); color: #fff;
+    }
+    .ce-xp-badge {
+      font-size: 12px; font-weight: 600; color: var(--secondary);
+      background: rgba(139,92,246,0.12); padding: 4px 12px; border-radius: 20px;
+    }
+    .btn-secondary {
+      background: var(--secondary); color: #fff;
+      box-shadow: 0 0 16px rgba(139,92,246,0.25);
+    }
+    .btn-secondary:hover { transform: translateY(-2px); box-shadow: 0 0 28px rgba(139,92,246,0.4); }
+    .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .ce-requirements {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 16px;
+      margin-bottom: 16px; font-size: 13px; color: var(--text-muted);
+    }
+    .ce-model-answer {
+      margin-top: 16px; padding: 16px;
+      background: var(--bg); border: 1px solid rgba(139,92,246,0.35);
+      border-left: 3px solid var(--secondary);
+      border-radius: var(--radius-sm);
+    }
+
+    /* ── Icon System (Lucide) ─────────────────────────────── */
+    .icon { width:16px; height:16px; display:inline-block; vertical-align:-2px; stroke-width:2; flex-shrink:0; }
+    .icon-lg { width:20px; height:20px; vertical-align:-4px; }
+    .icon-sm { width:14px; height:14px; vertical-align:-2px; }
+    .badge-label .icon, .badge-label .icon-lg { margin-right:4px; }
+    .quiz-feedback .icon { margin-right:3px; }
+  
+    pre { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    /* Focus-visible for keyboard navigation */
+    :focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    button:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+</style>
+  <link rel="stylesheet" href="/raven-cargo-course/assets/raven-labs.css" />
+  <link rel="stylesheet" href="/raven-cargo-course/assets/raven-course.css" />
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- Navigation -->
+<nav>
+  <div class="nav-brand">
+    <span class="nav-badge">Day 3</span>
+    <span>Lab 09 · Capstone Build</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <div class="xp-display" aria-live="polite" aria-label="Experience points">
+      <svg class="icon" data-lucide="zap" aria-hidden="true"></svg><span id="xp-value">0</span><span style="font-size:11px;color:var(--text-muted);">XP</span>
+    </div>
+    <div id="streak-display" class="streak-display" style="display:none;" aria-live="polite"></div>
+    <div id="milestone-display" class="milestone-display" aria-live="polite" aria-label="Current milestone">Milestone: Not started</div>
+    <div id="nav-dots" style="display:flex;gap:6px;" aria-label="Lab progress" role="list"></div>
+  </div>
+</nav>
+
+<div id="lab-onboarding-tip" role="note" style="max-width:860px;margin:14px auto 0;padding:10px 14px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:10px;font-size:12px;color:var(--muted);">Tip: fill the section action in each block to earn XP, and use nav dots as progress signals (locked = not available yet, active = current section, complete = finished).</div>
+
+<main>
+
+<!-- Nav links -->
+<div style="position:fixed;bottom:24px;left:24px;display:flex;gap:10px;z-index:800;">
+  <a href="/raven-cargo-course/lab/08" class="btn btn-ghost" style="font-size:12px;padding:8px 16px;" aria-label="Previous lab">← Lab 08</a>
+</div>
+
+<!-- Hero -->
+<div style="padding:110px 32px 52px;max-width:860px;margin:0 auto;text-align:center;">
+  <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-bottom:14px;">Day 3 · Lab 09 · Final Lab</div>
+  <h1>Capstone Build</h1>
+  <p style="font-size:17px;max-width:600px;margin:20px auto 0;color:var(--text-muted);">
+    Two days of theory become one complete pipeline design. You're not building a demo — you're building a solution to an actual problem your team has.
+  </p>
+  <div class="objectives-card" role="note" aria-label="Lab objectives">
+    <strong>After this lab you will have:</strong>
+    <ul style="text-align:left;margin-top:10px;padding-left:20px;">
+      <li>Designed a complete agentic pipeline for a real organizational problem</li>
+      <li>Written a production-grade TCEF prompt and skill definition for your pipeline's core step</li>
+      <li>Documented safety constraints, permission scope, and human approval gates</li>
+      <li>Self-reviewed your design against five professional dimensions</li>
+      <li>Exported a complete design document ready to take back to your team</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Lab sections -->
+<div id="lab-sections" style="max-width:900px;margin:0 auto;padding:0 32px 120px;">
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 0: Choosing Your Problem -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-block" id="section-0">
+    <div class="section-header">
+      <div class="section-num">Section 0</div>
+      <h2>Choosing Your Problem</h2>
+      <p class="mt-16">
+        The next 90 minutes transform two days of theory into something real. You're designing a complete agentic pipeline — not a tutorial exercise, but a solution to an actual problem your team deals with. The output is a documented design you can take back and build.
+      </p>
+    </div>
+
+    <!-- Starter options -->
+    <div class="info-card mb-16" style="margin-bottom:24px;">
+      <p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:16px;">Choose a problem to design against — or write your own:</p>
+      <div class="problem-options" id="problem-options" role="radiogroup" aria-label="Problem starter options">
+
+        <div class="problem-option" id="prob-0" role="radio" aria-checked="false" tabindex="0"
+             onclick="selectProblem(0)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectProblem(0);}">
+          <div class="problem-option-num">Option 1</div>
+          <div class="problem-option-title">Automated Code Review Pipeline</div>
+          <div class="problem-option-desc">Every PR triggers Claude Code — runs security check, test coverage check, style check — posts a structured report as a PR comment.</div>
+        </div>
+
+        <div class="problem-option" id="prob-1" role="radio" aria-checked="false" tabindex="0"
+             onclick="selectProblem(1)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectProblem(1);}">
+          <div class="problem-option-num">Option 2</div>
+          <div class="problem-option-title">Documentation Sync Agent</div>
+          <div class="problem-option-desc">Detects when source code changes without corresponding doc updates — generates draft doc updates — queues for human review.</div>
+        </div>
+
+        <div class="problem-option" id="prob-2" role="radio" aria-checked="false" tabindex="0"
+             onclick="selectProblem(2)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectProblem(2);}">
+          <div class="problem-option-num">Option 3</div>
+          <div class="problem-option-title">Incident Triage Assistant</div>
+          <div class="problem-option-desc">When a Slack alert fires — Claude reads logs and recent deploys — produces a structured incident brief with likely root causes and runbook links.</div>
+        </div>
+
+        <div class="problem-option" id="prob-3" role="radio" aria-checked="false" tabindex="0"
+             onclick="selectProblem(3)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectProblem(3);}">
+          <div class="problem-option-num">Option 4 — Custom</div>
+          <div class="problem-option-title">Write Your Own</div>
+          <div class="problem-option-desc">Design against a problem from your actual organization. Minimum 60 characters — it must be specific enough to design against.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Apply: problem statement -->
+    <div class="challenge-card">
+      <div class="card-badge challenge-badge">Apply — Problem Statement</div>
+      <p style="margin-bottom:16px;font-size:14px;">Write your problem statement. Be specific: what triggers the pipeline? What does success look like? Who benefits?</p>
+      <label for="apply-s0" class="sr-only">Your problem statement</label>
+      <textarea aria-label="Example: When a developer opens a pull request on our GitHub" id="apply-s0" rows="5" minlength="60"
+        placeholder="Example: When a developer opens a pull request on our GitHub monorepo, the pipeline triggers automatically. Success means the PR author receives a structured comment within 90 seconds that lists any new security vulnerabilities, the delta in test coverage, and any style violations introduced by the change. Our team of 8 engineers currently spends 45 minutes per day manually doing this review..."
+        oninput="handleApplyInput('apply-s0', 60, 's0-complete-btn')"
+        aria-describedby="apply-s0-hint"></textarea>
+      <div id="apply-s0-hint" class="char-hint" aria-live="polite">60 characters to activate</div>
+      <div class="flex-row mt-16">
+        <button id="s0-complete-btn" class="btn btn-primary" disabled
+          onclick="completeSection0()" aria-label="Lock in problem and continue to Section 1">
+          Lock In Problem → Section 1
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /section-0 -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 1: Pipeline Architecture Design -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-1" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <svg class="icon-lg" data-lucide="lock" aria-hidden="true" style="width:32px;height:32px;"></svg>
+      <p>Complete Section 0 to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Section 1</div>
+      <h2>Pipeline Architecture Design</h2>
+      <p class="mt-16">Every agentic pipeline has the same skeleton. Your job is to fill it in for your specific problem.</p>
+    </div>
+
+    <!-- Problem context bar (populated by completeSection0) -->
+    <div style="padding:12px 16px; background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.15); border-radius:8px; font-size:13px; color:var(--text-muted); margin-bottom:16px; display:none;">
+      <strong style="color:var(--primary);">Your Problem:</strong> <span id="s1-problem-label"></span>
+    </div>
+
+    <!-- Prediction Challenge -->
+    <div style="margin:20px 0; padding:16px 20px; background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.2); border-radius:10px;">
+      <div style="font-size:12px; font-weight:700; color:#f59e0b; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;">Predict Before You Read</div>
+      <p style="font-size:14px; color:#94a3b8; margin-bottom:10px;">What are the 3 most important components of a production agentic AI pipeline? (Think about what makes a pipeline actually work end-to-end, not just the LLM call.)</p>
+      <textarea aria-label="Your prediction" placeholder="Write your prediction..." style="width:100%; min-height:80px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px; color:#f1f5f9; font-size:13px; resize:vertical;"></textarea>
+    </div>
+
+    <!-- Callback: PRAO Loop -->
+    <div class="callback-card mb-16" style="margin-bottom:20px;" role="note" aria-label="Concept callback: PRAO Loop">
+      <div class="card-badge callback-badge"><svg class="icon" data-lucide="link" aria-hidden="true"></svg> Callback — PRAO Loop (Lab 01)</div>
+      <p><strong>Your pipeline IS the PRAO loop at scale.</strong></p>
+      <p style="margin-top:8px;">You first met Perceive → Reason → Act → Observe in Lab 01, Section 1. Here it is doing real work: What does Perceive receive? What does Reason decide? What does Act execute? What does Observe confirm? Every pipeline component maps directly to one of these four phases.</p>
+    </div>
+
+    <!-- Five components -->
+    <div class="info-card" style="margin-bottom:24px;">
+      <p style="font-weight:600;color:var(--text);margin-bottom:16px;">Five pipeline components every design must address:</p>
+      <div class="pipeline-grid">
+        <div class="pipeline-step">
+          <div class="pipeline-step-num">Component 1</div>
+          <h4>Trigger</h4>
+          <p>What event starts the pipeline?</p>
+          <div class="pipe-example">webhook, cron schedule, file change, Slack message, GitHub PR event</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="pipeline-step-num">Component 2</div>
+          <h4>Context Gathering</h4>
+          <p>What does the agent need to Perceive before reasoning?</p>
+          <div class="pipe-example">files, logs, tickets, schemas, git history, CI results</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="pipeline-step-num">Component 3</div>
+          <h4>Decision Logic</h4>
+          <p>What does the agent decide or produce?</p>
+          <div class="pipe-example">classification, draft content, structured report, risk score, summary</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="pipeline-step-num">Component 4</div>
+          <h4>Action Scope</h4>
+          <p>What can the agent Act on — vs. what requires human approval?</p>
+          <div class="pipe-example">post comment (auto), merge PR (human gate), delete file (never)</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="pipeline-step-num">Component 5</div>
+          <h4>Output Delivery</h4>
+          <p>How does the result reach humans?</p>
+          <div class="pipe-example">PR comment, Slack DM, email, Jira ticket, dashboard widget</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Apply: architecture -->
+    <div class="challenge-card">
+      <div class="card-badge challenge-badge">Apply — Architecture Design</div>
+      <p style="margin-bottom:16px;font-size:14px;">Map your problem to all five pipeline components. Be specific about each — not "reads relevant files" but "reads the changed files from git diff and the test results from CI logs."</p>
+      <label for="apply-s1" class="sr-only">Your pipeline architecture design</label>
+      <textarea aria-label="Trigger: GitHub webhook fires when a PR is opened or updated" id="apply-s1" rows="10" minlength="80"
+        placeholder="Trigger: GitHub webhook fires when a PR is opened or updated against the main branch.&#10;Context gathering: Agent reads (1) git diff --name-only HEAD~1 to get changed files, (2) the last 20 lines of the test runner output from the CI artifact, (3) the security scan JSON from our Snyk integration.&#10;Decision logic: Agent classifies each changed file by risk level, produces a coverage delta calculation, and lists any new security findings with severity.&#10;Action scope: Agent may post a PR comment automatically. It may NOT approve or merge the PR. It may NOT modify any source files.&#10;Output delivery: Structured markdown comment posted to the GitHub PR thread within 90 seconds of trigger."
+        oninput="handleApplyInput('apply-s1', 80, 's1-complete-btn')"
+        aria-describedby="apply-s1-hint"></textarea>
+      <div id="apply-s1-hint" class="char-hint" aria-live="polite">80 characters to activate</div>
+      <div class="flex-row mt-16">
+        <button id="s1-complete-btn" class="btn btn-primary" disabled
+          onclick="completeSection(1, 'insight-s1')" aria-label="Submit architecture and see insight">
+          Submit Architecture
+        </button>
+      </div>
+    </div>
+
+    <!-- Insight (post-apply) -->
+    <div class="insight-card mt-24" id="insight-s1" role="note" aria-label="Insight: specificity transforms ideas into buildable specs">
+      <div class="card-badge insight-badge"><svg class="icon" data-lucide="lightbulb" aria-hidden="true"></svg> Insight</div>
+      <p><strong>Specificity transforms a vague idea into a buildable spec.</strong></p>
+      <p style="margin-top:8px;">"Reads relevant files" requires a design decision. "Reads <code style="font-family:monospace;color:var(--accent);">git diff --name-only HEAD~1</code> and the last 3 lines of each changed file" is buildable today. Notice how each component forced you to make a concrete choice — those choices are your design. They can be reviewed, challenged, and improved. Vague intentions cannot.</p>
+    </div>
+
+    <div class="connect-forward mt-24" id="cf-s1" role="note">
+      <strong>Section 1 complete.</strong> You have a skeleton. Now Section 2 makes it intelligent — the TCEF prompt is where the reasoning lives.
+    </div>
+
+  </div><!-- /section-1 -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 2: Prompt & Skill Design -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-2" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <svg class="icon-lg" data-lucide="lock" aria-hidden="true" style="width:32px;height:32px;"></svg>
+      <p>Complete Section 1 to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Section 2</div>
+      <h2>Prompt &amp; Skill Design</h2>
+      <p class="mt-16">A pipeline is only as good as its prompts. Design the key TCEF prompt and the skill that packages it.</p>
+    </div>
+
+    <!-- Prediction Challenge -->
+    <div style="margin:20px 0; padding:16px 20px; background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.2); border-radius:10px;">
+      <div style="font-size:12px; font-weight:700; color:#f59e0b; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;">Predict Before You Read</div>
+      <p style="font-size:14px; color:#94a3b8; margin-bottom:10px;">What's the biggest risk when deploying an agentic AI system without human checkpoints? Think about what could go wrong if the pipeline acts autonomously on every decision.</p>
+      <textarea aria-label="Your prediction" placeholder="Write your prediction..." style="width:100%; min-height:80px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px; color:#f1f5f9; font-size:13px; resize:vertical;"></textarea>
+    </div>
+
+    <!-- Callback: TCEF Pattern -->
+    <div class="callback-card mb-16" style="margin-bottom:16px;" role="note" aria-label="Concept callback: TCEF Prompt Pattern">
+      <div class="card-badge callback-badge"><svg class="icon" data-lucide="link" aria-hidden="true"></svg> Callback — TCEF Pattern (Lab 03, Section 2)</div>
+      <p><strong>Task + Context + Examples + Format</strong> — you designed TCEF prompts in Lab 03. Now apply the pattern to your pipeline's core reasoning step. This is where "agent behavior" is actually defined — in the prompt, not the code around it.</p>
+    </div>
+
+    <!-- Callback: Skill Anatomy -->
+    <div class="callback-card mb-16" style="margin-bottom:24px;" role="note" aria-label="Concept callback: Skill Anatomy">
+      <div class="card-badge callback-badge"><svg class="icon" data-lucide="link" aria-hidden="true"></svg> Callback — Skill Anatomy (Lab 06, Section 1)</div>
+      <p><strong>YAML frontmatter + Markdown instructions = a skill file.</strong> You learned this pattern in Lab 06. Now package your pipeline's core logic as a skill — the reusable unit other pipelines can invoke. A well-designed skill is the difference between a one-off script and a building block.</p>
+    </div>
+
+    <!-- TCEF structure reminder -->
+    <div class="info-card" style="margin-bottom:24px;">
+      <p style="font-weight:600;color:var(--text);margin-bottom:16px;">TCEF anatomy for your Apply:</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+        <div style="background:var(--bg-raised);border-radius:var(--radius-sm);padding:14px;">
+          <div style="font-size:24px;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;">T</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:4px;">Task</div>
+          <div style="font-size:12px;color:var(--text-muted);">What the agent must produce — specific, measurable output</div>
+        </div>
+        <div style="background:var(--bg-raised);border-radius:var(--radius-sm);padding:14px;">
+          <div style="font-size:24px;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;">C</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:4px;">Context</div>
+          <div style="font-size:12px;color:var(--text-muted);">Exactly what data is injected — no vague "relevant information"</div>
+        </div>
+        <div style="background:var(--bg-raised);border-radius:var(--radius-sm);padding:14px;">
+          <div style="font-size:24px;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;">E</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:4px;">Example</div>
+          <div style="font-size:12px;color:var(--text-muted);">One concrete example of ideal output — anchors the model's reasoning</div>
+        </div>
+        <div style="background:var(--bg-raised);border-radius:var(--radius-sm);padding:14px;">
+          <div style="font-size:24px;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;">F</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:4px;">Format</div>
+          <div style="font-size:12px;color:var(--text-muted);">Exact output structure — JSON schema, markdown template, plain text</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Apply: TCEF + skill -->
+    <div class="challenge-card">
+      <div class="card-badge challenge-badge">Apply — TCEF Prompt + Skill Definition</div>
+      <p style="margin-bottom:16px;font-size:14px;">Write TWO artifacts: (1) the TCEF prompt for your pipeline's main reasoning step, and (2) the YAML frontmatter for the skill that wraps this prompt.</p>
+      <label for="apply-s2" class="sr-only">Your TCEF prompt and skill definition</label>
+      <textarea aria-label="TCEF PROMPT --- T (Task): Analyze the following pull request" id="apply-s2" rows="18" minlength="80"
+        placeholder="TCEF PROMPT&#10;---&#10;T (Task): Analyze the following pull request diff and CI output. Produce a structured code review report identifying: (a) any new security vulnerabilities classified by severity, (b) the test coverage delta as a percentage, (c) any style violations introduced.&#10;&#10;C (Context): You will receive: the output of `git diff --name-only HEAD~1`, the raw CI test runner output (last 100 lines), and the Snyk security scan JSON. The codebase is TypeScript. Our coverage threshold is 80%.&#10;&#10;E (Example): ## Code Review Report&#10;**Security**: 1 HIGH — SQL injection risk in `/src/api/users.ts` line 42. Unsanitized input passed directly to query string.&#10;**Coverage**: -2.3% (was 84.1%, now 81.8%) — still above threshold.&#10;**Style**: 2 violations — missing return type annotations in `getUserById` and `createSession`.&#10;&#10;F (Format): Respond with a markdown document using exactly these three sections: ## Security Findings, ## Coverage Delta, ## Style Violations. Each finding on its own line with file path and line number.&#10;&#10;---&#10;SKILL FRONTMATTER&#10;---&#10;name: pr-review-analyst&#10;description: Analyzes pull request diffs and CI output to produce structured code review reports with security, coverage, and style findings.&#10;triggers:&#10;  - github_pr_opened&#10;  - github_pr_synchronize&#10;tools: [read_file, bash]"
+        oninput="handleApplyInput('apply-s2', 80, 's2-complete-btn')"
+        aria-describedby="apply-s2-hint"></textarea>
+      <div id="apply-s2-hint" class="char-hint" aria-live="polite">80 characters to activate</div>
+      <div class="flex-row mt-16">
+        <button id="s2-complete-btn" class="btn btn-primary" disabled
+          onclick="completeSection(2, null)" aria-label="Submit prompt and skill design">
+          Submit Prompt &amp; Skill
+        </button>
+      </div>
+    </div>
+
+    <!-- CE-09-A: Write a Real Skill YAML -->
+    <div class="build-challenge" id="ce-09-a">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span class="build-badge"><svg class="icon-lg" data-lucide="hammer" aria-hidden="true"></svg> Required Build</span>
+        <span class="ce-xp-badge">+40 XP</span>
+      </div>
+      <h3 style="margin:0 0 8px;color:var(--text);">CE-09-A: Write the Actual Skill YAML</h3>
+      <p style="color:var(--text-muted);margin-bottom:16px;font-size:14px;">You've described your skill in the design section above. Now write it. Produce a complete, syntactically valid skill YAML for <strong>one skill in your pipeline</strong>. Not a design — the actual file you'd save to <code>~/.claude/skills/</code>.</p>
+
+      <div class="ce-requirements">
+        <strong style="color:var(--text);">Required fields (validation will check all of these):</strong>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
+          <div style="background:var(--bg-surface);padding:8px;border-radius:6px;font-size:12px;">
+            <code>name</code><br><span style="color:var(--text-muted);">snake_case, unique identifier</span>
+          </div>
+          <div style="background:var(--bg-surface);padding:8px;border-radius:6px;font-size:12px;">
+            <code>description</code><br><span style="color:var(--text-muted);">&gt;3 sentences, what+when+why</span>
+          </div>
+          <div style="background:var(--bg-surface);padding:8px;border-radius:6px;font-size:12px;">
+            <code>triggers</code><br><span style="color:var(--text-muted);">&ge;3 natural language phrases</span>
+          </div>
+          <div style="background:var(--bg-surface);padding:8px;border-radius:6px;font-size:12px;">
+            <code>behavior</code><br><span style="color:var(--text-muted);">&gt;100 words, must include constraints</span>
+          </div>
+          <div style="background:var(--bg-surface);padding:8px;border-radius:6px;font-size:12px;">
+            <code>output_format</code><br><span style="color:var(--text-muted);">exact structure, not "markdown"</span>
+          </div>
+          <div style="background:var(--bg-surface);padding:8px;border-radius:6px;font-size:12px;">
+            <code>examples</code><br><span style="color:var(--text-muted);">&ge;1 concrete before/after example</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ce-requirements" style="margin-top:16px;margin-bottom:16px;border-left:3px solid var(--accent);">
+        <strong style="font-size:13px;">Reference format — a complete skill YAML (for format guidance only):</strong>
+        <p style="font-size:12px;color:var(--text-muted);margin:6px 0 8px;">Write your pipeline's skill below — not this example. This shows the expected completeness of all 6 fields.</p>
+        <pre class="code-block" style="margin-top:0;font-size:11px;white-space:pre-wrap;">---
+name: pr-description-writer
+description: |
+  Writes a structured PR description from the current git diff vs main.
+  Reads changed files, extracts intent from commit messages and code, and produces
+  a description with Summary, Changes, and Testing sections. Use before opening a PR.
+triggers:
+  - write my PR description
+  - generate PR summary
+  - draft pull request description
+behavior: |
+  1. Run git diff --name-only origin/main...HEAD to get changed files
+  2. Read each changed file and its diff (Read tool per file)
+  3. Read recent commit messages for intent context
+  4. Generate the PR description using the output_format template
+  5. Do NOT invent test results or claim tests pass if not verified
+  6. Do NOT include internal implementation details in the summary
+output_format: |
+  ## Summary
+  [1-2 sentences: what this PR does and why]
+
+  ## Changes
+  - [filename]: [what changed and why]
+
+  ## Testing
+  - [ ] [how to verify each change manually]
+examples: |
+  Input: "write my PR description"
+  Output: ## Summary\nAdds rate limiting to /api/auth/login to prevent brute-force attacks.\n
+  ## Changes\n- src/middleware/ratelimit.ts: new middleware, 100 req/15min per IP\n
+  ## Testing\n- [ ] POST /api/auth/login more than 100 times in 15 min — expect 429</pre>
+      </div>
+
+      <label for="ce-09-a-input" style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;">Your skill YAML:</label>
+      <textarea aria-label="--- name: your-skill-name description: |   [3+ sentences exp" id="ce-09-a-input" placeholder="---&#10;name: your-skill-name&#10;description: |&#10;  [3+ sentences explaining what this skill does, when to use it, and what it produces]&#10;triggers:&#10;  - [phrase 1]&#10;  - [phrase 2]&#10;  - [phrase 3]&#10;behavior: |&#10;  [Step-by-step instructions. At least 100 words. Must include at least one explicit constraint - what NOT to do.]&#10;output_format: |&#10;  [Exact structure of what this skill outputs - not just 'markdown' but the actual format]&#10;examples: |&#10;  Input: [example trigger]&#10;  Output: [example output]" style="width:100%;min-height:320px;font-family:'Fira Code',monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;color:var(--text);resize:vertical;box-sizing:border-box;"></textarea>
+
+      <div id="ce-09-a-feedback" style="display:none;margin-top:12px;padding:14px;border-radius:8px;font-size:13px;"></div>
+
+      <button onclick="validateCE09A()" class="btn btn-secondary" style="margin-top:16px;">Validate Skill YAML + Earn XP</button>
+
+      <div id="ce-09-a-success" class="ce-model-answer" style="display:none;background:#f0fdf4;border-color:#86efac;">
+        <strong style="color:#166534;"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Skill YAML validated!</strong>
+        <p style="margin-top:8px;font-size:13px;color:#166534;">Your skill file is ready to save to <code>~/.claude/skills/[name].md</code>. This is the actual artifact — not a description of an artifact.</p>
+        <div style="margin-top:16px; padding:12px 16px; background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.15); border-radius:8px; font-size:13px;">
+          <span style="color:#a78bfa; font-weight:600;">Ready for more?</span>
+          <span style="color:#94a3b8;"> This exercise prepares you for </span>
+          <a href="/challenges#mission-11-author-two-skills-from-scratch-" style="color:#a78bfa; text-decoration:underline;">Mission 1.1 — Author Two Skills</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="connect-forward mt-24" id="cf-s2" role="note">
+      <strong>Section 2 complete.</strong> You have the intelligence layer. Section 3 makes it production-safe — before this touches real systems, three questions need answers.
+    </div>
+
+  </div><!-- /section-2 -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 3: Safety & Production Design -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-3" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <svg class="icon-lg" data-lucide="lock" aria-hidden="true" style="width:32px;height:32px;"></svg>
+      <p>Complete Section 2 to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Section 3</div>
+      <h2>Safety &amp; Production Design</h2>
+      <p class="mt-16">Before this pipeline touches production, answer three questions: what can it touch? what can it cost? who reviews before it acts?</p>
+    </div>
+
+    <!-- Prediction Challenge -->
+    <div style="margin:20px 0; padding:16px 20px; background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.2); border-radius:10px;">
+      <div style="font-size:12px; font-weight:700; color:#f59e0b; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;">Predict Before You Read</div>
+      <p style="font-size:14px; color:#94a3b8; margin-bottom:10px;">How would you structure a CLAUDE.md for a pipeline that runs unsupervised? What sections would you include to keep the agent safe without a human watching every action?</p>
+      <textarea aria-label="Your prediction" placeholder="Write your prediction..." style="width:100%; min-height:80px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px; color:#f1f5f9; font-size:13px; resize:vertical;"></textarea>
+    </div>
+
+    <!-- Callback: permission-scoping -->
+    <div class="callback-card mb-16" style="margin-bottom:24px;" role="note" aria-label="Concept callback: Permission Scoping">
+      <div class="card-badge callback-badge"><svg class="icon" data-lucide="link" aria-hidden="true"></svg> Callback — Permission Scoping (Lab 08, Section 1)</div>
+      <p><strong>Principle of least privilege applied to agentic pipelines.</strong> In Lab 08, you learned to write the <code style="font-family:monospace;color:var(--accent);">settings.json</code> permissions block that controls what tools and file paths an agent can access. That skill is load-bearing here — write the permissions block for your pipeline now.</p>
+    </div>
+
+    <!-- Three gates -->
+    <div class="info-card" style="margin-bottom:24px;">
+      <p style="font-weight:600;color:var(--text);margin-bottom:16px;">Three production gates every pipeline needs:</p>
+      <div class="gate-list">
+        <div class="gate-item">
+          <div class="gate-num">1</div>
+          <div>
+            <h4>Permission Scope</h4>
+            <p>Explicit allow/deny in <code style="font-family:monospace;color:var(--accent);">settings.json</code>. What tools are allowed? What file paths or domains can the agent access? What is explicitly denied? Least privilege means the agent can do exactly what it needs — and nothing more.</p>
+          </div>
+        </div>
+        <div class="gate-item">
+          <div class="gate-num">2</div>
+          <div>
+            <h4>Human Approval Gate</h4>
+            <p>Which actions require a human to confirm before execution? Any action that is difficult to reverse, has external side effects, or could cause data loss must have a human gate. Identify the single most consequential action in your pipeline and gate it.</p>
+          </div>
+        </div>
+        <div class="gate-item">
+          <div class="gate-num">3</div>
+          <div>
+            <h4>Failure Behavior</h4>
+            <p>What does the pipeline do when an agent fails or produces unexpected output? Fail silently? Post an error notice to Slack? Alert on-call? Write to a dead-letter queue? An unhandled failure in production is worse than a slow pipeline.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- settings.json example structure -->
+    <div class="info-card" style="margin-bottom:24px;">
+      <p style="font-weight:600;color:var(--text);margin-bottom:12px;">Reference: settings.json structure</p>
+      <div class="code-block">
+<span class="comment">// settings.json — Claude Code permissions for your pipeline agent</span>
+{
+  <span class="key">"permissions"</span>: {
+    <span class="key">"allow"</span>: [
+      <span class="string">"Bash(git:*)"</span>,          <span class="comment">// allow all git subcommands</span>
+      <span class="string">"Read(src/**)"</span>,           <span class="comment">// read source files</span>
+      <span class="string">"WebFetch(api.github.com)"</span>  <span class="comment">// fetch from GitHub API</span>
+    ],
+    <span class="key">"deny"</span>: [
+      <span class="string">"Write(*)"</span>,               <span class="comment">// no file writes</span>
+      <span class="string">"Bash(rm:*)"</span>,             <span class="comment">// no deletions</span>
+      <span class="string">"Bash(git push:*)"</span>         <span class="comment">// no push operations</span>
+    ]
+  }
+}
+      </div>
+    </div>
+
+    <!-- Apply: safety design -->
+    <div class="challenge-card">
+      <div class="card-badge challenge-badge">Apply — Production Safety Design</div>
+      <p style="margin-bottom:16px;font-size:14px;">Write your production safety design covering all three gates:</p>
+      <label for="apply-s3" class="sr-only">Your production safety design</label>
+      <textarea aria-label="PERMISSION SCOPE (settings.json) {   &quot;permissions&quot;: {" id="apply-s3" rows="14" minlength="60"
+        placeholder="PERMISSION SCOPE (settings.json)&#10;{&#10;  &quot;permissions&quot;: {&#10;    &quot;allow&quot;: [&#10;      &quot;Bash(git diff:*)&quot;,&#10;      &quot;Read(src/**)&quot;,&#10;      &quot;WebFetch(api.github.com)&quot;&#10;    ],&#10;    &quot;deny&quot;: [&#10;      &quot;Write(*)&quot;,&#10;      &quot;Bash(git push:*)&quot;,&#10;      &quot;Bash(rm:*)&quot;&#10;    ]&#10;  }&#10;}&#10;&#10;HUMAN APPROVAL GATE&#10;Posting the final PR comment requires human approval because: once posted, the comment is visible to all PR participants and could block a merge. A malformed report could create confusion or block urgent fixes.&#10;&#10;FAILURE BEHAVIOR&#10;If the agent fails to produce valid output within 30s, the pipeline posts a fallback comment: 'Automated review unavailable — please review manually.' It also sends an alert to #engineering-alerts Slack channel with the error trace."
+        oninput="handleApplyInput('apply-s3', 60, 's3-complete-btn')"
+        aria-describedby="apply-s3-hint"></textarea>
+      <div id="apply-s3-hint" class="char-hint" aria-live="polite">60 characters to activate</div>
+      <div class="flex-row mt-16">
+        <button id="s3-complete-btn" class="btn btn-primary" disabled
+          onclick="completeSection(3, null)" aria-label="Submit safety design">
+          Submit Safety Design
+        </button>
+      </div>
+    </div>
+
+    <!-- CE-09-C: Issue Tracker Pipeline Integration -->
+    <div class="build-challenge" id="ce-09-c">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span class="build-badge"><svg class="icon-lg" data-lucide="hammer" aria-hidden="true"></svg> Required Build</span>
+        <span class="ce-xp-badge">+40 XP</span>
+      </div>
+      <h3 style="margin:0 0 8px;color:var(--text);">CE-09-C: Issue Tracker Integration Specification</h3>
+      <p style="color:var(--text-muted);margin-bottom:16px;font-size:14px;">Production pipelines don't run invisibly — they create paper trails. Specify how your pipeline integrates with an issue tracker (Linear or GitHub Issues). This is a design spec — specific enough to implement, not vague enough to ignore.</p>
+
+      <div style="display:grid;gap:16px;">
+        <div>
+          <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">1. Which events in your pipeline create or update tracker items?</label>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Be specific: "when the orchestrator dispatches a subtask" not "when something starts"</p>
+          <textarea aria-label="e.g. - Task dispatched → Create issue titled" id="ce-09-c-q1" placeholder="e.g.&#10;- Task dispatched → Create issue titled '[Task ID]: [description]' with status 'In Progress'&#10;- Subagent completes successfully → Update issue status to 'Done', add completion comment&#10;- Subagent fails → Update issue status to 'Blocked', add error log as comment" style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+        </div>
+
+        <div>
+          <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">2. What information is written to each tracker item?</label>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">List the exact fields: title, description, labels, assignee, metadata you'd include</p>
+          <textarea aria-label="e.g. Each issue includes: - Title: [Pipeline name] — [Task d" id="ce-09-c-q2" placeholder="e.g. Each issue includes:&#10;- Title: [Pipeline name] — [Task description]&#10;- Description: Input received, files affected, estimated token cost&#10;- Labels: pipeline-task, [day/phase]&#10;- Metadata: task_id, parent_pipeline_id, started_at" style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+        </div>
+
+        <div>
+          <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">3. Which events require human acknowledgment before the pipeline continues?</label>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">What are the human checkpoints? When does the pipeline pause and wait?</p>
+          <textarea aria-label="e.g. Human review required before: - Any file deletion (irre" id="ce-09-c-q3" placeholder="e.g. Human review required before:&#10;- Any file deletion (irreversible operation)&#10;- Pushing to main branch&#10;- Sending external communications (emails, webhooks)&#10;Pipeline posts a 'Waiting for approval' comment and polls every 5 minutes" style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+        </div>
+
+        <div>
+          <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;color:var(--text);">4. How does the pipeline handle a tracker item that gets no response in 24 hours?</label>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">No-response handling: escalate? skip? cancel? retry?</p>
+          <textarea aria-label="e.g. If no human response within 24 hours: 1. Post a reminde" id="ce-09-c-q4" placeholder="e.g. If no human response within 24 hours:&#10;1. Post a reminder comment with context&#10;2. After 48 hours: escalate by mentioning @team-lead in the issue&#10;3. After 72 hours: mark task as 'Timed Out', archive to low-priority queue, continue pipeline without this task" style="width:100%;min-height:100px;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);box-sizing:border-box;"></textarea>
+        </div>
+      </div>
+
+      <div class="ce-requirements" style="margin-top:20px;">
+        <strong style="font-size:13px;">What makes a good integration spec vs. a vague one:</strong>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;font-size:12px;">
+          <div style="background:#fee2e2;padding:10px;border-radius:6px;">
+            <strong style="color:#991b1b;"><svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Too vague:</strong><br>
+            "Create issues when tasks start and close them when done"
+          </div>
+          <div style="background:#f0fdf4;padding:10px;border-radius:6px;">
+            <strong style="color:#166534;"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Specific enough:</strong><br>
+            "When orchestrator calls dispatch_task(), call mcp__linear__create_issue() with title='[task_id]: [description]', status='In Progress'"
+          </div>
+        </div>
+      </div>
+
+      <button onclick="submitCE09C()" class="btn btn-secondary" style="margin-top:16px;">Submit Issue Tracker Spec + Earn XP</button>
+
+      <div id="ce-09-c-result" class="ce-model-answer" style="display:none;background:#f0fdf4;border-color:#86efac;">
+        <strong style="color:#166534;"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Integration spec submitted!</strong>
+        <p style="margin-top:8px;font-size:13px;color:#166534;">This spec is now part of your capstone design. A pipeline with clear tracker integration is a pipeline you can debug, audit, and hand off to teammates.</p>
+        <div style="margin-top:16px; padding:12px 16px; background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.15); border-radius:8px; font-size:13px;">
+          <span style="color:#a78bfa; font-weight:600;">Ready for more?</span>
+          <span style="color:#94a3b8;"> This exercise prepares you for </span>
+          <a href="/challenges#mission-32-issue-to-merge-end-to-end-automation-" style="color:#a78bfa; text-decoration:underline;">Mission 3.2 — Issue-to-Merge Automation</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="connect-forward mt-24" id="cf-s3" role="note">
+      <strong>Section 3 complete.</strong> Your pipeline is designed and safety-scoped. Now Section 4 applies the professional quality gate — a structured peer review.
+    </div>
+
+  </div><!-- /section-3 -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 4: Peer Review Protocol -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-4" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <svg class="icon-lg" data-lucide="lock" aria-hidden="true" style="width:32px;height:32px;"></svg>
+      <p>Complete Section 3 to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Section 4</div>
+      <h2>Peer Review Protocol</h2>
+      <p class="mt-16">The final quality gate: a structured self-review. Score your design across five professional dimensions before you export it.</p>
+    </div>
+
+    <div class="info-card" style="margin-bottom:28px;">
+      <p style="font-weight:600;color:var(--text);margin-bottom:12px;">Rate your own design across five dimensions. Use the behavioral anchors — not instinct.</p>
+      <p style="font-size:13px;">Select a level for each dimension. Your weighted score will calculate automatically.</p>
+    </div>
+
+    <!-- Dimension 1: Correctness (25%) -->
+    <div class="review-dimension" id="dim-0">
+      <div class="dim-header">
+        <div>
+          <h3 class="dim-title">1. Correctness</h3>
+          <p style="font-size:13px;margin-top:4px;">Does the pipeline actually solve the stated problem? Is the trigger → context → decision → action → output chain complete?</p>
+        </div>
+        <div class="dim-weight">25%</div>
+      </div>
+      <div class="level-buttons" role="group" aria-label="Correctness rating">
+        <button class="level-btn" onclick="selectLevel(0,'D')" aria-pressed="false" id="dim-0-D">Distinguished</button>
+        <button class="level-btn" onclick="selectLevel(0,'P')" aria-pressed="false" id="dim-0-P">Proficient</button>
+        <button class="level-btn" onclick="selectLevel(0,'V')" aria-pressed="false" id="dim-0-V">Developing</button>
+        <button class="level-btn" onclick="selectLevel(0,'B')" aria-pressed="false" id="dim-0-B">Beginning</button>
+      </div>
+      <div class="level-anchor" id="anchor-0" aria-live="polite"></div>
+    </div>
+
+    <!-- Dimension 2: Architecture (25%) -->
+    <div class="review-dimension" id="dim-1">
+      <div class="dim-header">
+        <div>
+          <h3 class="dim-title">2. Architecture</h3>
+          <p style="font-size:13px;margin-top:4px;">Is the design justified? Are trade-offs explicit? Is the agent pattern (single vs. multi-agent) appropriate for the problem?</p>
+        </div>
+        <div class="dim-weight">25%</div>
+      </div>
+      <div class="level-buttons" role="group" aria-label="Architecture rating">
+        <button class="level-btn" onclick="selectLevel(1,'D')" aria-pressed="false" id="dim-1-D">Distinguished</button>
+        <button class="level-btn" onclick="selectLevel(1,'P')" aria-pressed="false" id="dim-1-P">Proficient</button>
+        <button class="level-btn" onclick="selectLevel(1,'V')" aria-pressed="false" id="dim-1-V">Developing</button>
+        <button class="level-btn" onclick="selectLevel(1,'B')" aria-pressed="false" id="dim-1-B">Beginning</button>
+      </div>
+      <div class="level-anchor" id="anchor-1" aria-live="polite"></div>
+    </div>
+
+    <!-- Dimension 3: Safety (20%) -->
+    <div class="review-dimension" id="dim-2">
+      <div class="dim-header">
+        <div>
+          <h3 class="dim-title">3. Safety</h3>
+          <p style="font-size:13px;margin-top:4px;">Does the permission scope follow least privilege? Is there a human gate on irreversible or consequential actions?</p>
+        </div>
+        <div class="dim-weight">20%</div>
+      </div>
+      <div class="level-buttons" role="group" aria-label="Safety rating">
+        <button class="level-btn" onclick="selectLevel(2,'D')" aria-pressed="false" id="dim-2-D">Distinguished</button>
+        <button class="level-btn" onclick="selectLevel(2,'P')" aria-pressed="false" id="dim-2-P">Proficient</button>
+        <button class="level-btn" onclick="selectLevel(2,'V')" aria-pressed="false" id="dim-2-V">Developing</button>
+        <button class="level-btn" onclick="selectLevel(2,'B')" aria-pressed="false" id="dim-2-B">Beginning</button>
+      </div>
+      <div class="level-anchor" id="anchor-2" aria-live="polite"></div>
+    </div>
+
+    <!-- Dimension 4: Adaptability (15%) -->
+    <div class="review-dimension" id="dim-3">
+      <div class="dim-header">
+        <div>
+          <h3 class="dim-title">4. Adaptability</h3>
+          <p style="font-size:13px;margin-top:4px;">Could you swap one component (e.g., GitHub to GitLab) without redesigning the whole pipeline? Is the design modular?</p>
+        </div>
+        <div class="dim-weight">15%</div>
+      </div>
+      <div class="level-buttons" role="group" aria-label="Adaptability rating">
+        <button class="level-btn" onclick="selectLevel(3,'D')" aria-pressed="false" id="dim-3-D">Distinguished</button>
+        <button class="level-btn" onclick="selectLevel(3,'P')" aria-pressed="false" id="dim-3-P">Proficient</button>
+        <button class="level-btn" onclick="selectLevel(3,'V')" aria-pressed="false" id="dim-3-V">Developing</button>
+        <button class="level-btn" onclick="selectLevel(3,'B')" aria-pressed="false" id="dim-3-B">Beginning</button>
+      </div>
+      <div class="level-anchor" id="anchor-3" aria-live="polite"></div>
+    </div>
+
+    <!-- Dimension 5: Communication (15%) -->
+    <div class="review-dimension" id="dim-4">
+      <div class="dim-header">
+        <div>
+          <h3 class="dim-title">5. Communication</h3>
+          <p style="font-size:13px;margin-top:4px;">Could another engineer build this from your design document alone, without asking you any questions?</p>
+        </div>
+        <div class="dim-weight">15%</div>
+      </div>
+      <div class="level-buttons" role="group" aria-label="Communication rating">
+        <button class="level-btn" onclick="selectLevel(4,'D')" aria-pressed="false" id="dim-4-D">Distinguished</button>
+        <button class="level-btn" onclick="selectLevel(4,'P')" aria-pressed="false" id="dim-4-P">Proficient</button>
+        <button class="level-btn" onclick="selectLevel(4,'V')" aria-pressed="false" id="dim-4-V">Developing</button>
+        <button class="level-btn" onclick="selectLevel(4,'B')" aria-pressed="false" id="dim-4-B">Beginning</button>
+      </div>
+      <div class="level-anchor" id="anchor-4" aria-live="polite"></div>
+    </div>
+
+    <!-- Score summary (auto-generated) -->
+    <div class="score-summary" id="score-summary" role="region" aria-label="Self-review score summary" aria-live="polite">
+      <h3 style="margin-bottom:20px;">Self-Review Score</h3>
+      <div id="score-bars"></div>
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Weighted Score</div>
+          <div id="weighted-score" style="font-size:36px;font-weight:800;color:var(--text);">—</div>
+        </div>
+        <div id="score-badge" style="font-size:14px;font-weight:600;padding:10px 20px;border-radius:100px;display:none;"></div>
+      </div>
+    </div>
+
+    <!-- Apply: improvement -->
+    <div class="challenge-card mt-24" id="review-apply-wrap" style="display:none;">
+      <div class="card-badge challenge-badge">Apply — Improvement Identification</div>
+      <p style="margin-bottom:16px;font-size:14px;">Based on your self-review, identify your lowest-scoring dimension and write one specific improvement you'd make before building this pipeline.</p>
+      <label for="apply-s4" class="sr-only">Your improvement identification</label>
+      <textarea aria-label="My lowest-scoring dimension was Communication (Developing)." id="apply-s4" rows="4" minlength="40"
+        placeholder="My lowest-scoring dimension was Communication (Developing). Before building, I would add a 'Decision Log' section to my design document explaining why I chose a single-agent architecture over multi-agent, and what specifically triggers the human approval gate and who receives the notification."
+        oninput="handleApplyInput('apply-s4', 40, 's4-complete-btn')"
+        aria-describedby="apply-s4-hint"></textarea>
+      <div id="apply-s4-hint" class="char-hint" aria-live="polite">40 characters to activate</div>
+      <div class="flex-row mt-16">
+        <button id="s4-complete-btn" class="btn btn-primary" disabled
+          onclick="completeSection4()" aria-label="Submit self-review and unlock final deliverable">
+          Complete Self-Review → Final Deliverable
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /section-4 -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 5: Final Deliverable -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-5" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <svg class="icon-lg" data-lucide="lock" aria-hidden="true" style="width:32px;height:32px;"></svg>
+      <p>Complete Section 4 to unlock</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-num">Final Deliverable</div>
+      <h2>Your Capstone Design Document</h2>
+      <p class="mt-16">This is what you take back to your team. A complete pipeline design — documented, reviewed, ready to build.</p>
+    </div>
+
+    <!-- All callbacks summarized -->
+    <div class="info-card" style="margin-bottom:28px;">
+      <p style="font-weight:600;color:var(--text);margin-bottom:16px;">Every concept from this course lives in your design document:</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;font-size:13px;">
+        <div style="padding:10px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.2);border-radius:8px;">
+          <div style="color:var(--secondary);font-weight:700;margin-bottom:4px;"><svg class="icon" data-lucide="link" aria-hidden="true"></svg> PRAO Loop</div>
+          <div style="color:var(--text-muted);">Your trigger → context → decision → action → output chain</div>
+        </div>
+        <div style="padding:10px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.2);border-radius:8px;">
+          <div style="color:var(--secondary);font-weight:700;margin-bottom:4px;"><svg class="icon" data-lucide="link" aria-hidden="true"></svg> TCEF Pattern</div>
+          <div style="color:var(--text-muted);">Your core reasoning prompt structure</div>
+        </div>
+        <div style="padding:10px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.2);border-radius:8px;">
+          <div style="color:var(--secondary);font-weight:700;margin-bottom:4px;"><svg class="icon" data-lucide="link" aria-hidden="true"></svg> Skill Anatomy</div>
+          <div style="color:var(--text-muted);">Your reusable skill definition</div>
+        </div>
+        <div style="padding:10px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.2);border-radius:8px;">
+          <div style="color:var(--secondary);font-weight:700;margin-bottom:4px;"><svg class="icon" data-lucide="link" aria-hidden="true"></svg> Permission Scoping</div>
+          <div style="color:var(--text-muted);">Your settings.json safety design</div>
+        </div>
+        <div style="padding:10px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.2);border-radius:8px;">
+          <div style="color:var(--secondary);font-weight:700;margin-bottom:4px;"><svg class="icon" data-lucide="link" aria-hidden="true"></svg> MCP Primitives</div>
+          <div style="color:var(--text-muted);">The tools and resources your agent uses</div>
+        </div>
+        <div style="padding:10px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.2);border-radius:8px;">
+          <div style="color:var(--secondary);font-weight:700;margin-bottom:4px;"><svg class="icon" data-lucide="link" aria-hidden="true"></svg> CLAUDE.md</div>
+          <div style="color:var(--text-muted);">Persistent context for your pipeline agent</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generated document display -->
+    <div style="margin-bottom:16px;">
+      <h3 style="margin-bottom:8px;">Generated Design Document</h3>
+      <p style="font-size:13px;">Auto-assembled from your work across all sections. Review before exporting.</p>
+    </div>
+    <div class="deliverable-display" id="deliverable-display" role="region" aria-label="Generated design document" aria-live="polite">
+      Your design document will appear here after completing Section 4.
+    </div>
+
+    <!-- Export + complete -->
+    <div class="flex-row mt-24" style="gap:14px;flex-wrap:wrap;">
+      <button class="btn btn-accent" onclick="exportDocument()" aria-label="Export design document as text file">
+        Export Design Document (.txt)
+      </button>
+      <button class="btn btn-success" id="course-complete-btn" onclick="completeCourse()" aria-label="Complete capstone and finish course">
+        Complete Capstone — Finish Course
+      </button>
+    </div>
+
+    <p class="mt-16" style="font-size:12px;">
+      Export first, then mark complete. The exported document is your take-home artifact.
+    </p>
+
+  </div><!-- /section-5 -->
+
+</div><!-- /lab-sections -->
+
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- COURSE COMPLETION BANNER -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div id="course-completion-banner" role="region" aria-label="Course completion">
+  <div class="course-complete-inner">
+    <span class="course-complete-emoji"><svg class="icon-lg" data-lucide="graduation-cap" aria-hidden="true" style="width:64px;height:64px;"></svg></span>
+    <h2 class="course-complete-headline">You've Completed Agentic AI Engineering</h2>
+    <p class="course-complete-sub">Two days. Nine labs. One complete pipeline design you own.</p>
+
+    <div class="course-xp-badge" aria-live="polite">
+      <svg class="icon" data-lucide="zap" aria-hidden="true"></svg> <span id="course-total-xp">0</span> XP earned across the full course
+    </div>
+
+    <div class="course-stat-row" id="course-stats">
+      <div class="course-stat">
+        <div class="course-stat-value">9</div>
+        <div class="course-stat-label">Labs Completed</div>
+      </div>
+      <div class="course-stat">
+        <div class="course-stat-value">3</div>
+        <div class="course-stat-label">Days</div>
+      </div>
+      <div class="course-stat">
+        <div class="course-stat-value" id="stat-pipelines">1</div>
+        <div class="course-stat-label">Pipeline Designed</div>
+      </div>
+      <div class="course-stat">
+        <div class="course-stat-value" id="stat-xp-this-lab">0</div>
+        <div class="course-stat-label">XP This Lab</div>
+      </div>
+    </div>
+
+    <div class="next-cards">
+      <div class="next-card">
+        <div class="next-card-icon"><svg class="icon-lg" data-lucide="hammer" aria-hidden="true"></svg></div>
+        <div class="next-card-title">Build It</div>
+        <div class="next-card-desc">Take your capstone design and implement it this week. You have the permission scope, the TCEF prompt, and the skill definition — the hardest design work is done.</div>
+      </div>
+      <div class="next-card">
+        <div class="next-card-icon"><svg class="icon-lg" data-lucide="repeat" aria-hidden="true"></svg></div>
+        <div class="next-card-title">Extend It</div>
+        <div class="next-card-desc">Add a second pipeline using a different trigger. Start from the architecture template in Section 1 and let your first pipeline's lessons shape your second design.</div>
+      </div>
+      <div class="next-card">
+        <div class="next-card-icon"><svg class="icon-lg" data-lucide="mic" aria-hidden="true"></svg></div>
+        <div class="next-card-title">Teach It</div>
+        <div class="next-card-desc">Run a 30-minute PRAO loop walkthrough with one colleague. Teaching is the highest-fidelity test of understanding — and it multiplies what this course gave you.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:28px;">
+      <button onclick="exportDocument()" class="btn" style="background:white;color:var(--primary);font-weight:700;" aria-label="Export your design document">
+        Export Design Document
+      </button>
+    </div>
+
+    <div class="course-final-quote">
+      "Not a course about AI. A course that is agentic AI in action."
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+    /* ─── Safe localStorage wrappers ─── */
+    function safeSave(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+    function safeLoad(k,d){try{const v=localStorage.getItem(k);return v==null?d:v}catch(e){return d}}
+/* ─── State ──────────────────────────────────────────────────── */
+const LAB_KEY      = 'lab-09';
+const SECTION_COUNT = 6; // S0–S5
+let xp             = 0;
+let sectionComplete = new Array(SECTION_COUNT).fill(false);
+let selectedProblem = -1;
+let dimRatings      = [null, null, null, null, null]; // D/P/V/B per dimension
+let reviewComplete  = false;
+let exportDone      = false;
+
+/* ─── Milestone System ───────────────────────────────────────── */
+  let milestoneLevel = 0;
+  const MILESTONES = [
+    { section: 1, label: 'Pipeline Designed' },
+    { section: 2, label: 'First Component' },
+    { section: 3, label: 'Integration Done' },
+    { section: 4, label: 'Capstone Shipped' }
+  ];
+
+  function getMilestoneLevel() {
+    let level = 0;
+    MILESTONES.forEach(function(m, idx) {
+      if (sectionComplete[m.section]) level = idx + 1;
+    });
+    return level;
+  }
+
+  function updateMilestoneDisplay() {
+    const el = document.getElementById('milestone-display');
+    if (!el) return;
+    if (milestoneLevel === 0) {
+      el.textContent = 'Milestone: Not started';
+      return;
+    }
+    const entry = MILESTONES[milestoneLevel - 1];
+    el.textContent = 'Milestone ' + milestoneLevel + ': ' + entry.label;
+  }
+
+  function announceMilestone(level) {
+    const entry = MILESTONES[level - 1];
+    const toast = document.createElement('div');
+    toast.className = 'milestone-toast';
+    toast.textContent = 'Milestone reached: ' + entry.label;
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.remove(); }, 2200);
+  }
+
+/* ─── Full Concept Registry (all 12 concepts from Labs 01–08) ── */
+const CONCEPT_REGISTRY = {
+  'prao-loop': {
+    label: 'PRAO Loop',
+    origin: 'Lab 01, Section 1',
+    originHref: '/raven-cargo-course/lab/01#section-old-new',
+    brief: 'Perceive → Reason → Act → Observe — the four-phase agentic execution cycle'
+  },
+  'gccf-pattern': {
+    label: 'GCCF Prompt Pattern',
+    origin: 'Lab 02, Section 1',
+    originHref: '/raven-cargo-course/lab/02#section-1',
+    brief: 'Goal + Context + Constraints + Format — complete prompt anatomy for complex tasks'
+  },
+  'claude-md': {
+    label: 'CLAUDE.md',
+    origin: 'Lab 01, Section 4',
+    originHref: '/raven-cargo-course/lab/01#section-commands',
+    brief: 'Persistent context file — briefing document you write once, agent reads every session'
+  },
+  'chain-of-thought': {
+    label: 'Chain-of-Thought',
+    origin: 'Lab 04, Section 2',
+    originHref: '/raven-cargo-course/lab/04#section-2',
+    brief: 'Intermediate reasoning steps that make agent decisions transparent and debuggable'
+  },
+  'tool-call-sequence': {
+    label: 'Tool Call Sequence',
+    origin: 'Lab 04, Section 3',
+    originHref: '/raven-cargo-course/lab/04#section-3',
+    brief: 'Ordered series of tool invocations an agent executes to gather context or take action'
+  },
+  'mcp-primitive': {
+    label: 'MCP Primitives',
+    origin: 'Lab 05, Section 1',
+    originHref: '/raven-cargo-course/lab/05#s1',
+    brief: 'Tools (actions), Resources (data), Prompts (templates) — three things MCP servers expose'
+  },
+  'tcef-pattern': {
+    label: 'TCEF Prompt Pattern',
+    origin: 'Lab 03, Section 2',
+    originHref: '/raven-cargo-course/lab/03#s2',
+    brief: 'Task + Context + Examples + Format — structured prompt anatomy for complex tasks'
+  },
+  'context-injection': {
+    label: 'Context Injection',
+    origin: 'Lab 03, Section 3',
+    originHref: '/raven-cargo-course/lab/03#s3',
+    brief: 'Programmatically inserting runtime data (files, API responses, git output) into prompts'
+  },
+  'skill-anatomy': {
+    label: 'Skill Anatomy',
+    origin: 'Lab 06, Section 1',
+    originHref: '/raven-cargo-course/lab/06#section-1',
+    brief: 'YAML frontmatter (name, description, triggers) + Markdown instructions = a skill file'
+  },
+  'agent-roles': {
+    label: 'Agent Roles',
+    origin: 'Lab 07, Section 1',
+    originHref: '/raven-cargo-course/lab/07#section-1',
+    brief: 'Orchestrator (decomposes and delegates) vs. subagent (executes a specific scoped task)'
+  },
+  'permission-scoping': {
+    label: 'Permission Scoping',
+    origin: 'Lab 08, Section 1',
+    originHref: '/raven-cargo-course/lab/08#section-1',
+    brief: 'Principle of least privilege applied via settings.json allow/deny lists for agents'
+  }
+};
+
+/* ─── Rubric anchors ──────────────────────────────────────────── */
+const RUBRIC_ANCHORS = {
+  0: { // Correctness
+    D: 'Pipeline runs end-to-end for the primary case AND handles edge cases (empty input, API failure, malformed output). Each component is precisely described.',
+    P: 'Pipeline clearly handles the primary case. All five components are present and logically connected.',
+    V: 'At least three components demonstrably work. Gaps are present but the core flow is visible.',
+    B: 'Design only — no executable path from trigger to output delivery. Components are vague or missing.'
+  },
+  1: { // Architecture
+    D: 'Design explicitly justifies why this pattern (single/multi-agent) was chosen over alternatives. Trade-offs are named. Scaling path is identified.',
+    P: 'Design justifies the core architectural choices. Agent boundaries are clear.',
+    V: 'Architecture is present but not justified. Reader would need to infer why these choices were made.',
+    B: 'Architecture is implied but not stated. No justification for any design choice.'
+  },
+  2: { // Safety
+    D: 'settings.json block follows least privilege. Human gate is specified with the precise trigger condition. Failure mode is fully described including escalation path.',
+    P: 'Permission scope follows least privilege. Human gate is identified on at least one consequential action.',
+    V: 'Safety measures are mentioned but permissions are overly broad or human gate is vague.',
+    B: 'No explicit permission scope or human approval gate specified.'
+  },
+  3: { // Adaptability
+    D: 'Design explicitly identifies the abstraction boundary that enables component swapping. Concrete swap example (e.g., GitHub → GitLab) is documented.',
+    P: 'Design is modular enough that one component could be swapped with reasonable effort.',
+    V: 'Some modular elements are present but the design has tight coupling in at least one place.',
+    B: 'Design is tightly coupled — swapping one component would require redesigning the whole pipeline.'
+  },
+  4: { // Communication
+    D: 'Another engineer could build this without asking any clarifying questions. Every decision has a rationale. Example outputs are provided.',
+    P: 'Another engineer could build the core pipeline. Minor ambiguities exist but would not block implementation.',
+    V: 'Core intent is clear but several implementation details would require follow-up conversations.',
+    B: 'Design requires the author to be present to explain it. Key decisions are undocumented.'
+  }
+};
+
+const DIM_WEIGHTS = [25, 25, 20, 15, 15];
+const DIM_NAMES   = ['Correctness', 'Architecture', 'Safety', 'Adaptability', 'Communication'];
+const LEVEL_SCORES = { D: 4, P: 3, V: 2, B: 1 };
+const LEVEL_LABELS = { D: 'Distinguished', P: 'Proficient', V: 'Developing', B: 'Beginning' };
+
+/* ─── XP System ───────────────────────────────────────────────── */
+function awardXP(amount, reason) {
+  xp += amount;
+  safeSave(`${LAB_KEY}-xp`, xp.toString());
+  updateXPDisplay();
+  showXPToast(amount, reason);
+}
+
+function updateXPDisplay() {
+  document.getElementById('xp-value').textContent = xp;
+  const finalEl = document.getElementById('stat-xp-this-lab');
+  if (finalEl) finalEl.textContent = xp;
+}
+
+function showXPToast(amount, reason) {
+  const toast = document.createElement('div');
+  toast.className = 'xp-toast';
+  toast.setAttribute('role', 'status');
+  toast.setAttribute('aria-live', 'assertive');
+  toast.textContent = `+${amount} XP — ${reason}`;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2200);
+}
+
+/* ─── Apply textarea handler ─────────────────────────────────── */
+const applyXPAwarded = {};
+function handleApplyInput(textareaId, minChars, btnId) {
+  const ta   = document.getElementById(textareaId);
+  const btn  = document.getElementById(btnId);
+  const hint = document.getElementById(textareaId + '-hint');
+  const val  = ta.value.trim();
+  const remaining = Math.max(0, minChars - val.length);
+
+  if (hint) {
+    hint.textContent = remaining > 0
+      ? `${remaining} more character${remaining === 1 ? '' : 's'} to activate`
+      : '✓ Ready to submit';
+    hint.className = remaining === 0 ? 'char-hint char-ready' : 'char-hint';
+  }
+  if (btn) btn.disabled = remaining > 0;
+
+  if (remaining === 0 && !applyXPAwarded[textareaId]) {
+    applyXPAwarded[textareaId] = true;
+    awardXP(30, 'apply exercise ready');
+  }
+
+  saveReflection(textareaId, ta.value);
+
+  // Auto-update deliverable if in S0–S4
+  updateDeliverable();
+}
+
+/* ─── Problem picker ─────────────────────────────────────────── */
+const PROBLEM_PREFILLS = [
+  'When a developer opens a pull request on our GitHub repository, the pipeline triggers automatically via GitHub webhook. Success means the PR author receives a structured comment within 90 seconds listing any new security vulnerabilities, the test coverage delta, and style violations introduced by the change. Our team of 8 engineers currently spends ~45 minutes per day manually doing this review.',
+  'When a file in our source code repository is modified without a corresponding change to the docs/ directory, the pipeline triggers via a post-commit hook. Success means a draft documentation update is queued for human review within 5 minutes, reducing the current 2-week documentation lag. Benefit: our technical writers and new engineers who struggle to keep docs current.',
+  'When PagerDuty fires a Slack alert to #incidents, the pipeline triggers automatically. Success means within 60 seconds a structured incident brief appears in the thread with: likely root cause (based on the last 3 deploys and current error logs), the relevant runbook section, and the names of the last engineers to touch the affected service.',
+  ''
+];
+
+function selectProblem(idx) {
+  selectedProblem = idx;
+  document.querySelectorAll('.problem-option').forEach((el, i) => {
+    const isSelected = i === idx;
+    el.classList.toggle('selected', isSelected);
+    el.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+  });
+  const ta = document.getElementById('apply-s0');
+  if (PROBLEM_PREFILLS[idx] && !ta.value.trim()) {
+    ta.value = PROBLEM_PREFILLS[idx];
+    saveReflection('apply-s0', ta.value);
+    handleApplyInput('apply-s0', 60, 's0-complete-btn');
+  }
+  safeSave(`${LAB_KEY}-problem`, idx.toString());
+}
+
+/* ─── Section completion ─────────────────────────────────────── */
+function completeSection0() {
+  const ta = document.getElementById('apply-s0');
+  if (ta.value.trim().length < 60) return;
+  markSectionComplete(0);
+  // Show "your problem is" context bar in S1
+  const probLabel = document.getElementById('s1-problem-label');
+  if (probLabel) {
+    probLabel.textContent = ta.value.trim().substring(0, 120) + (ta.value.trim().length > 120 ? '...' : '');
+        probLabel.parentElement.style.display = 'block';
+  }
+}
+
+function completeSection(idx, insightId) {
+  const applyMap = { 1: 'apply-s1', 2: 'apply-s2', 3: 'apply-s3' };
+  const minMap   = { 1: 80, 2: 80, 3: 60 };
+  const ta = document.getElementById(applyMap[idx]);
+  if (ta && ta.value.trim().length < minMap[idx]) return;
+
+  markSectionComplete(idx);
+
+  // Reveal insight card if present
+  if (insightId) {
+    const insight = document.getElementById(insightId);
+    if (insight) insight.classList.add('revealed');
+  }
+
+  // Show connect-forward
+  const cf = document.getElementById(`cf-s${idx}`);
+  if (cf) cf.classList.add('show');
+
+  updateDeliverable();
+}
+
+function completeSection4() {
+  const ta = document.getElementById('apply-s4');
+  if (ta && ta.value.trim().length < 40) return;
+  awardXP(50, 'self-review complete');
+  markSectionComplete(4);
+  updateDeliverable();
+  // Build and reveal section-5
+  buildDeliverable();
+}
+
+/* ─── Mark section complete + unlock next ─────────────────────── */
+function markSectionComplete(idx) {
+  sectionComplete[idx] = true;
+  safeSave(`${LAB_KEY}-s${idx}`, '1');
+  checkSectionUnlock(idx + 1);
+  updateNavDots();
+    const nextMilestoneLevel = getMilestoneLevel();
+    if (nextMilestoneLevel > milestoneLevel) {
+      milestoneLevel = nextMilestoneLevel;
+      updateMilestoneDisplay();
+      announceMilestone(milestoneLevel);
+    } else {
+      updateMilestoneDisplay();
+    }
+}
+
+function checkSectionUnlock(idx) {
+  if (idx >= SECTION_COUNT) return;
+  const section = document.getElementById(`section-${idx}`);
+  if (!section) return;
+  const allPriorDone = sectionComplete.slice(0, idx).every(Boolean);
+  if (allPriorDone) {
+    section.classList.remove('locked');
+    const overlay = section.querySelector('.lock-overlay');
+    if (overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.remove(), 300); }
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+/* ─── Peer review logic ───────────────────────────────────────── */
+function selectLevel(dimIdx, level) {
+  dimRatings[dimIdx] = level;
+  safeSave(`${LAB_KEY}-dim${dimIdx}`, level);
+
+  // Update button styles
+  ['D','P','V','B'].forEach(l => {
+    const btn = document.getElementById(`dim-${dimIdx}-${l}`);
+    if (!btn) return;
+    btn.className = 'level-btn';
+    btn.setAttribute('aria-pressed', l === level ? 'true' : 'false');
+    if (l === level) {
+      const classMap = { D:'selected-d', P:'selected-p', V:'selected-v', B:'selected-b' };
+      btn.classList.add(classMap[l]);
+    }
+  });
+
+  // Show behavioral anchor
+  const anchor = document.getElementById(`anchor-${dimIdx}`);
+  if (anchor) {
+    anchor.textContent = RUBRIC_ANCHORS[dimIdx][level];
+    anchor.classList.add('show');
+  }
+
+  // Recalculate score
+  calculateScore();
+}
+
+function calculateScore() {
+  const allRated = dimRatings.every(r => r !== null);
+  const summary = document.getElementById('score-summary');
+
+  // Show score whenever at least one is rated
+  if (dimRatings.some(r => r !== null)) {
+    summary.classList.add('show');
+  }
+
+  // Build bars
+  const barsEl = document.getElementById('score-bars');
+  barsEl.innerHTML = '';
+  let weightedTotal = 0;
+  let weightedMax   = 0;
+
+  dimRatings.forEach((r, i) => {
+    const score  = r ? LEVEL_SCORES[r] : 0;
+    const weight = DIM_WEIGHTS[i];
+    const pct    = r ? (score / 4) * 100 : 0;
+    weightedTotal += score * weight;
+    weightedMax   += 4 * weight;
+
+    const fillClass = pct >= 75 ? 'fill-gold' : pct >= 50 ? 'fill-primary' : pct >= 25 ? 'fill-warn' : 'fill-dim';
+
+    barsEl.innerHTML += `
+      <div class="score-bar-wrap">
+        <div class="score-bar-label">
+          <span>${DIM_NAMES[i]}</span>
+          <span>${r ? LEVEL_LABELS[r] : '—'} (${weight}%)</span>
+        </div>
+        <div class="score-bar">
+          <div class="score-bar-fill ${fillClass}" style="width:${pct}%" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+      </div>`;
+  });
+
+  if (allRated) {
+    const pctScore = Math.round((weightedTotal / weightedMax) * 100);
+    document.getElementById('weighted-score').textContent = pctScore + '%';
+
+    const badge = document.getElementById('score-badge');
+    badge.style.display = 'inline-block';
+    if (pctScore >= 87) {
+      badge.textContent = 'Distinguished';
+      badge.style.background = 'rgba(255,215,0,0.15)';
+      badge.style.color = 'gold';
+    } else if (pctScore >= 68) {
+      badge.textContent = '✦ Proficient';
+      badge.style.background = 'rgba(99,102,241,0.15)';
+      badge.style.color = 'var(--primary)';
+    } else if (pctScore >= 50) {
+      badge.textContent = '◆ Developing';
+      badge.style.background = 'rgba(245,158,11,0.15)';
+      badge.style.color = 'var(--warning)';
+    } else {
+      badge.textContent = '◇ Beginning';
+      badge.style.background = 'rgba(71,85,105,0.2)';
+      badge.style.color = 'var(--text-dim)';
+    }
+
+    // Show the apply textarea for improvement
+    document.getElementById('review-apply-wrap').style.display = 'block';
+    awardXP(50, 'self-review scored');
+  }
+}
+
+/* ─── Build final deliverable ────────────────────────────────── */
+function buildDeliverable() {
+  const doc = generateDocumentText();
+  const display = document.getElementById('deliverable-display');
+  if (display) display.textContent = doc;
+}
+
+function generateDocumentText() {
+  const now = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  const s0  = (document.getElementById('apply-s0')?.value || '').trim();
+  const s1  = (document.getElementById('apply-s1')?.value || '').trim();
+  const s2  = (document.getElementById('apply-s2')?.value || '').trim();
+  const s3  = (document.getElementById('apply-s3')?.value || '').trim();
+  const s4  = (document.getElementById('apply-s4')?.value || '').trim();
+
+  const scoreLines = dimRatings.map((r, i) =>
+    `  ${DIM_NAMES[i]} (${DIM_WEIGHTS[i]}%): ${r ? LEVEL_LABELS[r] : '—'}`
+  ).join('\n');
+
+  const allRated = dimRatings.every(r => r !== null);
+  let weightedTotal = 0;
+  dimRatings.forEach((r, i) => { if (r) weightedTotal += LEVEL_SCORES[r] * DIM_WEIGHTS[i]; });
+  const weightedScore = allRated ? Math.round((weightedTotal / 400) * 100) + '%' : '(incomplete)';
+
+  return `================================================================================
+AGENTIC AI ENGINEERING — CAPSTONE PIPELINE DESIGN DOCUMENT
+Generated: ${now}
+================================================================================
+
+SECTION 1: PROBLEM STATEMENT
+--------------------------------------------------------------------------------
+${s0 || '[Not completed]'}
+
+SECTION 2: PIPELINE ARCHITECTURE
+--------------------------------------------------------------------------------
+${s1 || '[Not completed]'}
+
+SECTION 3: CORE TCEF PROMPT & SKILL DEFINITION
+--------------------------------------------------------------------------------
+${s2 || '[Not completed]'}
+
+SECTION 4: PRODUCTION SAFETY DESIGN
+--------------------------------------------------------------------------------
+${s3 || '[Not completed]'}
+
+SECTION 5: SELF-REVIEW SCORES
+--------------------------------------------------------------------------------
+${scoreLines}
+
+  Weighted Score: ${weightedScore}
+
+SECTION 6: IMPROVEMENT IDENTIFIED
+--------------------------------------------------------------------------------
+${s4 || '[Not completed]'}
+
+================================================================================
+CONCEPT THREAD (all concepts from Labs 01–08 applied in this design)
+================================================================================
+  Lab 01: PRAO Loop          — Your trigger→context→decision→action→output chain
+  Lab 01: CLAUDE.md          — Persistent context for your pipeline agent
+  Lab 02: GCCF Pattern       — Foundation of your core prompt structure
+  Lab 04: Chain-of-Thought   — Reasoning transparency in your decision logic
+  Lab 04: Tool Call Sequence — The ordered tool invocations in your context gathering
+  Lab 05: MCP Primitives     — The tools and resources your agent uses
+  Lab 03: TCEF Pattern       — Your core reasoning prompt structure (Section 3)
+  Lab 03: Context Injection  — How your pipeline injects runtime data into prompts
+  Lab 06: Skill Anatomy      — Your reusable skill definition (Section 3)
+  Lab 07: Agent Roles        — Orchestrator vs. subagent boundary in your design
+  Lab 08: Permission Scoping — Your settings.json safety design (Section 4)
+================================================================================
+END OF DOCUMENT
+================================================================================`;
+}
+
+function updateDeliverable() {
+  const display = document.getElementById('deliverable-display');
+  if (display && sectionComplete[4]) {
+    display.textContent = generateDocumentText();
+  }
+}
+
+/* ─── Export ──────────────────────────────────────────────────── */
+function exportDocument() {
+  const s0val = (document.getElementById('apply-s0')?.value || '').trim();
+  const slug  = s0val.substring(0, 40).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'capstone';
+  const doc   = generateDocumentText();
+  const blob  = new Blob([doc], { type: 'text/plain;charset=utf-8' });
+  const url   = URL.createObjectURL(blob);
+  const a     = document.createElement('a');
+  a.href      = url;
+  a.download  = `capstone-${slug}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+
+  if (!exportDone) {
+    exportDone = true;
+    awardXP(100, 'design document exported!');
+    safeSave(`${LAB_KEY}-exported`, '1');
+  }
+}
+
+/* ─── Course completion ───────────────────────────────────────── */
+function completeCourse() {
+  if (!sectionComplete[4]) return;
+
+  awardXP(200, 'course complete!');
+  markSectionComplete(5);
+
+  // Calculate total course XP from all labs
+  let totalXP = xp;
+  for (let i = 1; i <= 8; i++) {
+    const labKey = `lab-0${i}-xp`;
+    const prior  = parseInt(safeLoad(labKey) || '0');
+    totalXP += prior;
+  }
+  document.getElementById('course-total-xp').textContent = totalXP;
+  document.getElementById('stat-xp-this-lab').textContent = xp;
+
+  safeSave(`${LAB_KEY}-complete`, Date.now().toString());
+  safeSave('course-complete', Date.now().toString());
+
+  const banner = document.getElementById('course-completion-banner');
+  banner.style.display = 'block';
+  setTimeout(() => banner.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  updateNavDots();
+}
+
+/* ─── Persistence ─────────────────────────────────────────────── */
+function saveReflection(key, value) {
+  safeSave(`${LAB_KEY}-${key}`, value);
+}
+
+function loadAllReflections() {
+  // Restore textareas
+  document.querySelectorAll('textarea[id]').forEach(ta => {
+    const saved = safeLoad(`${LAB_KEY}-${ta.id}`);
+    if (saved) ta.value = saved;
+  });
+
+  // Restore section completions
+  for (let i = 0; i < SECTION_COUNT; i++) {
+    if (safeLoad(`${LAB_KEY}-s${i}`) === '1') {
+      sectionComplete[i] = true;
+    }
+  }
+
+  // Restore XP
+  xp = parseInt(safeLoad(`${LAB_KEY}-xp`) || '0');
+  updateXPDisplay();
+
+  // Restore problem selection
+  const prob = safeLoad(`${LAB_KEY}-problem`);
+  if (prob !== null) {
+    selectedProblem = parseInt(prob);
+    const el = document.getElementById(`prob-${selectedProblem}`);
+    if (el) { el.classList.add('selected'); el.setAttribute('aria-checked', 'true'); }
+  }
+
+  // Restore apply XP flags based on char count
+  ['apply-s0','apply-s1','apply-s2','apply-s3','apply-s4'].forEach(id => {
+    const ta = document.getElementById(id);
+    if (ta && ta.value.trim().length >= 40) applyXPAwarded[id] = true;
+  });
+
+  // Restore char hints + button states
+  [['apply-s0',60,'s0-complete-btn'],['apply-s1',80,'s1-complete-btn'],
+   ['apply-s2',80,'s2-complete-btn'],['apply-s3',60,'s3-complete-btn'],
+   ['apply-s4',40,'s4-complete-btn']].forEach(([id, min, btn]) => {
+    const ta = document.getElementById(id);
+    if (ta && ta.value) handleApplyInput(id, min, btn);
+  });
+
+  // Restore dim ratings
+  dimRatings.forEach((_, i) => {
+    const saved = safeLoad(`${LAB_KEY}-dim${i}`);
+    if (saved) selectLevel(i, saved);
+  });
+
+  // Restore export flag
+  if (safeLoad(`${LAB_KEY}-exported`) === '1') exportDone = true;
+
+  // Unlock sections
+  for (let i = 0; i < SECTION_COUNT; i++) checkSectionUnlock(i);
+
+  // Restore insight
+  if (sectionComplete[1]) {
+    const insight = document.getElementById('insight-s1');
+    if (insight) insight.classList.add('revealed');
+  }
+
+  // Restore connect-forward
+  [1,2,3].forEach(i => {
+    if (sectionComplete[i]) {
+      const cf = document.getElementById(`cf-s${i}`);
+      if (cf) cf.classList.add('show');
+    }
+  });
+
+  // Restore review apply wrap
+  const allRated = dimRatings.every(r => r !== null);
+  if (allRated) {
+    document.getElementById('review-apply-wrap').style.display = 'block';
+  }
+
+  // Restore deliverable
+  if (sectionComplete[4]) buildDeliverable();
+
+  // Restore course completion banner
+  if (safeLoad('course-complete')) {
+    document.getElementById('course-completion-banner').style.display = 'block';
+    const totalXP = parseInt(document.getElementById('course-total-xp').textContent) || xp;
+    document.getElementById('stat-xp-this-lab').textContent = xp;
+  }
+
+  updateNavDots();
+}
+
+/* ─── Nav dots ────────────────────────────────────────────────── */
+function updateNavDots() {
+  const container = document.getElementById('nav-dots');
+  if (!container) return;
+
+  // Build dots if not yet created
+  if (!container.children.length) {
+    const labels = ['S0: Problem','S1: Architecture','S2: Prompt & Skill','S3: Safety','S4: Review','Final Deliverable'];
+    for (let i = 0; i < SECTION_COUNT; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'nav-dot';
+      dot.setAttribute('role', 'listitem');
+      dot.setAttribute('aria-label', labels[i]);
+      container.appendChild(dot);
+    }
+  }
+
+  const firstIncomplete = sectionComplete.indexOf(false);
+  [...container.children].forEach((dot, i) => {
+    dot.classList.remove('dot-locked','dot-active','dot-complete');
+    if (sectionComplete[i]) dot.classList.add('dot-complete');
+    else if (i === firstIncomplete) dot.classList.add('dot-active');
+    else dot.classList.add('dot-locked');
+  });
+}
+
+/* ─── CE-09-A: Validate Skill YAML ───────────────────────────── */
+function validateCE09A() {
+  var input = document.getElementById('ce-09-a-input').value.trim();
+  var feedbackDiv = document.getElementById('ce-09-a-feedback');
+  feedbackDiv.style.display = 'block';
+
+  if (input.length < 200) {
+    feedbackDiv.style.background = '#fee2e2';
+    feedbackDiv.style.border = '1px solid #fca5a5';
+    feedbackDiv.innerHTML = '<svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Too short. A real skill YAML needs substance — at least 200 characters.';
+    if (window.lucide) lucide.createIcons();
+    return;
+  }
+
+  var errors = [];
+  var checks = [
+    { pattern: /^name:/m, field: 'name' },
+    { pattern: /^description:/m, field: 'description' },
+    { pattern: /^triggers:/m, field: 'triggers' },
+    { pattern: /^behavior:/m, field: 'behavior' },
+    { pattern: /^output_format:/m, field: 'output_format' },
+    { pattern: /^examples:/m, field: 'examples' }
+  ];
+
+  checks.forEach(function(c) {
+    if (!c.pattern.test(input)) errors.push('Missing field: ' + c.field);
+  });
+
+  // Check triggers has 3+ items
+  var triggerMatches = input.match(/^\s+-\s+.+/gm) || [];
+  if (triggerMatches.length < 3) errors.push('triggers: need at least 3 items (found ' + triggerMatches.length + ')');
+
+  // Check behavior length
+  var behaviorMatch = input.match(/^behavior:\s*\|?\s*([\s\S]*?)(?=^[a-z_]+:|$)/m);
+  if (behaviorMatch && behaviorMatch[1].trim().split(/\s+/).length < 20) {
+    errors.push('behavior: too short — needs to be at least 100 words with explicit constraints');
+  }
+
+  // Check name is snake_case or kebab-case
+  var nameMatch = input.match(/^name:\s*(\S+)/m);
+  if (nameMatch && !/^[a-z][a-z0-9_-]*$/.test(nameMatch[1])) {
+    errors.push('name: must be snake_case or kebab-case (got "' + nameMatch[1] + '")');
+  }
+
+  if (errors.length > 0) {
+    feedbackDiv.style.background = '#fee2e2';
+    feedbackDiv.style.border = '1px solid #fca5a5';
+    feedbackDiv.innerHTML = '<strong><svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Fix these:</strong><ul style="margin:8px 0 0;padding-left:20px;">' + errors.map(function(e) { return '<li>' + e + '</li>'; }).join('') + '</ul>';
+    if (window.lucide) lucide.createIcons();
+    return;
+  }
+
+  feedbackDiv.style.background = '#f0fdf4';
+  feedbackDiv.style.border = '1px solid #86efac';
+  feedbackDiv.innerHTML = '<svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> All 6 required fields present and valid.';
+  if (window.lucide) lucide.createIcons();
+  document.getElementById('ce-09-a-success').style.display = 'block';
+  document.getElementById('ce-09-a-success').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  awardXP(40, 'skill YAML validated');
+
+  safeSave('lab09_ce09a', JSON.stringify({ completed: true, input: input }));
+}
+
+/* ─── CE-09-C: Submit Issue Tracker Spec ─────────────────────── */
+function submitCE09C() {
+  var q1 = document.getElementById('ce-09-c-q1').value.trim();
+  var q2 = document.getElementById('ce-09-c-q2').value.trim();
+  var q3 = document.getElementById('ce-09-c-q3').value.trim();
+  var q4 = document.getElementById('ce-09-c-q4').value.trim();
+
+  if ([q1, q2, q3, q4].some(function(v) { return v.length < 20; })) {
+    alert('Please complete all four questions with substantive answers before submitting.');
+    return;
+  }
+
+  document.getElementById('ce-09-c-result').style.display = 'block';
+  document.getElementById('ce-09-c-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  awardXP(40, 'issue tracker spec submitted');
+
+  safeSave('lab09_ce09c', JSON.stringify({ completed: true, q1: q1, q2: q2, q3: q3, q4: q4 }));
+}
+
+/* ─── Scroll progress bar ─────────────────────────────────────── */
+window.addEventListener('scroll', () => {
+  const d = document.documentElement;
+  const pct = (d.scrollTop / (d.scrollHeight - d.clientHeight)) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+});
+
+/* ─── Init ────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  updateNavDots();
+  loadAllReflections();
+    milestoneLevel = getMilestoneLevel();
+    updateMilestoneDisplay();
+});
+</script>
+
+  <!-- ─── Attribution Footer ─────────────────────────────────────────────── -->
+</main>
+
+  <footer style="
+    margin-top: 80px;
+    padding: 32px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    text-align: center;
+    font-size: 12px;
+    color: #475569;
+    line-height: 1.8;
+  ">
+    <p>
+      &ldquo;Claude&rdquo; and &ldquo;Claude Code&rdquo; are trademarks of Anthropic, PBC.
+      This course is not affiliated with or endorsed by Anthropic.
+      All product names, logos, and trademarks are the property of their respective owners
+      and are referenced here for educational purposes only.
+    </p>
+    <p>
+      Fonts:
+      <a href="https://fonts.google.com/specimen/Inter" rel="noopener" style="color:#6366f1;">Inter</a>
+      and
+      <a href="https://fonts.google.com/specimen/JetBrains+Mono" rel="noopener" style="color:#6366f1;">JetBrains Mono</a>
+      via Google Fonts under the
+      <a href="https://scripts.sil.org/OFL" rel="noopener" style="color:#6366f1;">SIL Open Font License 1.1</a>.
+    </p>
+    <p>Course content &copy; 2026 Agentic AI Engineering Course. Educational use.</p>
+  </footer>
+
+<script src="/raven-cargo-course/assets/lab-progression-bridge.js"></script>
+<script>if (window.lucide) lucide.createIcons();</script>
+</body>
+</html>

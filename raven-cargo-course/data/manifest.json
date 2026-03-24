@@ -1,0 +1,315 @@
+{
+  "course": {
+    "title": "Raven Cargo Agentic AI Engineering",
+    "subtitle": "Raven 2-day student portal",
+    "summary": "Student portal for the Raven March training course with the exact live class order, course pages, labs, submissions, resources, challenges, and async follow-through.",
+    "deliveryWindow": "March 24-25, 2026",
+    "location": "Raven Cargo · Freight operations cohort",
+    "basePath": "/raven-cargo-course"
+  },
+  "moduleOrder": ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"],
+  "labOrder": ["01", "02", "03", "04", "05", "06", "07", "08", "09"],
+  "modules": {
+    "01": { "id": "01", "slug": "01-paradigm-shift", "title": "Paradigm Shift", "href": "/raven-cargo-course/module/01", "phase": "core" },
+    "02": { "id": "02", "slug": "02-claude-code-foundations", "title": "Claude Code Foundations", "href": "/raven-cargo-course/module/02", "phase": "core" },
+    "03": { "id": "03", "slug": "04-prompt-engineering-depth", "title": "Prompt Engineering Depth", "href": "/raven-cargo-course/module/03", "phase": "core" },
+    "04": { "id": "04", "slug": "03-agent-thinking", "title": "Reading Agent Thinking", "href": "/raven-cargo-course/module/04", "phase": "core" },
+    "05": { "id": "05", "slug": "07-skills-commands", "title": "Skills & Commands", "href": "/raven-cargo-course/module/05", "phase": "core" },
+    "06": { "id": "06", "slug": "05-mcp-architecture", "title": "MCP Architecture", "href": "/raven-cargo-course/module/06", "phase": "core" },
+    "07": { "id": "07", "slug": "06-mcp-building", "title": "Building MCP Servers", "href": "/raven-cargo-course/module/07", "phase": "core" },
+    "08": { "id": "08", "slug": "09-multi-agent-systems", "title": "Multi-Agent Systems", "href": "/raven-cargo-course/module/08", "phase": "core" },
+    "09": { "id": "09", "slug": "10-security-sandboxing", "title": "Security + Capstone Build", "href": "/raven-cargo-course/module/09", "phase": "core" },
+    "10": { "id": "10", "slug": "08-meta-prompting", "title": "Meta-Prompting", "href": "/raven-cargo-course/module/10", "phase": "async" },
+    "11": { "id": "11", "slug": "11-tech-stack-adaptation", "title": "Tech Stack Adaptation", "href": "/raven-cargo-course/module/11", "phase": "async" },
+    "12": { "id": "12", "slug": "12-capstone-production", "title": "Capstone & Production Deployment", "href": "/raven-cargo-course/module/12", "phase": "async" }
+  },
+  "labs": {
+    "01": { "id": "01", "title": "Paradigm Shift", "href": "/raven-cargo-course/lab/01", "phase": "core" },
+    "02": { "id": "02", "title": "First Agent Conversation", "href": "/raven-cargo-course/lab/02", "phase": "core" },
+    "03": { "id": "03", "title": "Prompt Workshop", "href": "/raven-cargo-course/lab/03", "phase": "core" },
+    "04": { "id": "04", "title": "Agentic Reasoning", "href": "/raven-cargo-course/lab/04", "phase": "core" },
+    "05": { "id": "05", "title": "Skills Builder", "href": "/raven-cargo-course/lab/05", "phase": "core" },
+    "06": { "id": "06", "title": "MCP Explorer", "href": "/raven-cargo-course/lab/06", "phase": "core" },
+    "07": { "id": "07", "title": "Multi-Agent Orchestrator", "href": "/raven-cargo-course/lab/07", "phase": "core" },
+    "08": { "id": "08", "title": "Production", "href": "/raven-cargo-course/lab/08", "phase": "core" },
+    "09": { "id": "09", "title": "Capstone Build", "href": "/raven-cargo-course/lab/09", "phase": "core" }
+  },
+  "days": [
+    {
+      "id": "day-1",
+      "label": "Day 1",
+      "theme": "AI-First Freight Operations",
+      "blocks": [
+        {
+          "id": "D1-B1",
+          "time": "9:00-10:30",
+          "topic": "AI Foundations for Freight Operations",
+          "title": "Block 1 · The Agentic Coding Paradigm",
+          "summary": "Build the Raven mental model for where agents fit, what to automate first, and how PRAO turns freight workflows into structured agent work.",
+          "moduleIds": ["01"],
+          "labIds": ["01"],
+          "useCaseIds": ["shipment-email-extraction", "carrier-communication-classification", "exception-report-summarization"]
+        },
+        {
+          "id": "D1-B2",
+          "time": "10:45-12:15",
+          "topic": "AI-Powered Development with RavenEye",
+          "title": "Block 2 · Claude Code Foundations",
+          "summary": "Configure RavenEye context, permissions, and codebase conventions so the team can ship real changes instead of watching demos.",
+          "moduleIds": ["02"],
+          "labIds": ["02"],
+          "useCaseIds": ["raveneye-codebase-configuration", "raveneye-pr-review-automation"]
+        },
+        {
+          "id": "D1-B3",
+          "time": "13:15-14:45",
+          "topic": "Document Processing & BOL Automation",
+          "title": "Block 3 · Prompt Engineering Depth",
+          "summary": "Apply TCEF prompts to freight documents with confidence-aware extraction, validation rules, and reusable prompt assets.",
+          "moduleIds": ["04"],
+          "labIds": ["05"],
+          "useCaseIds": ["bol-data-extraction-pipeline", "rate-quote-extraction"]
+        },
+        {
+          "id": "D1-B4",
+          "time": "15:00-16:30",
+          "topic": "Carrier Intelligence & Rate Optimization",
+          "title": "Block 4 · Agent Thinking",
+          "summary": "Read traces, interpret tool plans, and steer multi-source carrier analysis without over-guiding the agent.",
+          "moduleIds": ["03"],
+          "labIds": ["03"],
+          "useCaseIds": ["carrier-intelligence-scoring"]
+        }
+      ],
+      "closeout": {
+        "title": "Day 1 Close",
+        "summary": "Map today’s patterns to Raven workflows, ship a PR, and prep the MCP / skills work for Day 2.",
+        "tags": ["Ship a PR", "Extract a BOL", "Analyze carrier lanes"]
+      }
+    },
+    {
+      "id": "day-2",
+      "label": "Day 2",
+      "theme": "Build the AI Infrastructure",
+      "blocks": [
+        {
+          "id": "D2-B5",
+          "time": "9:00-10:30",
+          "topic": "Skills Foundation",
+          "title": "Block 5 · Skills & Commands",
+          "summary": "Package repeated freight workflows into reusable skill files and slash commands that persist after the live cohort ends.",
+          "moduleIds": ["05"],
+          "labIds": ["05"],
+          "useCaseIds": ["freight-operational-skills-library"]
+        },
+        {
+          "id": "D2-B6",
+          "time": "10:45-12:15",
+          "topic": "MCP Servers & Tool Integration",
+          "title": "Block 6 · MCP Architecture + Building Servers",
+          "summary": "Wire Raven operational data into Claude through Tools, Resources, and Prompts, then turn that understanding into a deployable server surface.",
+          "moduleIds": ["06", "07"],
+          "labIds": ["06"],
+          "useCaseIds": ["fmcsa-authority-verification", "live-shipment-gps-tracking", "exception-report-via-mcp-prompt", "build-raveneye-mcp-server"]
+        },
+        {
+          "id": "D2-B7",
+          "time": "13:15-14:45",
+          "topic": "Agentic Workflows & Exception Management",
+          "title": "Block 7 · Multi-Agent Systems",
+          "summary": "Coordinate monitoring, notification, routing, and compliance agents as a system instead of isolated prompts.",
+          "moduleIds": ["09"],
+          "labIds": ["07"],
+          "useCaseIds": ["delay-detection-auto-notification", "compliance-verification-pipeline"]
+        },
+        {
+          "id": "D2-B8",
+          "time": "15:00-16:30",
+          "topic": "Capstone · Production-Ready Agent Pipeline",
+          "title": "Block 8 · Security + Capstone Build",
+          "summary": "Apply human-gated controls, secret management, and production deployment thinking to the Raven capstone pipeline.",
+          "moduleIds": ["10"],
+          "labIds": ["08", "09"],
+          "useCaseIds": ["human-gate-approval-pattern", "agent-secrets-permission-audit", "carrier-intelligence-pipeline-capstone"]
+        }
+      ],
+      "closeout": {
+        "title": "Day 2 Close",
+        "summary": "Share capstone pipelines, hand off next-step build work, and move the cohort into the async runway.",
+        "tags": ["Pipeline presentations", "Phase 2 backlog", "Take-home missions"]
+      }
+    }
+  ],
+  "asyncTrack": {
+    "modules": ["08", "11", "12"],
+    "missions": [
+      { "id": "1.1", "title": "Author Two Skills From Scratch", "href": "/raven-cargo-course/challenges" },
+      { "id": "2.1", "title": "Codebase Archaeology", "href": "/raven-cargo-course/challenges" },
+      { "id": "3.2", "title": "Production Workflow Adaptation", "href": "/raven-cargo-course/challenges" }
+    ]
+  },
+  "useCases": [
+    {
+      "id": "shipment-email-extraction",
+      "title": "Shipment Detail Extraction from Emails",
+      "day": "Day 1",
+      "moduleId": "01",
+      "labId": "01",
+      "pattern": "PRAO Loop",
+      "description": "Parse carrier and customer emails to extract shipment details, dates, and special requirements as structured output."
+    },
+    {
+      "id": "carrier-communication-classification",
+      "title": "Carrier Communication Classification",
+      "day": "Day 1",
+      "moduleId": "01",
+      "labId": "01",
+      "pattern": "Task Suitability Framework",
+      "description": "Classify carrier messages by urgency and type so Raven can route work into the right operational queue."
+    },
+    {
+      "id": "exception-report-summarization",
+      "title": "Exception Report Summarization",
+      "day": "Day 1",
+      "moduleId": "01",
+      "labId": "01",
+      "pattern": "PRAO + Structured Output",
+      "description": "Turn weekly delay, detention, claims, and missed pickup reports into standup-ready operational summaries."
+    },
+    {
+      "id": "raveneye-codebase-configuration",
+      "title": "RavenEye Codebase Configuration",
+      "day": "Day 1",
+      "moduleId": "02",
+      "labId": "02",
+      "pattern": "GCCF + Progressive Locking",
+      "description": "Configure CLAUDE.md, permissions, and project conventions so RavenEye work can ship as real pull requests."
+    },
+    {
+      "id": "raveneye-pr-review-automation",
+      "title": "RavenEye PR Review Automation",
+      "day": "Day 1",
+      "moduleId": "02",
+      "labId": "02",
+      "pattern": "CLAUDE.md + Permissions",
+      "description": "Use agent-assisted review to check Zod validation, /api/v2 conventions, and security constraints on every RavenEye PR."
+    },
+    {
+      "id": "bol-data-extraction-pipeline",
+      "title": "BOL Data Extraction Pipeline",
+      "day": "Day 1",
+      "moduleId": "04",
+      "labId": "05",
+      "pattern": "TCEF",
+      "description": "Extract shipper, consignee, commodity, weight, piece count, PRO number, and SCAC from Bills of Lading with validation."
+    },
+    {
+      "id": "rate-quote-extraction",
+      "title": "Rate Quote Extraction from Carrier Sheets",
+      "day": "Day 1",
+      "moduleId": "04",
+      "labId": "05",
+      "pattern": "TCEF + Constraint Spec",
+      "description": "Capture lane codes, accessorials, minimum weight, and effective dates from carrier rate sheets and emails."
+    },
+    {
+      "id": "carrier-intelligence-scoring",
+      "title": "Carrier Intelligence Scoring",
+      "day": "Day 1",
+      "moduleId": "03",
+      "labId": "03",
+      "pattern": "Multi-File Scout + Act & Verify",
+      "description": "Read FMCSA SAFER data, claims history, and lane performance to pre-score carriers in seconds."
+    },
+    {
+      "id": "fmcsa-authority-verification",
+      "title": "FMCSA Carrier Authority Verification",
+      "day": "Day 2",
+      "moduleId": "05",
+      "labId": "04",
+      "pattern": "MCP Tool",
+      "description": "Verify MC and USDOT authority, insurance status, and safety rating against FMCSA SAFER through a tool call."
+    },
+    {
+      "id": "live-shipment-gps-tracking",
+      "title": "Live Shipment GPS Tracking via MCP",
+      "day": "Day 2",
+      "moduleId": "05",
+      "labId": "04",
+      "pattern": "MCP Resource",
+      "description": "Expose read-only shipment position and status from RavenEye tracking feeds as addressable context."
+    },
+    {
+      "id": "exception-report-via-mcp-prompt",
+      "title": "Exception Report via MCP Prompt",
+      "day": "Day 2",
+      "moduleId": "05",
+      "labId": "04",
+      "pattern": "MCP Prompt",
+      "description": "Package a reusable delay-report template that aggregates operational context and returns a structured exception brief."
+    },
+    {
+      "id": "build-raveneye-mcp-server",
+      "title": "Build RavenEye MCP Server",
+      "day": "Day 2",
+      "moduleId": "06",
+      "labId": "04",
+      "pattern": "TypeScript MCP SDK",
+      "description": "Build the Raven operational server surface with schemas, error handling, and production deployment guardrails."
+    },
+    {
+      "id": "freight-operational-skills-library",
+      "title": "Freight Operational Skills Library",
+      "day": "Day 2",
+      "moduleId": "07",
+      "labId": "06",
+      "pattern": "YAML Skills + Slash Commands",
+      "description": "Author reusable operational skills such as carrier scoring and BOL extraction so workflows persist after the live delivery."
+    },
+    {
+      "id": "delay-detection-auto-notification",
+      "title": "Delay Detection & Auto-Notification",
+      "day": "Day 2",
+      "moduleId": "09",
+      "labId": "07",
+      "pattern": "Fan-Out / Pipeline",
+      "description": "Monitor tracking feeds, notify customers, and trigger contingency routing as a coordinated multi-agent sequence."
+    },
+    {
+      "id": "compliance-verification-pipeline",
+      "title": "Compliance Verification Pipeline",
+      "day": "Day 2",
+      "moduleId": "09",
+      "labId": "07",
+      "pattern": "Fan-Out / Fan-In",
+      "description": "Parallelize authority, insurance, and hazmat checks and then merge them into a human-reviewable compliance package."
+    },
+    {
+      "id": "human-gate-approval-pattern",
+      "title": "HUMAN GATE Approval Pattern",
+      "day": "Day 2",
+      "moduleId": "10",
+      "labId": "08",
+      "pattern": "Plan-Halt-Approve-Execute",
+      "description": "Require human approval for rebooking, carrier updates, rate changes, and any public or financially binding action."
+    },
+    {
+      "id": "agent-secrets-permission-audit",
+      "title": "Agent Secrets & Permission Audit",
+      "day": "Day 2",
+      "moduleId": "10",
+      "labId": "08",
+      "pattern": "Least Privilege + Env Vars",
+      "description": "Audit RavenEye-connected agents for API key handling, permissions scope, and operating cost at production scale."
+    },
+    {
+      "id": "carrier-intelligence-pipeline-capstone",
+      "title": "Carrier Intelligence Pipeline Capstone",
+      "day": "Day 2",
+      "moduleId": "10",
+      "labId": "09",
+      "pattern": "Production Pipeline Blueprint",
+      "description": "Design the trigger, context, decision logic, action scope, and output delivery for the exportable Raven production pipeline."
+    }
+  ]
+}

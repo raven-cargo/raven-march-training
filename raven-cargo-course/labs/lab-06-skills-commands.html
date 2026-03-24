@@ -1,0 +1,2082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 05 · Skills &amp; Commands Builder | Agentic AI Engineering</title>
+  <link rel="stylesheet" href="/raven-cargo-course/assets/theme-toggle.css" />
+  <link rel="stylesheet" href="/raven-cargo-course/assets/raven-labs.css" />
+  <script src="/raven-cargo-course/assets/theme-toggle.js" defer></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <style>
+    /* ─── Design System ──────────────────────────────────────────── */
+    :root {
+      --bg-base:    #080d1a;
+      --bg-surface: #0f1729;
+      --bg-raised:  #172035;
+      --bg-glass:   rgba(23, 32, 53, 0.7);
+      --primary:    #6366f1;
+      --primary-glow: rgba(99,102,241,0.25);
+      --secondary:  #8b5cf6;
+      --accent:     #06b6d4;
+      --accent-glow: rgba(6,182,212,0.2);
+      --success:    #10b981;
+      --warning:    #f59e0b;
+      --danger:     #ef4444;
+      --text:       #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim:   #475569;
+      --border:     rgba(255,255,255,0.08);
+      --border-bright: rgba(99,102,241,0.4);
+      --radius:     16px;
+      --radius-sm:  8px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-base);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ─── Progress Bar ───────────────────────────────────────────── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 0%; transition: width 0.2s ease;
+      z-index: 1000;
+      box-shadow: 0 0 12px var(--primary);
+    }
+
+    /* ─── Nav ────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: 16px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      backdrop-filter: blur(20px);
+      background: rgba(8,13,26,0.8);
+      border-bottom: 1px solid var(--border);
+      z-index: 900;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text-muted); }
+    .nav-badge {
+      background: var(--primary); color: white;
+      padding: 3px 10px; border-radius: 100px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
+    }
+    .nav-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--bg-raised); border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+    .nav-dot.dot-locked   { background: var(--text-dim); }
+    .nav-dot.dot-active   { background: var(--primary); box-shadow: 0 0 8px var(--primary-glow); }
+    .nav-dot.dot-complete { background: var(--success); }
+
+    /* ─── Sections ───────────────────────────────────────────────── */
+    .section-block {
+      padding: 60px 0;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .section-block:last-child { border-bottom: none; }
+    .section-block.locked { user-select: none; min-height: 220px; }
+
+    /* ─── Typography ─────────────────────────────────────────────── */
+    .overline {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 12px;
+    }
+    h1 {
+      font-size: clamp(36px,5vw,60px); font-weight: 800;
+      line-height: 1.1; letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--text) 0%, var(--text-muted) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    h2 { font-size: clamp(22px,3vw,32px); font-weight: 700; letter-spacing: -0.02em; }
+    h3 { font-size: 18px; font-weight: 600; }
+    p  { color: var(--text-muted); }
+
+    /* ─── Cards ──────────────────────────────────────────────────── */
+    .card {
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      backdrop-filter: blur(10px);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .card:hover { border-color: var(--border-bright); box-shadow: 0 0 30px var(--primary-glow); }
+
+    .info-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .challenge-card {
+      background: rgba(245,158,11,0.06);
+      border: 1px solid rgba(245,158,11,0.3);
+      border-left: 3px solid var(--warning);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .check-card {
+      background: rgba(99,102,241,0.05);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .callback-card {
+      background: rgba(139,92,246,0.06);
+      border: 1px solid rgba(139,92,246,0.3);
+      border-left: 3px solid var(--secondary);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .insight-card {
+      background: rgba(16,185,129,0.06);
+      border: 1px solid rgba(16,185,129,0.3);
+      border-left: 3px solid var(--success);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: none;
+    }
+    .insight-card.revealed { display: block; animation: fadeIn 0.4s ease; }
+
+    .warning-card {
+      background: rgba(239,68,68,0.06);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-left: 3px solid var(--danger);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .card-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 3px 10px;
+      border-radius: 4px; display: inline-block; margin-bottom: 12px;
+    }
+    .challenge-badge { background: rgba(245,158,11,0.15); color: var(--warning); }
+    .check-badge     { background: rgba(99,102,241,0.15); color: var(--primary); }
+    .callback-badge  { background: rgba(139,92,246,0.15); color: var(--secondary); }
+    .insight-badge   { background: rgba(16,185,129,0.15); color: var(--success); }
+    .warning-badge   { background: rgba(239,68,68,0.15); color: var(--danger); }
+
+    /* ─── Code blocks ────────────────────────────────────────────── */
+    .code-block {
+      background: #0a0f1e;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px 24px;
+      font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+      font-size: 13px; line-height: 1.8;
+      overflow-x: auto; position: relative;
+      white-space: pre;
+    }
+    .code-block .comment  { color: #4b5563; }
+    .code-block .keyword  { color: #8b5cf6; }
+    .code-block .string   { color: #10b981; }
+    .code-block .fn       { color: #06b6d4; }
+    .code-block .cmd      { color: var(--warning); }
+    .code-block .key      { color: var(--accent); }
+    .code-block .val      { color: #f472b6; }
+
+    /* ─── Buttons ────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border-radius: 10px;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      border: none; transition: all 0.2s; text-decoration: none;
+      font-family: inherit;
+    }
+    .btn-primary { background: var(--primary); color: white; box-shadow: 0 0 20px var(--primary-glow); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 30px var(--primary-glow); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-ghost {
+      background: transparent; color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-amber   { background: var(--warning); color: #000; font-weight: 700; }
+
+    /* ─── Textarea ───────────────────────────────────────────────── */
+    textarea {
+      width: 100%;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 14px; color: var(--text);
+      resize: vertical; min-height: 110px;
+      font-family: inherit; transition: border-color 0.2s;
+      line-height: 1.6;
+    }
+    textarea:focus { outline: none; border-color: var(--primary); }
+    .char-hint { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+    .char-ready { color: var(--success); }
+    label.field-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+
+    /* ─── Answer options ─────────────────────────────────────────── */
+    .answer-options { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+    .answer-option {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 18px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer; transition: all 0.2s;
+      font-size: 14px; color: var(--text-muted);
+      text-align: left; width: 100%;
+      font-family: inherit;
+    }
+    .answer-option:hover:not(.locked-opt) { border-color: var(--primary); color: var(--text); }
+    .answer-option.correct   { background: rgba(16,185,129,0.1); border-color: var(--success); color: var(--success); }
+    .answer-option.incorrect { background: rgba(239,68,68,0.1); border-color: var(--danger); color: #fca5a5; }
+    .answer-option.locked-opt { cursor: default; }
+    .opt-letter {
+      width: 24px; height: 24px; border-radius: 50%;
+      border: 2px solid currentColor;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+    }
+    .question-feedback {
+      margin-top: 12px; padding: 12px 16px;
+      border-radius: 8px; font-size: 14px; display: none;
+    }
+    .question-feedback.show { display: block; animation: fadeIn 0.3s; }
+    .fb-correct   { background: rgba(16,185,129,0.1); color: var(--success); border-left: 3px solid var(--success); }
+    .fb-incorrect { background: rgba(239,68,68,0.1); color: #fca5a5; border-left: 3px solid var(--danger); }
+
+    /* ─── Table ──────────────────────────────────────────────────── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .data-table th {
+      text-align: left; padding: 10px 14px;
+      background: var(--bg-raised); color: var(--text-muted);
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--text-muted); vertical-align: top; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table td:first-child { color: var(--text); font-weight: 600; }
+    .data-table code { font-family: 'Fira Code', monospace; font-size: 12px; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; color: var(--warning); }
+
+    /* ─── Rubric ─────────────────────────────────────────────────── */
+    .rubric { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; }
+    .rubric-level { padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-raised); }
+    .rubric-level-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+    .rubric-d { border-left: 3px solid gold; }
+    .rubric-d .rubric-level-label { color: gold; }
+    .rubric-p { border-left: 3px solid var(--primary); }
+    .rubric-p .rubric-level-label { color: var(--primary); }
+    .rubric-v { border-left: 3px solid var(--warning); }
+    .rubric-v .rubric-level-label { color: var(--warning); }
+    .rubric-b { border-left: 3px solid var(--text-dim); }
+    .rubric-b .rubric-level-label { color: var(--text-dim); }
+    .rubric-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+    /* ─── Lock overlay ───────────────────────────────────────────── */
+    .lock-overlay {
+      position: absolute; inset: 0;
+      background: rgba(8,13,26,0.88);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      border-radius: var(--radius); z-index: 10;
+      gap: 12px;
+    }
+    .lock-overlay p { color: var(--text-muted); font-size: 14px; }
+
+    /* ─── XP / Streak ────────────────────────────────────────────── */
+    .xp-display { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--warning); }
+    .xp-toast {
+      position: fixed; top: 80px; right: 24px;
+      background: var(--warning); color: #000;
+      padding: 8px 16px; border-radius: 20px;
+      font-weight: 700; font-size: 13px;
+      animation: toastFade 2s forwards;
+      pointer-events: none; z-index: 9999;
+    }
+    @keyframes toastFade {
+      0%  { opacity:0; transform:translateY(-10px) }
+      20% { opacity:1; transform:translateY(0) }
+      80% { opacity:1 }
+      100%{ opacity:0; transform:translateY(-10px) }
+    }
+    .streak-display { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+    .streak-3 { background: rgba(245,158,11,0.15); color: var(--warning); }
+    .streak-5 { background: rgba(139,92,246,0.15); color: var(--secondary); }
+    .streak-7 { background: rgba(245,158,11,0.2);  color: gold; }
+
+    /* ─── Connect forward ────────────────────────────────────────── */
+    .connect-forward {
+      display: none; margin-top: 24px;
+      padding: 16px 20px;
+      background: rgba(6,182,212,0.06);
+      border: 1px solid rgba(6,182,212,0.2);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-sm);
+      font-size: 14px; color: var(--text-muted);
+    }
+    .connect-forward.show { display: block; animation: fadeIn 0.4s; }
+
+    /* ─── Skill Grader ───────────────────────────────────────────── */
+    .grader-snippet {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    .grader-snippet h4 { font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .grade-selector { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .grade-btn {
+      padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 700;
+      border: 1px solid var(--border); background: var(--bg-raised);
+      cursor: pointer; transition: all 0.2s; color: var(--text-muted);
+      font-family: inherit;
+    }
+    .grade-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .grade-btn.selected { border-color: var(--primary); background: rgba(99,102,241,0.15); color: var(--primary); }
+    .grade-reveal {
+      margin-top: 10px; padding: 10px 14px; border-radius: 8px;
+      font-size: 13px; display: none;
+    }
+    .grade-reveal.show { display: block; animation: fadeIn 0.3s; }
+    .grade-d { background: rgba(245,197,24,0.1); border-left: 3px solid gold; color: #fde68a; }
+    .grade-v { background: rgba(245,158,11,0.08); border-left: 3px solid var(--warning); color: var(--warning); }
+    .grade-p { background: rgba(99,102,241,0.08); border-left: 3px solid var(--primary); color: #a5b4fc; }
+    .grade-b { background: rgba(100,116,139,0.1); border-left: 3px solid var(--text-dim); color: var(--text-dim); }
+
+    /* ─── Composition flow ───────────────────────────────────────── */
+    .flow-step {
+      display: flex; gap: 16px; align-items: flex-start;
+      padding: 16px; background: var(--bg-raised);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      margin-bottom: 10px;
+    }
+    .flow-step-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--primary); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 13px; flex-shrink: 0;
+    }
+    .flow-step-content h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .flow-step-content p  { font-size: 13px; margin: 0; }
+    .flow-arrow { text-align: center; color: var(--text-dim); font-size: 18px; margin: 4px 0; }
+
+    /* ─── Sim walkthrough ────────────────────────────────────────── */
+    .sim-step {
+      padding: 14px 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+      background: var(--bg-raised);
+      opacity: 0.4;
+      transition: all 0.3s;
+    }
+    .sim-step.active { opacity: 1; border-color: var(--accent); background: rgba(6,182,212,0.05); }
+    .sim-step.done   { opacity: 0.7; border-color: var(--success); }
+    .sim-step-label  { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+    .sim-step-label.invoke  { color: var(--accent); }
+    .sim-step-label.output  { color: var(--success); }
+    .sim-step-label.gate    { color: var(--warning); }
+    .sim-step-body  { font-size: 13px; color: var(--text-muted); }
+
+    /* ─── Objectives card ────────────────────────────────────────── */
+    .objectives-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      text-align: left;
+      max-width: 640px;
+      margin: 0 auto;
+      font-size: 15px;
+    }
+    .objectives-card ul { margin-top: 12px; padding-left: 20px; }
+    .objectives-card li { color: var(--text-muted); margin-bottom: 6px; }
+
+    /* ─── Utilities ──────────────────────────────────────────────── */
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    .mt-16 { margin-top: 16px; }
+    .mt-24 { margin-top: 24px; }
+    .gap-12 { display: flex; flex-direction: column; gap: 12px; }
+    .pill {
+      display: inline-block; padding: 2px 10px; border-radius: 100px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+    }
+    .pill-danger  { background: rgba(239,68,68,0.15); color: var(--danger); }
+    .pill-success { background: rgba(16,185,129,0.15); color: var(--success); }
+    code {
+      font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+      font-size: 12px; background: rgba(0,0,0,0.3);
+      padding: 2px 6px; border-radius: 4px; color: var(--warning);
+    }
+    strong { color: var(--text); }
+    .milestone-display {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: rgba(6,182,212,0.08);
+      border: 1px solid rgba(6,182,212,0.25);
+      border-radius: 999px;
+      padding: 4px 10px;
+      white-space: nowrap;
+    }
+    .milestone-toast {
+      position: fixed; top: 120px; right: 24px;
+      background: var(--accent); color: #02131a;
+      padding: 8px 14px; border-radius: 20px;
+      font-weight: 700; font-size: 12px;
+      animation: toastFade 2s forwards;
+      pointer-events: none; z-index: 9999;
+    }
+    /* ─── Build Challenge Exercises ──────────────────────────── */
+    .build-challenge {
+      margin-top: 32px;
+      background: rgba(139,92,246,0.06);
+      border: 1px solid rgba(139,92,246,0.3);
+      border-top: 3px solid var(--secondary);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+    .build-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 4px 14px;
+      border-radius: 20px; display: inline-block;
+      background: var(--secondary); color: #fff;
+    }
+    .ce-xp-badge {
+      font-size: 12px; font-weight: 600; color: var(--secondary);
+      background: rgba(139,92,246,0.12); padding: 4px 12px; border-radius: 20px;
+    }
+    .btn-secondary {
+      background: var(--secondary); color: #fff;
+      box-shadow: 0 0 16px rgba(139,92,246,0.25);
+    }
+    .btn-secondary:hover { transform: translateY(-2px); box-shadow: 0 0 28px rgba(139,92,246,0.4); }
+    .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .ce-requirements {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 16px;
+      margin-bottom: 16px; font-size: 13px; color: var(--text-muted);
+    }
+    .ce-model-answer {
+      margin-top: 20px; padding: 20px;
+      background: var(--bg); border: 1px solid rgba(139,92,246,0.35);
+      border-left: 3px solid var(--secondary);
+      border-radius: var(--radius-sm);
+    }
+    /* ── Icon System (Lucide) ─────────────────────────────── */
+    .icon { width:16px; height:16px; display:inline-block; vertical-align:-2px; stroke-width:2; flex-shrink:0; }
+    .icon-lg { width:20px; height:20px; vertical-align:-4px; }
+    .icon-sm { width:14px; height:14px; vertical-align:-2px; }
+    .badge-label .icon, .badge-label .icon-lg { margin-right:4px; }
+    .quiz-feedback .icon { margin-right:3px; }
+
+    /* ── Responsive ──────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      body { padding: 0; }
+      .section-block { padding: 20px 16px; margin: 12px 8px; }
+      h2 { font-size: 20px; }
+      nav { padding: 8px 16px; flex-wrap: wrap; gap: 8px; }
+      .nav-brand { font-size: 12px; }
+      .code-block { font-size: 12px; padding: 14px 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      code { font-size: 11px; }
+      .rubric { grid-template-columns: 1fr; gap: 8px; }
+      .grade-selector { gap: 6px; }
+      .card, .info-card, .challenge-card, .check-card,
+      .callback-card, .insight-card, .warning-card,
+      .build-challenge { padding: 16px; }
+      .objectives-card { padding: 18px 16px; }
+      textarea { min-height: 120px; font-size: 14px; }
+      .flow-step { gap: 10px; padding: 12px; }
+      .xp-display { font-size: 12px; }
+      .milestone-display { font-size: 10px; padding: 3px 8px; }
+      .data-table { font-size: 12px; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .data-table th, .data-table td { padding: 8px 10px; }
+      .grader-snippet { padding: 14px; }
+    }
+
+    @media (max-width: 480px) {
+      .section-block { padding: 16px 12px; margin: 8px 4px; }
+      h2 { font-size: 18px; }
+      nav { padding: 6px 12px; }
+      .card, .info-card, .challenge-card, .check-card,
+      .callback-card, .insight-card, .warning-card,
+      .build-challenge { padding: 12px; }
+      .code-block { font-size: 11px; padding: 12px; }
+      .flow-step { flex-direction: column; gap: 8px; }
+      .flow-step-num { width: 28px; height: 28px; font-size: 12px; }
+      .objectives-card { max-width: 100%; padding: 14px 12px; }
+      .streak-display, .milestone-display { display: none !important; }
+    }
+  
+    pre { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    /* Focus-visible for keyboard navigation */
+    :focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    button:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+</style>
+  <link rel="stylesheet" href="/raven-cargo-course/assets/raven-labs.css" />
+  <link rel="stylesheet" href="/raven-cargo-course/assets/raven-course.css" />
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div id="progress-bar" role="progressbar" aria-label="Page scroll progress"></div>
+
+<!-- Navigation -->
+<nav>
+  <div class="nav-brand">
+    <span class="nav-badge">Lab 05</span>
+    <span>Lab 05 · Skills &amp; Commands Builder</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:20px;">
+    <div class="xp-display" aria-live="polite" aria-label="Experience points">
+      <span aria-hidden="true"></span>
+      <span id="xp-value">0</span>
+      <span style="font-size:11px;color:var(--text-muted)">XP</span>
+    </div>
+    <div id="streak-display" class="streak-display" style="display:none;" aria-live="polite"></div>
+    <div id="milestone-display" class="milestone-display" aria-live="polite" aria-label="Current milestone">Milestone: Not started</div>
+    <div id="nav-dots" style="display:flex;gap:6px;" aria-label="Lab progress" role="list"></div>
+  </div>
+</nav>
+
+<div id="lab-onboarding-tip" role="note" style="max-width:860px;margin:14px auto 0;padding:10px 14px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:10px;font-size:12px;color:var(--muted);">Tip: fill the section action in each block to earn XP, and use nav dots as progress signals (locked = not available yet, active = current section, complete = finished).</div>
+
+<main>
+
+<!-- Hero -->
+<div style="padding:120px 32px 60px;max-width:900px;margin:0 auto;text-align:center;">
+  <div class="overline">Lab 05</div>
+  <h1 style="margin-bottom:20px;">Skills &amp; Commands Builder</h1>
+  <p style="font-size:18px;max-width:600px;margin:0 auto 32px;">
+    Every Claude Code session starts fresh — skills and commands are how you make expertise permanent and workflows one-keystroke fast.
+  </p>
+  <div class="objectives-card">
+    <strong>After this lab you will be able to:</strong>
+    <ul>
+      <li>Write a complete skill file with YAML frontmatter and an effective instruction body</li>
+      <li>Distinguish project-scoped from global skills and choose the right location</li>
+      <li>Build slash commands that invoke skills and compose multi-skill pipelines</li>
+      <li>Avoid the reserved-name trap that breaks Claude Code's built-in commands</li>
+    </ul>
+  </div>
+  <div style="display:flex;gap:12px;justify-content:center;margin-top:24px;flex-wrap:wrap;">
+    <a href="/raven-cargo-course/module/05" class="btn btn-ghost" style="text-decoration:none;font-size:12px;padding:8px 16px;">← Module 05: Skills &amp; Commands</a>
+    <a href="/raven-cargo-course/module/06" class="btn btn-ghost" style="text-decoration:none;font-size:12px;padding:8px 16px;">Module 06: MCP Architecture →</a>
+  </div>
+</div>
+
+<!-- Lab Sections -->
+<div id="lab-sections" style="max-width:900px;margin:0 auto;padding:0 32px 120px;">
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 0 — What Is a Skill? (Concept Introduction)
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-block" id="section-0">
+    <div class="overline">Section 0 · Concept Introduction</div>
+    <h2 style="margin-bottom:16px;">What Is a Skill?</h2>
+
+    <p style="margin-bottom:24px;">
+      Every new Claude Code session starts with a blank slate. No memory of your codebase conventions, your preferred commit style, your API patterns. You'd have to re-explain everything, every time — unless you use skills.
+    </p>
+
+    <div class="info-card" style="margin-bottom:20px;">
+      <h3 style="margin-bottom:12px;color:var(--text);">The Problem Skills Solve</h3>
+      <p>A <strong>skill</strong> is a markdown file with YAML frontmatter. Claude reads it before performing a specialized task, giving it persistent expertise that survives across sessions. Skills live at:</p>
+      <ul style="margin-top:12px;padding-left:20px;color:var(--text-muted);font-size:14px;">
+        <li style="margin-bottom:6px;"><code>~/.claude/skills/your-skill.md</code> — global, available in every session</li>
+        <li><code>.claude/skills/your-skill.md</code> — project-scoped, available only in that project</li>
+      </ul>
+    </div>
+
+    <div class="info-card" style="margin-bottom:20px;">
+      <h3 style="margin-bottom:16px;color:var(--text);">Anatomy of a Minimal Skill File</h3>
+      <p style="margin-bottom:14px;font-size:14px;">A skill has two parts: YAML frontmatter (metadata) and a Markdown body (instructions).</p>
+      <div class="code-block"><span class="comment">--- ← frontmatter starts</span>
+<span class="key">name</span>: <span class="string">git-commit-writer</span>
+<span class="key">description</span>: <span class="string">Writes conventional commits with scope, body, and breaking change notes</span>
+<span class="key">triggers</span>:
+  - <span class="string">"write a commit"</span>
+  - <span class="string">"commit message"</span>
+  - <span class="string">"conventional commit"</span>
+<span class="key">version</span>: <span class="string">"1.0.0"</span>
+<span class="comment">--- ← frontmatter ends</span>
+
+<span class="comment"># Git Commit Writer  ← body starts here (plain Markdown)</span>
+
+Write commit messages following the Conventional Commits spec.
+
+<span class="keyword">Format</span>: `&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;`
+<span class="keyword">Types</span>: feat, fix, docs, refactor, test, chore
+Always include: <span class="string">Why</span> this change (not what — the diff shows what).
+Breaking changes: Add `BREAKING CHANGE:` footer.</div>
+    </div>
+
+    <!-- CALLBACK: tcef-pattern -->
+    <div class="callback-card" style="margin-bottom:20px;">
+      <div class="card-badge callback-badge"><svg class="icon" data-lucide="link" aria-hidden="true"></svg> CALLBACK — Lab 03, Section 2</div>
+      <p><strong>TCEF Prompt Pattern</strong> — introduced in <em>Lab 03: Prompt Engineering</em></p>
+      <p class="mt-16" style="font-size:14px;">The skill body IS a TCEF prompt written once and reused infinitely. <strong>Task</strong>: what Claude should do. <strong>Context</strong>: conventions to follow. <strong>Examples</strong> (optional but powerful). <strong>Format</strong>: output structure. Writing a great skill body is exactly the same skill as writing a great TCEF prompt — the difference is persistence.</p>
+    </div>
+
+    <button class="btn btn-primary" onclick="completeSection0()" id="s0-btn">
+      Mark Complete — Continue to Section 1
+    </button>
+    <div class="connect-forward" id="s0-forward">
+      Next: the YAML frontmatter has more to it than it looks. One field is commonly misunderstood — let's make you predict it before we explain it.
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 1 — YAML Frontmatter Deep Dive (Prediction Challenge)
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-1" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete Section 0 to unlock</p>
+    </div>
+
+    <div class="overline">Section 1 · Prediction Challenge</div>
+    <h2 style="margin-bottom:16px;">YAML Frontmatter Deep Dive</h2>
+
+    <div class="challenge-card" style="margin-bottom:20px;">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> CHALLENGE — Predict First</div>
+      <p style="margin-bottom:14px;">The YAML frontmatter has a <code>triggers</code> field. What do you think it controls, and how might Claude use it?</p>
+      <label for="s1-predict" class="sr-only">Write your prediction about the triggers field</label>
+      <textarea aria-label="Write your prediction here — minimum 15 characters to unlock" id="s1-predict" placeholder="Write your prediction here — minimum 15 characters to unlock the reveal..."
+        oninput="checkPrediction('s1-predict','s1-reveal-btn',15)" aria-describedby="s1-predict-hint"></textarea>
+      <div id="s1-predict-hint" class="char-hint" aria-live="polite">15 characters to activate reveal</div>
+      <div style="margin-top:14px;">
+        <button class="btn btn-primary" id="s1-reveal-btn" disabled onclick="revealSection1()">Reveal Answer</button>
+      </div>
+    </div>
+
+    <div id="s1-reveal" style="display:none;">
+      <div class="info-card" style="margin-bottom:16px;">
+        <h3 style="margin-bottom:16px;color:var(--text);">The Four Frontmatter Fields</h3>
+        <table class="data-table">
+          <thead>
+            <tr><th>Field</th><th>Purpose</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>name</code></td>
+              <td>Unique identifier for this skill</td>
+              <td>Used by the <code>Skill</code> tool and orchestrators to load this skill by name</td>
+            </tr>
+            <tr>
+              <td><code>description</code></td>
+              <td>Human-readable summary</td>
+              <td>Written for both humans browsing the library AND for Claude deciding when to auto-select the skill</td>
+            </tr>
+            <tr>
+              <td><code>triggers</code></td>
+              <td>Phrases documenting when the skill is relevant</td>
+              <td><span class="pill pill-danger">Not native</span> This is a LUXOR/project convention — a documentation aid. Claude Code does not parse triggers for automatic keyword activation natively. Context-based auto-selection happens through description matching, not trigger strings.</td>
+            </tr>
+            <tr>
+              <td><code>version</code></td>
+              <td>Semantic version for tracking changes</td>
+              <td>Helps teams coordinate skill updates, especially when multiple engineers use the same skill library</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Knowledge Check Q1 -->
+      <div class="check-card" style="margin-bottom:20px;" id="q1-card">
+        <div class="card-badge check-badge">✓ CHECK — Question 1 of 4</div>
+        <p style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;">The <code>triggers</code> field in a skill's frontmatter is:</p>
+        <div class="answer-options" id="q1-opts">
+          <button class="answer-option" onclick="answerQ('q1',0,false,'Triggers are a LUXOR/project convention — a documentation aid showing when the skill is relevant. Native auto-activation in Claude Code is context-based, not keyword-based.')" aria-label="Option A">
+            <span class="opt-letter">A</span>
+            <span>A native Claude Code feature that automatically loads the skill when the phrase is detected in a user message</span>
+          </button>
+          <button class="answer-option" onclick="answerQ('q1',1,true,'Triggers document intent. They help humans and orchestrators know when to invoke the skill, but Claude Code does not parse them for automatic activation natively. The description field drives context-based auto-selection.')" aria-label="Option B">
+            <span class="opt-letter">B</span>
+            <span>A project convention documenting when the skill should be invoked — not processed natively by Claude Code for keyword matching</span>
+          </button>
+          <button class="answer-option" onclick="answerQ('q1',2,false,'No regex matching happens at runtime. Triggers are metadata — documentation for humans and orchestrators, not runtime logic.')" aria-label="Option C">
+            <span class="opt-letter">C</span>
+            <span>Regular expressions that Claude Code matches against all user messages at runtime</span>
+          </button>
+          <button class="answer-option" onclick="answerQ('q1',3,false,'Triggers are optional metadata. Skills without a triggers field load and work normally — the field is purely informational.')" aria-label="Option D">
+            <span class="opt-letter">D</span>
+            <span>Required — skills without a triggers field will not load correctly</span>
+          </button>
+        </div>
+        <div class="question-feedback" id="q1-fb"></div>
+      </div>
+
+      <!-- Apply -->
+      <div class="challenge-card" style="margin-bottom:20px;">
+        <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
+        <p style="margin-bottom:14px;">Write the complete YAML frontmatter for a skill called <code>api-documenter</code> that writes OpenAPI documentation from code. Include all four fields. Triggers should reference phrases about documenting endpoints or API specs.</p>
+        <label for="s1-apply" class="sr-only">Write the YAML frontmatter for api-documenter skill</label>
+        <textarea aria-label="--- name: api-documenter description: ... triggers:   -" id="s1-apply" placeholder="---&#10;name: api-documenter&#10;description: ...&#10;triggers:&#10;  - ...&#10;version: ..." style="min-height:160px;font-family:'Fira Code',monospace;font-size:13px;"
+          oninput="checkApply('s1-apply','s1-apply-btn',40)" aria-describedby="s1-apply-hint"></textarea>
+        <div id="s1-apply-hint" class="char-hint" aria-live="polite">40 characters to complete this section</div>
+        <div style="margin-top:14px;">
+          <button class="btn btn-primary" id="s1-apply-btn" disabled onclick="completeSection1()">Complete Section 1</button>
+        </div>
+      </div>
+
+      <div class="connect-forward" id="s1-forward">
+        You now understand what the frontmatter declares. Next: what makes the body — the actual instructions — distinguish a skill that works from one that frustrates.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 2 — Writing the Skill Body (Interactive Workshop)
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-2" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete Section 1 to unlock</p>
+    </div>
+
+    <div class="overline">Section 2 · Interactive Workshop</div>
+    <h2 style="margin-bottom:16px;">Writing the Skill Body</h2>
+
+    <p style="margin-bottom:24px;">The skill body is instructions. The difference between a good skill and a useless one is specificity — vague instructions produce vague behavior.</p>
+
+    <div class="info-card" style="margin-bottom:20px;">
+      <h3 style="margin-bottom:16px;color:var(--text);">Four Elements of a Strong Skill Body</h3>
+      <div class="gap-12">
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">1</div>
+          <div><strong>Role statement</strong> — What Claude is acting as.<br><span style="font-size:13px;color:var(--text-muted);">Example: "You are a code reviewer specializing in security vulnerabilities in Node.js APIs."</span></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">2</div>
+          <div><strong>Procedure</strong> — Step-by-step numbered process to follow.<br><span style="font-size:13px;color:var(--text-muted);">Numbered steps prevent Claude from skipping phases or reordering actions.</span></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">3</div>
+          <div><strong>Examples</strong> — At least one input/output pair for pattern-setting.<br><span style="font-size:13px;color:var(--text-muted);">One concrete example is worth ten paragraphs of description.</span></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">4</div>
+          <div><strong>Anti-patterns</strong> — Explicit <svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> <em>Don't do this</em> sections.<br><span style="font-size:13px;color:var(--text-muted);">Naming what NOT to do is often more reliable than describing what to do.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skill Grader -->
+    <div class="info-card" style="margin-bottom:20px;">
+      <h3 style="margin-bottom:4px;color:var(--text);">Skill Body Grader</h3>
+      <p style="font-size:13px;margin-bottom:20px;">Rate each snippet on the 4-level scale, then submit to see the actual grade and reasoning.</p>
+
+      <div class="grader-snippet">
+        <h4>Snippet 1</h4>
+        <div class="code-block" style="white-space:pre-wrap;">Help the user with their code.</div>
+        <div class="grade-selector">
+          <button class="grade-btn" onclick="selectGrade('g1','Distinguished',this)">Distinguished</button>
+          <button class="grade-btn" onclick="selectGrade('g1','Proficient',this)">Proficient</button>
+          <button class="grade-btn" onclick="selectGrade('g1','Developing',this)">Developing</button>
+          <button class="grade-btn" onclick="selectGrade('g1','Beginning',this)">Beginning</button>
+        </div>
+        <div class="grade-reveal" id="g1-reveal"></div>
+      </div>
+
+      <div class="grader-snippet">
+        <h4>Snippet 2</h4>
+        <div class="code-block" style="white-space:pre-wrap;">Review code for security issues. Check for SQL injection, XSS, and auth problems. Report findings.</div>
+        <div class="grade-selector">
+          <button class="grade-btn" onclick="selectGrade('g2','Distinguished',this)">Distinguished</button>
+          <button class="grade-btn" onclick="selectGrade('g2','Proficient',this)">Proficient</button>
+          <button class="grade-btn" onclick="selectGrade('g2','Developing',this)">Developing</button>
+          <button class="grade-btn" onclick="selectGrade('g2','Beginning',this)">Beginning</button>
+        </div>
+        <div class="grade-reveal" id="g2-reveal"></div>
+      </div>
+
+      <div class="grader-snippet">
+        <h4>Snippet 3</h4>
+        <div class="code-block" style="white-space:pre-wrap;">You are a security-focused code reviewer for Node.js applications.
+
+Procedure:
+1. Read the entire file before commenting
+2. Identify injection vulnerabilities (SQL, command, path traversal)
+3. Check authentication and authorization boundaries
+4. Assess secret exposure (hardcoded keys, env var leakage)
+5. Rate each finding: Critical / High / Medium / Low
+
+Output format:
+## Findings
+- [SEVERITY] Finding description
+  - File: path, Line: N
+  - Fix: specific remediation
+
+<svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Never suggest "security through obscurity" as a fix.
+<svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Never mark a finding as Low if it exposes user data.</div>
+        <div class="grade-selector">
+          <button class="grade-btn" onclick="selectGrade('g3','Distinguished',this)">Distinguished</button>
+          <button class="grade-btn" onclick="selectGrade('g3','Proficient',this)">Proficient</button>
+          <button class="grade-btn" onclick="selectGrade('g3','Developing',this)">Developing</button>
+          <button class="grade-btn" onclick="selectGrade('g3','Beginning',this)">Beginning</button>
+        </div>
+        <div class="grade-reveal" id="g3-reveal"></div>
+      </div>
+
+      <button class="btn btn-amber" id="grader-submit-btn" onclick="submitGrader()" style="margin-top:8px;" disabled>
+        Submit Ratings
+      </button>
+      <div id="grader-selections" style="display:none;"></div>
+    </div>
+
+    <!-- Apply -->
+    <div class="challenge-card" style="margin-bottom:20px;">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
+      <p style="margin-bottom:14px;">Write the body (not frontmatter) of a skill called <code>pr-reviewer</code>. It should review pull requests for: correctness, test coverage, and API breaking changes. Include a role statement, numbered procedure, and at least one anti-pattern.</p>
+      <label for="s2-apply" class="sr-only">Write the skill body for pr-reviewer</label>
+      <textarea aria-label="# PR Reviewer  You are a ...  Procedure: 1." id="s2-apply" placeholder="# PR Reviewer&#10;&#10;You are a ...&#10;&#10;Procedure:&#10;1. ..." style="min-height:200px;"
+        oninput="checkApply('s2-apply','s2-apply-btn',40)" aria-describedby="s2-apply-hint"></textarea>
+      <div id="s2-apply-hint" class="char-hint" aria-live="polite">40 characters to complete this section</div>
+      <div style="margin-top:14px;">
+        <button class="btn btn-primary" id="s2-apply-btn" disabled onclick="completeSection2()">Complete Section 2</button>
+      </div>
+    </div>
+
+    <!-- CE-06-C: Author a Full Skill From Scratch -->
+    <div class="build-challenge" id="ce-06-c">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <span class="build-badge"><svg class="icon-lg" data-lucide="hammer" aria-hidden="true"></svg> Build Challenge</span>
+        <span class="ce-xp-badge">+30 XP Bonus</span>
+      </div>
+      <h3 style="margin:0 0 8px;color:var(--text);">Challenge CE-06-C: Author a Full Skill From Scratch</h3>
+      <p style="color:var(--text-muted);margin-bottom:20px;font-size:14px;">Write a complete, production-quality skill YAML for a <strong>standup-writer</strong> skill. This skill reads recent git commits (last 24 hours), filters to the current user's commits, groups by type (feat/fix/chore/test), and outputs: "Yesterday: X. Today: Y. Blockers: Z."</p>
+
+      <div class="ce-requirements">
+        <strong style="color:var(--text);">Required fields — all must be present and substantive:</strong>
+        <ul style="margin:8px 0 0;padding-left:20px;">
+          <li><code>name</code>: snake_case, descriptive</li>
+          <li><code>description</code>: 2+ sentences — what it reads, what it produces, when to use it</li>
+          <li><code>triggers</code>: array with at least 4 phrases (natural language, no collisions)</li>
+          <li><code>behavior</code>: step-by-step instructions referencing the git log format</li>
+          <li><code>output_format</code>: exact markdown structure for the standup</li>
+          <li><code>constraints</code>: what NOT to include (merge commits, WIP commits, other authors)</li>
+        </ul>
+      </div>
+
+      <div class="ce-requirements" style="margin-top:16px;margin-bottom:16px;border-left:3px solid var(--accent);">
+        <strong style="font-size:13px;">Reference — example of a complete skill YAML (commit-summary):</strong>
+        <p style="font-size:12px;color:var(--text-muted);margin:6px 0 8px;">Study this format — then write yours below. Your standup-writer skill should have the same completeness.</p>
+        <pre class="code-block" style="margin-top:0;font-size:11px;white-space:pre-wrap;">---
+name: commit-summary
+description: &gt;
+  Generates a concise summary of recent git commits for a given time range.
+  Reads the git log and formats output as a bullet list grouped by conventional
+  commit type. Use when you need a changelog entry or a quick release notes draft.
+triggers:
+  - summarize my commits
+  - what did I commit recently
+  - generate release notes
+  - create a changelog entry
+behavior: |
+  1. Run: git log --since=[range] --oneline --no-merges
+  2. Parse commit messages for conventional prefixes: feat, fix, chore, docs, test
+  3. Group commits by type — most impactful first (feat &gt; fix &gt; docs &gt; chore)
+  4. Format each as a bullet with the message and short hash
+  5. Do NOT include merge commits or commits with empty messages
+  6. Do NOT fabricate commits not in the actual log
+output_format: |
+  ## Commits — [DATE RANGE]
+  **Features:** [feat: items as bullets]
+  **Fixes:** [fix: items as bullets]
+  **Other:** [remaining items]
+constraints: |
+  - Only include commits in the specified range
+  - Do NOT modify any files
+  - Do NOT guess at commit intent from code — use only the commit message</pre>
+      </div>
+
+      <label for="ce-06-c-input" style="font-weight:600;font-size:13px;display:block;margin-bottom:6px;">Your standup-writer skill YAML:</label>
+      <textarea aria-label="--- name: standup-writer description: ... triggers:   -" id="ce-06-c-input" placeholder="---&#10;name: standup-writer&#10;description: ...&#10;triggers:&#10;  - ...&#10;behavior: |&#10;  ...&#10;output_format: |&#10;  ...&#10;constraints: |&#10;  ..." style="width:100%;min-height:280px;font-family:'Fira Code',monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;color:var(--text);resize:vertical;box-sizing:border-box;"></textarea>
+
+      <div class="ce-requirements" style="margin-top:16px;margin-bottom:0;">
+        <strong style="font-size:13px;">Success criteria (self-check after reveal):</strong>
+        <ul style="margin:8px 0 0;padding-left:20px;font-size:13px;color:var(--text-muted);">
+          <li>Description mentions: git commits, 24-hour window, standup format</li>
+          <li>At least 4 trigger phrases, none overlap with commit-writer or changelog-generator</li>
+          <li>Behavior explicitly calls out git log filtering by author</li>
+          <li>Output format shows Yesterday / Today / Blockers structure</li>
+          <li>Constraints section has at least 3 "do NOT include" items</li>
+        </ul>
+      </div>
+
+      <button onclick="submitCE06C()" class="btn btn-secondary" style="margin-top:16px;">Submit for +30 XP</button>
+
+      <div id="ce-06-c-model" class="ce-model-answer" style="display:none;">
+        <strong style="color:var(--secondary);"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Model Answer:</strong>
+        <pre class="code-block" style="margin-top:12px;">---
+name: standup-writer
+description: &gt;
+  Generates a formatted daily standup from your recent git history.
+  Reads commits from the last 24 hours authored by the current git user,
+  groups them by conventional commit type, and outputs a structured
+  Yesterday / Today / Blockers summary. Use when preparing a standup
+  update or before a team sync.
+triggers:
+  - write my standup
+  - generate standup update
+  - what did I work on yesterday
+  - prepare daily standup
+  - summarize my commits
+behavior: |
+  1. Run: git log --since="24 hours ago" --author="$(git config user.email)" --oneline --no-merges
+  2. Parse each commit message for conventional commit prefix (feat:, fix:, chore:, test:, docs:)
+  3. Filter out: merge commits (Merge branch...), WIP commits (wip:, WIP), commits by other authors
+  4. Group remaining commits by type
+  5. For Yesterday: list completed work (feat, fix, docs commits)
+  6. For Today: if calendar date has changed, list today's commits; otherwise state "continuing work from above"
+  7. For Blockers: scan commit messages for TODO, BLOCKED, or question marks; if none, output "None"
+  8. Format and output using the output_format template
+output_format: |
+  **Daily Standup — [DATE]**
+
+  **Yesterday:**
+  - [type] [description] (from commit: [hash])
+
+  **Today:**
+  - [planned work based on in-progress items]
+
+  **Blockers:**
+  - [None | specific blocker]
+constraints: |
+  - Do NOT include merge commits or automated commits
+  - Do NOT include commits authored by other team members
+  - Do NOT include WIP commits (prefix wip: or message contains [WIP])
+  - Do NOT fabricate or summarize work not in the commit log
+  - Do NOT list commits older than 24 hours unless no recent commits exist</pre>
+        <div style="margin-top:16px; padding:12px 16px; background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.15); border-radius:8px; font-size:13px;">
+          <span style="color:#a78bfa; font-weight:600;">Ready for more?</span>
+          <span style="color:#94a3b8;"> This exercise prepares you for </span>
+          <a href="/challenges#mission-11-author-two-skills-from-scratch-" style="color:#a78bfa; text-decoration:underline;">Mission 1.1 — Author Two Skills</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-card" id="s2-insight">
+      <div class="card-badge insight-badge"><svg class="icon" data-lucide="lightbulb" aria-hidden="true"></svg> INSIGHT</div>
+      <p><strong>The best skills read like a briefing document.</strong> Imagine handing it to a new senior engineer on their first day. What would they need to know to do this job correctly without asking you any questions? If your skill passes that test, it will work reliably as Claude's instructions too.</p>
+    </div>
+
+    <div class="connect-forward" id="s2-forward">
+      You can write a skill. Now: how do users invoke one without reaching into the filesystem? That's what slash commands are for.
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 3 — Building Slash Commands
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-3" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete Section 2 to unlock</p>
+    </div>
+
+    <div class="overline">Section 3 · Prediction Challenge + Apply</div>
+    <h2 style="margin-bottom:16px;">Building Slash Commands</h2>
+
+    <div class="challenge-card" style="margin-bottom:20px;">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> CHALLENGE — Predict First</div>
+      <p style="margin-bottom:14px;">Slash commands trigger skills from the Claude Code interface. How do you think a slash command file differs from a skill file?</p>
+      <label for="s3-predict" class="sr-only">Predict how command files differ from skill files</label>
+      <textarea aria-label="Write your prediction — minimum 15 characters" id="s3-predict" placeholder="Write your prediction — minimum 15 characters..."
+        oninput="checkPrediction('s3-predict','s3-reveal-btn',15)" aria-describedby="s3-predict-hint"></textarea>
+      <div id="s3-predict-hint" class="char-hint" aria-live="polite">15 characters to activate reveal</div>
+      <div style="margin-top:14px;">
+        <button class="btn btn-primary" id="s3-reveal-btn" disabled onclick="revealSection3()">Reveal Answer</button>
+      </div>
+    </div>
+
+    <div id="s3-reveal" style="display:none;">
+      <div class="info-card" style="margin-bottom:20px;">
+        <h3 style="margin-bottom:16px;color:var(--text);">Skills vs. Commands — Side by Side</h3>
+        <table class="data-table">
+          <thead>
+            <tr><th></th><th>Skills</th><th>Commands</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>File location</td>
+              <td><code>~/.claude/skills/</code> or <code>.claude/skills/</code></td>
+              <td><code>~/.claude/commands/</code> or <code>.claude/commands/</code></td>
+            </tr>
+            <tr>
+              <td>File format</td>
+              <td>YAML frontmatter + Markdown instructions</td>
+              <td>Plain Markdown — no frontmatter required</td>
+            </tr>
+            <tr>
+              <td>Invocation</td>
+              <td>Via <code>Skill</code> tool or orchestrator in instructions</td>
+              <td>Via <code>/command-name</code> typed in Claude Code</td>
+            </tr>
+            <tr>
+              <td>Purpose</td>
+              <td>Reusable expertise Claude loads when directed</td>
+              <td>User-facing shortcuts that invoke skills or run tasks</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 style="margin-top:24px;margin-bottom:12px;color:var(--text);">A Minimal Command File</h3>
+        <div class="code-block"><span class="comment"># Review PR
+# File: ~/.claude/commands/pr-review.md</span>
+
+Use the Skill tool to invoke the <span class="string">`pr-reviewer`</span> skill.
+Then apply the review to the current git branch's changes.
+
+<span class="keyword">Arguments</span>: $ARGUMENTS (optional PR number or branch name)</div>
+      </div>
+
+      <!-- Critical warning -->
+      <div class="warning-card" style="margin-bottom:20px;">
+        <div class="card-badge warning-badge"><svg class="icon" data-lucide="triangle-alert" aria-hidden="true"></svg> CRITICAL — Reserved Names</div>
+        <p style="margin-bottom:12px;"><strong>NEVER name a command using a Claude Code built-in name.</strong> Commands in <code>~/.claude/commands/</code> take precedence over built-in commands. A file named <code>plugin.md</code> will shadow the native plugin system — breaking marketplace access and plugin installation entirely.</p>
+        <table class="data-table" style="margin-top:12px;">
+          <thead><tr><th>Reserved Name</th><th>Native Function</th><th>Use Instead</th></tr></thead>
+          <tbody>
+            <tr><td><code>plugin</code></td><td>Official plugin marketplace</td><td><code>plugin-builder</code>, <code>my-plugin</code></td></tr>
+            <tr><td><code>help</code></td><td>Built-in help system</td><td><code>my-help</code>, <code>guide</code></td></tr>
+            <tr><td><code>clear</code></td><td>Clear screen</td><td><code>cleanup</code>, <code>reset</code></td></tr>
+            <tr><td><code>config</code></td><td>Configuration management</td><td><code>my-config</code>, <code>settings</code></td></tr>
+            <tr><td><code>mcp</code></td><td>MCP server management</td><td><code>mcp-helper</code>, <code>mcp-tools</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Knowledge Check Q2 -->
+      <div class="check-card" style="margin-bottom:20px;" id="q2-card">
+        <div class="card-badge check-badge">✓ CHECK — Question 2 of 4</div>
+        <p style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;">Where do you store a skill that should be available across ALL your projects?</p>
+        <div class="answer-options" id="q2-opts">
+          <button class="answer-option" onclick="answerQ('q2',0,false,'Project-level skills in .claude/skills/ are only available when working inside that specific project directory. For global availability across every session, use the home directory location.')" aria-label="Option A">
+            <span class="opt-letter">A</span>
+            <span><code>.claude/skills/</code> in each project directory</span>
+          </button>
+          <button class="answer-option" onclick="answerQ('q2',1,true,'Global skills in ~/.claude/skills/ are available in every Claude Code session regardless of working directory. Project-level skills in .claude/skills/ are scoped to that project only.')" aria-label="Option B">
+            <span class="opt-letter">B</span>
+            <span><code>~/.claude/skills/</code> in your home directory</span>
+          </button>
+          <button class="answer-option" onclick="answerQ('q2',2,false,'CLAUDE.md is for project context — it describes the project, conventions, and preferences. Skill definitions are separate markdown files in the skills directory, not embedded in CLAUDE.md.')" aria-label="Option C">
+            <span class="opt-letter">C</span>
+            <span>As an entry inside the <code>CLAUDE.md</code> file</span>
+          </button>
+          <button class="answer-option" onclick="answerQ('q2',3,false,'Skills are markdown files in the filesystem — they are not stored in environment variables. Environment variables carry configuration values like API keys, not instruction documents.')" aria-label="Option D">
+            <span class="opt-letter">D</span>
+            <span>As an environment variable exported in your shell profile</span>
+          </button>
+        </div>
+        <div class="question-feedback" id="q2-fb"></div>
+      </div>
+
+      <!-- Apply -->
+      <div class="challenge-card" style="margin-bottom:20px;">
+        <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
+        <p style="margin-bottom:14px;">Write the command file content for <code>/commit</code> that invokes the <code>git-commit-writer</code> skill and stages all changes before writing the message. Also note — in your response — whether <code>commit</code> is a safe command name and why or why not.</p>
+        <label for="s3-apply" class="sr-only">Write the commit command file content</label>
+        <textarea aria-label="# Commit  Use the Skill tool to invoke ...  Note on command" id="s3-apply" placeholder="# Commit&#10;&#10;Use the Skill tool to invoke ...&#10;&#10;Note on command name safety: ..." style="min-height:160px;"
+          oninput="checkApply('s3-apply','s3-apply-btn',40)" aria-describedby="s3-apply-hint"></textarea>
+        <div id="s3-apply-hint" class="char-hint" aria-live="polite">40 characters to complete this section</div>
+        <div style="margin-top:14px;">
+          <button class="btn btn-primary" id="s3-apply-btn" disabled onclick="completeSection3()">Complete Section 3</button>
+        </div>
+      </div>
+
+      <!-- CE-06-D: Build a Two-Step Slash Command -->
+      <div class="build-challenge" id="ce-06-d">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <span class="build-badge"><svg class="icon-lg" data-lucide="hammer" aria-hidden="true"></svg> Build Challenge</span>
+          <span class="ce-xp-badge">+30 XP Bonus</span>
+        </div>
+        <h3 style="margin:0 0 8px;color:var(--text);">Challenge CE-06-D: Build a /pr-ready Slash Command</h3>
+        <p style="color:var(--text-muted);margin-bottom:20px;font-size:14px;">Design a complete <code>/pr-ready</code> slash command that checks whether a branch is ready to submit as a PR. The command must: (1) read the current diff vs. main, (2) check which test files exist for changed source files, (3) read CLAUDE.md for shipping constraints, (4) output a structured readiness report with a go/no-go recommendation.</p>
+
+        <div class="ce-requirements">
+          <strong style="color:var(--text);">Fill in each section of the command file:</strong>
+          <div style="margin-top:12px;display:grid;gap:12px;">
+            <div>
+              <label style="font-weight:600;display:block;margin-bottom:4px;color:var(--text);">1. Arguments specification — does /pr-ready take arguments? What are they?</label>
+              <textarea aria-label="e.g. Optional: --base <branch> to compare against a branch o" id="ce-06-d-args" placeholder="e.g. Optional: --base &lt;branch&gt; to compare against a branch other than main. No required arguments." style="width:100%;min-height:60px;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--text);box-sizing:border-box;"></textarea>
+            </div>
+            <div>
+              <label style="font-weight:600;display:block;margin-bottom:4px;color:var(--text);">2. Step-by-step behavior — what does each step do and what does it pass to the next?</label>
+              <textarea aria-label="Step 1: Run git diff main...HEAD ... Step 2: For each change" id="ce-06-d-steps" placeholder="Step 1: Run git diff main...HEAD ...&#10;Step 2: For each changed .ts/.js file in src/, check if a corresponding .test.ts exists ...&#10;Step 3: Read CLAUDE.md if it exists ...&#10;Step 4: Generate the readiness report ..." style="width:100%;min-height:120px;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--text);box-sizing:border-box;"></textarea>
+            </div>
+            <div>
+              <label style="font-weight:600;display:block;margin-bottom:4px;color:var(--text);">3. Output format — what does the readiness report look like?</label>
+              <textarea aria-label="## PR Readiness Report **Branch**: feature/... **Changed Fil" id="ce-06-d-output" placeholder="## PR Readiness Report&#10;**Branch**: feature/...&#10;**Changed Files**: N files&#10;**Test Coverage**: ...&#10;**CLAUDE.md Constraints**: ...&#10;**Recommendation**: GO / NOT READY" style="width:100%;min-height:100px;font-size:12px;font-family:'Fira Code',monospace;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--text);box-sizing:border-box;"></textarea>
+            </div>
+            <div>
+              <label style="font-weight:600;display:block;margin-bottom:4px;color:var(--text);">4. Edge case — what happens if CLAUDE.md doesn't exist?</label>
+              <textarea aria-label="If CLAUDE.md is not found," id="ce-06-d-edge" placeholder="If CLAUDE.md is not found, ..." style="width:100%;min-height:60px;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--text);box-sizing:border-box;"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="ce-requirements">
+          <strong style="font-size:13px;">Success criteria:</strong>
+          <ul style="margin:8px 0 0;padding-left:20px;font-size:13px;color:var(--text-muted);">
+            <li>Arguments section explicitly states whether arguments are required vs. optional</li>
+            <li>Steps reference actual tool calls (git diff, Glob, Read) not just "check the diff"</li>
+            <li>Data flows between steps (step 2 uses output of step 1)</li>
+            <li>Output format has a clear GO/NOT READY verdict with specific evidence</li>
+            <li>CLAUDE.md missing case is explicitly handled (not ignored)</li>
+          </ul>
+        </div>
+
+        <button onclick="submitCE06D()" class="btn btn-secondary">Submit for +30 XP</button>
+
+        <div id="ce-06-d-model" class="ce-model-answer" style="display:none;">
+          <strong style="color:var(--secondary);"><svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Model Answer:</strong>
+          <div style="margin-top:12px;font-size:13px;color:var(--text);">
+            <p><strong>Arguments:</strong> Optional: <code>--base &lt;branch&gt;</code> (default: main). No required arguments — the command should work with zero arguments for the common case.</p>
+            <p style="margin-top:8px;"><strong>Steps:</strong></p>
+            <ol style="padding-left:20px;margin-top:4px;">
+              <li>Run <code>Bash: git diff --name-only origin/main...HEAD</code> → collect list of changed file paths</li>
+              <li>For each changed file matching <code>src/**/*.{ts,js}</code>, run <code>Glob</code> to check if <code>**/*.test.{ts,js}</code> exists for the same module. Record: file name, has_test (true/false)</li>
+              <li>Run <code>Read: CLAUDE.md</code>. If file not found: set constraints = "No CLAUDE.md found — no documented constraints. Proceed with standard review." If found: extract any lines under "## Shipping" or "## Deploy" or "## Constraints"</li>
+              <li>Output the structured report using all collected data. GO if: at least 80% of src files have tests AND no CLAUDE.md constraint is violated. NOT READY otherwise with specific reason.</li>
+            </ol>
+            <p style="margin-top:8px;"><strong>Output format:</strong></p>
+            <pre style="font-size:11px;background:var(--bg-surface);padding:8px;border-radius:4px;">## PR Readiness Report
+**Branch**: [branch-name] vs [base]
+**Changed Files**: N files (M in src/, K test files)
+
+**Test Coverage**:
+| File | Has Test? |
+|------|-----------|
+| src/auth.ts | <svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> Yes |
+| src/utils.ts | <svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Missing |
+
+**CLAUDE.md Constraints**:
+- [constraint 1]
+- No CLAUDE.md found (if applicable)
+
+**Recommendation**: <svg class="icon" data-lucide="circle-check" aria-hidden="true"></svg> READY TO SUBMIT / <svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> NOT READY
+Reason: [specific reason if not ready]</pre>
+          </div>
+          <div style="margin-top:16px; padding:12px 16px; background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.15); border-radius:8px; font-size:13px;">
+            <span style="color:#a78bfa; font-weight:600;">Ready for more?</span>
+            <span style="color:#94a3b8;"> This exercise prepares you for </span>
+            <a href="/challenges#mission-12-build-a-slash-command-that-orchestrates-multiple-steps-" style="color:#a78bfa; text-decoration:underline;">Mission 1.2 — Build Multi-Step Command</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="connect-forward" id="s3-forward">
+        Individual skills are powerful. What happens when you chain them — skills invoking other skills in sequence? That's composition, and it's how real agentic workflows are built.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 4 — Skill Composition
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-4" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete Section 3 to unlock</p>
+    </div>
+
+    <div class="overline">Section 4 · Concept Introduction + Simulation</div>
+    <h2 style="margin-bottom:16px;">Skill Composition</h2>
+
+    <p style="margin-bottom:24px;">Individual skills are powerful. Composed skills — skills that invoke other skills — are how you build complex agentic workflows that run reliably without manual coordination.</p>
+
+    <div class="info-card" style="margin-bottom:20px;">
+      <h3 style="margin-bottom:16px;color:var(--text);">Three Composition Patterns</h3>
+      <div class="gap-12">
+        <div style="background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">1 · Sequential</div>
+          <p style="font-size:14px;margin-bottom:8px;">Skill A → Skill B → Skill C — a pipeline where output of each feeds the next</p>
+          <div class="code-block" style="font-size:12px;">invoke `pr-reviewer` → if passes → invoke `git-commit-writer` → invoke `changelog-updater`</div>
+        </div>
+        <div style="background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--warning);margin-bottom:8px;">2 · Conditional</div>
+          <p style="font-size:14px;margin-bottom:8px;">If [condition] → invoke Skill A, else → invoke Skill B</p>
+          <div class="code-block" style="font-size:12px;">if review_passed: invoke `git-commit-writer`
+else: invoke `fix-suggester` with findings as context</div>
+        </div>
+        <div style="background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--secondary);margin-bottom:8px;">3 · Parallel</div>
+          <p style="font-size:14px;margin-bottom:8px;">Launch Skill A and Skill B simultaneously via the Agent tool in the skill body</p>
+          <div class="code-block" style="font-size:12px;">Agent(task="run `security-scanner`") + Agent(task="run `test-coverage-checker`")</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALLBACK: prao-loop -->
+    <div class="callback-card" style="margin-bottom:20px;">
+      <div class="card-badge callback-badge"><svg class="icon" data-lucide="link" aria-hidden="true"></svg> CALLBACK — Lab 01, Section 1</div>
+      <p><strong>PRAO Loop</strong> — first introduced in <em>Lab 01: The Paradigm Shift</em></p>
+      <p class="mt-16" style="font-size:14px;">Skill composition maps directly onto the PRAO loop. Each skill invocation is an <strong>Act</strong>. Its output is immediately available as input to the next skill's <strong>Perceive</strong> phase. A composed skill pipeline is a PRAO loop running multiple times in sequence, each cycle narrowing in on a complete result.</p>
+    </div>
+
+    <!-- Simulation: ship-feature walkthrough -->
+    <div class="info-card" style="margin-bottom:20px;">
+      <h3 style="margin-bottom:4px;color:var(--text);">Simulation: The <code>ship-feature</code> Skill Executing</h3>
+      <p style="font-size:13px;margin-bottom:20px;">Step through the execution to see which skill runs at each stage, what output passes forward, and where human approval gates exist.</p>
+
+      <div id="sim-container">
+        <div class="sim-step active" id="sim-0">
+          <div class="sim-step-label invoke">INVOKE</div>
+          <div class="sim-step-body"><strong>ship-feature</strong> skill starts. Reads the current branch diff and passes it as context to the next skill.</div>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="sim-step" id="sim-1">
+          <div class="sim-step-label invoke">INVOKE → pr-reviewer</div>
+          <div class="sim-step-body">Receives the diff. Runs the 5-step review procedure. <strong>Output:</strong> findings list with severities.</div>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="sim-step" id="sim-2">
+          <div class="sim-step-label gate">⏸ HUMAN GATE</div>
+          <div class="sim-step-body">Review findings displayed. User approves or requests fixes. <em>Pipeline pauses here — no action taken without human sign-off.</em></div>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="sim-step" id="sim-3">
+          <div class="sim-step-label invoke">INVOKE → git-commit-writer</div>
+          <div class="sim-step-body">Receives diff + approved review. Writes conventional commit message with scope and why. <strong>Output:</strong> formatted commit message.</div>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="sim-step" id="sim-4">
+          <div class="sim-step-label output">INVOKE → changelog-updater</div>
+          <div class="sim-step-body">Receives commit message. Appends entry to CHANGELOG.md in correct format. <strong>Output:</strong> updated changelog entry.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button class="btn btn-ghost" onclick="simStep(-1)" id="sim-prev" disabled aria-label="Previous simulation step">← Prev</button>
+        <button class="btn btn-primary" onclick="simStep(1)" id="sim-next" aria-label="Next simulation step">Next Step →</button>
+        <button class="btn btn-ghost" onclick="simReset()" aria-label="Reset simulation">Reset</button>
+      </div>
+      <div id="sim-status" style="margin-top:12px;font-size:13px;color:var(--text-muted);">Step 1 of 5 — Start of pipeline</div>
+    </div>
+
+    <!-- Apply -->
+    <div class="challenge-card" style="margin-bottom:20px;">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> APPLY</div>
+      <p style="margin-bottom:14px;">Design a composed skill called <code>onboard-repo</code> that a new team member runs to understand a codebase. List the 3 sub-skills it would invoke in sequence and describe what output each produces that feeds the next.</p>
+      <label for="s4-apply" class="sr-only">Design the onboard-repo composed skill</label>
+      <textarea aria-label="onboard-repo composition: 1. Sub-skill: ... → Output: ... 2." id="s4-apply" placeholder="onboard-repo composition:&#10;1. Sub-skill: ... → Output: ...&#10;2. Sub-skill: ... → Output: ...&#10;3. Sub-skill: ... → Output: ..." style="min-height:160px;"
+        oninput="checkApply('s4-apply','s4-apply-btn',40)" aria-describedby="s4-apply-hint"></textarea>
+      <div id="s4-apply-hint" class="char-hint" aria-live="polite">40 characters to complete this section</div>
+      <div style="margin-top:14px;">
+        <button class="btn btn-primary" id="s4-apply-btn" disabled onclick="completeSection4()">Complete Section 4</button>
+      </div>
+    </div>
+
+    <div class="connect-forward" id="s4-forward">
+      Almost there. Two final knowledge checks to consolidate everything — then the Capstone Challenge.
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 5 — Synthesis (Knowledge Checks Q3 + Q4)
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-5" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete Section 4 to unlock</p>
+    </div>
+
+    <div class="overline">Section 5 · Synthesis</div>
+    <h2 style="margin-bottom:24px;">Putting It All Together</h2>
+
+    <!-- Q3 -->
+    <div class="check-card" style="margin-bottom:20px;" id="q3-card">
+      <div class="card-badge check-badge">✓ CHECK — Question 3 of 4</div>
+      <p style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;">A skill file's <code>description</code> field should be written primarily for:</p>
+      <div class="answer-options" id="q3-opts">
+        <button class="answer-option" onclick="answerQ('q3',0,false,'Skills are not deployed by CI/CD systems. The description is metadata for human discovery and for Claude to use when deciding which skill to auto-select during orchestration — not a deployment artifact.')" aria-label="Option A">
+          <span class="opt-letter">A</span>
+          <span>The CI/CD system that deploys skills to production environments</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q3',1,true,'The description serves both audiences simultaneously: humans browsing a skill library to find the right tool, and Claude determining which skill to invoke when orchestrating a multi-skill workflow. Write it to be clear to both.')" aria-label="Option B">
+          <span class="opt-letter">B</span>
+          <span>Humans browsing the skill library AND for Claude to determine when to auto-select the skill during orchestration</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q3',2,false,'Commit messages are separate from skill metadata. The description lives in the frontmatter of the skill file itself and serves runtime orchestration purposes — not version control history.')" aria-label="Option C">
+          <span class="opt-letter">C</span>
+          <span>Version control commit messages when the skill file is updated</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q3',3,false,'Description strings are semantic metadata — they are not parsed for performance optimization. The description affects discoverability and selection quality, not execution speed.')" aria-label="Option D">
+          <span class="opt-letter">D</span>
+          <span>Runtime performance optimization — shorter descriptions load faster</span>
+        </button>
+      </div>
+      <div class="question-feedback" id="q3-fb"></div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="check-card" style="margin-bottom:20px;" id="q4-card">
+      <div class="card-badge check-badge">✓ CHECK — Question 4 of 4</div>
+      <p style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;">You want to build a slash command called <code>/config</code>. What is wrong with this name?</p>
+      <div class="answer-options" id="q4-opts">
+        <button class="answer-option" onclick="answerQ('q4',0,false,'This is wrong — the name is not valid. /config shadows Claude Code\'s native config command. Commands in ~/.claude/commands/ take precedence over built-in commands, so /config.md would break native configuration functionality.')" aria-label="Option A">
+          <span class="opt-letter">A</span>
+          <span>Nothing — <code>config</code> is a perfectly valid command name</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q4',1,true,'Commands in ~/.claude/commands/ take precedence over built-in commands. /config.md would shadow and break Claude Code\'s native config command. Always choose unique, descriptive names — use /my-config or /project-config instead.')" aria-label="Option B">
+          <span class="opt-letter">B</span>
+          <span>It shadows the native Claude Code <code>config</code> command — use <code>/my-config</code> or <code>/project-config</code> instead</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q4',2,false,'No such rule exists. Commands do not need to start with a verb. The issue is exclusively that \"config\" is a reserved name that conflicts with a Claude Code built-in command.')" aria-label="Option C">
+          <span class="opt-letter">C</span>
+          <span>Commands must start with a verb — <code>config</code> is a noun</span>
+        </button>
+        <button class="answer-option" onclick="answerQ('q4',3,false,'There is no length requirement for command names. Commands can be any length. The problem is exclusively the reserved name conflict with the native config command.')" aria-label="Option D">
+          <span class="opt-letter">D</span>
+          <span>Commands need at least 8 characters — <code>config</code> is too short</span>
+        </button>
+      </div>
+      <div class="question-feedback" id="q4-fb"></div>
+    </div>
+
+    <button class="btn btn-primary" id="s5-complete-btn" onclick="completeSection5()" style="display:none;">
+      Unlock Capstone Challenge
+    </button>
+
+    <div class="connect-forward" id="s5-forward">
+      All concepts complete. The Capstone Challenge asks you to synthesize everything into a real team skill ecosystem.
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       BOSS CHALLENGE — Section 6
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-block locked" id="section-6" style="position:relative;">
+    <div class="lock-overlay" aria-hidden="true">
+      <div style="font-size:32px;"><svg class="icon-lg" data-lucide="lock" aria-hidden="true"></svg></div>
+      <p>Complete all sections above to unlock the Capstone Challenge</p>
+    </div>
+
+    <div class="overline">Capstone Challenge · Synthesis</div>
+    <h2 style="margin-bottom:8px;">Build a Skill Ecosystem</h2>
+    <p style="margin-bottom:24px;">Your team needs a skill ecosystem for a Python FastAPI backend project. Design and partially implement it.</p>
+
+    <div class="challenge-card" style="margin-bottom:24px;">
+      <div class="card-badge challenge-badge"><svg class="icon" data-lucide="target" aria-hidden="true"></svg> BOSS CHALLENGE</div>
+      <p style="margin-bottom:16px;font-weight:600;color:var(--text);">Deliver all four of the following in your response:</p>
+      <ol style="padding-left:20px;color:var(--text-muted);font-size:14px;line-height:2;">
+        <li><strong style="color:var(--text);">List 4 skills</strong> your team needs — name + one-sentence description each</li>
+        <li><strong style="color:var(--text);">Write the COMPLETE skill file</strong> (frontmatter + body) for the most important one</li>
+        <li><strong style="color:var(--text);">Write the command file</strong> for a <code>/ship</code> command that sequences two of your skills</li>
+        <li><strong style="color:var(--text);">Name one composition anti-pattern</strong> to avoid and explain why it fails</li>
+      </ol>
+      <div style="margin-top:20px;">
+        <label for="boss-challenge" class="sr-only">Write your Capstone Challenge response</label>
+        <textarea aria-label="1. Skills:    - api-documenter: ...    - test-writer:" id="boss-challenge" placeholder="1. Skills:&#10;   - api-documenter: ...&#10;   - test-writer: ...&#10;   - migration-generator: ...&#10;   - code-reviewer: ...&#10;&#10;2. Complete skill file:&#10;---&#10;name: ...&#10;---&#10;# ...&#10;&#10;3. /ship command file:&#10;# Ship&#10;...&#10;&#10;4. Anti-pattern: ..." style="min-height:360px;"
+          oninput="checkApply('boss-challenge','boss-submit-btn',80)" aria-describedby="boss-hint"></textarea>
+        <div id="boss-hint" class="char-hint" aria-live="polite">80 characters minimum to submit</div>
+        <div style="margin-top:14px;">
+          <button class="btn btn-amber" id="boss-submit-btn" disabled onclick="submitBoss()">Submit Capstone Challenge</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Model Answer (hidden until submit) -->
+    <div id="boss-answer" style="display:none;">
+      <div class="info-card" style="margin-bottom:20px;">
+        <h3 style="margin-bottom:16px;color:var(--text);">Model Answer</h3>
+
+        <p style="margin-bottom:12px;font-weight:600;color:var(--text);">1. Four skills for a FastAPI project:</p>
+        <ul style="padding-left:20px;color:var(--text-muted);font-size:14px;margin-bottom:20px;">
+          <li style="margin-bottom:6px;"><code>api-documenter</code> — Generates OpenAPI 3.0 spec YAML from FastAPI endpoint definitions</li>
+          <li style="margin-bottom:6px;"><code>test-writer</code> — Writes pytest tests with fixtures and async client setup for new endpoints</li>
+          <li style="margin-bottom:6px;"><code>migration-generator</code> — Creates Alembic migration files from SQLAlchemy model changes</li>
+          <li><code>code-reviewer</code> — Reviews Python code for FastAPI patterns, Pydantic v2 correctness, and async safety</li>
+        </ul>
+
+        <p style="margin-bottom:12px;font-weight:600;color:var(--text);">2. Complete skill file — <code>api-documenter</code>:</p>
+        <div class="code-block" style="margin-bottom:20px;white-space:pre-wrap;">---
+name: api-documenter
+description: Generates OpenAPI 3.0 specification YAML from FastAPI endpoint source code
+triggers:
+  - "document the API"
+  - "write OpenAPI spec"
+  - "generate API docs"
+  - "document this endpoint"
+version: "1.0.0"
+---
+
+# API Documenter
+
+You are an OpenAPI 3.0 specification writer for FastAPI applications.
+
+## Procedure
+
+1. Read the target endpoint file(s) — identify all route decorators (@app.get, @app.post, etc.)
+2. Extract path parameters, query parameters, and request body schemas from type annotations
+3. Identify response models (Pydantic schemas) and map them to OpenAPI response objects
+4. Generate a complete OpenAPI 3.0 YAML block for each endpoint
+5. Validate that all $ref references resolve to defined schemas
+
+## Output Format
+
+```yaml
+/endpoint-path:
+  method:
+    summary: One-line description
+    parameters: [...]
+    requestBody: {...}
+    responses:
+      200:
+        description: Success
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResponseModel'
+```
+
+## Anti-patterns
+
+<svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Never invent fields that are not present in the source code
+<svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Never omit error responses (400, 422, 500 are standard for FastAPI)
+<svg class="icon" data-lucide="circle-x" aria-hidden="true"></svg> Never use OpenAPI 2.0 (Swagger) format — always OpenAPI 3.0</div>
+
+        <p style="margin-bottom:12px;font-weight:600;color:var(--text);">3. <code>/ship</code> command file:</p>
+        <div class="code-block" style="margin-bottom:20px;white-space:pre-wrap;"># Ship
+# File: .claude/commands/ship.md
+
+Use the Skill tool to invoke the `code-reviewer` skill on the current branch's changes.
+
+If the review passes (no Critical or High severity findings):
+  Use the Skill tool to invoke the `api-documenter` skill on any modified endpoint files.
+  Then write a conventional commit message summarizing the changes.
+
+If the review finds Critical or High issues:
+  Stop and report the findings. Do not commit.
+
+Arguments: $ARGUMENTS (optional — specific files to scope the review)</div>
+
+        <p style="margin-bottom:12px;font-weight:600;color:var(--text);">4. Composition anti-pattern to avoid:</p>
+        <div class="info-card" style="background:rgba(239,68,68,0.06);border-color:rgba(239,68,68,0.3);border-left-color:var(--danger);">
+          <p><strong style="color:var(--danger);">Anti-pattern: Skills that are too broad ("do everything")</strong></p>
+          <p style="margin-top:8px;font-size:14px;">A skill called <code>full-review-and-document-and-commit</code> that tries to do code review, documentation, and commit writing in one body becomes unreliable and impossible to test. When it fails, you can't tell which responsibility broke. One skill, one responsibility — compose them in the command layer where sequencing is explicit and each step is verifiable.</p>
+        </div>
+      </div>
+
+      <!-- Rubric -->
+      <div style="margin-bottom:24px;">
+        <h3 style="margin-bottom:4px;">Self-Assessment Rubric</h3>
+        <p style="font-size:13px;margin-bottom:16px;">Compare your response to the model answer using these behavioral anchors:</p>
+        <div class="rubric">
+          <div class="rubric-level rubric-d">
+            <div class="rubric-level-label">Distinguished</div>
+            <div class="rubric-desc">All 4 skills listed with clear descriptions. Complete skill file with frontmatter + role + procedure + anti-patterns. Valid /ship command with conditional logic. Anti-pattern is specific and explains why it fails (not just that it does).</div>
+          </div>
+          <div class="rubric-level rubric-p">
+            <div class="rubric-level-label">Proficient</div>
+            <div class="rubric-desc">4 skills listed. Skill file has frontmatter and body with at least a procedure. /ship command invokes two skills. Anti-pattern named with basic reasoning.</div>
+          </div>
+          <div class="rubric-level rubric-v">
+            <div class="rubric-level-label">Developing</div>
+            <div class="rubric-desc">Skills listed but descriptions are vague. Skill file missing either frontmatter or body elements. /ship command present but incomplete. Anti-pattern named without reasoning.</div>
+          </div>
+          <div class="rubric-level rubric-b">
+            <div class="rubric-level-label">Beginning</div>
+            <div class="rubric-desc">Only a skill list provided, or responses are generic without FastAPI specificity. Missing two or more of the four required deliverables.</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-success" onclick="completeLab()" id="finish-btn">
+        Finish Lab — Continue to Module 06 →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Completion Banner -->
+<div id="completion-banner" style="display:none;background:linear-gradient(135deg,var(--primary),var(--secondary));padding:60px 32px;text-align:center;margin-top:60px;">
+  <div style="font-size:48px;margin-bottom:16px;" aria-hidden="true"><svg class="icon-lg" data-lucide="party-popper" aria-hidden="true"></svg></div>
+  <h2 style="font-size:32px;font-weight:800;margin-bottom:12px;">Lab 05 Complete!</h2>
+  <p style="color:rgba(255,255,255,0.8);margin-bottom:8px;">Final XP: <strong id="final-xp">0</strong></p>
+  <p style="color:rgba(255,255,255,0.7);font-size:14px;">You can write, compose, and deploy skills and commands. Next: understanding the Model Context Protocol and its three primitives.</p>
+  <div style="display:flex;gap:16px;justify-content:center;margin-top:32px;flex-wrap:wrap;">
+    <button onclick="exportReflections()" class="btn" style="background:white;color:var(--primary);font-weight:700;">
+      Export Notes
+    </button>
+    <a href="/raven-cargo-course/module/05" class="btn" style="text-decoration:none;background:rgba(255,255,255,0.15);color:white;font-weight:700;">
+      ← Back to Module 05
+    </a>
+    <a href="/raven-cargo-course/module/06" class="btn" style="text-decoration:none;background:rgba(255,255,255,0.15);color:white;font-weight:700;">
+      Continue to Module 06 →
+    </a>
+  </div>
+</div>
+
+<script>
+
+    /* ─── Safe localStorage wrappers ─── */
+    function safeSave(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+    function safeLoad(k,d){try{const v=localStorage.getItem(k);return v==null?d:v}catch(e){return d}}
+/* ─── State ──────────────────────────────────────────────────────── */
+const LAB_KEY = 'lab-06';
+const SECTION_COUNT = 7; // sections 0-5 + boss (6)
+let xp = 0, streak = 0;
+let sectionComplete = new Array(SECTION_COUNT).fill(false);
+
+// Grader state
+const graderSelections = { g1: null, g2: null, g3: null };
+const graderAnswers = {
+  g1: { correct: 'Beginning',     css: 'grade-b', reason: 'Beginning — no role, no procedure, no examples, no constraints. This gives Claude zero actionable guidance. Any behavior it produces is luck, not skill design.' },
+  g2: { correct: 'Developing',    css: 'grade-v', reason: 'Developing — has a clear goal and names three vulnerability classes. Missing: no procedure (what order to check?), no examples, no severity framework, no output format. Consistent results are unlikely.' },
+  g3: { correct: 'Distinguished', css: 'grade-d', reason: 'Distinguished — role statement, 5-step numbered procedure, clear output format with example structure, explicit anti-patterns with justification. This skill will produce consistent, testable results.' },
+};
+
+// Simulation state
+let simCurrentStep = 0;
+const SIM_STEPS = 5;
+let simCompletionAwarded = false;
+const simMessages = [
+  'Step 1 of 5 — Pipeline starts: reading branch diff',
+  'Step 2 of 5 — pr-reviewer skill running code review',
+  'Step 3 of 5 — Human gate: review findings displayed for approval',
+  'Step 4 of 5 — git-commit-writer composing conventional commit',
+  'Step 5 of 5 — changelog-updater adding entry to CHANGELOG.md',
+];
+
+// Q state for section 5 completion gating
+let q3done = false, q4done = false;
+
+/* ─── XP System ──────────────────────────────────────────────────── */
+function awardXP(amount, reason) {
+  xp += amount;
+  safeSave(`${LAB_KEY}-xp`, xp.toString());
+  updateXPDisplay();
+  showXPToast(amount, reason);
+}
+
+function updateXPDisplay() {
+  document.getElementById('xp-value').textContent = xp;
+  const finalEl = document.getElementById('final-xp');
+  if (finalEl) finalEl.textContent = xp;
+}
+
+function showXPToast(amount, reason) {
+  const toast = document.createElement('div');
+  toast.className = 'xp-toast';
+  toast.setAttribute('aria-live', 'polite');
+  toast.textContent = `+${amount} XP — ${reason}`;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2100);
+}
+
+/* ─── Streak System ──────────────────────────────────────────────── */
+function updateStreak(correct) {
+  if (correct) {
+    streak++;
+    const el = document.getElementById('streak-display');
+    if (streak >= 7) {
+      el.style.display = 'block'; el.className = 'streak-display streak-7';
+      el.textContent = `${streak} streak`; awardXP(25, 'mastery streak!');
+    } else if (streak >= 5) {
+      el.style.display = 'block'; el.className = 'streak-display streak-5';
+      el.textContent = `${streak} streak`; awardXP(25, 'streak bonus');
+    } else if (streak === 3) {
+      el.style.display = 'block'; el.className = 'streak-display streak-3';
+      el.textContent = `${streak} streak`; awardXP(25, 'streak bonus');
+    }
+  } else {
+    streak = 0;
+    document.getElementById('streak-display').style.display = 'none';
+  }
+}
+
+/* ─── Answer handler ─────────────────────────────────────────────── */
+const qAttempts = { q1: 0, q2: 0, q3: 0, q4: 0 };
+const qDone     = { q1: false, q2: false, q3: false, q4: false };
+
+function answerQ(qId, optIdx, isCorrect, feedback) {
+  if (qDone[qId]) return;
+  qAttempts[qId]++;
+  const opts = document.querySelectorAll(`#${qId}-opts .answer-option`);
+  const fb   = document.getElementById(`${qId}-fb`);
+  opts[optIdx].classList.add(isCorrect ? 'correct' : 'incorrect');
+
+  if (isCorrect) {
+    qDone[qId] = true;
+    // Lock all options
+    opts.forEach(o => { o.classList.add('locked-opt'); o.disabled = true; });
+    fb.className = 'question-feedback fb-correct show';
+    fb.textContent = '✓ ' + feedback;
+    const pts = qAttempts[qId] === 1 ? 30 : qAttempts[qId] === 2 ? 15 : 5;
+    const label = qAttempts[qId] === 1 ? 'first try!' : qAttempts[qId] === 2 ? 'second try' : 'third try';
+    awardXP(pts, label);
+    updateStreak(true);
+    safeSave(`${LAB_KEY}-${qId}`, 'done');
+    // Section 5 gating
+    if (qId === 'q3') { q3done = true; checkS5Complete(); }
+    if (qId === 'q4') { q4done = true; checkS5Complete(); }
+  } else {
+    fb.className = 'question-feedback fb-incorrect show';
+    fb.textContent = '✗ ' + feedback;
+    updateStreak(false);
+    if (qAttempts[qId] >= 3) {
+      opts.forEach(o => { o.classList.add('locked-opt'); o.disabled = true; });
+      qDone[qId] = true;
+      if (qId === 'q3') { q3done = true; checkS5Complete(); }
+      if (qId === 'q4') { q4done = true; checkS5Complete(); }
+    }
+  }
+}
+
+function checkS5Complete() {
+  if (q3done && q4done) {
+    const btn = document.getElementById('s5-complete-btn');
+    if (btn) btn.style.display = 'inline-flex';
+  }
+}
+
+/* ─── Prediction gate ────────────────────────────────────────────── */
+let predictionXPAwarded = {};
+
+function checkPrediction(taId, btnId, minChars) {
+  const ta  = document.getElementById(taId);
+  const btn = document.getElementById(btnId);
+  const hint = document.getElementById(`${taId}-hint`);
+  const remaining = Math.max(0, minChars - ta.value.trim().length);
+  if (hint) {
+    hint.textContent = remaining > 0
+      ? `${remaining} more characters to activate reveal`
+      : '✓ Ready to reveal';
+    hint.className = remaining === 0 ? 'char-hint char-ready' : 'char-hint';
+  }
+  btn.disabled = remaining > 0;
+  if (remaining === 0 && !predictionXPAwarded[taId]) {
+    predictionXPAwarded[taId] = true;
+    awardXP(10, 'prediction committed');
+  }
+  saveReflection(taId, ta.value);
+}
+
+/* ─── Apply gate ─────────────────────────────────────────────────── */
+let applyXPAwarded = {};
+
+function checkApply(taId, btnId, minChars) {
+  const ta  = document.getElementById(taId);
+  const btn = document.getElementById(btnId);
+  const hint = document.getElementById(`${taId}-hint`);
+  const remaining = Math.max(0, minChars - ta.value.trim().length);
+  if (hint) {
+    hint.textContent = remaining > 0
+      ? `${remaining} more characters to complete`
+      : '✓ Ready';
+    hint.className = remaining === 0 ? 'char-hint char-ready' : 'char-hint';
+  }
+  if (btn) btn.disabled = remaining > 0;
+  if (remaining === 0 && !applyXPAwarded[taId]) {
+    applyXPAwarded[taId] = true;
+    awardXP(20, 'apply exercise complete');
+  }
+  saveReflection(taId, ta.value);
+}
+
+/* ─── Section completions ────────────────────────────────────────── */
+function completeSection0() {
+  markSectionComplete(0);
+  document.getElementById('s0-forward').classList.add('show');
+  document.getElementById('s0-btn').disabled = true;
+  document.getElementById('s0-btn').textContent = '✓ Section 0 Complete';
+}
+
+function revealSection1() {
+  document.getElementById('s1-reveal').style.display = 'block';
+  document.getElementById('s1-reveal').style.animation = 'fadeIn 0.4s ease';
+}
+
+function completeSection1() {
+  markSectionComplete(1);
+  document.getElementById('s1-forward').classList.add('show');
+  document.getElementById('s1-apply-btn').disabled = true;
+  document.getElementById('s1-apply-btn').textContent = '✓ Section 1 Complete';
+}
+
+function revealSection3() {
+  document.getElementById('s3-reveal').style.display = 'block';
+  document.getElementById('s3-reveal').style.animation = 'fadeIn 0.4s ease';
+}
+
+function completeSection2() {
+  const insight = document.getElementById('s2-insight');
+  if (insight) insight.classList.add('revealed');
+  markSectionComplete(2);
+  document.getElementById('s2-forward').classList.add('show');
+  document.getElementById('s2-apply-btn').disabled = true;
+  document.getElementById('s2-apply-btn').textContent = '✓ Section 2 Complete';
+}
+
+function completeSection3() {
+  markSectionComplete(3);
+  document.getElementById('s3-forward').classList.add('show');
+  document.getElementById('s3-apply-btn').disabled = true;
+  document.getElementById('s3-apply-btn').textContent = '✓ Section 3 Complete';
+}
+
+function completeSection4() {
+  markSectionComplete(4);
+  document.getElementById('s4-forward').classList.add('show');
+  document.getElementById('s4-apply-btn').disabled = true;
+  document.getElementById('s4-apply-btn').textContent = '✓ Section 4 Complete';
+}
+
+function completeSection5() {
+  markSectionComplete(5);
+  document.getElementById('s5-forward').classList.add('show');
+  document.getElementById('s5-complete-btn').disabled = true;
+  document.getElementById('s5-complete-btn').textContent = '✓ Capstone Challenge Unlocked';
+}
+
+/* ─── Skill Grader ───────────────────────────────────────────────── */
+function selectGrade(snippetId, grade, btn) {
+  graderSelections[snippetId] = grade;
+  const parent = btn.closest('.grader-snippet');
+  parent.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  // Enable submit if all three selected
+  const allSelected = Object.values(graderSelections).every(v => v !== null);
+  document.getElementById('grader-submit-btn').disabled = !allSelected;
+}
+
+function submitGrader() {
+  let allCorrect = true;
+  ['g1','g2','g3'].forEach(key => {
+    const selected = graderSelections[key];
+    const ans = graderAnswers[key];
+    const revealEl = document.getElementById(`${key}-reveal`);
+    revealEl.style.display = 'block';
+    revealEl.style.animation = 'fadeIn 0.3s';
+    if (selected === ans.correct) {
+      revealEl.className = `grade-reveal show ${ans.css}`;
+      revealEl.innerHTML = `✓ You got it right. ${ans.reason}`;
+    } else {
+      revealEl.className = `grade-reveal show grade-b`;
+      revealEl.innerHTML = `Actual grade: <strong>${ans.correct}</strong>. ${ans.reason}`;
+      allCorrect = false;
+    }
+  });
+  document.getElementById('grader-submit-btn').disabled = true;
+  if (allCorrect) awardXP(15, 'perfect grader score');
+}
+
+/* ─── Simulation ─────────────────────────────────────────────────── */
+function simStep(dir) {
+  const steps = document.querySelectorAll('.sim-step');
+  const nextStep = Math.max(0, Math.min(SIM_STEPS - 1, simCurrentStep + dir));
+  if (nextStep === simCurrentStep) return;
+
+  steps[simCurrentStep].classList.remove('active');
+  if (dir > 0) {
+    steps[simCurrentStep].classList.add('done');
+  }
+
+  simCurrentStep = nextStep;
+  steps[simCurrentStep].classList.remove('done');
+  steps[simCurrentStep].classList.add('active');
+  document.getElementById('sim-status').textContent = simMessages[simCurrentStep];
+  document.getElementById('sim-prev').disabled = simCurrentStep === 0;
+  document.getElementById('sim-next').disabled = simCurrentStep === SIM_STEPS - 1;
+  if (simCurrentStep === SIM_STEPS - 1 && !simCompletionAwarded) {
+    simCompletionAwarded = true;
+    awardXP(15, 'simulation complete');
+  }
+}
+
+function simReset() {
+  const steps = document.querySelectorAll('.sim-step');
+  steps.forEach((s, i) => {
+    s.classList.remove('active', 'done');
+    if (i === 0) s.classList.add('active');
+  });
+  simCurrentStep = 0;
+  simCompletionAwarded = false;
+  document.getElementById('sim-status').textContent = simMessages[0];
+  document.getElementById('sim-prev').disabled = true;
+  document.getElementById('sim-next').disabled = false;
+}
+
+/* ─── Capstone Challenge ─────────────────────────────────────────────── */
+function submitBoss() {
+  document.getElementById('boss-answer').style.display = 'block';
+  document.getElementById('boss-answer').style.animation = 'fadeIn 0.4s';
+  document.getElementById('boss-submit-btn').disabled = true;
+  document.getElementById('boss-submit-btn').textContent = '✓ Submitted';
+  awardXP(50, 'Capstone Challenge complete!');
+  document.getElementById('boss-answer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ─── Milestone System ───────────────────────────────────────────── */
+  let milestoneLevel = 0;
+  const MILESTONES = [
+    { section: 1, label: 'Skill Anatomy' },
+    { section: 3, label: 'Slash Commands' },
+    { section: 4, label: 'Subagents' },
+    { section: 6, label: 'Capstone Complete' }
+  ];
+
+  function getMilestoneLevel() {
+    let level = 0;
+    MILESTONES.forEach(function(m, idx) {
+      if (sectionComplete[m.section]) level = idx + 1;
+    });
+    return level;
+  }
+
+  function updateMilestoneDisplay() {
+    const el = document.getElementById('milestone-display');
+    if (!el) return;
+    if (milestoneLevel === 0) {
+      el.textContent = 'Milestone: Not started';
+      return;
+    }
+    const entry = MILESTONES[milestoneLevel - 1];
+    el.textContent = 'Milestone ' + milestoneLevel + ': ' + entry.label;
+  }
+
+  function announceMilestone(level) {
+    const entry = MILESTONES[level - 1];
+    const toast = document.createElement('div');
+    toast.className = 'milestone-toast';
+    toast.textContent = 'Milestone reached: ' + entry.label;
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.remove(); }, 2200);
+  }
+
+/* ─── Section unlock ─────────────────────────────────────────────── */
+function markSectionComplete(idx) {
+  sectionComplete[idx] = true;
+  safeSave(`${LAB_KEY}-s${idx}`, '1');
+  checkSectionUnlock(idx + 1);
+  updateNavDots();
+  const nextMilestoneLevel = getMilestoneLevel();
+  if (nextMilestoneLevel > milestoneLevel) {
+    milestoneLevel = nextMilestoneLevel;
+    updateMilestoneDisplay();
+    announceMilestone(milestoneLevel);
+  } else {
+    updateMilestoneDisplay();
+  }
+}
+
+function checkSectionUnlock(idx) {
+  if (idx >= SECTION_COUNT) return;
+  const section = document.getElementById(`section-${idx}`);
+  if (!section) return;
+  const allPriorDone = sectionComplete.slice(0, idx).every(Boolean);
+  if (allPriorDone) {
+    section.classList.remove('locked');
+    const overlay = section.querySelector('.lock-overlay');
+    if (overlay) overlay.remove();
+  }
+}
+
+/* ─── Complete lab ───────────────────────────────────────────────── */
+function completeLab() {
+  markSectionComplete(6);
+  awardXP(100, 'lab complete!');
+  const banner = document.getElementById('completion-banner');
+  banner.style.display = 'block';
+  banner.scrollIntoView({ behavior: 'smooth' });
+  safeSave(`${LAB_KEY}-complete`, Date.now().toString());
+  updateNavDots();
+}
+
+/* ─── Persistence ────────────────────────────────────────────────── */
+function saveReflection(key, value) {
+  safeSave(`${LAB_KEY}-${key}`, value);
+}
+
+function loadAllReflections() {
+  document.querySelectorAll('textarea[id]').forEach(ta => {
+    const saved = safeLoad(`${LAB_KEY}-${ta.id}`);
+    if (saved) {
+      ta.value = saved;
+      // Re-fire char counters
+      const event = new Event('input');
+      ta.dispatchEvent(event);
+    }
+  });
+  // Section completion states
+  for (let i = 0; i < SECTION_COUNT; i++) {
+    if (safeLoad(`${LAB_KEY}-s${i}`) === '1') sectionComplete[i] = true;
+  }
+  // Question states
+  ['q1','q2','q3','q4'].forEach(qId => {
+    if (safeLoad(`${LAB_KEY}-${qId}`) === 'done') {
+      qDone[qId] = true;
+      if (qId === 'q3') { q3done = true; }
+      if (qId === 'q4') { q4done = true; }
+    }
+  });
+  // XP
+  xp = parseInt(safeLoad(`${LAB_KEY}-xp`) || '0');
+  updateXPDisplay();
+  // Unlock gates
+  for (let i = 0; i < SECTION_COUNT; i++) checkSectionUnlock(i);
+  // Restore s1 reveal if prediction was done
+  if (safeLoad(`${LAB_KEY}-s1-predict`) && sectionComplete[1]) {
+    const rev = document.getElementById('s1-reveal');
+    if (rev) rev.style.display = 'block';
+  }
+  // Restore s3 reveal
+  if (safeLoad(`${LAB_KEY}-s3-predict`) && sectionComplete[3]) {
+    const rev = document.getElementById('s3-reveal');
+    if (rev) rev.style.display = 'block';
+  }
+  // s5 complete btn
+  if (q3done && q4done) checkS5Complete();
+  // Restore section 0 button state
+  if (sectionComplete[0]) {
+    const btn = document.getElementById('s0-btn');
+    if (btn) { btn.disabled = true; btn.textContent = '✓ Section 0 Complete'; }
+    const fwd = document.getElementById('s0-forward');
+    if (fwd) fwd.classList.add('show');
+  }
+  // s2 insight
+  if (sectionComplete[2]) {
+    const ins = document.getElementById('s2-insight');
+    if (ins) ins.classList.add('revealed');
+    const fwd = document.getElementById('s2-forward');
+    if (fwd) fwd.classList.add('show');
+  }
+  // Completion banner
+  if (safeLoad(`${LAB_KEY}-complete`)) {
+    document.getElementById('completion-banner').style.display = 'block';
+  }
+  milestoneLevel = getMilestoneLevel();
+  updateMilestoneDisplay();
+  updateNavDots();
+}
+
+function exportReflections() {
+  let content = `Lab 05: Skills & Commands Builder — ${new Date().toLocaleDateString()}\nXP Earned: ${xp}\n\n`;
+  document.querySelectorAll('textarea[id]').forEach(ta => {
+    if (ta.value.trim()) content += `[${ta.id}]\n${ta.value.trim()}\n\n`;
+  });
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `${LAB_KEY}-reflections.txt`;
+  document.body.appendChild(a); a.click();
+  URL.revokeObjectURL(url); document.body.removeChild(a);
+}
+
+/* ─── Navigation Dots ────────────────────────────────────────────── */
+function updateNavDots() {
+  const container = document.getElementById('nav-dots');
+  if (!container) return;
+  if (!container.children.length) {
+    for (let i = 0; i < SECTION_COUNT; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'nav-dot';
+      dot.setAttribute('aria-label', `Section ${i + 1}`);
+      dot.setAttribute('role', 'listitem');
+      container.appendChild(dot);
+    }
+  }
+  const firstIncomplete = sectionComplete.indexOf(false);
+  [...container.children].forEach((dot, i) => {
+    dot.classList.remove('dot-locked', 'dot-active', 'dot-complete');
+    if (sectionComplete[i]) dot.classList.add('dot-complete');
+    else if (i === firstIncomplete) dot.classList.add('dot-active');
+    else dot.classList.add('dot-locked');
+    const state = sectionComplete[i] ? 'Complete' : i === firstIncomplete ? 'Current' : 'Locked';
+    dot.setAttribute('aria-label', `Section ${i + 1}: ${state}`);
+  });
+}
+
+/* ─── Scroll Progress ────────────────────────────────────────────── */
+window.addEventListener('scroll', () => {
+  const d = document.documentElement;
+  const pct = (d.scrollTop / (d.scrollHeight - d.clientHeight)) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+});
+
+/* ─── Challenge Exercises CE-06-C / CE-06-D ─────────────────────── */
+function submitCE06C() {
+  const input = document.getElementById('ce-06-c-input').value.trim();
+  if (input.length < 100) {
+    alert('Please write a more complete skill YAML before submitting (at least 100 characters).');
+    return;
+  }
+  document.getElementById('ce-06-c-model').style.display = 'block';
+  document.getElementById('ce-06-c-model').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (typeof awardXP === 'function') awardXP(30, 'CE-06-C: Skill YAML Author');
+  safeSave('lab06_ce06c', JSON.stringify({ completed: true, input: input }));
+}
+
+function submitCE06D() {
+  const args   = document.getElementById('ce-06-d-args').value.trim();
+  const steps  = document.getElementById('ce-06-d-steps').value.trim();
+  const output = document.getElementById('ce-06-d-output').value.trim();
+  const edge   = document.getElementById('ce-06-d-edge').value.trim();
+  if (args.length < 10 || steps.length < 30 || output.length < 20 || edge.length < 10) {
+    alert('Please complete all four fields before submitting.');
+    return;
+  }
+  document.getElementById('ce-06-d-model').style.display = 'block';
+  document.getElementById('ce-06-d-model').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (typeof awardXP === 'function') awardXP(30, 'CE-06-D: /pr-ready Command Builder');
+  safeSave('lab06_ce06d', JSON.stringify({ completed: true, args, steps, output, edge }));
+}
+
+/* ─── Init ───────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', loadAllReflections);
+</script>
+<script src="/raven-cargo-course/assets/lab-progression-bridge.js"></script>
+<script>if (window.lucide) lucide.createIcons();</script>
+
+  <!-- ─── Attribution Footer ─────────────────────────────────────────────── -->
+</main>
+
+  <footer style="
+    margin-top: 80px;
+    padding: 32px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    text-align: center;
+    font-size: 12px;
+    color: #475569;
+    line-height: 1.8;
+  ">
+    <p>
+      &ldquo;Claude&rdquo; and &ldquo;Claude Code&rdquo; are trademarks of Anthropic, PBC.
+      This course is not affiliated with or endorsed by Anthropic.
+      All product names, logos, and trademarks are the property of their respective owners
+      and are referenced here for educational purposes only.
+    </p>
+    <p>
+      Fonts:
+      <a href="https://fonts.google.com/specimen/Inter" rel="noopener" style="color:#6366f1;">Inter</a>
+      and
+      <a href="https://fonts.google.com/specimen/JetBrains+Mono" rel="noopener" style="color:#6366f1;">JetBrains Mono</a>
+      via Google Fonts under the
+      <a href="https://scripts.sil.org/OFL" rel="noopener" style="color:#6366f1;">SIL Open Font License 1.1</a>.
+    </p>
+    <p>Course content &copy; 2026 Agentic AI Engineering Course. Educational use.</p>
+  </footer>
+
+</body>
+</html>
