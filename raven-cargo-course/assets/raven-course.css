@@ -1271,6 +1271,45 @@ a {
   white-space: nowrap;
 }
 
+/* ── Phase Cards ── */
+.raven-phase-grid {
+  display: grid;
+  gap: 8px;
+}
+.raven-phase-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+.raven-phase-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(199, 216, 185, 0.12);
+  color: var(--sage);
+  font: 700 14px/1 'JetBrains Mono', monospace;
+  flex-shrink: 0;
+}
+.raven-phase-card strong {
+  display: block;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+.raven-phase-card code {
+  background: rgba(199, 216, 185, 0.12);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+
 /* ── Filter Tabs (Non-Technical / Technical) ── */
 .raven-filter-tabs {
   display: flex;

@@ -26,7 +26,7 @@
   <div class="raven-topbar">
     <div class="raven-topbar-inner">
       <div class="raven-brand">
-        <span class="raven-brand-label">CETI AI · Raven March Training</span>
+        <span class="raven-brand-label">CETI AI &middot; Raven March Training</span>
         <span class="raven-brand-title" id="page-title">Raven Cargo AI Transformation</span>
       </div>
       <div class="raven-tabs" aria-label="Course sections">
@@ -37,229 +37,308 @@
         <a class="raven-tab is-active" href="async.html">Async</a>
         <a class="raven-tab" href="evaluations.html">Evaluations</a>
       </div>
-      <div class="raven-topbar-badge" id="course-badge">Loading…</div>
+      <div class="raven-topbar-badge" id="course-badge">Loading&hellip;</div>
     </div>
   </div>
 
   <main class="raven-app">
     <section class="raven-hero">
       <div class="raven-hero-copy">
-        <div class="raven-overline">Raven Cargo · Async Follow-Through</div>
+        <div class="raven-overline">Raven Cargo &middot; Async Follow-Through</div>
         <h1 id="course-title">Raven Cargo AI Transformation</h1>
-        <p id="course-summary">Three-week async schedule to reinforce live course material, complete challenge missions, and ship production-ready artifacts.</p>
+        <p id="course-summary">Your post-training action plan. Pick the track that matches your role, complete the challenges, and submit your work by April 17.</p>
       </div>
       <div class="raven-meta-grid">
         <article class="raven-meta-card">
           <div class="raven-meta-label">Async Window</div>
-          <div class="raven-meta-value">March 30 – April 17, 2026</div>
+          <div class="raven-meta-value">March 30 &ndash; April 17, 2026</div>
         </article>
         <article class="raven-meta-card">
           <div class="raven-meta-label">How It Works</div>
-          <div class="raven-meta-value">Work at your own pace. Complete async modules, submit challenge missions, and post artifacts to the Submissions page.</div>
+          <div class="raven-meta-value">Choose your role track below. Complete the challenges at your own pace. Post artifacts to <a href="submissions.html" style="color:var(--sage);">Submissions</a>.</div>
         </article>
       </div>
     </section>
 
-    <!-- ── Week 1 ── -->
-    <section class="raven-section">
+    <!-- ════════════════════════════════════════════════════
+         CAPSTONE: ROLE-BASED TRACKS
+         ════════════════════════════════════════════════════ -->
+    <section class="raven-section" id="role-tracks">
       <div class="raven-section-heading">
-        <h2>Week 1 — Reinforce &amp; Extend</h2>
-        <span class="raven-section-date">Mar 30 – Apr 5</span>
+        <h2>Your Capstone Track</h2>
       </div>
-      <p class="raven-section-copy">Revisit the live course material, solidify your skills and commands, and start your first challenge mission.</p>
+      <p class="raven-section-copy">
+        The capstone is a production pipeline design for Raven Cargo. Each track applies the same five-phase framework (Problem Scoping &rarr; Architecture &rarr; Prompt Design &rarr; Safety &rarr; Validation) to a problem relevant to your role. Pick one and ship it.
+      </p>
 
-      <div class="raven-mission-group">
-        <div class="raven-mission-head">
-          <span class="raven-track-badge track-1">Modules</span>
-          <h3>Async Modules to Complete</h3>
-        </div>
-        <div class="raven-mission-grid">
-          <a class="raven-mission-card" href="/raven-cargo-course/module/10">
-            <div class="raven-mission-num track-1">M10</div>
-            <div class="raven-mission-body">
-              <div class="raven-mission-name">Meta-Prompting</div>
-              <div class="raven-mission-meta">Recursive prompt refinement, quality-gated iteration, and meta-prompting patterns</div>
-            </div>
-            <span class="raven-mission-arrow">&#8594;</span>
-          </a>
-          <a class="raven-mission-card" href="/raven-cargo-course/module/11">
-            <div class="raven-mission-num track-1">M11</div>
-            <div class="raven-mission-body">
-              <div class="raven-mission-name">Tech Stack Adaptation</div>
-              <div class="raven-mission-meta">Apply course patterns to RavenEye's real stack and integration boundaries</div>
-            </div>
-            <span class="raven-mission-arrow">&#8594;</span>
-          </a>
-        </div>
+      <!-- Role Tabs -->
+      <div class="raven-filter-tabs" id="role-filter">
+        <button class="raven-filter-tab is-active" data-filter="all">All Tracks</button>
+        <button class="raven-filter-tab" data-filter="technical">Technical</button>
+        <button class="raven-filter-tab" data-filter="accounting">Accounting</button>
+        <button class="raven-filter-tab" data-filter="business">Business</button>
       </div>
 
-      <div class="raven-mission-group">
+      <!-- ── Technical Track ── -->
+      <div class="raven-mission-group" data-track="technical">
         <div class="raven-mission-head">
-          <span class="raven-track-badge track-2">Missions</span>
-          <h3>Start One Challenge Mission</h3>
+          <span class="raven-track-badge track-2">Technical</span>
+          <h3>Engineering &amp; DevOps</h3>
         </div>
-        <p class="raven-section-copy">Pick at least one mission from Track 1 or Track 2. These build directly on the Day 1–2 labs.</p>
-        <div class="raven-mission-grid">
-          <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-11-author-two-skills-from-scratch-">
-            <div class="raven-mission-num track-1">1.1</div>
-            <div class="raven-mission-body">
-              <div class="raven-mission-name">Author Two Skills From Scratch</div>
-              <div class="raven-mission-meta">&#9733;&#9733;&#9733; · ~3h · Recommended starting point</div>
+        <p class="raven-section-copy">For developers, engineers, and IT staff working on RavenEye or internal tooling.</p>
+
+        <div class="raven-concept-card">
+          <div class="raven-concept-header">
+            <span class="raven-concept-num">T1</span>
+            <div>
+              <div class="raven-mission-name">PR Review Pipeline</div>
+              <div class="raven-concept-level">Simple Chain &middot; ~4h</div>
             </div>
-            <span class="raven-mission-arrow">&#8594;</span>
-          </a>
-          <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-21-codebase-archaeology-understand-before-touching-">
-            <div class="raven-mission-num track-2">2.1</div>
-            <div class="raven-mission-body">
-              <div class="raven-mission-name">Codebase Archaeology</div>
-              <div class="raven-mission-meta">&#9733;&#9733;&#9733; · ~3h · Navigate unfamiliar codebase + bug fix</div>
+          </div>
+          <div class="raven-concept-body">
+            <p class="raven-concept-desc">Build an agent that reviews every pull request to the RavenEye repository. The agent reads the diff + CLAUDE.md context, then posts a structured review comment covering security, performance, and test coverage.</p>
+            <div class="raven-concept-challenge">
+              <strong>Deliverables:</strong> (1) Trigger specification &mdash; PR opened webhook. (2) TCEF prompt for code review with Raven conventions. (3) <code>settings.json</code> with read-only scope &mdash; no write access to the codebase. (4) Output schema for the review comment with severity tags. (5) Tested on 3+ real PRs from the RavenEye repo.
             </div>
-            <span class="raven-mission-arrow">&#8594;</span>
-          </a>
+          </div>
+        </div>
+
+        <div class="raven-concept-card">
+          <div class="raven-concept-header">
+            <span class="raven-concept-num">T2</span>
+            <div>
+              <div class="raven-mission-name">Incident Triage Router</div>
+              <div class="raven-concept-level">Conditional Router &middot; ~6h</div>
+            </div>
+          </div>
+          <div class="raven-concept-body">
+            <p class="raven-concept-desc">Design a conditional router that classifies incoming alerts (tracking failures, API errors, carrier integration issues) and routes each to a specialized agent with the right MCP tools and system prompt.</p>
+            <div class="raven-concept-challenge">
+              <strong>Deliverables:</strong> (1) Classification logic for 3+ incident types. (2) Separate system prompts per specialist agent. (3) MCP server config for each specialist (Streamable HTTP transport). (4) Approval gate before any write action. (5) Incident response playbook covering the first 5 minutes.
+            </div>
+          </div>
+        </div>
+
+        <div class="raven-concept-card">
+          <div class="raven-concept-header">
+            <span class="raven-concept-num">T3</span>
+            <div>
+              <div class="raven-mission-name">Data Quality Monitor</div>
+              <div class="raven-concept-level">Parallel Fan-Out &middot; ~5h</div>
+            </div>
+          </div>
+          <div class="raven-concept-body">
+            <p class="raven-concept-desc">Deploy a scheduled pipeline that runs nightly to validate RavenEye data quality &mdash; one sub-agent per domain (shipments, carriers, invoices). Each checks records against schema rules and opens issues for violations above a severity threshold.</p>
+            <div class="raven-concept-challenge">
+              <strong>Deliverables:</strong> (1) Cron trigger specification. (2) Fan-out architecture with 3 domain sub-agents. (3) Validation rules per domain. (4) Cost budget: per-session ceiling + daily limit. (5) Alerting thresholds for error rate and cost spikes.
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="raven-mission-group">
+      <!-- ── Accounting Track ── -->
+      <div class="raven-mission-group" data-track="accounting">
         <div class="raven-mission-head">
-          <span class="raven-track-badge track-ex">Deliverable</span>
-          <h3>Week 1 Checkpoint</h3>
+          <span class="raven-track-badge track-1">Accounting</span>
+          <h3>Finance &amp; Invoicing</h3>
         </div>
-        <div class="raven-meta-grid" style="margin-top: 10px;">
-          <article class="raven-meta-card">
-            <div class="raven-meta-label">Due by Apr 5</div>
-            <div class="raven-meta-value">Complete M10 + M11 and submit at least one mission artifact to the <a href="submissions.html" style="color:var(--sage);">Submissions</a> page.</div>
-          </article>
+        <p class="raven-section-copy">For accounting, billing, and finance team members who handle carrier invoices, rate reconciliation, and cost reporting.</p>
+
+        <div class="raven-concept-card">
+          <div class="raven-concept-header">
+            <span class="raven-concept-num">A1</span>
+            <div>
+              <div class="raven-mission-name">Invoice Reconciliation Pipeline</div>
+              <div class="raven-concept-level">Simple Chain &middot; ~4h</div>
+            </div>
+          </div>
+          <div class="raven-concept-body">
+            <p class="raven-concept-desc">Design an agent that compares carrier invoices against contracted rates and flags discrepancies. The agent reads the invoice data, cross-references the rate agreement, and produces a structured variance report with action items.</p>
+            <div class="raven-concept-challenge">
+              <strong>Deliverables:</strong> (1) Trigger: new invoice received or batch upload. (2) TCEF prompt specifying the reconciliation rules (lane, weight break, accessorials, fuel surcharge). (3) Output schema: variance report with line-item flags (over-charge, under-charge, missing accessorial). (4) Approval gate before any adjustment is posted. (5) Tested on 5+ sample invoices.
+            </div>
+          </div>
+        </div>
+
+        <div class="raven-concept-card">
+          <div class="raven-concept-header">
+            <span class="raven-concept-num">A2</span>
+            <div>
+              <div class="raven-mission-name">Cost Allocation Report Generator</div>
+              <div class="raven-concept-level">Simple Chain &middot; ~3h</div>
+            </div>
+          </div>
+          <div class="raven-concept-body">
+            <p class="raven-concept-desc">Build an agent that pulls shipment cost data from RavenEye, allocates costs by customer/lane/mode, and generates a formatted weekly cost report for leadership review.</p>
+            <div class="raven-concept-challenge">
+              <strong>Deliverables:</strong> (1) Scheduled trigger (weekly). (2) Data gathering prompt: which RavenEye fields to pull. (3) Allocation rules encoded as a skill file. (4) Output: formatted report with cost breakdown by customer, lane, and transport mode. (5) Permission scope: read-only access to financial data, no write.
+            </div>
+          </div>
+        </div>
+
+        <div class="raven-concept-card">
+          <div class="raven-concept-header">
+            <span class="raven-concept-num">A3</span>
+            <div>
+              <div class="raven-mission-name">Rate Audit &amp; Compliance Checker</div>
+              <div class="raven-concept-level">Parallel Fan-Out &middot; ~5h</div>
+            </div>
+          </div>
+          <div class="raven-concept-body">
+            <p class="raven-concept-desc">Deploy an agent that audits active carrier rate agreements for expiration, missing accessorial definitions, and deviations from market benchmarks. One sub-agent per carrier, running in parallel.</p>
+            <div class="raven-concept-challenge">
+              <strong>Deliverables:</strong> (1) Fan-out architecture: one sub-agent per carrier. (2) Audit rules: expiration check, accessorial completeness, market deviation threshold. (3) Output: compliance scorecard per carrier with red/yellow/green flags. (4) Cost controls: per-session token ceiling. (5) Quarterly maintenance cadence documented.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Business Track ── -->
+      <div class="raven-mission-group" data-track="business">
+        <div class="raven-mission-head">
+          <span class="raven-track-badge track-3">Business</span>
+          <h3>Operations &amp; Leadership</h3>
+        </div>
+        <p class="raven-section-copy">For operations managers, dispatchers, account managers, and leadership who manage carrier relationships, customer communication, and strategic decisions.</p>
+
+        <div class="raven-concept-card">
+          <div class="raven-concept-header">
+            <span class="raven-concept-num">B1</span>
+            <div>
+              <div class="raven-mission-name">Carrier Performance Dashboard Generator</div>
+              <div class="raven-concept-level">Simple Chain &middot; ~3h</div>
+            </div>
+          </div>
+          <div class="raven-concept-body">
+            <p class="raven-concept-desc">Build an agent that pulls carrier performance data (on-time %, claims rate, capacity utilization) and generates a weekly executive summary with trend analysis and recommendations for carrier mix adjustments.</p>
+            <div class="raven-concept-challenge">
+              <strong>Deliverables:</strong> (1) Scheduled trigger (weekly, Monday morning). (2) Data gathering from RavenEye carrier metrics. (3) Output: executive summary with top 5 carriers, bottom 5 carriers, and trend arrows. (4) Approval gate before any summary is distributed externally. (5) Brand guidelines embedded in the agent persona file.
+            </div>
+          </div>
+        </div>
+
+        <div class="raven-concept-card">
+          <div class="raven-concept-header">
+            <span class="raven-concept-num">B2</span>
+            <div>
+              <div class="raven-mission-name">Customer Exception Communication</div>
+              <div class="raven-concept-level">Conditional Router &middot; ~4h</div>
+            </div>
+          </div>
+          <div class="raven-concept-body">
+            <p class="raven-concept-desc">Design an agent that monitors shipment exceptions (delays, damage, missed pickups) and drafts customer-facing communications routed by severity &mdash; routine status updates for minor delays, escalation notices for critical issues.</p>
+            <div class="raven-concept-challenge">
+              <strong>Deliverables:</strong> (1) Exception classification rules (minor/moderate/critical). (2) Communication templates per severity level. (3) Conditional routing: minor &rarr; auto-draft, critical &rarr; human approval gate. (4) Tone and brand guidelines encoded as a skill. (5) Tested on 5+ real exception scenarios from Raven's history.
+            </div>
+          </div>
+        </div>
+
+        <div class="raven-concept-card">
+          <div class="raven-concept-header">
+            <span class="raven-concept-num">B3</span>
+            <div>
+              <div class="raven-mission-name">Customs &amp; Cross-Border Documentation</div>
+              <div class="raven-concept-level">Simple Chain with Approval Gate &middot; ~5h</div>
+            </div>
+          </div>
+          <div class="raven-concept-body">
+            <p class="raven-concept-desc">Build an agent that assembles cross-border documentation packages (BOL, commercial invoice, packing list, customs declarations) from shipment data, validates completeness, and presents the package for broker review before submission.</p>
+            <div class="raven-concept-challenge">
+              <strong>Deliverables:</strong> (1) Trigger: shipment flagged as cross-border in RavenEye. (2) Document assembly rules encoded as a W.A.T. framework (Workflows, Agent, Tools). (3) Completeness validation checklist. (4) Approval gate: broker reviews before submission &mdash; agent never submits autonomously. (5) Blast radius documented: maximum scope of damage from a documentation error.
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- ── Week 2 ── -->
-    <section class="raven-section">
+    <!-- ════════════════════════════════════════════════════
+         THE FIVE DESIGN PHASES
+         ════════════════════════════════════════════════════ -->
+    <section class="raven-section" id="design-phases">
       <div class="raven-section-heading">
-        <h2>Week 2 — Build &amp; Ship</h2>
-        <span class="raven-section-date">Apr 6 – Apr 12</span>
+        <h2>The Five Design Phases</h2>
       </div>
-      <p class="raven-section-copy">Complete your challenge mission, tackle a second one, and begin the capstone module.</p>
+      <p class="raven-section-copy">Every capstone track uses the same five-phase framework. Complete each phase in order before writing any configuration.</p>
 
-      <div class="raven-mission-group">
-        <div class="raven-mission-head">
-          <span class="raven-track-badge track-1">Module</span>
-          <h3>Capstone Module</h3>
+      <div class="raven-phase-grid">
+        <div class="raven-phase-card">
+          <span class="raven-phase-num">1</span>
+          <div>
+            <strong>Problem Scoping</strong>
+            <span class="raven-check-desc">Define the trigger, write a measurable success criterion, and trace the value chain from output to beneficiary.</span>
+          </div>
         </div>
-        <div class="raven-mission-grid">
-          <a class="raven-mission-card" href="/raven-cargo-course/module/12">
-            <div class="raven-mission-num track-1">M12</div>
-            <div class="raven-mission-body">
-              <div class="raven-mission-name">Capstone &amp; Production</div>
-              <div class="raven-mission-meta">Full production follow-through for Phase 2 implementation work</div>
-            </div>
-            <span class="raven-mission-arrow">&#8594;</span>
-          </a>
+        <div class="raven-phase-card">
+          <span class="raven-phase-num">2</span>
+          <div>
+            <strong>Pipeline Architecture</strong>
+            <span class="raven-check-desc">Choose your archetype (simple chain, fan-out, or conditional router). Document whether single-agent or multi-agent, and why.</span>
+          </div>
         </div>
-      </div>
-
-      <div class="raven-mission-group">
-        <div class="raven-mission-head">
-          <span class="raven-track-badge track-2">Missions</span>
-          <h3>Continue Challenge Missions</h3>
+        <div class="raven-phase-card">
+          <span class="raven-phase-num">3</span>
+          <div>
+            <strong>Prompt &amp; Skill Design</strong>
+            <span class="raven-check-desc">Write the full TCEF prompt. Identify patterns to encode as skill files. Define the output schema.</span>
+          </div>
         </div>
-        <p class="raven-section-copy">Finish your Week 1 mission and stretch into Track 2 or Track 3.</p>
-        <div class="raven-mission-grid">
-          <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-12-build-a-slash-command-that-orchestrates-multiple-steps-">
-            <div class="raven-mission-num track-1">1.2</div>
-            <div class="raven-mission-body">
-              <div class="raven-mission-name">Build a Multi-Step Slash Command</div>
-              <div class="raven-mission-meta">&#9733;&#9733;&#9733; · ~3h · /ship, /onboard, or /incident</div>
-            </div>
-            <span class="raven-mission-arrow">&#8594;</span>
-          </a>
-          <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-22-issue-to-pr-pipeline-using-linear-or-github-mcp-">
-            <div class="raven-mission-num track-2">2.2</div>
-            <div class="raven-mission-body">
-              <div class="raven-mission-name">Issue-to-PR Pipeline</div>
-              <div class="raven-mission-meta">&#9733;&#9733;&#9733;&#9733; · ~5h · Linear/GitHub MCP 6-step workflow</div>
-            </div>
-            <span class="raven-mission-arrow">&#8594;</span>
-          </a>
-          <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-31-build-a-developer-productivity-toolkit-">
-            <div class="raven-mission-num track-3">3.1</div>
-            <div class="raven-mission-body">
-              <div class="raven-mission-name">Developer Productivity Toolkit</div>
-              <div class="raven-mission-meta">&#9733;&#9733;&#9733;&#9733; · ~6h · Skill + command + subagent as a system</div>
-            </div>
-            <span class="raven-mission-arrow">&#8594;</span>
-          </a>
+        <div class="raven-phase-card">
+          <span class="raven-phase-num">4</span>
+          <div>
+            <strong>Safety &amp; Permissions</strong>
+            <span class="raven-check-desc">Write <code>settings.json</code> allow/deny lists. Audit secrets. Place approval gates for irreversible actions. Document blast radius.</span>
+          </div>
         </div>
-      </div>
-
-      <div class="raven-mission-group">
-        <div class="raven-mission-head">
-          <span class="raven-track-badge track-ex">Deliverable</span>
-          <h3>Week 2 Checkpoint</h3>
-        </div>
-        <div class="raven-meta-grid" style="margin-top: 10px;">
-          <article class="raven-meta-card">
-            <div class="raven-meta-label">Due by Apr 12</div>
-            <div class="raven-meta-value">Complete M12 and submit second mission artifact. Begin capstone design if targeting Mission 3.2.</div>
-          </article>
+        <div class="raven-phase-card">
+          <span class="raven-phase-num">5</span>
+          <div>
+            <strong>Validation</strong>
+            <span class="raven-check-desc">Test on 5+ representative real inputs. Validate output against schema. Test edge cases and approval gates.</span>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- ── Week 3 ── -->
+    <!-- ════════════════════════════════════════════════════
+         TIMELINE
+         ════════════════════════════════════════════════════ -->
     <section class="raven-section">
       <div class="raven-section-heading">
-        <h2>Week 3 — Capstone &amp; Close</h2>
-        <span class="raven-section-date">Apr 13 – Apr 17</span>
+        <h2>Timeline</h2>
       </div>
-      <p class="raven-section-copy">Final week: ship your capstone artifacts, complete any remaining missions, and submit your course evaluation.</p>
-
-      <div class="raven-mission-group">
-        <div class="raven-mission-head">
-          <span class="raven-track-badge track-3">Capstone</span>
-          <h3>Final Mission &amp; Evaluation</h3>
+      <div class="raven-phase-grid">
+        <div class="raven-phase-card">
+          <span class="raven-phase-num" style="background:rgba(199,216,185,0.15);">W1</span>
+          <div>
+            <strong>Week 1 &mdash; Mar 30 &ndash; Apr 5</strong>
+            <span class="raven-check-desc">Pick your track. Complete Phase 1 (Problem Scoping) and Phase 2 (Architecture). Start one concept challenge from the <a href="challenges.html#concept-challenges" style="color:var(--sage);">Challenges</a> page.</span>
+          </div>
         </div>
-        <p class="raven-section-copy">The capstone mission ties together everything from the course. Submit your final artifacts and course evaluation.</p>
-        <div class="raven-mission-grid">
-          <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-32-issue-to-merge-end-to-end-automation-">
-            <div class="raven-mission-num track-3">3.2</div>
-            <div class="raven-mission-body">
-              <div class="raven-mission-name">Issue-to-Merge Automation</div>
-              <div class="raven-mission-meta">&#9733;&#9733;&#9733;&#9733;&#9733; · ~10h · Full pipeline with human checkpoints</div>
-            </div>
-            <span class="raven-mission-arrow">&#8594;</span>
-          </a>
-          <a class="raven-mission-card" href="evaluations.html">
-            <div class="raven-mission-num track-ex">EVAL</div>
-            <div class="raven-mission-body">
-              <div class="raven-mission-name">Course Evaluation</div>
-              <div class="raven-mission-meta">Rate instructor, relevance, and materials — confidential feedback</div>
-            </div>
-            <span class="raven-mission-arrow">&#8594;</span>
-          </a>
+        <div class="raven-phase-card">
+          <span class="raven-phase-num" style="background:rgba(199,216,185,0.15);">W2</span>
+          <div>
+            <strong>Week 2 &mdash; Apr 6 &ndash; Apr 12</strong>
+            <span class="raven-check-desc">Complete Phases 3&ndash;4 (Prompt Design + Safety). Submit your concept challenge artifact to <a href="submissions.html" style="color:var(--sage);">Submissions</a>.</span>
+          </div>
         </div>
-      </div>
-
-      <div class="raven-mission-group">
-        <div class="raven-mission-head">
-          <span class="raven-track-badge track-ex">Deliverable</span>
-          <h3>Final Checkpoint</h3>
-        </div>
-        <div class="raven-meta-grid" style="margin-top: 10px;">
-          <article class="raven-meta-card">
-            <div class="raven-meta-label">Due by Apr 17</div>
-            <div class="raven-meta-value">All mission submissions finalized. Course evaluation completed. Async window closes April 17.</div>
-          </article>
+        <div class="raven-phase-card">
+          <span class="raven-phase-num" style="background:rgba(199,216,185,0.15);">W3</span>
+          <div>
+            <strong>Week 3 &mdash; Apr 13 &ndash; Apr 17</strong>
+            <span class="raven-check-desc">Complete Phase 5 (Validation). Submit your capstone design. Complete the <a href="evaluations.html" style="color:var(--sage);">Course Evaluation</a>. Window closes April 17.</span>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- ── Course Completion Checklist ── -->
+    <!-- ════════════════════════════════════════════════════
+         COURSE COMPLETION CHECKLIST
+         ════════════════════════════════════════════════════ -->
     <section class="raven-section" id="completion-checklist">
       <div class="raven-section-heading">
         <h2>Course Completion Checklist</h2>
       </div>
-      <p class="raven-section-copy">Your engineering toolkit from Modules 01&ndash;11. Check off each skill as you confirm mastery. Progress is saved locally in your browser.</p>
+      <p class="raven-section-copy">Your engineering toolkit from the live 2-day training. Check off each skill as you confirm mastery. Progress is saved locally in your browser.</p>
 
       <div class="raven-checklist">
         <label class="raven-check-item">
@@ -267,7 +346,7 @@
           <span class="raven-check-box"></span>
           <span class="raven-check-content">
             <strong>M01 &mdash; Agentic Loop (PRAO)</strong>
-            <span class="raven-check-desc">I can describe the Perceive, Reason, Act, Observe loop and identify where a stuck loop breaks down and where intervention is appropriate.</span>
+            <span class="raven-check-desc">I can describe Perceive, Reason, Act, Observe and identify where a stuck loop breaks down.</span>
           </span>
         </label>
 
@@ -276,7 +355,7 @@
           <span class="raven-check-box"></span>
           <span class="raven-check-content">
             <strong>M02 &mdash; Settings &amp; CLAUDE.md</strong>
-            <span class="raven-check-desc">I can write a <code>settings.json</code> with correct allow/deny permissions and a working CLAUDE.md that is read at session start.</span>
+            <span class="raven-check-desc">I can write a <code>settings.json</code> with correct allow/deny permissions and a working CLAUDE.md.</span>
           </span>
         </label>
 
@@ -285,7 +364,7 @@
           <span class="raven-check-box"></span>
           <span class="raven-check-content">
             <strong>M03 &mdash; Agent Trace Reading</strong>
-            <span class="raven-check-desc">I can read an agent trace and identify healthy loops, stuck loops, and the correct intervention signal &mdash; and I know when to hold vs intervene.</span>
+            <span class="raven-check-desc">I can read an agent trace and identify healthy loops, stuck loops, and the correct intervention signal.</span>
           </span>
         </label>
 
@@ -294,7 +373,7 @@
           <span class="raven-check-box"></span>
           <span class="raven-check-content">
             <strong>M04 &mdash; TCEF Prompt Engineering</strong>
-            <span class="raven-check-desc">I can write a TCEF prompt with precision verbs in the Task, grounding Context, concrete domain-specific Examples, and a constrained machine-readable Format.</span>
+            <span class="raven-check-desc">I can write a TCEF prompt: Task (precision verbs), Context (constraints), Examples (domain-specific), Format (schema).</span>
           </span>
         </label>
 
@@ -303,7 +382,7 @@
           <span class="raven-check-box"></span>
           <span class="raven-check-content">
             <strong>M05 &mdash; MCP Architecture</strong>
-            <span class="raven-check-desc">I understand MCP architecture &mdash; exactly three primitives (Tools, Resources, Prompts), transport choices, and capability discovery at session start.</span>
+            <span class="raven-check-desc">I understand the three MCP primitives (Tools, Resources, Prompts), transport choices, and capability discovery.</span>
           </span>
         </label>
 
@@ -312,7 +391,7 @@
           <span class="raven-check-box"></span>
           <span class="raven-check-content">
             <strong>M06 &mdash; Building MCP Servers</strong>
-            <span class="raven-check-desc">I can design and implement MCP servers with correct primitive selection, tool schemas Claude can use reliably, and structured <code>isError</code> handling.</span>
+            <span class="raven-check-desc">I can implement MCP servers with correct primitive selection, tool schemas, and <code>isError</code> handling.</span>
           </span>
         </label>
 
@@ -321,7 +400,7 @@
           <span class="raven-check-box"></span>
           <span class="raven-check-content">
             <strong>M07 &mdash; Skills &amp; Commands</strong>
-            <span class="raven-check-desc">I can create skill files, load them in CLAUDE.md, build a reusable skill library, and distinguish LUXOR conventions from native Claude Code features.</span>
+            <span class="raven-check-desc">I can create skill files, load them in CLAUDE.md, and build a reusable skill library.</span>
           </span>
         </label>
 
@@ -330,7 +409,7 @@
           <span class="raven-check-box"></span>
           <span class="raven-check-content">
             <strong>M08 &mdash; Meta-Prompting</strong>
-            <span class="raven-check-desc">I can use meta-prompting to generate, evaluate, and improve prompts, and I know when direct prompting is the safer or faster choice.</span>
+            <span class="raven-check-desc">I can use meta-prompting to generate, evaluate, and improve prompts.</span>
           </span>
         </label>
 
@@ -339,7 +418,7 @@
           <span class="raven-check-box"></span>
           <span class="raven-check-content">
             <strong>M09 &mdash; Multi-Agent Architecture</strong>
-            <span class="raven-check-desc">I can apply the four-question decision framework to choose between single-agent and multi-agent architectures, and I default to single-agent until I can justify multi-agent.</span>
+            <span class="raven-check-desc">I can apply the four-question decision framework and default to single-agent until multi-agent is justified.</span>
           </span>
         </label>
 
@@ -348,7 +427,7 @@
           <span class="raven-check-box"></span>
           <span class="raven-check-content">
             <strong>M10 &mdash; Security &amp; Permissions</strong>
-            <span class="raven-check-desc">I can configure permission boundaries with least privilege, manage secrets correctly (environment variables only), and design approval gates for irreversible actions.</span>
+            <span class="raven-check-desc">I can configure least-privilege permissions, manage secrets via env vars only, and design approval gates.</span>
           </span>
         </label>
 
@@ -357,7 +436,7 @@
           <span class="raven-check-box"></span>
           <span class="raven-check-content">
             <strong>M11 &mdash; Tech Stack Adaptation</strong>
-            <span class="raven-check-desc">I can adapt any agentic system to a specific tech stack using Context7 for documentation pre-loading and a stack-specific CLAUDE.md encoding team conventions.</span>
+            <span class="raven-check-desc">I can adapt an agentic system to a specific tech stack using Context7 and a stack-specific CLAUDE.md.</span>
           </span>
         </label>
       </div>
@@ -368,33 +447,51 @@
       </div>
     </section>
 
-    <!-- ── Summary ── -->
+    <!-- ════════════════════════════════════════════════════
+         QUICK LINKS
+         ════════════════════════════════════════════════════ -->
     <section class="raven-section">
       <div class="raven-section-heading">
-        <h2>Async Summary</h2>
+        <h2>Quick Links</h2>
       </div>
       <div class="raven-meta-grid">
         <article class="raven-meta-card">
-          <div class="raven-meta-label">Modules</div>
-          <div class="raven-meta-value">M10 Meta-Prompting, M11 Tech Stack Adaptation, M12 Capstone &amp; Production</div>
-        </article>
-        <article class="raven-meta-card">
-          <div class="raven-meta-label">Missions</div>
-          <div class="raven-meta-value">Minimum 2 challenge missions from any track. Mission 3.2 is the stretch capstone.</div>
+          <div class="raven-meta-label">Challenges</div>
+          <div class="raven-meta-value"><a href="challenges.html" style="color:var(--sage);">Concept challenges (C1&ndash;C8) + mission tracks &rarr;</a></div>
         </article>
         <article class="raven-meta-card">
           <div class="raven-meta-label">Submissions</div>
-          <div class="raven-meta-value">Post all artifacts to the <a href="submissions.html" style="color:var(--sage);">Submissions</a> page with the mission tag selected.</div>
+          <div class="raven-meta-value"><a href="submissions.html" style="color:var(--sage);">Submit capstone + challenge artifacts &rarr;</a></div>
         </article>
         <article class="raven-meta-card">
-          <div class="raven-meta-label">Support</div>
-          <div class="raven-meta-value">Reach out via the team channel for implementation blockers, questions, or feedback during the async window.</div>
+          <div class="raven-meta-label">Videos</div>
+          <div class="raven-meta-value"><a href="challenges.html#additional-videos" style="color:var(--sage);">5 supplementary videos on agentic AI &rarr;</a></div>
+        </article>
+        <article class="raven-meta-card">
+          <div class="raven-meta-label">Evaluation</div>
+          <div class="raven-meta-value"><a href="evaluations.html" style="color:var(--sage);">Confidential course feedback form &rarr;</a></div>
         </article>
       </div>
     </section>
   </main>
 
   <script>
+    // Role track filter tabs
+    (function () {
+      var tabs = document.querySelectorAll('#role-filter .raven-filter-tab');
+      var groups = document.querySelectorAll('#role-tracks .raven-mission-group[data-track]');
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          tabs.forEach(function (t) { t.classList.remove('is-active'); });
+          tab.classList.add('is-active');
+          var filter = tab.getAttribute('data-filter');
+          groups.forEach(function (g) {
+            g.style.display = (filter === 'all' || g.getAttribute('data-track') === filter) ? '' : 'none';
+          });
+        });
+      });
+    })();
+
     // Checklist persistence
     (function () {
       var KEY = 'raven-checklist';
@@ -402,30 +499,18 @@
       var fill = document.getElementById('check-fill');
       var count = document.getElementById('check-count');
       var total = boxes.length;
-
-      function load() {
-        try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (_) { return {}; }
-      }
-      function save(state) {
-        try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (_) {}
-      }
+      function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (_) { return {}; } }
+      function save(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (_) {} }
       function update() {
-        var checked = 0;
-        boxes.forEach(function (b) { if (b.checked) checked++; });
-        if (fill) fill.style.width = (total ? (checked / total) * 100 : 0) + '%';
-        if (count) count.textContent = checked + ' / ' + total;
+        var c = 0; boxes.forEach(function (b) { if (b.checked) c++; });
+        if (fill) fill.style.width = (total ? (c / total) * 100 : 0) + '%';
+        if (count) count.textContent = c + ' / ' + total;
       }
-
       var state = load();
       boxes.forEach(function (box) {
         var key = box.getAttribute('data-check');
         if (state[key]) box.checked = true;
-        box.addEventListener('change', function () {
-          var s = load();
-          s[key] = box.checked;
-          save(s);
-          update();
-        });
+        box.addEventListener('change', function () { var s = load(); s[key] = box.checked; save(s); update(); });
       });
       update();
     })();
