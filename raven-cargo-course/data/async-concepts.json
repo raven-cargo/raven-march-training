@@ -76,6 +76,20 @@
       "challenge_title": "The Warehouse CI/CD Challenge",
       "challenge_original": "Write a .yaml configuration file designed for a GitHub Action runner. Embed a highly specific system prompt into the configuration, instructing the headless agent to automatically audit the security of new pull requests submitted for the company's Warehouse Management System (WMS), outputting only critical code-review flags related to inventory databases or payment modules.",
       "challenge_raven": "Write a GitHub Actions workflow YAML that deploys a headless Claude Code agent triggered on every pull request to the RavenEye repository. The agent's system prompt must audit PRs specifically for: (1) changes touching carrier rate tables or financial calculations, (2) modifications to the shipment tracking API surface, and (3) any new environment variable usage that could leak credentials. Output a structured review comment with severity-tagged findings."
+    },
+    {
+      "id": "skills-agent-config",
+      "number": 8,
+      "title": "Skills, Commands & Agent Configuration",
+      "level": "Technical",
+      "track": "technical",
+      "breakdown": "Skills are reusable YAML-defined capabilities that persist your operational patterns beyond a single session. Combined with slash commands, CLAUDE.md configuration, and subagent system prompts, they form the building blocks of a production agent system.",
+      "challenge_title": "The Raven Skills & Agent Configuration Challenge",
+      "challenge_original": "Author a complete agent configuration: a skill YAML, a slash command that chains multiple steps, and a subagent system prompt — all wired into a CLAUDE.md file with proper permission scoping.",
+      "challenge_raven": "Author a complete Raven Cargo agent configuration consisting of three artifacts: (1) a skill YAML file (carrier-scorer) that takes a carrier name and returns a structured safety/performance rating by querying RavenEye data, (2) a slash command (/load-review) that chains the carrier-scorer skill with a BOL extraction step and outputs a go/no-go recommendation, and (3) a subagent system prompt for a Raven Compliance Reviewer that audits shipment documentation against FMCSA requirements. Wire all three into a CLAUDE.md file with proper permission scoping.",
+      "video_url": "https://www.youtube.com/watch?v=luqKnexhpFs",
+      "video_title": "Agentic Prompt Engineering with Claude Code",
+      "video_channel": "IndyDevDan"
     }
   ]
 }

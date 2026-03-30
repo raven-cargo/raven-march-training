@@ -68,11 +68,43 @@
         <h2>Additional Videos</h2>
       </div>
       <p class="raven-section-copy">
-        Supplementary video content covering seven core agentic AI concepts — from goal-oriented execution and voice orchestration to headless CI/CD pipelines. Watch the videos, then tackle the Raven-specific challenges below.
+        These videos cover the transition from rigid, manual automation to goal-oriented agentic execution &mdash; the same shift that powers Raven Cargo's AI transformation. You'll see how to define the outcome (like a final delivery destination) and let the agent reason through the steps: from hands-free voice orchestration and the WAT framework for structuring operations, to parallel multi-agent teams that cut processing time, composable prompts that snap together like building blocks, headless CI/CD for fully automated code review, and skills configuration that keeps agents aligned with Raven's standards. Watch first, then tackle the Raven-specific challenges below.
       </p>
       <div class="raven-video-grid" id="video-grid">
-        <div class="raven-video-placeholder">
-          <div class="raven-empty-state">YouTube video URLs will be embedded here once provided. Each concept maps to a Raven-specific challenge below.</div>
+        <div class="raven-video-card">
+          <iframe src="https://www.youtube.com/embed/luqKnexhpFs" title="Agentic Prompt Engineering with Claude Code" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+          <div class="raven-video-card-body">
+            <div class="raven-video-card-title">Agentic Prompt Engineering with Claude Code</div>
+            <div class="raven-video-card-meta">IndyDevDan &middot; Skills YAML, slash commands, CLAUDE.md, subagent prompts &middot; Maps to C8</div>
+          </div>
+        </div>
+        <div class="raven-video-card">
+          <iframe src="https://www.youtube.com/embed/OdtGN27LchE" title="Claude Code Skills just Built me an AI Agent Team" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+          <div class="raven-video-card-body">
+            <div class="raven-video-card-title">Claude Code Skills Built Me an AI Agent Team</div>
+            <div class="raven-video-card-meta">Riley Brown &middot; 2026 guide &middot; Skills + agent teams in practice</div>
+          </div>
+        </div>
+        <div class="raven-video-card">
+          <iframe src="https://www.youtube.com/embed/CEvIs9y1uog" title="Don't Build Agents, Build Skills Instead" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+          <div class="raven-video-card-body">
+            <div class="raven-video-card-title">Don't Build Agents, Build Skills Instead</div>
+            <div class="raven-video-card-meta">Anthropic (Barry Zhang &amp; Mahesh Murag) &middot; Official perspective on skills architecture</div>
+          </div>
+        </div>
+        <div class="raven-video-card">
+          <iframe src="https://www.youtube.com/embed/y9IYtWELMHw" title="How to Use Claude Code Agent Teams in 13 Mins" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+          <div class="raven-video-card-body">
+            <div class="raven-video-card-title">Agent Teams in 13 Minutes (Opus 4.6)</div>
+            <div class="raven-video-card-meta">Simon Scrapes &middot; Concise agent teams walkthrough</div>
+          </div>
+        </div>
+        <div class="raven-video-card">
+          <iframe src="https://www.youtube.com/embed/Z_iWe6dyGzs" title="Build with Multiple AI Agents using Claude Code" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+          <div class="raven-video-card-body">
+            <div class="raven-video-card-title">Build with Multiple AI Agents in 40 Minutes</div>
+            <div class="raven-video-card-meta">Peter Yang / Kieran Klaassen &middot; Multi-agent deep dive &middot; Maps to C6</div>
+          </div>
         </div>
       </div>
     </section>
@@ -85,7 +117,7 @@
         <h2>Raven Concept Challenges</h2>
       </div>
       <p class="raven-section-copy">
-        Seven challenges derived from the video concepts above, rewritten for Raven Cargo operations. Use the tabs to filter by role.
+        Eight challenges derived from the video concepts above, rewritten for Raven Cargo operations. Use the tabs to filter by role.
       </p>
 
       <!-- Tab Switcher -->
@@ -170,7 +202,7 @@
         </div>
       </div>
 
-      <!-- Technical Challenges (Concepts 5-7) -->
+      <!-- Technical Challenges (Concepts 5-8) -->
       <div class="raven-mission-group" data-track="technical">
         <div class="raven-mission-head">
           <span class="raven-track-badge track-2">Technical</span>
@@ -222,6 +254,22 @@
               <p class="raven-concept-desc">Deploy agents in Headless Mode on scalable cloud infrastructure. Run autonomously 24/7, triggered by webhooks, cron jobs, or new code pushes.</p>
               <div class="raven-concept-challenge">
                 <strong>Challenge:</strong> Write a GitHub Actions workflow YAML that deploys a headless Claude Code agent triggered on every pull request to the RavenEye repository. The agent's system prompt must audit PRs specifically for: (1) changes touching carrier rate tables or financial calculations, (2) modifications to the shipment tracking API surface, and (3) any new environment variable usage that could leak credentials. Output a structured review comment with severity-tagged findings.
+              </div>
+            </div>
+          </div>
+
+          <div class="raven-concept-card" id="concept-8">
+            <div class="raven-concept-header">
+              <span class="raven-concept-num">C8</span>
+              <div>
+                <div class="raven-mission-name">The Raven Skills &amp; Agent Configuration Challenge</div>
+                <div class="raven-concept-level">Technical &middot; Skills, Commands &amp; Agent Configuration</div>
+              </div>
+            </div>
+            <div class="raven-concept-body">
+              <p class="raven-concept-desc">Skills are reusable YAML-defined capabilities that persist your operational patterns beyond a single session. Combined with slash commands, CLAUDE.md configuration, and subagent system prompts, they form the building blocks of a production agent system.</p>
+              <div class="raven-concept-challenge">
+                <strong>Challenge:</strong> Author a complete Raven Cargo agent configuration consisting of three artifacts: (1) a skill YAML file (<code>carrier-scorer</code>) that takes a carrier name and returns a structured safety/performance rating by querying RavenEye data, (2) a slash command (<code>/load-review</code>) that chains the carrier-scorer skill with a BOL extraction step and outputs a go/no-go recommendation, and (3) a subagent system prompt for a &lsquo;Raven Compliance Reviewer&rsquo; that audits shipment documentation against FMCSA requirements. Wire all three into a CLAUDE.md file with proper permission scoping.
               </div>
             </div>
           </div>
