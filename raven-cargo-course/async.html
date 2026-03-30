@@ -254,6 +254,120 @@
       </div>
     </section>
 
+    <!-- ── Course Completion Checklist ── -->
+    <section class="raven-section" id="completion-checklist">
+      <div class="raven-section-heading">
+        <h2>Course Completion Checklist</h2>
+      </div>
+      <p class="raven-section-copy">Your engineering toolkit from Modules 01&ndash;11. Check off each skill as you confirm mastery. Progress is saved locally in your browser.</p>
+
+      <div class="raven-checklist">
+        <label class="raven-check-item">
+          <input type="checkbox" data-check="m01" />
+          <span class="raven-check-box"></span>
+          <span class="raven-check-content">
+            <strong>M01 &mdash; Agentic Loop (PRAO)</strong>
+            <span class="raven-check-desc">I can describe the Perceive, Reason, Act, Observe loop and identify where a stuck loop breaks down and where intervention is appropriate.</span>
+          </span>
+        </label>
+
+        <label class="raven-check-item">
+          <input type="checkbox" data-check="m02" />
+          <span class="raven-check-box"></span>
+          <span class="raven-check-content">
+            <strong>M02 &mdash; Settings &amp; CLAUDE.md</strong>
+            <span class="raven-check-desc">I can write a <code>settings.json</code> with correct allow/deny permissions and a working CLAUDE.md that is read at session start.</span>
+          </span>
+        </label>
+
+        <label class="raven-check-item">
+          <input type="checkbox" data-check="m03" />
+          <span class="raven-check-box"></span>
+          <span class="raven-check-content">
+            <strong>M03 &mdash; Agent Trace Reading</strong>
+            <span class="raven-check-desc">I can read an agent trace and identify healthy loops, stuck loops, and the correct intervention signal &mdash; and I know when to hold vs intervene.</span>
+          </span>
+        </label>
+
+        <label class="raven-check-item">
+          <input type="checkbox" data-check="m04" />
+          <span class="raven-check-box"></span>
+          <span class="raven-check-content">
+            <strong>M04 &mdash; TCEF Prompt Engineering</strong>
+            <span class="raven-check-desc">I can write a TCEF prompt with precision verbs in the Task, grounding Context, concrete domain-specific Examples, and a constrained machine-readable Format.</span>
+          </span>
+        </label>
+
+        <label class="raven-check-item">
+          <input type="checkbox" data-check="m05" />
+          <span class="raven-check-box"></span>
+          <span class="raven-check-content">
+            <strong>M05 &mdash; MCP Architecture</strong>
+            <span class="raven-check-desc">I understand MCP architecture &mdash; exactly three primitives (Tools, Resources, Prompts), transport choices, and capability discovery at session start.</span>
+          </span>
+        </label>
+
+        <label class="raven-check-item">
+          <input type="checkbox" data-check="m06" />
+          <span class="raven-check-box"></span>
+          <span class="raven-check-content">
+            <strong>M06 &mdash; Building MCP Servers</strong>
+            <span class="raven-check-desc">I can design and implement MCP servers with correct primitive selection, tool schemas Claude can use reliably, and structured <code>isError</code> handling.</span>
+          </span>
+        </label>
+
+        <label class="raven-check-item">
+          <input type="checkbox" data-check="m07" />
+          <span class="raven-check-box"></span>
+          <span class="raven-check-content">
+            <strong>M07 &mdash; Skills &amp; Commands</strong>
+            <span class="raven-check-desc">I can create skill files, load them in CLAUDE.md, build a reusable skill library, and distinguish LUXOR conventions from native Claude Code features.</span>
+          </span>
+        </label>
+
+        <label class="raven-check-item">
+          <input type="checkbox" data-check="m08" />
+          <span class="raven-check-box"></span>
+          <span class="raven-check-content">
+            <strong>M08 &mdash; Meta-Prompting</strong>
+            <span class="raven-check-desc">I can use meta-prompting to generate, evaluate, and improve prompts, and I know when direct prompting is the safer or faster choice.</span>
+          </span>
+        </label>
+
+        <label class="raven-check-item">
+          <input type="checkbox" data-check="m09" />
+          <span class="raven-check-box"></span>
+          <span class="raven-check-content">
+            <strong>M09 &mdash; Multi-Agent Architecture</strong>
+            <span class="raven-check-desc">I can apply the four-question decision framework to choose between single-agent and multi-agent architectures, and I default to single-agent until I can justify multi-agent.</span>
+          </span>
+        </label>
+
+        <label class="raven-check-item">
+          <input type="checkbox" data-check="m10" />
+          <span class="raven-check-box"></span>
+          <span class="raven-check-content">
+            <strong>M10 &mdash; Security &amp; Permissions</strong>
+            <span class="raven-check-desc">I can configure permission boundaries with least privilege, manage secrets correctly (environment variables only), and design approval gates for irreversible actions.</span>
+          </span>
+        </label>
+
+        <label class="raven-check-item">
+          <input type="checkbox" data-check="m11" />
+          <span class="raven-check-box"></span>
+          <span class="raven-check-content">
+            <strong>M11 &mdash; Tech Stack Adaptation</strong>
+            <span class="raven-check-desc">I can adapt any agentic system to a specific tech stack using Context7 for documentation pre-loading and a stack-specific CLAUDE.md encoding team conventions.</span>
+          </span>
+        </label>
+      </div>
+
+      <div class="raven-check-progress" id="check-progress">
+        <span class="raven-check-bar"><span class="raven-check-fill" id="check-fill"></span></span>
+        <span class="raven-check-count" id="check-count">0 / 11</span>
+      </div>
+    </section>
+
     <!-- ── Summary ── -->
     <section class="raven-section">
       <div class="raven-section-heading">
@@ -279,5 +393,42 @@
       </div>
     </section>
   </main>
+
+  <script>
+    // Checklist persistence
+    (function () {
+      var KEY = 'raven-checklist';
+      var boxes = document.querySelectorAll('.raven-checklist input[type="checkbox"]');
+      var fill = document.getElementById('check-fill');
+      var count = document.getElementById('check-count');
+      var total = boxes.length;
+
+      function load() {
+        try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (_) { return {}; }
+      }
+      function save(state) {
+        try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (_) {}
+      }
+      function update() {
+        var checked = 0;
+        boxes.forEach(function (b) { if (b.checked) checked++; });
+        if (fill) fill.style.width = (total ? (checked / total) * 100 : 0) + '%';
+        if (count) count.textContent = checked + ' / ' + total;
+      }
+
+      var state = load();
+      boxes.forEach(function (box) {
+        var key = box.getAttribute('data-check');
+        if (state[key]) box.checked = true;
+        box.addEventListener('change', function () {
+          var s = load();
+          s[key] = box.checked;
+          save(s);
+          update();
+        });
+      });
+      update();
+    })();
+  </script>
 </body>
 </html>
