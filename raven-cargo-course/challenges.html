@@ -35,6 +35,7 @@
         <a class="raven-tab" href="resources.html">Resources</a>
         <a class="raven-tab is-active" href="challenges.html">Challenges</a>
         <a class="raven-tab" href="async.html">Async</a>
+        <a class="raven-tab" href="evaluations.html">Evaluations</a>
       </div>
       <div class="raven-topbar-badge" id="course-badge">Loading…</div>
     </div>
@@ -50,7 +51,7 @@
       <div class="raven-meta-grid">
         <article class="raven-meta-card">
           <div class="raven-meta-label">Challenge Path</div>
-          <div class="raven-meta-value" id="course-subtitle">Loading…</div>
+          <div class="raven-meta-value" id="course-subtitle">Loading&hellip;</div>
         </article>
         <article class="raven-meta-card">
           <div class="raven-meta-label">Briefings</div>
@@ -59,13 +60,186 @@
       </div>
     </section>
 
+    <!-- ════════════════════════════════════════════════════
+         ADDITIONAL VIDEOS — Agentic AI Concepts
+         ════════════════════════════════════════════════════ -->
+    <section class="raven-section" id="additional-videos">
+      <div class="raven-section-heading">
+        <h2>Additional Videos</h2>
+      </div>
+      <p class="raven-section-copy">
+        Supplementary video content covering seven core agentic AI concepts — from goal-oriented execution and voice orchestration to headless CI/CD pipelines. Watch the videos, then tackle the Raven-specific challenges below.
+      </p>
+      <div class="raven-video-grid" id="video-grid">
+        <div class="raven-video-placeholder">
+          <div class="raven-empty-state">YouTube video URLs will be embedded here once provided. Each concept maps to a Raven-specific challenge below.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════
+         RAVEN-SPECIFIC CONCEPT CHALLENGES (Tabbed)
+         ════════════════════════════════════════════════════ -->
+    <section class="raven-section" id="concept-challenges">
+      <div class="raven-section-heading">
+        <h2>Raven Concept Challenges</h2>
+      </div>
+      <p class="raven-section-copy">
+        Seven challenges derived from the video concepts above, rewritten for Raven Cargo operations. Use the tabs to filter by role.
+      </p>
+
+      <!-- Tab Switcher -->
+      <div class="raven-filter-tabs" id="concept-filter">
+        <button class="raven-filter-tab is-active" data-filter="all">All</button>
+        <button class="raven-filter-tab" data-filter="non-technical">Non-Technical</button>
+        <button class="raven-filter-tab" data-filter="technical">Technical</button>
+      </div>
+
+      <!-- Non-Technical Challenges (Concepts 1-4) -->
+      <div class="raven-mission-group" data-track="non-technical">
+        <div class="raven-mission-head">
+          <span class="raven-track-badge track-1">Non-Technical</span>
+          <h3>Operations &amp; Business Challenges</h3>
+        </div>
+        <div class="raven-mission-grid">
+
+          <div class="raven-concept-card" id="concept-1">
+            <div class="raven-concept-header">
+              <span class="raven-concept-num">C1</span>
+              <div>
+                <div class="raven-mission-name">The Freight Rate Challenge</div>
+                <div class="raven-concept-level">Foundational &middot; &ldquo;What&rdquo; Over &ldquo;How&rdquo; Philosophy</div>
+              </div>
+            </div>
+            <div class="raven-concept-body">
+              <p class="raven-concept-desc">Agentic workflows shift from step-by-step automation to goal-oriented execution. You provide the desired end goal and the agent figures out the logic, API calls, and tools required.</p>
+              <div class="raven-concept-challenge">
+                <strong>Challenge:</strong> Write a plain-language objective telling your agent to pull current LTL and FTL rate quotes from three carriers Raven Cargo works with and consolidate them into a single comparison spreadsheet. Provide no instructions on column formatting, rate normalization, or which RavenEye API endpoints to use. Evaluate whether the agent autonomously infers the required fields (lane, weight break, transit days, accessorials) or asks clarifying questions.
+              </div>
+            </div>
+          </div>
+
+          <div class="raven-concept-card" id="concept-2">
+            <div class="raven-concept-header">
+              <span class="raven-concept-num">C2</span>
+              <div>
+                <div class="raven-mission-name">The Tracking Dictation Challenge</div>
+                <div class="raven-concept-level">Foundational &middot; Hands-Free Voice Orchestration</div>
+              </div>
+            </div>
+            <div class="raven-concept-body">
+              <p class="raven-concept-desc">Leverage OS-level dictation tools to bypass the keyboard bottleneck. Speak your goals naturally and the software translates voice into executable agentic code.</p>
+              <div class="raven-concept-challenge">
+                <strong>Challenge:</strong> Without touching your keyboard, use a voice-to-text tool to verbally describe an automation that takes a Raven PRO number as input, queries the RavenEye tracking feed for the latest shipment location and status, and drafts a customer update email with the current ETA and any exception flags. Execute the workflow to confirm the agent captured your spoken intent accurately.
+              </div>
+            </div>
+          </div>
+
+          <div class="raven-concept-card" id="concept-3">
+            <div class="raven-concept-header">
+              <span class="raven-concept-num">C3</span>
+              <div>
+                <div class="raven-mission-name">The Customs SOP Challenge</div>
+                <div class="raven-concept-level">Business Operations &middot; W.A.T. Framework</div>
+              </div>
+            </div>
+            <div class="raven-concept-body">
+              <p class="raven-concept-desc">The W.A.T. framework organizes agentic tasks into Workflows (natural-language SOPs), the Agent (the AI coordinator), and Tools (the executable scripts).</p>
+              <div class="raven-concept-challenge">
+                <strong>Challenge:</strong> Create a CLAUDE.md file that acts as your Raven operations onboarding document using the W.A.T. framework. Instruct your agent to read it and autonomously generate the directory structure (Workflows, Tools, Temp) tailored for Raven Cargo's cross-border customs documentation process &mdash; including BOL generation, customs broker handoff templates, and carrier compliance checklists.
+              </div>
+            </div>
+          </div>
+
+          <div class="raven-concept-card" id="concept-4">
+            <div class="raven-concept-header">
+              <span class="raven-concept-num">C4</span>
+              <div>
+                <div class="raven-mission-name">The Fleet Analytics Challenge</div>
+                <div class="raven-concept-level">Business Operations &middot; Multi-Agent Corporate Personas</div>
+              </div>
+            </div>
+            <div class="raven-concept-body">
+              <p class="raven-concept-desc">Build specialized teams of agents representing distinct departments, equipped with specific skills and MCP tool integrations to pull live data.</p>
+              <div class="raven-concept-challenge">
+                <strong>Challenge:</strong> Define an agent persona file assigning the role of &lsquo;Raven Operations Analyst&rsquo; with embedded Raven Cargo brand guidelines (colors, logo, report format). Feed the agent a raw dataset of Raven's monthly carrier performance metrics (on-time %, claims rate, lane coverage, cost-per-mile) and command it to independently generate a 10-slide executive presentation for leadership that follows Raven's brand constraints.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Technical Challenges (Concepts 5-7) -->
+      <div class="raven-mission-group" data-track="technical">
+        <div class="raven-mission-head">
+          <span class="raven-track-badge track-2">Technical</span>
+          <h3>Engineering &amp; DevOps Challenges</h3>
+        </div>
+        <div class="raven-mission-grid">
+
+          <div class="raven-concept-card" id="concept-5">
+            <div class="raven-concept-header">
+              <span class="raven-concept-num">C5</span>
+              <div>
+                <div class="raven-mission-name">The Waybill Flow Control Challenge</div>
+                <div class="raven-concept-level">Technical &middot; Agentic Prompt Composability</div>
+              </div>
+            </div>
+            <div class="raven-concept-body">
+              <p class="raven-concept-desc">High-level agentic prompts must be modular, utilizing dynamic variables and Control Flow logic for loops or conditional early returns without manual intervention.</p>
+              <div class="raven-concept-challenge">
+                <strong>Challenge:</strong> Engineer a composable prompt with a dynamic <code>{{PRO_NUMBER}}</code> variable that triggers a Raven shipment status lookup. Include explicit control flow: if no PRO number is provided, halt execution and ask the dispatcher to supply it; if the shipment shows an exception status in RavenEye, branch into an escalation sub-prompt that drafts a carrier communication and flags the load for ops review.
+              </div>
+            </div>
+          </div>
+
+          <div class="raven-concept-card" id="concept-6">
+            <div class="raven-concept-header">
+              <span class="raven-concept-num">C6</span>
+              <div>
+                <div class="raven-mission-name">The Routing Algorithm Concurrency Challenge</div>
+                <div class="raven-concept-level">Technical &middot; Parallel Orchestration</div>
+              </div>
+            </div>
+            <div class="raven-concept-body">
+              <p class="raven-concept-desc">Orchestrate multiple agents in parallel to prevent context bloat and linear execution times. Use Git Worktrees or shared task lists for sub-agents to collaborate.</p>
+              <div class="raven-concept-challenge">
+                <strong>Challenge:</strong> Implement a slash command that spins up three parallel sub-agents against the RavenEye codebase. Agent 1 audits the carrier API integration layer for security vulnerabilities and credential exposure. Agent 2 profiles the shipment tracking query performance and identifies latency bottlenecks. Agent 3 evaluates test coverage across the booking and dispatch modules. The coordinator agent aggregates all three reports into a single prioritized executive summary for the engineering lead.
+              </div>
+            </div>
+          </div>
+
+          <div class="raven-concept-card" id="concept-7">
+            <div class="raven-concept-header">
+              <span class="raven-concept-num">C7</span>
+              <div>
+                <div class="raven-mission-name">The RavenEye CI/CD Challenge</div>
+                <div class="raven-concept-level">Advanced &middot; Headless Infrastructure &amp; CI/CD</div>
+              </div>
+            </div>
+            <div class="raven-concept-body">
+              <p class="raven-concept-desc">Deploy agents in Headless Mode on scalable cloud infrastructure. Run autonomously 24/7, triggered by webhooks, cron jobs, or new code pushes.</p>
+              <div class="raven-concept-challenge">
+                <strong>Challenge:</strong> Write a GitHub Actions workflow YAML that deploys a headless Claude Code agent triggered on every pull request to the RavenEye repository. The agent's system prompt must audit PRs specifically for: (1) changes touching carrier rate tables or financial calculations, (2) modifications to the shipment tracking API surface, and (3) any new environment variable usage that could leak credentials. Output a structured review comment with severity-tagged findings.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════
+         ORIGINAL CHALLENGE MISSIONS (preserved)
+         ════════════════════════════════════════════════════ -->
     <section class="raven-section">
       <div class="raven-section-heading">
         <h2>Challenge Missions</h2>
       </div>
       <p class="raven-section-copy">
         Open-ended engineering challenges with clear success criteria. These are not guided tutorials. They require you to produce working artifacts on real codebases.
-        <a href="/raven-cargo-course/challenges" style="color:var(--sage);">View full mission briefings →</a>
+        <a href="/raven-cargo-course/challenges" style="color:var(--sage);">View full mission briefings &rarr;</a>
       </p>
 
       <div class="raven-mission-group">
@@ -78,25 +252,25 @@
             <div class="raven-mission-num track-1">1.1</div>
             <div class="raven-mission-body">
               <div class="raven-mission-name">Author Two Skills From Scratch</div>
-              <div class="raven-mission-meta">★★★ · ~3h · Write code-focused + workflow-focused skill YAMLs · M05</div>
+              <div class="raven-mission-meta">&#9733;&#9733;&#9733; &middot; ~3h &middot; Write code-focused + workflow-focused skill YAMLs &middot; M05</div>
             </div>
-            <span class="raven-mission-arrow">→</span>
+            <span class="raven-mission-arrow">&rarr;</span>
           </a>
           <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-12-build-a-slash-command-that-orchestrates-multiple-steps-">
             <div class="raven-mission-num track-1">1.2</div>
             <div class="raven-mission-body">
               <div class="raven-mission-name">Build a Multi-Step Slash Command</div>
-              <div class="raven-mission-meta">★★★ · ~3h · /ship, /onboard, or /incident — 3+ chained steps · M07</div>
+              <div class="raven-mission-meta">&#9733;&#9733;&#9733; &middot; ~3h &middot; /ship, /onboard, or /incident &mdash; 3+ chained steps &middot; M07</div>
             </div>
-            <span class="raven-mission-arrow">→</span>
+            <span class="raven-mission-arrow">&rarr;</span>
           </a>
           <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-13-configure-a-specialized-subagent-">
             <div class="raven-mission-num track-1">1.3</div>
             <div class="raven-mission-body">
               <div class="raven-mission-name">Configure a Specialized Subagent</div>
-              <div class="raven-mission-meta">★★★★ · ~4h · Security reviewer, doc writer, or test generator · M09</div>
+              <div class="raven-mission-meta">&#9733;&#9733;&#9733;&#9733; &middot; ~4h &middot; Security reviewer, doc writer, or test generator &middot; M09</div>
             </div>
-            <span class="raven-mission-arrow">→</span>
+            <span class="raven-mission-arrow">&rarr;</span>
           </a>
         </div>
       </div>
@@ -111,25 +285,25 @@
             <div class="raven-mission-num track-2">2.1</div>
             <div class="raven-mission-body">
               <div class="raven-mission-name">Codebase Archaeology</div>
-              <div class="raven-mission-meta">★★★ · ~3h · Navigate unfamiliar codebase · Bug hunt + fix · M03</div>
+              <div class="raven-mission-meta">&#9733;&#9733;&#9733; &middot; ~3h &middot; Navigate unfamiliar codebase &middot; Bug hunt + fix &middot; M03</div>
             </div>
-            <span class="raven-mission-arrow">→</span>
+            <span class="raven-mission-arrow">&rarr;</span>
           </a>
           <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-22-issue-to-pr-pipeline-using-linear-or-github-mcp-">
             <div class="raven-mission-num track-2">2.2</div>
             <div class="raven-mission-body">
               <div class="raven-mission-name">Issue-to-PR Pipeline</div>
-              <div class="raven-mission-meta">★★★★ · ~5h · Linear/GitHub MCP · 6-step workflow · M06/M07</div>
+              <div class="raven-mission-meta">&#9733;&#9733;&#9733;&#9733; &middot; ~5h &middot; Linear/GitHub MCP &middot; 6-step workflow &middot; M06/M07</div>
             </div>
-            <span class="raven-mission-arrow">→</span>
+            <span class="raven-mission-arrow">&rarr;</span>
           </a>
           <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-23-pr-review-workflow-agent-as-reviewer-">
             <div class="raven-mission-num track-2">2.3</div>
             <div class="raven-mission-body">
               <div class="raven-mission-name">PR Review Workflow</div>
-              <div class="raven-mission-meta">★★★★ · ~4h · 5-category structured review agent · M09</div>
+              <div class="raven-mission-meta">&#9733;&#9733;&#9733;&#9733; &middot; ~4h &middot; 5-category structured review agent &middot; M09</div>
             </div>
-            <span class="raven-mission-arrow">→</span>
+            <span class="raven-mission-arrow">&rarr;</span>
           </a>
         </div>
       </div>
@@ -144,25 +318,25 @@
             <div class="raven-mission-num track-3">3.1</div>
             <div class="raven-mission-body">
               <div class="raven-mission-name">Developer Productivity Toolkit</div>
-              <div class="raven-mission-meta">★★★★ · ~6h · Skill + command + subagent as a system · M07/M09</div>
+              <div class="raven-mission-meta">&#9733;&#9733;&#9733;&#9733; &middot; ~6h &middot; Skill + command + subagent as a system &middot; M07/M09</div>
             </div>
-            <span class="raven-mission-arrow">→</span>
+            <span class="raven-mission-arrow">&rarr;</span>
           </a>
           <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-31b-bridge-to-end-to-end-automation-">
             <div class="raven-mission-num track-3">3.1B</div>
             <div class="raven-mission-body">
               <div class="raven-mission-name">Bridge: Partial Pipeline + Review Gate</div>
-              <div class="raven-mission-meta">★★★★ · ~4h · Intake-to-test run + enforced checkpoint before merge automation</div>
+              <div class="raven-mission-meta">&#9733;&#9733;&#9733;&#9733; &middot; ~4h &middot; Intake-to-test run + enforced checkpoint before merge automation</div>
             </div>
-            <span class="raven-mission-arrow">→</span>
+            <span class="raven-mission-arrow">&rarr;</span>
           </a>
           <a class="raven-mission-card" href="/raven-cargo-course/challenges#mission-32-issue-to-merge-end-to-end-automation-">
             <div class="raven-mission-num track-3">3.2</div>
             <div class="raven-mission-body">
               <div class="raven-mission-name">Issue-to-Merge Automation</div>
-              <div class="raven-mission-meta">★★★★★ · ~10h · Full pipeline · Human checkpoints · Production-grade · All modules</div>
+              <div class="raven-mission-meta">&#9733;&#9733;&#9733;&#9733;&#9733; &middot; ~10h &middot; Full pipeline &middot; Human checkpoints &middot; Production-grade &middot; All modules</div>
             </div>
-            <span class="raven-mission-arrow">→</span>
+            <span class="raven-mission-arrow">&rarr;</span>
           </a>
         </div>
       </div>
@@ -177,50 +351,50 @@
           <a class="raven-mission-card" href="/raven-cargo-course/lab/04#ce-03-d">
             <div class="raven-mission-num track-ex">CE</div>
             <div class="raven-mission-body">
-              <div class="raven-mission-name">CE-03-D · Issue Navigation</div>
-              <div class="raven-mission-meta">Lab 04 · Debug auth 500 error · PRAO + GCCF fix prompt · +30 XP</div>
+              <div class="raven-mission-name">CE-03-D &middot; Issue Navigation</div>
+              <div class="raven-mission-meta">Lab 04 &middot; Debug auth 500 error &middot; PRAO + GCCF fix prompt &middot; +30 XP</div>
             </div>
-            <span class="raven-mission-arrow">→</span>
+            <span class="raven-mission-arrow">&rarr;</span>
           </a>
           <a class="raven-mission-card" href="/raven-cargo-course/lab/06#ce-04-b">
             <div class="raven-mission-num track-ex">CE</div>
             <div class="raven-mission-body">
-              <div class="raven-mission-name">CE-04-B · Tool Schema Design</div>
-              <div class="raven-mission-meta">Lab 06 · Write production MCP tool JSON schema · Auto-validated · +30 XP</div>
+              <div class="raven-mission-name">CE-04-B &middot; Tool Schema Design</div>
+              <div class="raven-mission-meta">Lab 06 &middot; Write production MCP tool JSON schema &middot; Auto-validated &middot; +30 XP</div>
             </div>
-            <span class="raven-mission-arrow">→</span>
+            <span class="raven-mission-arrow">&rarr;</span>
           </a>
           <a class="raven-mission-card" href="/raven-cargo-course/lab/05#ce-06-c">
             <div class="raven-mission-num track-ex">CE</div>
             <div class="raven-mission-body">
-              <div class="raven-mission-name">CE-06-C · Author a Skill YAML</div>
-              <div class="raven-mission-meta">Lab 05 · Write standup-writer skill from scratch · 6-field validation · +30 XP</div>
+              <div class="raven-mission-name">CE-06-C &middot; Author a Skill YAML</div>
+              <div class="raven-mission-meta">Lab 05 &middot; Write standup-writer skill from scratch &middot; 6-field validation &middot; +30 XP</div>
             </div>
-            <span class="raven-mission-arrow">→</span>
+            <span class="raven-mission-arrow">&rarr;</span>
           </a>
           <a class="raven-mission-card" href="/raven-cargo-course/lab/05#ce-06-d">
             <div class="raven-mission-num track-ex">CE</div>
             <div class="raven-mission-body">
-              <div class="raven-mission-name">CE-06-D · Build /pr-ready Command</div>
-              <div class="raven-mission-meta">Lab 05 · Design slash command with 4 sections · Data flow required · +30 XP</div>
+              <div class="raven-mission-name">CE-06-D &middot; Build /pr-ready Command</div>
+              <div class="raven-mission-meta">Lab 05 &middot; Design slash command with 4 sections &middot; Data flow required &middot; +30 XP</div>
             </div>
-            <span class="raven-mission-arrow">→</span>
+            <span class="raven-mission-arrow">&rarr;</span>
           </a>
           <a class="raven-mission-card" href="/raven-cargo-course/lab/07#ce-07-b">
             <div class="raven-mission-num track-ex">CE</div>
             <div class="raven-mission-body">
-              <div class="raven-mission-name">CE-07-B · Subagent System Prompt</div>
-              <div class="raven-mission-meta">Lab 07 · Write 200+ word system prompt · 6-section spec · +30 XP</div>
+              <div class="raven-mission-name">CE-07-B &middot; Subagent System Prompt</div>
+              <div class="raven-mission-meta">Lab 07 &middot; Write 200+ word system prompt &middot; 6-section spec &middot; +30 XP</div>
             </div>
-            <span class="raven-mission-arrow">→</span>
+            <span class="raven-mission-arrow">&rarr;</span>
           </a>
           <a class="raven-mission-card" href="/raven-cargo-course/lab/08#ce-08-a">
             <div class="raven-mission-num track-ex">CE</div>
             <div class="raven-mission-body">
-              <div class="raven-mission-name">CE-08-A · Permission Models</div>
-              <div class="raven-mission-meta">Lab 08 · Write settings.json for 3 scenarios · JSON validated · +30 XP</div>
+              <div class="raven-mission-name">CE-08-A &middot; Permission Models</div>
+              <div class="raven-mission-meta">Lab 08 &middot; Write settings.json for 3 scenarios &middot; JSON validated &middot; +30 XP</div>
             </div>
-            <span class="raven-mission-arrow">→</span>
+            <span class="raven-mission-arrow">&rarr;</span>
           </a>
         </div>
       </div>
@@ -236,5 +410,27 @@
       </div>
     </section>
   </main>
+
+  <script>
+    // Tab filter for concept challenges
+    (function () {
+      var tabs = document.querySelectorAll('#concept-filter .raven-filter-tab');
+      var groups = document.querySelectorAll('#concept-challenges .raven-mission-group[data-track]');
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          tabs.forEach(function (t) { t.classList.remove('is-active'); });
+          tab.classList.add('is-active');
+          var filter = tab.getAttribute('data-filter');
+          groups.forEach(function (g) {
+            if (filter === 'all') {
+              g.style.display = '';
+            } else {
+              g.style.display = g.getAttribute('data-track') === filter ? '' : 'none';
+            }
+          });
+        });
+      });
+    })();
+  </script>
 </body>
 </html>

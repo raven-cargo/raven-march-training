@@ -21,6 +21,7 @@ function getConfig() {
     resourcesTable: process.env.SUPABASE_RAVEN_RESOURCES_TABLE || 'raven_course_resources',
     submissionsBucket: process.env.SUPABASE_RAVEN_SUBMISSIONS_BUCKET || 'raven-course-submissions',
     resourcesBucket: process.env.SUPABASE_RAVEN_RESOURCES_BUCKET || 'raven-course-resources',
+    evaluationsTable: process.env.SUPABASE_RAVEN_EVALUATIONS_TABLE || 'raven_course_evaluations',
     resourceWriteToken: process.env.RAVEN_RESOURCE_WRITE_TOKEN || process.env.RAVEN_SUBMISSIONS_WRITE_TOKEN || ''
   };
 }

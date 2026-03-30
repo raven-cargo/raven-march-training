@@ -443,6 +443,7 @@
               '<div class="raven-chip-row">' +
                 (item.block_title ? '<span class="raven-chip">' + escapeHtml(item.block_title) + '</span>' : '') +
                 (item.use_case_title ? '<span class="raven-chip">' + escapeHtml(item.use_case_title) + '</span>' : '') +
+                (item.mission_title ? '<span class="raven-chip">' + escapeHtml(item.mission_title) + '</span>' : '') +
                 '<span class="raven-chip submission-order">Most Recent First</span>' +
               '</div>' +
               '<div class="raven-submission-title">' + escapeHtml(title) + '</div>' +
@@ -615,6 +616,7 @@
     var fileMeta = null;
     var labSelect = byId('submission-lab');
     var useCaseSelect = byId('submission-use-case');
+    var missionSelect = byId('submission-mission');
 
     var filePromise = Promise.resolve();
     if (fileInput && fileInput.files && fileInput.files[0]) {
@@ -628,6 +630,7 @@
     filePromise.then(function () {
       var selectedLab = labSelect && labSelect.selectedOptions && labSelect.selectedOptions[0] ? labSelect.selectedOptions[0].textContent : '';
       var selectedUseCase = useCaseSelect && useCaseSelect.selectedOptions && useCaseSelect.selectedOptions[0] ? useCaseSelect.selectedOptions[0].textContent : '';
+      var selectedMission = missionSelect && missionSelect.selectedOptions && missionSelect.selectedOptions[0] ? missionSelect.selectedOptions[0].textContent : '';
       return readJson('/api/raven-course/submissions', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -642,6 +645,8 @@
           lab_title: selectedLab,
           use_case_id: useCaseSelect ? useCaseSelect.value : '',
           use_case_title: selectedUseCase,
+          mission_id: missionSelect ? missionSelect.value : '',
+          mission_title: missionSelect && missionSelect.value ? selectedMission : '',
           notes: byId('submission-notes').value.trim(),
           link_url: byId('submission-link').value.trim(),
           file_url: fileMeta ? fileMeta.fileUrl : '',
@@ -725,6 +730,85 @@
     }
   }
 
+  /* ── Evaluation Star Ratings & Form ── */
+  var STAR_LABELS = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+
+  function setupStarRatings() {
+    var groups = document.querySelectorAll('.raven-star-group');
+    for (var g = 0; g < groups.length; g++) {
+      (function (group) {
+        var field = group.getAttribute('data-rating-for');
+        var stars = group.querySelectorAll('.raven-star');
+        var label = group.querySelector('.raven-star-label');
+        var hiddenInput = byId('eval-rating-' + field);
+
+        function paint(upTo, cls) {
+          for (var s = 0; s < stars.length; s++) {
+            stars[s].classList.toggle(cls, s < upTo);
+          }
+        }
+
+        for (var s = 0; s < stars.length; s++) {
+          (function (star, index) {
+            star.addEventListener('mouseenter', function () {
+              paint(index + 1, 'is-hover');
+              if (label) label.textContent = STAR_LABELS[index + 1] || '';
+            });
+            star.addEventListener('mouseleave', function () {
+              paint(0, 'is-hover');
+              var current = hiddenInput ? parseInt(hiddenInput.value, 10) : 0;
+              if (label) label.textContent = current ? STAR_LABELS[current] : '';
+            });
+            star.addEventListener('click', function () {
+              var val = index + 1;
+              paint(val, 'is-active');
+              if (hiddenInput) hiddenInput.value = val;
+              if (label) label.textContent = STAR_LABELS[val] || '';
+            });
+          })(stars[s], s);
+        }
+      })(groups[g]);
+    }
+  }
+
+  function handleEvaluation(event) {
+    event.preventDefault();
+    setStatus('evaluation-status', 'Submitting evaluation…');
+
+    var ri = byId('eval-rating-instructor');
+    var rr = byId('eval-rating-relevance');
+    var rm = byId('eval-rating-materials');
+
+    if ((!ri || !ri.value) && (!rr || !rr.value) && (!rm || !rm.value)) {
+      setStatus('evaluation-status', 'Please select at least one star rating.', 'error');
+      return;
+    }
+
+    readJson('/api/raven-course/evaluations', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        name: (byId('eval-name').value || '').trim(),
+        rating_instructor: ri ? ri.value : '',
+        rating_relevance: rr ? rr.value : '',
+        rating_materials: rm ? rm.value : '',
+        instructor_comments: (byId('eval-instructor-comments').value || '').trim(),
+        relevance_comments: (byId('eval-relevance-comments').value || '').trim(),
+        materials_comments: (byId('eval-materials-comments').value || '').trim(),
+        overall_comments: (byId('eval-overall').value || '').trim(),
+        recommend: byId('eval-recommend') ? byId('eval-recommend').value : ''
+      })
+    }).then(function () {
+      var form = byId('evaluation-form');
+      if (form) form.style.display = 'none';
+      var confirm = byId('eval-confirmation');
+      if (confirm) confirm.hidden = false;
+      setStatus('evaluation-status', '');
+    }).catch(function (error) {
+      setStatus('evaluation-status', error.message, 'error');
+    });
+  }
+
   function forceDarkTheme() {
     document.documentElement.setAttribute('data-theme', 'dark');
     try {
@@ -765,6 +849,12 @@
         setupResourcePanel();
         resourceForm.addEventListener('submit', handleResourceUpload);
         fetchResources();
+      }
+
+      var evaluationForm = byId('evaluation-form');
+      if (evaluationForm) {
+        setupStarRatings();
+        evaluationForm.addEventListener('submit', handleEvaluation);
       }
     }).catch(function (error) {
       var host = byId('course-flow');

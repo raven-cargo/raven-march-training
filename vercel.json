@@ -8,6 +8,7 @@
     { "source": "/raven-cargo-course/resources", "destination": "/raven-cargo-course/resources.html" },
     { "source": "/raven-cargo-course/submissions", "destination": "/raven-cargo-course/submissions.html" },
     { "source": "/raven-cargo-course/async", "destination": "/raven-cargo-course/async.html" },
+    { "source": "/raven-cargo-course/evaluations", "destination": "/raven-cargo-course/evaluations.html" },
     { "source": "/raven-cargo-course/module/:id", "destination": "/raven-cargo-course/module-viewer.html" },
     { "source": "/raven-cargo-course/challenges", "destination": "/raven-cargo-course/module-viewer.html" },
     { "source": "/raven-cargo-course/challenge", "destination": "/raven-cargo-course/module-viewer.html" },

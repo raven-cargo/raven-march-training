@@ -49,6 +49,8 @@ module.exports = async function handler(req, res) {
       lab_title: body.lab_title || '',
       use_case_id: body.use_case_id || null,
       use_case_title: body.use_case_title || '',
+      mission_id: body.mission_id || null,
+      mission_title: body.mission_title || '',
       notes: body.notes || '',
       link_url: body.link_url || '',
       file_url: body.file_url || '',

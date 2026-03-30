@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Raven Cargo Evaluations</title>
+  <script>
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.style.colorScheme = 'dark';
+  </script>
+  <script>
+    (function () {
+      var baseHref = window.location.protocol === 'file:' ? './' : '/raven-cargo-course/';
+      document.write('<base href="' + baseHref + '">');
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/theme-toggle.css" />
+  <link rel="stylesheet" href="assets/raven-course.css" />
+  <script src="assets/theme-toggle.js" defer></script>
+  <script src="assets/raven-course.js" defer></script>
+</head>
+<body class="raven-course-home">
+  <div class="raven-topbar">
+    <div class="raven-topbar-inner">
+      <div class="raven-brand">
+        <span class="raven-brand-label">CETI AI · Raven March Training</span>
+        <span class="raven-brand-title" id="page-title">Raven Cargo AI Transformation</span>
+      </div>
+      <div class="raven-tabs" aria-label="Course sections">
+        <a class="raven-tab" href="index.html#course-flow-section">Course Flow</a>
+        <a class="raven-tab" href="submissions.html">Submissions</a>
+        <a class="raven-tab" href="resources.html">Resources</a>
+        <a class="raven-tab" href="challenges.html">Challenges</a>
+        <a class="raven-tab" href="async.html">Async</a>
+        <a class="raven-tab is-active" href="evaluations.html">Evaluations</a>
+      </div>
+      <div class="raven-topbar-badge" id="course-badge">Loading…</div>
+    </div>
+  </div>
+
+  <main class="raven-app">
+    <section class="raven-hero">
+      <div class="raven-hero-copy">
+        <div class="raven-overline">Raven Cargo · Course Evaluation</div>
+        <h1 id="course-title">Raven Cargo AI Transformation</h1>
+        <p id="course-summary">Share your feedback on the instructor, course relevance, and materials. Your responses help us improve future sessions.</p>
+      </div>
+      <div class="raven-meta-grid">
+        <article class="raven-meta-card">
+          <div class="raven-meta-label">Course Instance</div>
+          <div class="raven-meta-value" id="course-subtitle">Loading…</div>
+        </article>
+        <article class="raven-meta-card">
+          <div class="raven-meta-label">Privacy</div>
+          <div class="raven-meta-value">Evaluations are confidential. Only the instructor can view submitted feedback.</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="raven-section">
+      <div class="raven-section-heading">
+        <h2>Course Evaluation</h2>
+      </div>
+      <p class="raven-section-copy">Rate each area and add any comments. All fields except star ratings are optional.</p>
+
+      <div class="raven-form-layout raven-form-layout-single">
+        <article class="raven-form-card">
+          <form id="evaluation-form">
+            <div class="raven-form-grid">
+              <div class="raven-field" style="flex-basis:100%;">
+                <label for="eval-name">Name (optional)</label>
+                <input id="eval-name" name="name" placeholder="Leave blank for anonymous feedback" />
+              </div>
+
+              <!-- Instructor Rating -->
+              <div class="raven-field" style="flex-basis:100%;">
+                <label>Instructor</label>
+                <div class="raven-star-group" data-rating-for="instructor">
+                  <button type="button" class="raven-star" data-value="1" aria-label="1 star">
+                    <svg viewBox="0 0 24 24" width="28" height="28"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  </button>
+                  <button type="button" class="raven-star" data-value="2" aria-label="2 stars">
+                    <svg viewBox="0 0 24 24" width="28" height="28"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  </button>
+                  <button type="button" class="raven-star" data-value="3" aria-label="3 stars">
+                    <svg viewBox="0 0 24 24" width="28" height="28"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  </button>
+                  <button type="button" class="raven-star" data-value="4" aria-label="4 stars">
+                    <svg viewBox="0 0 24 24" width="28" height="28"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  </button>
+                  <button type="button" class="raven-star" data-value="5" aria-label="5 stars">
+                    <svg viewBox="0 0 24 24" width="28" height="28"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  </button>
+                  <span class="raven-star-label"></span>
+                </div>
+                <input type="hidden" name="rating_instructor" id="eval-rating-instructor" value="" />
+                <div class="raven-field-note">Clarity of explanations, pacing, responsiveness to questions</div>
+              </div>
+
+              <div class="raven-field" style="flex-basis:100%;">
+                <label for="eval-instructor-comments">Instructor Comments</label>
+                <textarea id="eval-instructor-comments" name="instructor_comments" placeholder="What did the instructor do well? What could be improved?"></textarea>
+              </div>
+
+              <!-- Course Relevance Rating -->
+              <div class="raven-field" style="flex-basis:100%;">
+                <label>Course Relevance</label>
+                <div class="raven-star-group" data-rating-for="relevance">
+                  <button type="button" class="raven-star" data-value="1" aria-label="1 star">
+                    <svg viewBox="0 0 24 24" width="28" height="28"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  </button>
+                  <button type="button" class="raven-star" data-value="2" aria-label="2 stars">
+                    <svg viewBox="0 0 24 24" width="28" height="28"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  </button>
+                  <button type="button" class="raven-star" data-value="3" aria-label="3 stars">
+                    <svg viewBox="0 0 24 24" width="28" height="28"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  </button>
+                  <button type="button" class="raven-star" data-value="4" aria-label="4 stars">
+                    <svg viewBox="0 0 24 24" width="28" height="28"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  </button>
+                  <button type="button" class="raven-star" data-value="5" aria-label="5 stars">
+                    <svg viewBox="0 0 24 24" width="28" height="28"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  </button>
+                  <span class="raven-star-label"></span>
+                </div>
+                <input type="hidden" name="rating_relevance" id="eval-rating-relevance" value="" />
+                <div class="raven-field-note">How applicable is the content to your daily work at Raven Cargo?</div>
+              </div>
+
+              <div class="raven-field" style="flex-basis:100%;">
+                <label for="eval-relevance-comments">Relevance Comments</label>
+                <textarea id="eval-relevance-comments" name="relevance_comments" placeholder="Which topics were most/least relevant to your role?"></textarea>
+              </div>
+
+              <!-- Course Materials Rating -->
+              <div class="raven-field" style="flex-basis:100%;">
+                <label>Course Materials</label>
+                <div class="raven-star-group" data-rating-for="materials">
+                  <button type="button" class="raven-star" data-value="1" aria-label="1 star">
+                    <svg viewBox="0 0 24 24" width="28" height="28"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  </button>
+                  <button type="button" class="raven-star" data-value="2" aria-label="2 stars">
+                    <svg viewBox="0 0 24 24" width="28" height="28"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  </button>
+                  <button type="button" class="raven-star" data-value="3" aria-label="3 stars">
+                    <svg viewBox="0 0 24 24" width="28" height="28"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  </button>
+                  <button type="button" class="raven-star" data-value="4" aria-label="4 stars">
+                    <svg viewBox="0 0 24 24" width="28" height="28"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  </button>
+                  <button type="button" class="raven-star" data-value="5" aria-label="5 stars">
+                    <svg viewBox="0 0 24 24" width="28" height="28"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  </button>
+                  <span class="raven-star-label"></span>
+                </div>
+                <input type="hidden" name="rating_materials" id="eval-rating-materials" value="" />
+                <div class="raven-field-note">Quality of modules, labs, slides, and reference materials</div>
+              </div>
+
+              <div class="raven-field" style="flex-basis:100%;">
+                <label for="eval-materials-comments">Materials Comments</label>
+                <textarea id="eval-materials-comments" name="materials_comments" placeholder="Were the labs helpful? Any materials you'd like to see added or improved?"></textarea>
+              </div>
+
+              <!-- Overall -->
+              <div class="raven-field" style="flex-basis:100%;">
+                <label for="eval-overall">Overall Feedback</label>
+                <textarea id="eval-overall" name="overall_comments" placeholder="Anything else you'd like us to know? Suggestions for future sessions?"></textarea>
+              </div>
+
+              <div class="raven-field" style="flex-basis:100%;">
+                <label for="eval-recommend">Would you recommend this course to a colleague?</label>
+                <select id="eval-recommend" name="recommend">
+                  <option value="">— Select —</option>
+                  <option value="definitely">Definitely yes</option>
+                  <option value="probably">Probably yes</option>
+                  <option value="unsure">Unsure</option>
+                  <option value="probably_not">Probably not</option>
+                  <option value="no">No</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="raven-form-actions">
+              <button class="raven-button" type="submit">Submit Evaluation</button>
+              <div class="raven-status" id="evaluation-status"></div>
+            </div>
+          </form>
+        </article>
+      </div>
+
+      <div class="raven-eval-confirmation" id="eval-confirmation" hidden>
+        <div class="raven-empty-state" style="border-color: var(--sage); background: rgba(199, 216, 185, 0.06);">
+          Thank you for your feedback! Your evaluation has been submitted confidentially.
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

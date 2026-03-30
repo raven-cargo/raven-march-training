@@ -1,0 +1,81 @@
+{
+  "concepts": [
+    {
+      "id": "what-over-how",
+      "number": 1,
+      "title": "The \"What\" Over \"How\" Philosophy",
+      "level": "Foundational",
+      "track": "non-technical",
+      "breakdown": "Agentic workflows shift the paradigm from step-by-step traditional automation to goal-oriented execution. Instead of giving a strict recipe, you provide the desired end goal and the agent figures out the logic, API calls, and tools required to accomplish it.",
+      "challenge_title": "The Freight Rate Challenge",
+      "challenge_original": "Write a plain-language objective telling your agent to scrape current freight rates and container availability from three different carrier shipping websites and export them into a single spreadsheet. Provide absolutely zero instructions on how to format the data, bypass the site layouts, or which scraping tools to use. Evaluate if the agent can autonomously request clarification or successfully infer the required logistics fields.",
+      "challenge_raven": "Write a plain-language objective telling your agent to pull current LTL and FTL rate quotes from three carriers Raven Cargo works with and consolidate them into a single comparison spreadsheet. Provide no instructions on column formatting, rate normalization, or which RavenEye API endpoints to use. Evaluate whether the agent autonomously infers the required fields (lane, weight break, transit days, accessorials) or asks clarifying questions."
+    },
+    {
+      "id": "voice-orchestration",
+      "number": 2,
+      "title": "Hands-Free Voice Orchestration",
+      "level": "Foundational",
+      "track": "non-technical",
+      "breakdown": "By leveraging OS-level dictation tools (like Whisper Flow), you can bypass the keyboard bottleneck. You simply speak your overarching goals naturally, and the software translates your voice into executable agentic code, automatically removing filler words and formatting technical instructions.",
+      "challenge_title": "The Tracking Dictation Challenge",
+      "challenge_original": "Without touching your keyboard, use a voice-to-text tool to verbally describe an automation script that takes a dynamic input of a shipment container ID, pings a specific carrier's API to fetch the latest location status, and drafts an update email to the client with an ETA. Execute the workflow to confirm the agent successfully captured your spoken intent.",
+      "challenge_raven": "Without touching your keyboard, use a voice-to-text tool to verbally describe an automation that takes a Raven PRO number as input, queries the RavenEye tracking feed for the latest shipment location and status, and drafts a customer update email with the current ETA and any exception flags. Execute the workflow to confirm the agent captured your spoken intent accurately."
+    },
+    {
+      "id": "wat-framework",
+      "number": 3,
+      "title": "The W.A.T. Framework",
+      "level": "Non-Technical & Business Operations",
+      "track": "non-technical",
+      "breakdown": "Complex projects require structure. The W.A.T. framework organizes agentic tasks into Workflows (the natural-language SOPs), the Agent (the AI coordinator), and Tools (the executable scripts that do the physical work).",
+      "challenge_title": "The Customs SOP Challenge",
+      "challenge_original": "Create a claude.md file that acts as your system's onboarding document, outlining the W.A.T. framework. Instruct your agent to read this file and autonomously generate the proper directory structure (folders for Workflows, Tools, and Temp files) specifically tailored for handling international customs documentation and auto-generating Bills of Lading.",
+      "challenge_raven": "Create a CLAUDE.md file that acts as your Raven operations onboarding document using the W.A.T. framework. Instruct your agent to read it and autonomously generate the directory structure (Workflows, Tools, Temp) tailored for Raven Cargo's cross-border customs documentation process — including BOL generation, customs broker handoff templates, and carrier compliance checklists."
+    },
+    {
+      "id": "multi-agent-personas",
+      "number": 4,
+      "title": "Multi-Agent Corporate Personas",
+      "level": "Non-Technical & Business Operations",
+      "track": "non-technical",
+      "breakdown": "You can build specialized teams of agents representing distinct departments, equipped with specific skills and Model Context Protocol (MCP) tool integrations to pull live data.",
+      "challenge_title": "The Fleet Analytics Challenge",
+      "challenge_original": "Define an .md file assigning a specific role (e.g., \"Fleet Data Analyst\") and embed strict brand guidelines containing your shipping company's color palettes and logo usage. Provide the agent a raw dataset of monthly fleet fuel consumption and route mileage, and command it to independently design and format a 10-slide executive presentation that adheres strictly to your brand constraints.",
+      "challenge_raven": "Define an agent persona file assigning the role of 'Raven Operations Analyst' with embedded Raven Cargo brand guidelines (colors, logo, report format). Feed the agent a raw dataset of Raven's monthly carrier performance metrics (on-time %, claims rate, lane coverage, cost-per-mile) and command it to independently generate a 10-slide executive presentation for leadership that follows Raven's brand constraints."
+    },
+    {
+      "id": "prompt-composability",
+      "number": 5,
+      "title": "Agentic Prompt Composability",
+      "level": "Technical",
+      "track": "technical",
+      "breakdown": "High-level agentic prompts must be modular, utilizing dynamic variables and Control Flow logic. This allows the prompt to execute loops or conditional early returns automatically without manual intervention.",
+      "challenge_title": "The Waybill Flow Control Challenge",
+      "challenge_original": "Engineer a level-3 Control Flow prompt utilizing a dynamic input variable for a Tracking Number or Waybill ID. Write a conditional statement explicitly stating: If no tracking number is provided in the variable, immediately stop execution and ask the logistics coordinator to provide it.",
+      "challenge_raven": "Engineer a composable prompt with a dynamic {{PRO_NUMBER}} variable that triggers a Raven shipment status lookup. Include explicit control flow: if no PRO number is provided, halt execution and ask the dispatcher to supply it; if the shipment shows an exception status in RavenEye, branch into an escalation sub-prompt that drafts a carrier communication and flags the load for ops review."
+    },
+    {
+      "id": "parallel-orchestration",
+      "number": 6,
+      "title": "Parallel Orchestration & Collaborative Teams",
+      "level": "Technical",
+      "track": "technical",
+      "breakdown": "To prevent context bloat and linear execution times, you can orchestrate multiple agents in parallel. This can involve using Git Worktrees for agents to work simultaneously on different branches, or setting up shared task lists for sub-agents to collaborate.",
+      "challenge_title": "The Routing Algorithm Concurrency Challenge",
+      "challenge_original": "Implement a command that spins up three distinct, parallel sub-agents to evaluate a new logistics routing algorithm codebase. Assign one to review carrier API integrations for security vulnerabilities, one to check performance/latency, and one to evaluate test coverage. Have the main coordinating agent aggregate their independent findings into a single prioritized executive summary.",
+      "challenge_raven": "Implement a slash command that spins up three parallel sub-agents against the RavenEye codebase. Agent 1 audits the carrier API integration layer for security vulnerabilities and credential exposure. Agent 2 profiles the shipment tracking query performance and identifies latency bottlenecks. Agent 3 evaluates test coverage across the booking and dispatch modules. The coordinator agent aggregates all three reports into a single prioritized executive summary for the engineering lead."
+    },
+    {
+      "id": "headless-cicd",
+      "number": 7,
+      "title": "Headless Infrastructure & CI/CD",
+      "level": "Advanced Engineering & DevOps",
+      "track": "technical",
+      "breakdown": "To move agentic workflows into production, agents can be deployed in Headless Mode on scalable cloud infrastructure (like Modal or GitHub Actions). This allows them to run autonomously 24/7, triggered by webhooks, cron jobs, or new code pushes.",
+      "challenge_title": "The Warehouse CI/CD Challenge",
+      "challenge_original": "Write a .yaml configuration file designed for a GitHub Action runner. Embed a highly specific system prompt into the configuration, instructing the headless agent to automatically audit the security of new pull requests submitted for the company's Warehouse Management System (WMS), outputting only critical code-review flags related to inventory databases or payment modules.",
+      "challenge_raven": "Write a GitHub Actions workflow YAML that deploys a headless Claude Code agent triggered on every pull request to the RavenEye repository. The agent's system prompt must audit PRs specifically for: (1) changes touching carrier rate tables or financial calculations, (2) modifications to the shipment tracking API surface, and (3) any new environment variable usage that could leak credentials. Output a structured review comment with severity-tagged findings."
+    }
+  ]
+}
