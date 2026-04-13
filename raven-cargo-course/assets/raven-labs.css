@@ -1,3 +1,23 @@
+:root {
+  --bg-base: var(--olive-dark) !important;
+  --bg-surface: rgba(26, 26, 23, 0.88) !important;
+  --bg-raised: rgba(50, 69, 85, 0.46) !important;
+  --bg-glass: rgba(50, 69, 85, 0.32) !important;
+  --primary: var(--sage) !important;
+  --primary-glow: rgba(199, 216, 185, 0.2) !important;
+  --secondary: var(--camel) !important;
+  --accent: var(--slate-light) !important;
+  --accent-glow: rgba(61, 85, 104, 0.22) !important;
+  --success: var(--sage) !important;
+  --warning: #d4aa84 !important;
+  --danger: #d9826f !important;
+  --text: var(--cream) !important;
+  --text-muted: var(--muted) !important;
+  --text-dim: var(--muted-soft) !important;
+  --border: var(--line) !important;
+  --border-bright: var(--line-strong) !important;
+}
+
 body {
   background:
     radial-gradient(circle at top left, rgba(199, 216, 185, 0.04), transparent 30%),
@@ -10,6 +30,8 @@ nav,
 .top-nav,
 .lab-nav {
   backdrop-filter: blur(10px);
+  background: rgba(26, 26, 23, 0.86) !important;
+  border-bottom: 1px solid var(--line) !important;
 }
 
 .hero,
@@ -34,6 +56,34 @@ nav,
   border-color: rgba(199, 216, 185, 0.18) !important;
 }
 
+.nav-badge,
+.card-badge {
+  background: rgba(199, 216, 185, 0.12) !important;
+  color: var(--sage) !important;
+  border: 1px solid rgba(199, 216, 185, 0.18) !important;
+}
+
+.overline,
+.section-kicker,
+.milestone-label {
+  color: var(--sage) !important;
+}
+
+h1,
+h2,
+h3,
+.hero-title,
+.section-title {
+  color: var(--cream) !important;
+}
+
+h1 {
+  background: linear-gradient(135deg, var(--cream) 0%, rgba(231, 225, 215, 0.72) 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
 .connect-forward {
   background: rgba(61, 85, 104, 0.26) !important;
   border-left-color: var(--camel) !important;
@@ -50,6 +100,41 @@ nav,
 .xp-counter,
 .nav-xp {
   color: var(--cream) !important;
+}
+
+.card,
+.info-card,
+.challenge-card,
+.check-card,
+.callback-card,
+.insight-card,
+.warning-card,
+.code-block,
+textarea,
+input,
+select {
+  border-color: var(--line) !important;
+  box-shadow: none !important;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--sage), #d5e1cb) !important;
+  color: var(--olive-dark) !important;
+  box-shadow: 0 0 20px rgba(199, 216, 185, 0.16) !important;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 0 28px rgba(199, 216, 185, 0.2) !important;
+}
+
+.btn-ghost {
+  color: var(--cream) !important;
+  border-color: var(--line) !important;
+}
+
+.btn-ghost:hover {
+  border-color: var(--sage) !important;
+  color: var(--sage) !important;
 }
 
 /* Temporary course-wide ungating during rapid iteration */

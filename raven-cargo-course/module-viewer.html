@@ -3016,6 +3016,14 @@
       line-height: 1.6;
     }
 
+    .ix-trace-compare-shared {
+      border-top: 1px solid var(--border);
+      max-height: 220px;
+      padding: 14px 16px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
     .ix-trace-compare-col .ix-trace-row {
       gap: 6px;
     }
@@ -3503,29 +3511,37 @@
     var components = contentEl.querySelectorAll('[data-component]');
     components.forEach(function (el) {
       var type = el.dataset.component;
-      switch (type) {
-        case 'tabbed-panel':     initTabbedPanel(el);     break;
-        case 'click-cards':      initClickCards(el);      break;
-        case 'flow-diagram':     initFlowDiagram(el);     break;
-        case 'decision-tree':    initDecisionTree(el);    break;
-        case 'step-walkthrough': initStepWalkthrough(el); break;
-        case 'agent-trace':      initAgentTrace(el);      break;
-        case 'quiz':             initQuiz(el);            break;
-        case 'predict-reveal':   initPredictReveal(el);   break;
-        case 'terminal-sim':     initTerminalSim(el);     break;
-        case 'objective':        initObjective(el);       break;
-        case 'callout':          initCallout(el);         break;
-        case 'entry-list':       initEntryList(el);       break;
-        case 'hierarchy':        initHierarchy(el);       break;
-        case 'timeline':         initTimeline(el);        break;
-        case 'scenario-quiz':    initScenarioQuiz(el);    break;
-        case 'reveal-quiz':      initRevealQuiz(el);      break;
-        case 'intervention':     initIntervention(el);    break;
-        case 'debug-steps':      initDebugSteps(el);      break;
-        case 'module-hero':      initModuleHero(el);      break;
-        case 'pattern-grid':     initPatternGrid(el);     break;
-        case 'step-checklist':   initStepChecklist(el);   break;
-        case 'compare':          initCompare(el);         break;
+      try {
+        switch (type) {
+          case 'tabbed-panel':     initTabbedPanel(el);     break;
+          case 'click-cards':      initClickCards(el);      break;
+          case 'flow-diagram':     initFlowDiagram(el);     break;
+          case 'decision-tree':    initDecisionTree(el);    break;
+          case 'step-walkthrough': initStepWalkthrough(el); break;
+          case 'agent-trace':      initAgentTrace(el);      break;
+          case 'quiz':             initQuiz(el);            break;
+          case 'predict-reveal':   initPredictReveal(el);   break;
+          case 'terminal-sim':     initTerminalSim(el);     break;
+          case 'objective':        initObjective(el);       break;
+          case 'callout':          initCallout(el);         break;
+          case 'entry-list':       initEntryList(el);       break;
+          case 'hierarchy':        initHierarchy(el);       break;
+          case 'timeline':         initTimeline(el);        break;
+          case 'scenario-quiz':    initScenarioQuiz(el);    break;
+          case 'reveal-quiz':      initRevealQuiz(el);      break;
+          case 'intervention':     initIntervention(el);    break;
+          case 'debug-steps':      initDebugSteps(el);      break;
+          case 'module-hero':      initModuleHero(el);      break;
+          case 'pattern-grid':     initPatternGrid(el);     break;
+          case 'step-checklist':   initStepChecklist(el);   break;
+          case 'compare':          initCompare(el);         break;
+        }
+      } catch (err) {
+        console.warn('[IX] Component hydration error:', {
+          component: type,
+          diagramId: el.dataset.diagramId || null,
+          error: err
+        });
       }
     });
     // Render Lucide icons inside hydrated components
@@ -3805,12 +3821,12 @@
     if (!node) return null;
     var next = node.nextElementSibling;
     if (next && next.classList.contains('ix-tree-children')) return next;
-    return node.querySelector(':scope > .ix-tree-children');
+    return firstDirectChildMatching(node, '.ix-tree-children');
   }
 
   function ensureDecisionTreeNodeText(node) {
     if (!node) return;
-    if (node.querySelector(':scope > .ix-node-label, :scope > .ix-node-question, :scope > .ix-tree-node-text')) return;
+    if (firstDirectChildMatching(node, '.ix-node-label, .ix-node-question, .ix-tree-node-text')) return;
 
     var textParts = [];
     Array.from(node.childNodes).forEach(function (child) {
@@ -3830,7 +3846,7 @@
   }
 
   function ensureDecisionTreeBranchLabel(branch, fallbackLabel) {
-    if (!branch || branch.querySelector(':scope > .ix-tree-branch-label')) return;
+    if (!branch || firstDirectChildMatching(branch, '.ix-tree-branch-label')) return;
     var labelText = (branch.dataset.answer || branch.dataset.label || fallbackLabel || '').trim();
     if (!labelText) return;
     var label = document.createElement('div');
@@ -3841,7 +3857,7 @@
 
   function ensureDecisionTreeChevron(node, children) {
     if (!node || !children) return;
-    if (node.querySelector(':scope > [data-lucide="chevron-right"], :scope > [data-lucide="chevron-down"], :scope > svg')) return;
+    if (firstDirectChildMatching(node, '[data-lucide="chevron-right"], [data-lucide="chevron-down"], svg')) return;
     var chevron = document.createElement('i');
     chevron.setAttribute('data-lucide', 'chevron-right');
     node.insertBefore(chevron, node.firstChild);
@@ -3856,7 +3872,7 @@
     var branchSource = [];
 
     if (!children) {
-      branchSource = Array.from(node.querySelectorAll(':scope > .ix-tree-branch'));
+      branchSource = directChildrenMatching(node, '.ix-tree-branch');
       if (!branchSource.length) {
         var sibling = node.nextElementSibling;
         while (sibling && sibling.classList.contains('ix-tree-branch')) {
@@ -3868,7 +3884,11 @@
       if (branchSource.length) {
         children = document.createElement('div');
         children.className = 'ix-tree-children';
-        node.parentNode.insertBefore(children, branchSource[0]);
+        if (branchSource[0].parentNode === node) {
+          node.insertBefore(children, branchSource[0]);
+        } else if (node.parentNode) {
+          node.parentNode.insertBefore(children, branchSource[0]);
+        }
         branchSource.forEach(function (branch) {
           children.appendChild(branch);
         });
@@ -3877,13 +3897,11 @@
 
     if (!children) return;
 
-    var branches = Array.from(children.children).filter(function (child) {
-      return child.classList && child.classList.contains('ix-tree-branch');
-    });
+    var branches = directChildrenMatching(children, '.ix-tree-branch');
 
     branches.forEach(function (branch, index) {
       ensureDecisionTreeBranchLabel(branch, branches.length === 2 ? (index === 0 ? 'Yes' : 'No') : '');
-      var childNode = branch.querySelector(':scope > .ix-tree-node');
+      var childNode = firstDirectChildMatching(branch, '.ix-tree-node');
       if (childNode) normalizeSequentialDecisionTree(childNode);
     });
   }
@@ -3943,7 +3961,7 @@
     var normalizedTree = buildFlatDecisionTreeNode(nodeMap, rootId, []);
     flatNodes.forEach(function (node) { node.remove(); });
 
-    var title = el.querySelector(':scope > .ix-title');
+    var title = firstDirectChildMatching(el, '.ix-title');
     if (title && title.nextSibling) {
       el.insertBefore(normalizedTree, title.nextSibling);
     } else {
@@ -3956,22 +3974,18 @@
    * .ix-tree-children containers.
    */
   function initDecisionTree(el) {
-    if (el.querySelector(':scope > .ix-tree-node[data-node-id]')) {
+    if (firstDirectChildMatching(el, '.ix-tree-node[data-node-id]')) {
       normalizeFlatDecisionTree(el);
     }
 
-    var roots = Array.from(el.querySelectorAll(':scope > .ix-tree-root'));
+    var roots = directChildrenMatching(el, '.ix-tree-root');
     if (roots.length) {
       roots.forEach(function (root) {
-        var rootNode = Array.from(root.children).find(function (child) {
-          return child.classList && child.classList.contains('ix-tree-node');
-        });
+        var rootNode = firstDirectChildMatching(root, '.ix-tree-node');
         if (rootNode) normalizeSequentialDecisionTree(rootNode);
       });
     } else {
-      var firstNode = Array.from(el.children).find(function (child) {
-        return child.classList && child.classList.contains('ix-tree-node');
-      });
+      var firstNode = firstDirectChildMatching(el, '.ix-tree-node');
       if (firstNode) normalizeSequentialDecisionTree(firstNode);
     }
 
@@ -4104,14 +4118,53 @@
     var autoPlay = el.dataset.autoPlay !== 'false';
     var defaultManual = el.dataset.defaultMode === 'manual';
 
+    function buildFlatCompareTraceGroups(traceEl) {
+      var flatLines = directChildrenMatching(traceEl, '.ix-trace-line, .ix-trace-row');
+      var groupOrder = [];
+      var groupMap = {};
+      var sharedLines = [];
+
+      flatLines.forEach(function (line) {
+        var col = (line.dataset.col || '').trim();
+        if (!col) {
+          sharedLines.push(line);
+          return;
+        }
+
+        if (!groupMap[col]) {
+          var group = document.createElement('div');
+          group.className = 'ix-trace-group';
+          group.dataset.label = line.dataset.colLabel || line.dataset.label || col;
+          groupMap[col] = group;
+          groupOrder.push(col);
+        } else if (!groupMap[col].dataset.label && (line.dataset.colLabel || line.dataset.label)) {
+          groupMap[col].dataset.label = line.dataset.colLabel || line.dataset.label;
+        }
+
+        groupMap[col].appendChild(line);
+      });
+
+      return {
+        groups: groupOrder.map(function (col) { return groupMap[col]; }),
+        sharedLines: sharedLines
+      };
+    }
+
     // Collect lines (or groups for compare variant)
     var isCompare = variant === 'compare';
-    var groups = isCompare
-      ? Array.from(el.querySelectorAll(':scope > .ix-trace-group'))
-      : null;
+    var groups = isCompare ? directChildrenMatching(el, '.ix-trace-group') : null;
+    var sharedCompareLines = [];
+    if (isCompare && !groups.length) {
+      var normalizedCompare = buildFlatCompareTraceGroups(el);
+      groups = normalizedCompare.groups;
+      sharedCompareLines = normalizedCompare.sharedLines;
+      if (!groups.length) {
+        isCompare = false;
+      }
+    }
     var lines = isCompare
       ? null
-      : Array.from(el.querySelectorAll(':scope > .ix-trace-line, :scope > .ix-trace-row'));
+      : directChildrenMatching(el, '.ix-trace-line, .ix-trace-row');
 
     // Build the visual container
     var container = document.createElement('div');
@@ -4158,6 +4211,7 @@
     else if (isCompare) {
       var compareWrap = document.createElement('div');
       compareWrap.className = 'ix-trace-compare';
+      var sharedCompareOutput = null;
       groups.forEach(function (group) {
         var col = document.createElement('div');
         col.className = 'ix-trace-compare-col';
@@ -4172,9 +4226,16 @@
         compareWrap.appendChild(col);
         // Store reference for playback
         group._outputEl = colOutput;
-        group._lines = Array.from(group.querySelectorAll(':scope > .ix-trace-line, :scope > .ix-trace-row'));
+        group._lines = directChildrenMatching(group, '.ix-trace-line, .ix-trace-row');
       });
       stage.appendChild(compareWrap);
+      if (sharedCompareLines.length) {
+        sharedCompareOutput = document.createElement('div');
+        sharedCompareOutput.className = 'ix-trace-output ix-trace-compare-shared';
+        sharedCompareOutput.setAttribute('role', 'log');
+        sharedCompareOutput.setAttribute('aria-label', 'Shared compare trace output');
+        stage.appendChild(sharedCompareOutput);
+      }
     } else {
       stage.appendChild(outputArea);
     }
@@ -4266,6 +4327,7 @@
     // Remove source lines from DOM (they are data, not display)
     if (lines) lines.forEach(function (l) { l.remove(); });
     if (groups) groups.forEach(function (g) { g.remove(); });
+    sharedCompareLines.forEach(function (line) { line.remove(); });
 
     // --- Playback engine ---
     var state = {
@@ -4277,14 +4339,32 @@
       total: lines ? lines.length : 0
     };
 
-    // For compare variant, interleave lines from both groups
+    // For compare variant, advance one frame at a time across paired columns,
+    // then append any shared/system rows after the column replay completes.
     if (isCompare && groups) {
       state.groups = groups.map(function (g) {
-        return { lines: g._lines, outputEl: g._outputEl, current: 0 };
+        return { lines: g._lines, outputEl: g._outputEl };
       });
-      state.total = Math.max.apply(null, state.groups.map(function (g) {
-        return g.lines.length;
-      }));
+      state.compareFrames = [];
+      var maxGroupLines = state.groups.reduce(function (max, group) {
+        return Math.max(max, group.lines.length);
+      }, 0);
+      for (var groupIndex = 0; groupIndex < maxGroupLines; groupIndex++) {
+        state.compareFrames.push({
+          groupLines: state.groups.map(function (group) {
+            return group.lines[groupIndex] || null;
+          }),
+          sharedLine: null
+        });
+      }
+      sharedCompareLines.forEach(function (line) {
+        state.compareFrames.push({
+          groupLines: state.groups.map(function () { return null; }),
+          sharedLine: line
+        });
+      });
+      state.total = state.compareFrames.length;
+      state.sharedOutputEl = typeof sharedCompareOutput !== 'undefined' ? sharedCompareOutput : null;
     }
 
     function updateProgress() {
@@ -4352,19 +4432,21 @@
 
     function showNext() {
       if (isCompare) {
-        var anyRemaining = false;
-        state.groups.forEach(function (g) {
-          if (g.current < g.lines.length) {
-            renderLine(g.lines[g.current], g.outputEl, null);
-            g.current++;
-            if (g.current < g.lines.length) anyRemaining = true;
+        if (state.current >= state.total) { stop(); return; }
+        var frame = state.compareFrames[state.current];
+        frame.groupLines.forEach(function (line, idx) {
+          if (line) {
+            renderLine(line, state.groups[idx].outputEl, null);
           }
         });
-        state.current = Math.max.apply(null, state.groups.map(function (g) {
-          return g.current;
-        }));
-        if (!anyRemaining) {
+        if (frame.sharedLine && state.sharedOutputEl) {
+          renderLine(frame.sharedLine, state.sharedOutputEl, null);
+        }
+        state.current++;
+        if (state.current >= state.total) {
           stop();
+          updateProgress();
+          return;
         }
       } else {
         if (state.current >= state.total) { stop(); return; }
@@ -4378,9 +4460,14 @@
     }
 
     function getDelay() {
-      var line = isCompare
-        ? (state.groups[0].lines[state.groups[0].current] || state.groups[0].lines[0])
-        : state.allLines[Math.min(state.current, state.total - 1)];
+      var line;
+      if (isCompare) {
+        var frame = state.compareFrames[Math.min(state.current, Math.max(state.total - 1, 0))];
+        line = frame && (frame.sharedLine || frame.groupLines.find(function (entry) { return !!entry; }));
+      } else {
+        line = state.allLines[Math.min(state.current, state.total - 1)];
+      }
+      if (!line) return 800 / state.speed;
       var base = parseInt(line.dataset.delay, 10) || 800;
       return base / state.speed;
     }
@@ -4419,9 +4506,9 @@
       if (annotationPanel) annotationPanel.innerHTML = '';
       if (isCompare) {
         state.groups.forEach(function (g) {
-          g.current = 0;
           g.outputEl.innerHTML = '';
         });
+        if (state.sharedOutputEl) state.sharedOutputEl.innerHTML = '';
       }
       if (praoStrip) {
         praoStrip.querySelectorAll('.ix-trace-prao-seg').forEach(function (s) {
@@ -4499,9 +4586,13 @@
     // Reduced motion preference
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       if (isCompare) {
-        state.groups.forEach(function (g) {
-          g.lines.forEach(function (l) { renderLine(l, g.outputEl, null); });
-          g.current = g.lines.length;
+        state.compareFrames.forEach(function (frame) {
+          frame.groupLines.forEach(function (line, idx) {
+            if (line) renderLine(line, state.groups[idx].outputEl, null);
+          });
+          if (frame.sharedLine && state.sharedOutputEl) {
+            renderLine(frame.sharedLine, state.sharedOutputEl, null);
+          }
         });
       } else {
         state.allLines.forEach(function (l) { renderLine(l, outputArea, annotationPanel); });
@@ -5428,6 +5519,15 @@
   /* ── initRevealQuiz ──
    * Click-to-reveal cards with answer badge and reasoning.
    */
+  function normalizeRevealQuizAnswerType(value) {
+    var raw = String(value || 'interactive').trim().toLowerCase();
+    if (raw.indexOf('misclassified') === 0 || raw.indexOf('should be') !== -1) return 'ask';
+    if (raw === 'tool') return 'interactive';
+    if (raw === 'resource') return 'noninteractive';
+    if (raw === 'prompt') return 'both';
+    return raw || 'interactive';
+  }
+
   function initRevealQuiz(el) {
     el.classList.add('ix-rq-list');
     var items = Array.from(el.querySelectorAll('.ix-reveal-item, .ix-rq-item'));
@@ -5452,12 +5552,13 @@
       item.setAttribute('role', 'button');
       item.setAttribute('tabindex', '0');
       item.setAttribute('aria-expanded', item.classList.contains('revealed') ? 'true' : 'false');
-      var answerType = item.dataset.answer || 'interactive';
-      var label = item.dataset.label || answerType;
+      var answerLabel = item.dataset.label || item.dataset.reveal || item.dataset.answer || 'interactive';
+      var answerType = normalizeRevealQuizAnswerType(item.dataset.answer || item.dataset.reveal || 'interactive');
+      var label = answerLabel;
 
       // Ensure prompt wrap exists
-      var promptEl = item.querySelector('.ix-reveal-prompt, .ix-rq-prompt');
-      var whyEl = item.querySelector('.ix-reveal-why, .ix-rq-why');
+      var promptEl = item.querySelector('.ix-reveal-prompt, .ix-rq-prompt, .ix-rq-label');
+      var whyEl = item.querySelector('.ix-reveal-why, .ix-rq-why, .ix-rq-explanation');
 
       if (promptEl && !item.querySelector('.ix-rq-prompt-wrap')) {
         var wrap = document.createElement('div');
@@ -6080,6 +6181,17 @@
     return el.id;
   }
 
+  function directChildrenMatching(el, selector) {
+    if (!el) return [];
+    return Array.from(el.children).filter(function (child) {
+      return child.matches(selector);
+    });
+  }
+
+  function firstDirectChildMatching(el, selector) {
+    return directChildrenMatching(el, selector)[0] || null;
+  }
+
   /* ── Module slug map ── */
   const COURSE_BASE = '/raven-cargo-course';
   const COURSE_ORDER = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
@@ -6116,6 +6228,12 @@
       return [entry[1], entry[0]];
     })
   );
+  const LIVE_MODULE_KEY_BY_LEGACY = Object.entries(MODULE_SLUGS).reduce(function (acc, entry) {
+    var liveKey = entry[0];
+    var legacyMatch = entry[1].match(/^(\d{2})-/);
+    acc[legacyMatch ? legacyMatch[1] : liveKey] = liveKey;
+    return acc;
+  }, {});
   const MODULE_NAV_ORDER = COURSE_ORDER.map(function (key) {
     return MODULE_SLUGS[key];
   }).concat(['CHALLENGE-MISSIONS']);
@@ -6141,6 +6259,7 @@
   const params = new URLSearchParams(window.location.search);
   const rawParamSlug = params.get('m');
   const slug = slugFromPath || slugFromSpecialPath || (rawParamSlug ? rawParamSlug.replace(/\.md$/i, '') : null);
+  const displayModuleKey = pathKey || MODULE_KEY_BY_SLUG[slug] || null;
 
   if (!slug) {
     showError('No module specified. Use /raven-cargo-course/module/01 or /raven-cargo-course/challenges.');
@@ -6892,6 +7011,125 @@
     });
   }
 
+  function displayModuleLabelForLegacy(num) {
+    var key = String(num || '').padStart(2, '0');
+    return LIVE_MODULE_KEY_BY_LEGACY[key] || key;
+  }
+
+  function stripDiagramWithLeadIn(md, diagramId) {
+    var marker = 'data-diagram-id="' + diagramId + '"';
+    var markerIndex = md.indexOf(marker);
+    if (markerIndex === -1) return md;
+
+    var diagramStart = md.lastIndexOf('<div class="ix-diagram"', markerIndex);
+    if (diagramStart === -1) return md;
+
+    var leadStart = md.lastIndexOf('\n<p class="ix-instruct">', diagramStart);
+    var removeStart = leadStart === -1 ? diagramStart : leadStart;
+    var scanIndex = diagramStart;
+    var depth = 0;
+
+    while (scanIndex < md.length) {
+      var nextOpen = md.indexOf('<div', scanIndex);
+      var nextClose = md.indexOf('</div>', scanIndex);
+      if (nextClose === -1) break;
+
+      if (nextOpen !== -1 && nextOpen < nextClose) {
+        depth++;
+        scanIndex = nextOpen + 4;
+        continue;
+      }
+
+      depth--;
+      scanIndex = nextClose + 6;
+      if (depth === 0) break;
+    }
+
+    var removeEnd = scanIndex;
+    while (md.charAt(removeEnd) === '\n') removeEnd++;
+
+    return md.slice(0, removeStart).replace(/\n+$/, '\n\n') + md.slice(removeEnd).replace(/^\n+/, '');
+  }
+
+  function stripProblemDiagramBlocks(md, currentSlug) {
+    var normalized = md;
+    if (currentSlug === '01-paradigm-shift') {
+      normalized = normalized.replace(
+        /\n<p class="ix-instruct">Press play to watch the same example as a terminal trace with Agentic Loop \(PRAO\) annotations\.<\/p>\n\n<div class="ix-diagram" data-component="agent-trace"[\s\S]*?data-diagram-id="m01-prao-trace"[\s\S]*?<\/div>\n\n---/m,
+        '\n---'
+      );
+      normalized = normalized.replace(
+        /\n<p class="ix-instruct">Step through both traces to compare the same task in two different paradigms\. Use the arrow keys or click the step button\.<\/p>\n\n<div class="ix-diagram" data-component="agent-trace"[\s\S]*?data-diagram-id="m01-era-compare"[\s\S]*?<\/div>\n\n---/m,
+        '\n---'
+      );
+    }
+    if (currentSlug === '05-mcp-architecture') {
+      normalized = normalized.replace(
+        /\n---\n\n## 5\.5 MCP and the Agentic Loop \(PRAO\)[\s\S]*?\n---\n\n## Module 05 Knowledge Check/m,
+        '\n---\n\n## Module 05 Knowledge Check'
+      );
+      normalized = stripDiagramWithLeadIn(normalized, 'm05-description-quality');
+    }
+    if (currentSlug === '03-agent-thinking') {
+      normalized = stripDiagramWithLeadIn(normalized, 'm03-intervention-signals');
+      normalized = stripDiagramWithLeadIn(normalized, 'm03-looping-vs-thoroughness');
+      normalized = stripDiagramWithLeadIn(normalized, 'm03-patterns-live');
+    }
+    if (currentSlug === '06-mcp-building') {
+      normalized = stripDiagramWithLeadIn(normalized, 'm06-schema-quality');
+    }
+    if (currentSlug === '09-multi-agent-systems') {
+      normalized = stripDiagramWithLeadIn(normalized, 'm09-contradiction-trace');
+    }
+    if (currentSlug === '10-security-sandboxing') {
+      normalized = stripDiagramWithLeadIn(normalized, 'm10-trust-hierarchy');
+    }
+    return normalized;
+  }
+
+  function normalizeLegacyMarkdown(md, currentSlug) {
+    var normalized = stripProblemDiagramBlocks(md, currentSlug);
+
+    if (currentSlug === '04-prompt-engineering-depth') {
+      normalized = normalized.replace(
+        "Building on the failure modes from Module 03's prompt foundations, TCEF provides a targeted fix for each one.",
+        'Building on the earlier prompt foundations in this module, TCEF provides a targeted fix for each one.'
+      );
+      normalized = normalized.replace('**Lab 05** applies this module\'s concepts directly.', '**Lab 03** applies this module\'s concepts directly.');
+    }
+    if (currentSlug === '03-agent-thinking') {
+      normalized = normalized.replace('**Lab 03** provides pre-recorded agent traces for three tasks.', '**Lab 04** provides pre-recorded agent traces for three tasks.');
+    }
+    if (currentSlug === '05-mcp-architecture') {
+      normalized = normalized.replace('**Lab 04** connects directly to this module.', '**Lab 06** connects directly to this module.');
+    }
+    if (currentSlug === '06-mcp-building') {
+      normalized = normalized.replace('**Lab 04** reinforces this module\'s fundamentals', '**Lab 06** reinforces this module\'s fundamentals');
+    }
+    if (currentSlug === '07-skills-commands') {
+      normalized = normalized.replace(
+        'As learned in Module 05, the output contract is what makes output reliable.',
+        'The output contract is what makes output reliable.'
+      );
+      normalized = normalized.replace(
+        'In Module 06 you orchestrated individual tools. Now you orchestrate entire skills -- each encapsulating the expertise of a specialist.',
+        'In the MCP modules, you orchestrated individual tools. Now you orchestrate entire skills -- each encapsulating the expertise of a specialist.'
+      );
+      normalized = normalized.replace('**Lab 06** is the direct hands-on companion for this module.', '**Lab 05** is the direct hands-on companion for this module.');
+    }
+
+    normalized = normalized.replace(/^(\s*#{2,6}\s+)(\d{1,2})(\.\d+\b)/gm, function (_, prefix, legacyNum, suffix) {
+      var mapped = displayModuleLabelForLegacy(legacyNum);
+      return prefix + String(parseInt(mapped, 10)) + suffix;
+    });
+
+    normalized = normalized.replace(/\bModule\s+(\d{1,2})\b/g, function (_, legacyNum) {
+      return 'Module ' + displayModuleLabelForLegacy(legacyNum);
+    });
+
+    return normalized;
+  }
+
   loadXp();
 
   /* ── Fetch & render ── */
@@ -6919,6 +7157,7 @@
 
   fetchModuleMarkdown(slug)
     .then(function (md) {
+      md = normalizeLegacyMarkdown(md, slug);
       document.getElementById('loading').style.display = 'none';
       const contentEl = document.getElementById('content');
       contentEl.style.display = 'block';

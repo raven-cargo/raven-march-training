@@ -195,7 +195,7 @@
           "id": "d2-b7",
           "time": "13:15–14:45",
           "topic": "Agentic Workflows & Exception Management",
-          "title": "Block 8 — Multi-Agent Systems",
+          "title": "Block 7 — Multi-Agent Systems",
           "trainingModule": "Module 08",
           "modules": [
             { "id": "08", "title": "Multi-Agent Systems", "href": "/raven-cargo-course/module/08" }
@@ -217,7 +217,7 @@
           "id": "d2-b8",
           "time": "15:00–16:30",
           "topic": "Capstone: Production-Ready Agent Pipeline",
-          "title": "Block 9 — Security + Capstone Build",
+          "title": "Block 8 — Security + Capstone Build",
           "trainingModule": "Module 09",
           "modules": [
             { "id": "09", "title": "Security + Capstone Build", "href": "/raven-cargo-course/module/09" }
