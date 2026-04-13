@@ -1,3 +1,12 @@
 .vercel
 raven-cargo-course/resources-drop/*
 !raven-cargo-course/resources-drop/.gitkeep
+
+# OS / editor noise
+.DS_Store
+**/.DS_Store
+
+# Secrets — never commit
+.env
+.env.local
+.env.*.local
