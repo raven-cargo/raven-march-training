@@ -179,3 +179,16 @@ Current approved Raven live order:
 
 - Day 1: Module 01, Lab 01; Module 02, Lab 02; Module 03, Lab 03; Module 04, Lab 04
 - Day 2: Module 05, Lab 05; Module 06, Module 07, Lab 06; Module 08, Lab 07; Module 09, Lab 08, Lab 09
+
+---
+
+## Decision 21: Public Raven Submission Reads Use an Explicit Column Allow-List
+
+The student submission form at `raven-cargo-course/submissions.html` collects an email address, and `api/raven-course/submissions.js` persists it. That endpoint is unauthenticated and runs with the Supabase service-role key (which bypasses RLS), so anything the read path selects is public.
+
+Implementation rule:
+
+- the submissions `GET` must never return `email`; it requests an explicit `PUBLIC_COLUMNS` list and projects each row through the same list before serializing, so a column added to the table later cannot leak by default
+- do not reintroduce `select=*` on any read path over a table that stores student-identifying data
+- keep `PUBLIC_COLUMNS` equal to the columns the insert in the same handler writes: PostgREST returns 400 for the entire query if a requested column does not exist, so handler and schema must be renamed together
+- exposing emails to instructors is a separate, authenticated endpoint — not a relaxation of this rule
