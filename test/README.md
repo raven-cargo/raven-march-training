@@ -9,3 +9,6 @@ node --test "test/api/*.test.js"
 - `api/submissions-privacy.test.js` — guards the unauthenticated submissions GET against
   returning the student email stored with each submission, and checks the fields the
   course UI renders still come back.
+
+Use the quoted glob, not `node --test test/api/` — the bare directory form reports
+MODULE_NOT_FOUND on Node 22 in this repo.

@@ -9,9 +9,23 @@ const {
 
 // The submissions table stores a student-supplied email address (collected by
 // the submission form). This endpoint is unauthenticated, so the read path must
-// never return it: select an explicit column list instead of `select=*`. Every
-// column below is written by the insert in this same file, so the list is
-// guaranteed to match the table.
+// never return it: select an explicit column list instead of `select=*`.
+//
+// Scope of this list, deliberately:
+//   - It is exactly the set of columns the insert further down this file writes,
+//     so the names are guaranteed to exist on the table. That matters because
+//     PostgREST rejects the whole query with 400 if any requested column is
+//     missing, where `select=*` silently tolerated schema drift. Rename a column
+//     here and in the insert together.
+//   - `id` is therefore not requested, even though `select=*` used to return it
+//     and it carries no PII. Nothing in raven-cargo-course/assets/raven-course.js
+//     reads it today. Add it here (and to the test's UI field list) if an
+//     instructor view or dedupe ever needs a stable row key.
+//   - Likewise `submitter_name`, which renderSubmissionList uses as a fallback
+//     title. This API never writes that column, so requesting it would risk a
+//     400 on a table that does not have it; `name` is required on POST, so the
+//     fallback has nothing to fall back from.
+//   - Anything new and student-identifying must stay out of this list.
 const PUBLIC_COLUMNS = [
   'name',
   'team',
