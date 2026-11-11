@@ -7,6 +7,43 @@ const {
   sendJson
 } = require('./_supabase');
 
+// The submissions table stores a student-supplied email address (collected by
+// the submission form). This endpoint is unauthenticated, so the read path must
+// never return it: select an explicit column list instead of `select=*`. Every
+// column below is written by the insert in this same file, so the list is
+// guaranteed to match the table.
+const PUBLIC_COLUMNS = [
+  'name',
+  'team',
+  'role',
+  'block_id',
+  'block_title',
+  'lab_id',
+  'lab_title',
+  'use_case_id',
+  'use_case_title',
+  'notes',
+  'link_url',
+  'file_url',
+  'file_name',
+  'storage_path',
+  'content_type',
+  'created_at'
+];
+
+const PUBLIC_SELECT = 'select=' + PUBLIC_COLUMNS.join(',');
+
+function toPublicSubmission(row) {
+  const source = row && typeof row === 'object' ? row : {};
+  const safe = {};
+  PUBLIC_COLUMNS.forEach(function (column) {
+    if (Object.prototype.hasOwnProperty.call(source, column)) {
+      safe[column] = source[column];
+    }
+  });
+  return safe;
+}
+
 module.exports = async function handler(req, res) {
   const config = getConfig();
 
@@ -16,7 +53,8 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-      const items = await selectRows(config.submissionsTable, 'select=*&order=created_at.desc');
+      const rows = await selectRows(config.submissionsTable, PUBLIC_SELECT + '&order=created_at.desc');
+      const items = (Array.isArray(rows) ? rows : []).map(toPublicSubmission);
       return sendJson(res, 200, { backend: 'supabase', items: items });
     } catch (error) {
       return sendJson(res, error.statusCode || 500, { error: error.message });
@@ -58,8 +96,12 @@ module.exports = async function handler(req, res) {
       created_at: new Date().toISOString()
     });
 
-    return sendJson(res, 201, { item: row });
+    return sendJson(res, 201, { item: toPublicSubmission(row) });
   } catch (error) {
     return sendJson(res, error.statusCode || 500, { error: error.message });
   }
 };
+
+module.exports.PUBLIC_COLUMNS = PUBLIC_COLUMNS;
+module.exports.PUBLIC_SELECT = PUBLIC_SELECT;
+module.exports.toPublicSubmission = toPublicSubmission;
